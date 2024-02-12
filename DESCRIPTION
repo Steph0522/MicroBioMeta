@@ -1,0 +1,15 @@
+Package: MicroBioMeta
+Title: What the Package Does (One Line, Title Case)
+Version: 0.99.0
+Date: 2024-02-07
+Authors@R: 
+    person("Stephanie", "Hereira", , "shereirap@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-1433-8187"))
+Description: What the package does (one paragraph).
+License: Artistic-2.0
+URL: https://github.com/Steph0522/MicroBioMeta
+BugReports: https://support.bioconductor.org/tag/MicroBioMeta
+biocViews: Software
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
