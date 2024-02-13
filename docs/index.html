@@ -91,7 +91,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of <code>MicroBioMeta</code> is to analyze, visualize, and explore data from microbiome studies of amplicon and metagenomic sequencing at taxonomic, functional, and phylogenetic levels.</p>
+<p>The goal of <code>MicroBioMeta</code> is to …</p>
 <div class="section level2">
 <h2 id="installation-instructions">Installation instructions<a class="anchor" aria-label="anchor" href="#installation-instructions"></a>
 </h2>
@@ -107,25 +107,64 @@
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"Steph0522/MicroBioMeta"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>This is a basic example which shows you how to solve a common problem:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/Steph0522/MicroBioMeta" class="external-link">"MicroBioMeta"</a></span><span class="op">)</span></span>
+<span><span class="co">## basic example code</span></span></code></pre></div>
+<p>What is special about using <code>README.Rmd</code> instead of just <code>README.md</code>? You can include R chunks like so:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      speed           dist       </span></span>
+<span><span class="co">#&gt;  Min.   : 4.0   Min.   :  2.00  </span></span>
+<span><span class="co">#&gt;  1st Qu.:12.0   1st Qu.: 26.00  </span></span>
+<span><span class="co">#&gt;  Median :15.0   Median : 36.00  </span></span>
+<span><span class="co">#&gt;  Mean   :15.4   Mean   : 42.98  </span></span>
+<span><span class="co">#&gt;  3rd Qu.:19.0   3rd Qu.: 56.00  </span></span>
+<span><span class="co">#&gt;  Max.   :25.0   Max.   :120.00</span></span></code></pre></div>
+<p>You’ll still need to render <code>README.Rmd</code> regularly, to keep <code>README.md</code> up-to-date.</p>
+<p>You can also embed plots, for example:</p>
+<p><img src="reference/figures/README-pressure-1.png" width="100%"></p>
+<p>In that case, don’t forget to commit and push the resulting figure files, so they display on GitHub!</p>
+</div>
+<div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>Below is the citation output from using <code>citation('MicroBioMeta')</code> in R. Please run this yourself to check for any updates on how to cite <strong>MicroBioMeta</strong>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">'MicroBioMeta'</span><span class="op">)</span>, bibtex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; To cite package 'MicroBioMeta' in publications use:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Hereira S (2024). _MicroBioMeta: What the Package Does (One Line,</span></span>
-<span><span class="co">#&gt;   Title Case)_. R package version 0.99.0,</span></span>
-<span><span class="co">#&gt;   &lt;https://github.com/Steph0522/MicroBioMeta&gt;.</span></span>
+<span><span class="co">#&gt;   Steph0522 (2024). _MicroBioMeta_. doi:10.18129/B9.bioc.MicroBioMeta</span></span>
+<span><span class="co">#&gt;   &lt;https://doi.org/10.18129/B9.bioc.MicroBioMeta&gt;,</span></span>
+<span><span class="co">#&gt;   https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package</span></span>
+<span><span class="co">#&gt;   version 0.99.0, &lt;http://www.bioconductor.org/packages/MicroBioMeta&gt;.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   @Manual{,</span></span>
-<span><span class="co">#&gt;     title = {MicroBioMeta: What the Package Does (One Line, Title Case)},</span></span>
-<span><span class="co">#&gt;     author = {Stephanie Hereira},</span></span>
+<span><span class="co">#&gt;     title = {MicroBioMeta},</span></span>
+<span><span class="co">#&gt;     author = {{Steph0522}},</span></span>
 <span><span class="co">#&gt;     year = {2024},</span></span>
-<span><span class="co">#&gt;     note = {R package version 0.99.0},</span></span>
-<span><span class="co">#&gt;     url = {https://github.com/Steph0522/MicroBioMeta},</span></span>
+<span><span class="co">#&gt;     url = {http://www.bioconductor.org/packages/MicroBioMeta},</span></span>
+<span><span class="co">#&gt;     note = {https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package version 0.99.0},</span></span>
+<span><span class="co">#&gt;     doi = {10.18129/B9.bioc.MicroBioMeta},</span></span>
+<span><span class="co">#&gt;   }</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   Steph0522 (2024). "MicroBioMeta." _bioRxiv_. doi:10.1101/TODO</span></span>
+<span><span class="co">#&gt;   &lt;https://doi.org/10.1101/TODO&gt;,</span></span>
+<span><span class="co">#&gt;   &lt;https://www.biorxiv.org/content/10.1101/TODO&gt;.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   @Article{,</span></span>
+<span><span class="co">#&gt;     title = {MicroBioMeta},</span></span>
+<span><span class="co">#&gt;     author = {{Steph0522}},</span></span>
+<span><span class="co">#&gt;     year = {2024},</span></span>
+<span><span class="co">#&gt;     journal = {bioRxiv},</span></span>
+<span><span class="co">#&gt;     doi = {10.1101/TODO},</span></span>
+<span><span class="co">#&gt;     url = {https://www.biorxiv.org/content/10.1101/TODO},</span></span>
 <span><span class="co">#&gt;   }</span></span></code></pre></div>
 <p>Please note that the <code>MicroBioMeta</code> was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignettes and/or the paper(s) describing this package.</p>
 </div>
@@ -194,6 +233,7 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/Steph0522/MicroBioMeta/issues" class="external-link"><img src="https://img.shields.io/github/issues/Steph0522/MicroBioMeta" alt="GitHub issues"></a></li>
 <li><a href="https://github.com/Steph0522/MicroBioMeta/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/Steph0522/MicroBioMeta" alt="GitHub pulls"></a></li>
+<li><a href="https://app.codecov.io/gh/Steph0522/MicroBioMeta?branch=main" class="external-link"><img src="https://codecov.io/gh/Steph0522/MicroBioMeta/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
 
