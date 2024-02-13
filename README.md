@@ -9,9 +9,11 @@
 issues](https://img.shields.io/github/issues/Steph0522/MicroBioMeta)](https://github.com/Steph0522/MicroBioMeta/issues)
 [![GitHub
 pulls](https://img.shields.io/github/issues-pr/Steph0522/MicroBioMeta)](https://github.com/Steph0522/MicroBioMeta/pulls)
+[![Codecov test
+coverage](https://codecov.io/gh/Steph0522/MicroBioMeta/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Steph0522/MicroBioMeta?branch=main)
 <!-- badges: end -->
 
-The goal of `MicroBioMeta` is to analyze, visualize, and explore data from microbiome studies of amplicon and metagenomic sequencing at taxonomic, functional, and phylogenetic levels.
+The goal of `MicroBioMeta` is to …
 
 ## Installation instructions
 
@@ -34,6 +36,38 @@ And the development version from
 BiocManager::install("Steph0522/MicroBioMeta")
 ```
 
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library("MicroBioMeta")
+## basic example code
+```
+
+What is special about using `README.Rmd` instead of just `README.md`?
+You can include R chunks like so:
+
+``` r
+summary(cars)
+#>      speed           dist       
+#>  Min.   : 4.0   Min.   :  2.00  
+#>  1st Qu.:12.0   1st Qu.: 26.00  
+#>  Median :15.0   Median : 36.00  
+#>  Mean   :15.4   Mean   : 42.98  
+#>  3rd Qu.:19.0   3rd Qu.: 56.00  
+#>  Max.   :25.0   Max.   :120.00
+```
+
+You’ll still need to render `README.Rmd` regularly, to keep `README.md`
+up-to-date.
+
+You can also embed plots, for example:
+
+<img src="man/figures/README-pressure-1.png" width="100%" />
+
+In that case, don’t forget to commit and push the resulting figure
+files, so they display on GitHub!
 
 ## Citation
 
@@ -45,18 +79,35 @@ Please run this yourself to check for any updates on how to cite
 print(citation('MicroBioMeta'), bibtex = TRUE)
 #> To cite package 'MicroBioMeta' in publications use:
 #> 
-#>   Hereira S (2024). _MicroBioMeta: What the Package Does (One Line,
-#>   Title Case)_. R package version 0.99.0,
-#>   <https://github.com/Steph0522/MicroBioMeta>.
+#>   Steph0522 (2024). _MicroBioMeta_. doi:10.18129/B9.bioc.MicroBioMeta
+#>   <https://doi.org/10.18129/B9.bioc.MicroBioMeta>,
+#>   https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package
+#>   version 0.99.0, <http://www.bioconductor.org/packages/MicroBioMeta>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {MicroBioMeta: What the Package Does (One Line, Title Case)},
-#>     author = {Stephanie Hereira},
+#>     title = {MicroBioMeta},
+#>     author = {{Steph0522}},
 #>     year = {2024},
-#>     note = {R package version 0.99.0},
-#>     url = {https://github.com/Steph0522/MicroBioMeta},
+#>     url = {http://www.bioconductor.org/packages/MicroBioMeta},
+#>     note = {https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package version 0.99.0},
+#>     doi = {10.18129/B9.bioc.MicroBioMeta},
+#>   }
+#> 
+#>   Steph0522 (2024). "MicroBioMeta." _bioRxiv_. doi:10.1101/TODO
+#>   <https://doi.org/10.1101/TODO>,
+#>   <https://www.biorxiv.org/content/10.1101/TODO>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Article{,
+#>     title = {MicroBioMeta},
+#>     author = {{Steph0522}},
+#>     year = {2024},
+#>     journal = {bioRxiv},
+#>     doi = {10.1101/TODO},
+#>     url = {https://www.biorxiv.org/content/10.1101/TODO},
 #>   }
 ```
 

@@ -8,8 +8,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' pca_compo("table.txt")
-#'Rscript pca_compos.R table.tsv
+#' pca_compos(table, write=TRUE)
 #' }
 
 pca_compos<- function(table, write=TRUE){

@@ -1,0 +1,8 @@
+template:
+  params:
+    bootswatch: cosmo
+    ganalytics: UA-000000-01
+  opengraph:
+    twitter:
+      creator: "@Steph0522"
+      card: summary_large_image
