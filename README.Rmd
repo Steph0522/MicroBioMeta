@@ -18,7 +18,15 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![GitHub issues](https://img.shields.io/github/issues/Steph0522/MicroBioMeta)](https://github.com/Steph0522/MicroBioMeta/issues)
 [![GitHub pulls](https://img.shields.io/github/issues-pr/Steph0522/MicroBioMeta)](https://github.com/Steph0522/MicroBioMeta/pulls)
-[![Codecov test coverage](https://codecov.io/gh/Steph0522/MicroBioMeta/branch/main/graph/badge.svg)](https://app.codecov.io/gh/Steph0522/MicroBioMeta?branch=main)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Bioc release status](http://www.bioconductor.org/shields/build/release/bioc/MicroBioMeta.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/MicroBioMeta)
+[![Bioc devel status](http://www.bioconductor.org/shields/build/devel/bioc/MicroBioMeta.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/MicroBioMeta)
+[![Bioc downloads rank](https://bioconductor.org/shields/downloads/release/MicroBioMeta.svg)](http://bioconductor.org/packages/stats/bioc/MicroBioMeta/)
+[![Bioc support](https://bioconductor.org/shields/posts/MicroBioMeta.svg)](https://support.bioconductor.org/tag/MicroBioMeta)
+[![Bioc history](https://bioconductor.org/shields/years-in-bioc/MicroBioMeta.svg)](https://bioconductor.org/packages/release/bioc/html/MicroBioMeta.html#since)
+[![Bioc last commit](https://bioconductor.org/shields/lastcommit/devel/bioc/MicroBioMeta.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/MicroBioMeta/)
+[![Bioc dependencies](https://bioconductor.org/shields/dependencies/release/MicroBioMeta.svg)](https://bioconductor.org/packages/release/bioc/html/MicroBioMeta.html#since)
+[![R-CMD-check-bioc](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml/badge.svg)](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml)
 <!-- badges: end -->
 
 The goal of `MicroBioMeta` is to ...
