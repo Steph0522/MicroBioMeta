@@ -25,6 +25,6 @@ compositional PerMANOVA
 }
 \examples{
 \dontrun{
-  permanova_compos(data_table, metadata, form="Material+Tipo",  strata_value="Individuo", write=FALSE)
+permanova_compos(data_table, metadata, form = "Material+Tipo", strata_value = "Individuo", write = FALSE)
 }
 }

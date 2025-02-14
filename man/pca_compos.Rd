@@ -19,6 +19,6 @@ compositional PCA
 }
 \examples{
 \dontrun{
-pca_compos(table, write=TRUE)
+pca_compos(table, write = TRUE)
 }
 }

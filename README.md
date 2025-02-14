@@ -91,7 +91,7 @@ Please run this yourself to check for any updates on how to cite
 **MicroBioMeta**.
 
 ``` r
-print(citation('MicroBioMeta'), bibtex = TRUE)
+print(citation("MicroBioMeta"), bibtex = TRUE)
 #> To cite package 'MicroBioMeta' in publications use:
 #> 
 #>   Steph0522 (2025). _MicrobioMeta_. doi:10.18129/B9.bioc.MicroBioMeta
