@@ -2,3 +2,4 @@
 
 export(pca_compos)
 export(permanova_compos)
+export(suma)
