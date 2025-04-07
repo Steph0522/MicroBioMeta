@@ -2,6 +2,24 @@
 
 
 #1. Definir la funcion 
+#' Diversidad alfa
+#'
+#' @param otu: Otu table, en donde las columnas son las muestras y las filas ASV's. Ademas, la primer columna debe decir "OTUID", otros nombres marcara error (ejemplo OTU-ID, Sample-ID).
+#' @param metadata Mapa de características que contiene información util de las muestras.
+#' @param x Nombre de la variable del eje x
+#' @param y Nombre de la variable del eje y
+#' @param fill Nombre de la variable que separará las muestras por color 
+#' @param V1 Variable que dividirá la figura en facets verticales
+#' @param V2 Varible que separara la figura en facets horizontales
+#' @param paleta_colores Paleta de colores blind-fliendly 
+#' @param Titulo.leyenda Título de la leyenda principal 
+#' @param Titulo.figura Título principal de la figura
+#' @param Titulo.eje.y Título del eje y
+#'
+#' @return
+#' @export
+#'
+#' @examples
 diversidad_alfa <- function(otu, metadata, x, y, fill, V1, V2, paleta_colores, Titulo.leyenda,
                             Titulo.figura, Titulo.eje.y)
   
