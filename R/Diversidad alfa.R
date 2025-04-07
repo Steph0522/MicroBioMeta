@@ -2,9 +2,9 @@
 
 
 #1. Definir la funcion 
+
 diversidad_alfa <- function(otu, metadata, x, y, fill, V1, V2, color1, color2, color3, color4, color5, Titulo.leyenda,
                             Titulo.figura, Titulo.eje.y)
-  
   
   #Obtener indices de diversidad por cada orden
   #especificar el nombre de la columna con las muestras (OTUID o sample-id y verificar al unir con el metadata)
