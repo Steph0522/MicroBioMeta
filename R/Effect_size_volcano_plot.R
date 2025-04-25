@@ -16,7 +16,7 @@
 #' @return A `ggplot` object with the volcano plot.
 #' @export
 #'
-#' @examples
+#' @examples a
 
 #' 
 #' 

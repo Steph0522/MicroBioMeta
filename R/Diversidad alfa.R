@@ -16,10 +16,10 @@
 #' @param Titulo.figura Título principal de la figura
 #' @param Titulo.eje.y Título del eje y
 #'
-#' @return
+#' @return a
 #' @export
 #'
-#' @examples
+#' @examples a
 diversidad_alfa <- function(otu, metadata, x, y, fill, V1, V2, paleta_colores, Titulo.leyenda,
                             Titulo.figura, Titulo.eje.y)
   
@@ -78,18 +78,5 @@ diversidad_alfa <- function(otu, metadata, x, y, fill, V1, V2, paleta_colores, T
   
   return(figura_completa)
 }
-
-#2. Correr la funcion 
-diversidad_alfa(otu = table.qiime, 
-                metadata = sample_metadata,
-                x = "body_site",
-                y="Numero efectivo de ASV´s",
-                fill = "day",
-                V1="orden",
-                V2="subject", 
-                paleta_colores = paleta_colores,
-                Titulo.leyenda="Days",
-                Titulo.figura="Alfa diversity", 
-                Titulo.eje.y= "Effective number of ASVs")
 
 

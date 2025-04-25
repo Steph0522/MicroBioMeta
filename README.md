@@ -28,7 +28,18 @@ dependencies](https://bioconductor.org/shields/dependencies/release/MicroBioMeta
 [![R-CMD-check-bioc](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml/badge.svg)](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml)
 <!-- badges: end -->
 
-The goal of `MicroBioMeta` is to …
+The goal of `MicroBioMeta` is to support beginners in microbiome data
+analysis, whether working with metagenomic or metabarcoding datasets. It
+enables users with limited experience in R to explore, visualize, and
+analyze results with minimal coding and customization. This helps save
+time on scripting, while still producing statistically robust results
+and publication-ready figures in an intuitive and accessible way
+
+## Contributors
+
+- Stephanie Hereira - lead developer.
+- Nina Montoya - co-developer and functions.
+- Karla Zarco - co-developer and functions.
 
 ## Installation instructions
 
@@ -51,7 +62,7 @@ And the development version from
 BiocManager::install("Steph0522/MicroBioMeta")
 ```
 
-## Example
+## Examples
 
 This is a basic example which shows you how to solve a common problem:
 
@@ -60,30 +71,6 @@ library("MicroBioMeta")
 ## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub!
-
 ## Citation
 
 Below is the citation output from using `citation('MicroBioMeta')` in R.
@@ -91,7 +78,7 @@ Please run this yourself to check for any updates on how to cite
 **MicroBioMeta**.
 
 ``` r
-print(citation("MicroBioMeta"), bibtex = TRUE)
+print(citation('MicroBioMeta'), bibtex = TRUE)
 #> To cite package 'MicroBioMeta' in publications use:
 #> 
 #>   Steph0522 (2025). _MicrobioMeta_. doi:10.18129/B9.bioc.MicroBioMeta

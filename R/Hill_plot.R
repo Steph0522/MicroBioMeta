@@ -19,7 +19,7 @@
 #' @return A `ggplot` object representing the boxplot of Hill numbers for each q-value, stratified by `x_col` and `fill_col`.
 #' @export
 #'
-#' @examples
+#' @examples a
 hill_plot <-
   function(table,
            metadata,

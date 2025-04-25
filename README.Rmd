@@ -29,7 +29,13 @@ knitr::opts_chunk$set(
 [![R-CMD-check-bioc](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml/badge.svg)](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml)
 <!-- badges: end -->
 
-The goal of `MicroBioMeta` is to ...
+The goal of `MicroBioMeta` is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way
+
+## Contributors
+
+- Stephanie Hereira - lead developer.
+- Nina Montoya - co-developer and functions.
+- Karla Zarco - co-developer and functions.
 
 ## Installation instructions
 
@@ -48,7 +54,7 @@ And the development version from [GitHub](https://github.com/Steph0522/MicroBioM
 ```{r 'install_dev', eval = FALSE}
 BiocManager::install("Steph0522/MicroBioMeta")
 ```
-## Example
+## Examples
 
 This is a basic example which shows you how to solve a common problem:
 
@@ -57,29 +63,13 @@ library("MicroBioMeta")
 ## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
-
 ## Citation
 
 Below is the citation output from using `citation('MicroBioMeta')` in R. Please
 run this yourself to check for any updates on how to cite __MicroBioMeta__.
 
 ```{r 'citation', eval = requireNamespace('MicroBioMeta')}
-print(citation("MicroBioMeta"), bibtex = TRUE)
+print(citation('MicroBioMeta'), bibtex = TRUE)
 ```
 
 Please note that the `MicroBioMeta` was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignettes and/or the paper(s) describing this package.

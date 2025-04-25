@@ -1,10 +1,10 @@
 Package: MicroBioMeta
-Title: What the Package Does (One Line, Title Case)
+Title: MicroBioMeta: Intuitive Microbiome Data Analysis for Beginners with Minimal Coding
 Version: 0.99.0
-Date: 2025-02-13
+Date: 2025-04-25
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Stephanie", "Hereira", , "first.last@example.com", role = c("aut", "cre"))
+Description: The goal of MicroBioMeta is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way.
 License: Artistic-2.0
 URL: https://github.com/Steph0522/MicroBioMeta
 BugReports: https://support.bioconductor.org/tag/MicroBioMeta
