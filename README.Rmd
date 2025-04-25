@@ -69,7 +69,7 @@ Below is the citation output from using `citation('MicroBioMeta')` in R. Please
 run this yourself to check for any updates on how to cite __MicroBioMeta__.
 
 ```{r 'citation', eval = requireNamespace('MicroBioMeta')}
-print(citation('MicroBioMeta'), bibtex = TRUE)
+print(citation("MicroBioMeta"), bibtex = TRUE)
 ```
 
 Please note that the `MicroBioMeta` was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignettes and/or the paper(s) describing this package.

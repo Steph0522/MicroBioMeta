@@ -79,11 +79,11 @@ library(vegan)
 data(dune)
 data(dune.env)
 alpha_hill_plot(
- table = t(dune),
- metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
- x_col = "Management",
- fill_col = "Management",
- facet_by = "Use",
- facet_orientation = "vertical"
+    table = t(dune),
+    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
+    x_col = "Management",
+    fill_col = "Management",
+    facet_by = "Use",
+    facet_orientation = "vertical"
 )
 }
