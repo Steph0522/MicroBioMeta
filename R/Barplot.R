@@ -11,8 +11,7 @@
 #' @param group_var Character. Column name in `metadata` used to group samples for plotting (e.g., replicate, subject).
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n_groups Integer. Number of most abundant taxa groups to display. Default is `15`.
-#' @param name_vector Optional. A named vector for custom renaming of taxa (currently not implemented).
-#'
+#' 
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
