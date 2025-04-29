@@ -54,15 +54,15 @@ diversidad_alfa <- function(table, metadata, x_col, y_col, fill_col, facet_x, fa
   
   #Figura completa
   figura_completa<- otu.completa %>% 
-    ggpubr::ggboxplot(x = x, y = y, fill = fill)+
+    ggpubr::ggboxplot(x = x_col, y = y_col, fill = fill_col)+
     ggh4x::facet_grid2(as.formula(paste(V1,"~", V2)) , space = "fixed", scales = "free") +
-    ylab(Titulo.eje.y)+
+    ylab(axis_y_title)+
     xlab(NULL)+
     scale_fill_manual(values = paleta_colores) + 
     theme_classic()+
     theme(legend.position = "bottom")+
-    labs(fill=Titulo.leyenda) + #Modificar titulo de la leyenda
-    ggtitle(Titulo.figura)+
+    labs(fill=legend_title) + #Modificar titulo de la leyenda
+    ggtitle(legend_figure)+
     guides(color = guide_legend(override.aes = list(size = 5))) + #tamaño del key de la primer leyenda (season)
     theme(panel.border = element_rect(fill = "transparent", # Necesario para agregar el borde
                                       color = "black", linewidth = 0.5),
