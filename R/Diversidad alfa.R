@@ -4,24 +4,26 @@
 #1. Definir la funcion 
 #' Diversidad alfa
 #'
-#' @param otu: Otu table, en donde las columnas son las muestras y las filas ASV's. Ademas, la primer columna debe decir "OTUID", otros nombres marcara error (ejemplo OTU-ID, Sample-ID).
-#' @param metadata Mapa de características que contiene información util de las muestras.
-#' @param x Nombre de la variable del eje x
-#' @param y Nombre de la variable del eje y
-#' @param fill Nombre de la variable que separará las muestras por color 
-#' @param V1 Variable que dividirá la figura en facets verticales
-#' @param V2 Varible que separara la figura en facets horizontales
-#' @param paleta_colores Paleta de colores blind-fliendly 
-#' @param Titulo.leyenda Título de la leyenda principal 
-#' @param Titulo.figura Título principal de la figura
-#' @param Titulo.eje.y Título del eje y
+#' @param table: Data frame, where, the columns are the samples and rows are ASV's or taxa.
+#'               In addition, the first column should be called "OTUID", other names, e.g.,OTU-ID,
+#'               Sample-ID, sample-ids, etc., will flag an error.
+#' @param metadata Data frame of characteristics or important information of the samples.
+#' @param x_col Variable that defines the axis x
+#' @param y_col Variable that defines the axis y
+#' @param fill_col Variable that separates the samples for color 
+#' @param facet_x Variable that separates the samples in horizontal facets
+#' @param facet_y Variable that separates the samples in vertical facets
+#' @param col_pallete Blind-friendly color palette
+#' @param legend_title Title of the principal legend 
+#' @param legend_figure Principal title of the figure
+#' @param axis_y_title Title of the axis y
 #'
 #' @return
 #' @export
 #'
 #' @examples
-diversidad_alfa <- function(otu, metadata, x, y, fill, V1, V2, paleta_colores, Titulo.leyenda,
-                            Titulo.figura, Titulo.eje.y)
+diversidad_alfa <- function(table, metadata, x_col, y_col, fill_col, facet_x, facet_y, col_pallete, legend_title,
+                            legend_figure, axis_y_title)
   
   
   #Obtener indices de diversidad por cada orden
@@ -80,16 +82,16 @@ diversidad_alfa <- function(otu, metadata, x, y, fill, V1, V2, paleta_colores, T
 }
 
 #2. Correr la funcion 
-diversidad_alfa(otu = table.qiime, 
+diversidad_alfa(table = table.qiime, 
                 metadata = sample_metadata,
-                x = "body_site",
-                y="Numero efectivo de ASV´s",
-                fill = "day",
-                V1="orden",
-                V2="subject", 
-                paleta_colores = paleta_colores,
-                Titulo.leyenda="Days",
-                Titulo.figura="Alfa diversity", 
-                Titulo.eje.y= "Effective number of ASVs")
+                x_col = "body_site",
+                y_col="Numero efectivo de ASV´s",
+                fill_col = "day",
+                facet_x="subject",
+                facet_y="orden", 
+                col_pallete = paleta_colores,
+                legend_title="Days",
+                legend_figure="Alfa diversity", 
+                axis_y_title= "Effective number of ASVs")
 
 
