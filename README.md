@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# MicroBioMeta
+# 🧬 MicroBioMeta
 
 <!-- badges: start -->
 
@@ -35,13 +35,13 @@ analyze results with minimal coding and customization. This helps save
 time on scripting, while still producing statistically robust results
 and publication-ready figures in an intuitive and accessible way
 
-## Contributors
+## 👩‍💻 Contributors
 
 - Stephanie Hereira - lead developer.
 - Nina Montoya - co-developer and functions.
 - Karla Zarco - co-developer and functions.
 
-## Installation instructions
+## :computer: Installation instructions
 
 Get the latest stable `R` release from
 [CRAN](http://cran.r-project.org/). Then install `MicroBioMeta` from
@@ -62,7 +62,7 @@ And the development version from
 BiocManager::install("Steph0522/MicroBioMeta")
 ```
 
-## Examples
+## :green_book: Examples
 
 This is a basic example which shows you how to solve a common problem:
 
@@ -71,7 +71,7 @@ library("MicroBioMeta")
 ## basic example code
 ```
 
-## Citation
+## :books: Citation
 
 Below is the citation output from using `citation('MicroBioMeta')` in R.
 Please run this yourself to check for any updates on how to cite
