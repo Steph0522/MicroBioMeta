@@ -20,6 +20,7 @@
 #' @param strip_color Background color of facet strips. Default: "grey".
 #' @param show_legend Logical. Show legend? Default: TRUE.
 #' @param legend_title Title for the legend.
+#' @param legend_position Position of the legend: "bottom", "top", "right", or "left". Default is "bottom".
 #' @param figure_title Title for the entire plot.
 #' @param axis_x_title Title for the x-axis.
 #' @param axis_y_title Title for the y-axis.
@@ -57,8 +58,9 @@ alpha_hill_plot <- function(
         show_legend = TRUE,
         figure_title = NULL,
         legend_title = NULL,
+        legend_position = "bottom",
         axis_x_title = NULL,
-        axis_y_title = "Effective number of ASVs",
+        axis_y_title = "Effective number of Species",
         free_y = FALSE) {
     sample_order <- metadata[[1]]
     common_samples <- intersect(colnames(table), sample_order)
@@ -137,7 +139,7 @@ alpha_hill_plot <- function(
 
     capa_geom <- if (type == "boxplot") {
         ggplot2::geom_boxplot(
-            width = 0.4,
+            width = 0.5,
             position = ggplot2::position_dodge(width = 0.9)
         )
     } else if (type == "barplot") {
@@ -145,7 +147,7 @@ alpha_hill_plot <- function(
             stat = "summary",
             fun = "mean",
             position = ggplot2::position_dodge(width = 0.9),
-            width = 0.7,
+            width = 0.5,
             color = "black"
         )
     } else {
@@ -153,25 +155,23 @@ alpha_hill_plot <- function(
     }
 
     capa_error <- if (type == "barplot") {
-        ggplot2::stat_summary(
-            fun.data = "mean_sdl",
-            fun.args = list(mult = 1),
-            geom = "errorbar",
-            width = 0.2,
-            position = ggplot2::position_dodge(width = 0.9)
-        )
-    } else if (type == "boxplot") {
-        ggplot2::stat_summary(
-            fun.data = "mean_sdl",
-            fun.args = list(mult = 1),
-            geom = "crossbar",
-            width = 0.5,
-            position = ggplot2::position_dodge(width = 0.9),
-            color = "black"
-        )
+      ggplot2::stat_summary(
+        fun.data = "mean_sdl",
+        fun.args = list(mult = 1),
+        geom = "errorbar",
+        width = 0.2,
+        position = ggplot2::position_dodge(width = 0.9)
+      )
     } else {
-        NULL
+      NULL
     }
+    
+    aspect_ratio_theme <- if (facet_orientation == "horizontal") {
+      ggplot2::theme(aspect.ratio = 1.5)
+    } else {
+      ggplot2::theme(aspect.ratio = 0.7)
+    }
+    
 
     # Calcular label.y ajustado por q
     # Si hay facet_by, incluimos esa variable en el agrupamiento
@@ -193,16 +193,17 @@ alpha_hill_plot <- function(
         ggplot2::theme(
             panel.grid = ggplot2::element_blank(),
             panel.spacing = grid::unit(1, "lines"),
-            aspect.ratio = 0.4,
+           # aspect.ratio = 0.6,
             strip.text = ggplot2::element_text(face = "bold", color = "black", size = 15),
             strip.background = ggplot2::element_rect(fill = strip_color),
             axis.title.y = ggplot2::element_text(size = 14, face = "bold"),
-            axis.text.y = ggplot2::element_text(size = 10),
-            axis.text.x = ggplot2::element_text(size = 10),
+            axis.text.y = ggplot2::element_text(size = 10, colour = "black"),
+            axis.text.x = ggplot2::element_text(size = 10, color = "black"),
             legend.title = ggplot2::element_text(size = 12, face = "bold"),
             legend.text = ggplot2::element_text(size = 11),
-            legend.position = if (show_legend) "bottom" else "none"
-        )
+            legend.position = if (show_legend) legend_position else "none"
+        )+ aspect_ratio_theme 
+      
     if (!is.null(stat)) {
         split_vars <- if (!is.null(facet_by)) c("q", facet_by) else "q"
         p_vals_layers <- results_largo %>%

@@ -191,6 +191,8 @@ relative_abundance_plot <- function(table,
     )
   )(length(unique(avg_by_group$taxonomy)))
   
+  
+  
   # Generate plot
   p <- ggplot(avg_by_group,
               aes(
@@ -209,11 +211,14 @@ relative_abundance_plot <- function(table,
     theme(
       panel.grid = element_blank(),
       legend.title = element_text(size = 12),
-      legend.text = element_markdown(size = 10)
+      axis.title = element_text(size = 14, color = "black"),
+      axis.text.x = element_text(size = 12, colour = "black"),
+      axis.text.y = element_text(size=12, colour = "black"),
+      legend.text = element_text(size = 10, face = if (level == "genus") "italic" else "plain")
     ) +
     ylim(0, 100) +
     ylab("Relative abundance (%)") +
-    xlab("Sample")
+    xlab("Samples")
   
   if (!is.null(facet_col)) {
     p <- p + facet_wrap(vars(!!sym(facet_col)), scales = "free_x")

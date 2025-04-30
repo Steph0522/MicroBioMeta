@@ -21,8 +21,9 @@ alpha_hill_plot(
   show_legend = TRUE,
   figure_title = NULL,
   legend_title = NULL,
+  legend_position = "bottom",
   axis_x_title = NULL,
-  axis_y_title = "Effective number of ASVs",
+  axis_y_title = "Effective number of Species",
   free_y = FALSE
 )
 }
@@ -59,6 +60,8 @@ The first column must contain the OTUID, ASV, or species name.}
 \item{figure_title}{Title for the entire plot.}
 
 \item{legend_title}{Title for the legend.}
+
+\item{legend_position}{Position of the legend: "bottom", "top", "right", or "left". Default is "bottom".}
 
 \item{axis_x_title}{Title for the x-axis.}
 
