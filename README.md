@@ -43,22 +43,18 @@ and publication-ready figures in an intuitive and accessible way
 
 ## :computer: Installation instructions
 
-Get the latest stable `R` release from
-[CRAN](http://cran.r-project.org/). Then install `MicroBioMeta` from
-[Bioconductor](http://bioconductor.org/) using the following code:
+```r
+install.packages("devtools")
+library(devtools)
+install_github("Steph0522/MicroBioMeta")
+library(MicroBioMeta)
+
+or with BiocManager:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
-
-BiocManager::install("MicroBioMeta")
-```
-
-And the development version from
-[GitHub](https://github.com/Steph0522/MicroBioMeta) with:
-
-``` r
 BiocManager::install("Steph0522/MicroBioMeta")
 ```
 
@@ -117,14 +113,14 @@ Please note that the `MicroBioMeta` was only made possible thanks to
 many other R and bioinformatics software authors, which are cited either
 in the vignettes and/or the paper(s) describing this package.
 
-## Code of Conduct
+## :raised_hands: Code of Conduct
 
 Please note that the `MicroBioMeta` project is released with a
 [Contributor Code of
 Conduct](http://bioconductor.org/about/code-of-conduct/). By
 contributing to this project, you agree to abide by its terms.
 
-## Development tools
+## :hammer: Development tools
 
 - Continuous code testing is possible thanks to [GitHub
   actions](https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/)
