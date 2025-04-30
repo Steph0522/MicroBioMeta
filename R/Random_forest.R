@@ -1,6 +1,36 @@
 #####RANDOM FOREST CON LOLIPLOT####
 
  #Definir la funcion 
+#' Title
+#'
+#' @param table Dataframe, where, the columns are the samples and rows are ASV's or taxa.
+#' @param metadata Dataframe of characteristics or important information of the samples
+#' @param taxonomy Dataframe that contains the ASVs assigned to a taxonomic group 
+#' @param variable_to_predict Variable 
+#' @param col_pallete 
+#' @param legend_figure Principal title of the figure
+#'
+#' @return
+#' @export
+#'
+#' @examples
+random_forest(table = gestacion.recto.filtrada, 
+              metadata = metadata.gestacion.recto,
+              taxonomy = taxonomia_0.99,
+              variable_to_predict = "temporada",
+              legend_figure =  "Top 15 most important ASVs (Random Forest)")
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
 random_forest <- function(table, metadata, taxonomy, variable_to_predict, col_pallete= NULL, legend_figure)
   
   #cargar librerias
