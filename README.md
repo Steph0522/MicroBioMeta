@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# MicroBioMeta
+# 🧬 MicroBioMeta
 
 <!-- badges: start -->
 
@@ -28,30 +28,37 @@ dependencies](https://bioconductor.org/shields/dependencies/release/MicroBioMeta
 [![R-CMD-check-bioc](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml/badge.svg)](https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml)
 <!-- badges: end -->
 
-The goal of `MicroBioMeta` is to …
+The goal of `MicroBioMeta` is to support beginners in microbiome data
+analysis, whether working with metagenomic or metabarcoding datasets. It
+enables users with limited experience in R to explore, visualize, and
+analyze results with minimal coding and customization. This helps save
+time on scripting, while still producing statistically robust results
+and publication-ready figures in an intuitive and accessible way
 
-## Installation instructions
+## 👩‍💻 Contributors
 
-Get the latest stable `R` release from
-[CRAN](http://cran.r-project.org/). Then install `MicroBioMeta` from
-[Bioconductor](http://bioconductor.org/) using the following code:
+- Stephanie Hereira - lead developer.
+- Nina Montoya - co-developer and functions.
+- Karla Zarco - co-developer and functions.
+
+## :computer: Installation instructions
+
+```r
+install.packages("devtools")
+library(devtools)
+install_github("Steph0522/MicroBioMeta")
+library(MicroBioMeta)
+
+or with BiocManager:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
-
-BiocManager::install("MicroBioMeta")
-```
-
-And the development version from
-[GitHub](https://github.com/Steph0522/MicroBioMeta) with:
-
-``` r
 BiocManager::install("Steph0522/MicroBioMeta")
 ```
 
-## Example
+## :green_book: Examples
 
 This is a basic example which shows you how to solve a common problem:
 
@@ -60,31 +67,7 @@ library("MicroBioMeta")
 ## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub!
-
-## Citation
+## :books: Citation
 
 Below is the citation output from using `citation('MicroBioMeta')` in R.
 Please run this yourself to check for any updates on how to cite
@@ -130,14 +113,14 @@ Please note that the `MicroBioMeta` was only made possible thanks to
 many other R and bioinformatics software authors, which are cited either
 in the vignettes and/or the paper(s) describing this package.
 
-## Code of Conduct
+## :raised_hands: Code of Conduct
 
 Please note that the `MicroBioMeta` project is released with a
 [Contributor Code of
 Conduct](http://bioconductor.org/about/code-of-conduct/). By
 contributing to this project, you agree to abide by its terms.
 
-## Development tools
+## :hammer: Development tools
 
 - Continuous code testing is possible thanks to [GitHub
   actions](https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/)
