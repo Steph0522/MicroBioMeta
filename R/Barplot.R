@@ -46,6 +46,12 @@ relative_abundance_plot <- function(table,
   table <- table %>%
     filter(taxonomy != "d__Bacteria;__;__;__;__;__")
   
+  #Reorder columns based on SAMPLEID order in metadata
+  ordered_samples <- metadata$SAMPLEID
+  sample_columns <- colnames(table)[-1]
+  ordered_samples <- intersect(ordered_samples, sample_columns)
+  table <- table[, c("taxonomy", ordered_samples)]
+  
   # Collapse to genus level if specified
   if (level == "genus") {
     table$taxonomy <-
