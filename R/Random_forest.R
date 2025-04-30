@@ -107,11 +107,3 @@ random_forest <- function(table, metadata, taxonomy, variable_to_predict, col_pa
 }
 
 
- #Correr la funcion 
-random_forest(table = gestacion.recto.filtrada, 
-              metadata = metadata.gestacion.recto,
-              taxonomy = taxonomia_0.99,
-              variable_to_predict = "temporada",
-              legend_figure =  "Top 15 most important ASVs (Random Forest)")
-
-
