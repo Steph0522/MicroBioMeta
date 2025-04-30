@@ -33,15 +33,15 @@ diversidad_alfa <- function(table, metadata, x_col, y_col, fill_col, facet_x, fa
   library(ggplot2)
   library(ggpubr)
   #El nombre de la primera columna de la otu debe ser OTUID, el nombre del metadata se cambia en el siguiente paso. 
-  otu.q0<- hilldiv::hill_div(otu,0) %>% as.data.frame() %>% mutate(orden="q=0") %>% rownames_to_column(var = "OTUID")
-  otu.q1<- hilldiv::hill_div(otu,1) %>% as.data.frame() %>% mutate(orden="q=1") %>% rownames_to_column(var = "OTUID")
-  otu.q2<- hilldiv::hill_div(otu,2) %>% as.data.frame() %>% mutate(orden="q=2") %>% rownames_to_column(var = "OTUID")
+  otu.q0<- hilldiv::hill_div(table,0) %>% as.data.frame() %>% mutate(orden="q=0") %>% rownames_to_column(var = "OTUID")
+  otu.q1<- hilldiv::hill_div(table,1) %>% as.data.frame() %>% mutate(orden="q=1") %>% rownames_to_column(var = "OTUID")
+  otu.q2<- hilldiv::hill_div(table,2) %>% as.data.frame() %>% mutate(orden="q=2") %>% rownames_to_column(var = "OTUID")
   
   #renombrar nombre del metadata
   colnames(metadata)[1]<- "OTUID"
   
   #Unir archivos de cada orden en una sola tabla y darle nombre a la segunda columna del archivo.
-  otu.completa <- rbind(otu.q0, otu.q1, otu.q2) %>% inner_join(metadata, by = "OTUID")
+  otu.completa <- rbind(table.q0, table.q1, table.q2) %>% inner_join(metadata, by = "OTUID")
   colnames(otu.completa)[2]<- "Numero efectivo de ASV´s"
   
   #Especificar el orden del eje x en el que quiero la grafica final.
@@ -55,7 +55,7 @@ diversidad_alfa <- function(table, metadata, x_col, y_col, fill_col, facet_x, fa
   #Figura completa
   figura_completa<- otu.completa %>% 
     ggpubr::ggboxplot(x = x_col, y = y_col, fill = fill_col)+
-    ggh4x::facet_grid2(as.formula(paste(V1,"~", V2)) , space = "fixed", scales = "free") +
+    ggh4x::facet_grid2(as.formula(paste(facet_y,"~", facet_x)) , space = "fixed", scales = "free") +
     ylab(axis_y_title)+
     xlab(NULL)+
     scale_fill_manual(values = paleta_colores) + 
