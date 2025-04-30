@@ -111,6 +111,9 @@ effect_size_plot <- function(table,
                 inherit.aes = FALSE
             )
     }
+    
+    q = p + scale_x_continuous(limits = c(-3,3))+
+      scale_y_continuous(breaks = c(0,0.05,0.25, 0.5, 0.75,1))
 
-    return(p)
+    return(q)
 }
