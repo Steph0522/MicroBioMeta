@@ -1,4 +1,4 @@
-#####RANDOM FOREST CON LOLIPLOT####
+#####RANDOM FOREST CON LOLIPOP####
 
  #Definir la funcion 
 #' Title
@@ -10,7 +10,7 @@
 #' @param col_pallete 
 #' @param legend_figure Principal title of the figure
 #'
-#' @return
+#' @return A lollipop plot with Top 15 most important ASV´s of random forest analysis .
 #' @export
 #'
 #' @examples
