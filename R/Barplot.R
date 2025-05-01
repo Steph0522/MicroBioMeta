@@ -8,17 +8,16 @@
 #' @param level Character. Taxonomic level to collapse: `"genus"` (default) or `"phylum"`.
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
 #' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
-#' @param group_var Character. Column name in `metadata` used to group samples for plotting (e.g., replicate, subject).
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n_groups Integer. Number of most abundant taxa groups to display. Default is `15`.
-#' 
+#' @param x_axis_title
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
 #' - Relative abundances are calculated per sample (%).
 #' - Taxa names are collapsed to the specified taxonomic `level` ("genus" or "phylum").
 #' - Only the top `top_n_groups` taxa are shown; others are filtered out.
-#' - Samples are grouped and ordered according to `group_var`.
+#' - Samples are grouped and ordered according to `x_col`.
 #' - Optional faceting by `facet_col` if provided.
 #' - Taxonomic strings matching `"d__Bacteria;__;__;__;__;__"` are automatically removed.
 #'
@@ -32,11 +31,12 @@ relative_abundance_plot <- function(table,
                                     level = "genus",
                                     x_col,
                                     facet_col = NULL,
-                                    group_var,
                                     label = "taxonomy",
                                     top_n_groups = 15,
-                                    name_vector = NULL) {
-  
+                                    x_axis_title="Samples") {
+
+  table<- table[,-1]
+  table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   # Remove uninformative taxonomy strings
   table <- table %>%
     dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__")
@@ -73,7 +73,7 @@ relative_abundance_plot <- function(table,
                         values_to = "RelativeAbundance")
   
   # Join with metadata
-  columns_to_join <- c("SAMPLEID", x_col, facet_col, group_var)
+  columns_to_join <- c("SAMPLEID", x_col, facet_col, x_col)
   columns_to_join <- columns_to_join[!is.na(columns_to_join) & columns_to_join != "NULL"]
   
   table_long <- dplyr::left_join(
@@ -83,7 +83,7 @@ relative_abundance_plot <- function(table,
   )
   
   # Grouping
-  grouping_vars <- c(group_var, "taxonomy")
+  grouping_vars <- c(x_col, "taxonomy")
   if (!is.null(facet_col)) {
     grouping_vars <- c(grouping_vars, facet_col)
   }
@@ -132,8 +132,8 @@ relative_abundance_plot <- function(table,
     avg_by_group[[facet_col]] <- factor(avg_by_group[[facet_col]], levels = facet_levels)
   }
   
-  x_levels <- unique(metadata[[group_var]])
-  avg_by_group[[group_var]] <- factor(avg_by_group[[group_var]], levels = x_levels)
+  x_levels <- unique(metadata[[x_col]])
+  avg_by_group[[x_col]] <- factor(avg_by_group[[x_col]], levels = x_levels)
   
   taxonomy_order <- avg_by_group %>%
     dplyr::group_by(taxonomy) %>%
@@ -153,7 +153,7 @@ relative_abundance_plot <- function(table,
   
   p <- ggplot2::ggplot(avg_by_group,
                        ggplot2::aes(
-                         x = !!rlang::sym(group_var),
+                         x = !!rlang::sym(x_col),
                          y = MeanAbundance,
                          fill = taxonomy
                        )) +
@@ -175,7 +175,7 @@ relative_abundance_plot <- function(table,
     ) +
     ggplot2::ylim(0, 100) +
     ggplot2::ylab("Relative abundance (%)") +
-    ggplot2::xlab("Samples")
+    ggplot2::xlab(x_axis_title)
   
   if (!is.null(facet_col)) {
     p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(facet_col)), scales = "free_x")
