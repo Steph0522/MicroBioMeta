@@ -19,27 +19,29 @@ diversidad_alfa(
 )
 }
 \arguments{
-\item{metadata}{Mapa de características que contiene información util de las muestras.}
+\item{metadata}{Data frame of characteristics or important information of the samples.}
 
-\item{x}{Nombre de la variable del eje x}
+\item{table:}{Data frame, where, the columns are the samples and rows are ASV's or taxa.
+In addition, the first column should be called "OTUID", other names, e.g.,OTU-ID,
+Sample-ID, sample-ids, etc., will flag an error.}
 
-\item{y}{Nombre de la variable del eje y}
+\item{x_col}{Variable that defines the axis x}
 
-\item{fill}{Nombre de la variable que separará las muestras por color}
+\item{y_col}{Variable that defines the axis y}
 
-\item{V1}{Variable que dividirá la figura en facets verticales}
+\item{fill_col}{Variable that separates the samples for color}
 
-\item{V2}{Varible que separara la figura en facets horizontales}
+\item{facet_x}{Variable that separates the samples in horizontal facets}
 
-\item{paleta_colores}{Paleta de colores blind-fliendly}
+\item{facet_y}{Variable that separates the samples in vertical facets}
 
-\item{Titulo.leyenda}{Título de la leyenda principal}
+\item{col_pallete}{Blind-friendly color palette}
 
-\item{Titulo.figura}{Título principal de la figura}
+\item{legend_title}{Title of the principal legend}
 
-\item{Titulo.eje.y}{Título del eje y}
+\item{legend_figure}{Principal title of the figure}
 
-\item{otu:}{Otu table, en donde las columnas son las muestras y las filas ASV's. Ademas, la primer columna debe decir "OTUID", otros nombres marcara error (ejemplo OTU-ID, Sample-ID).}
+\item{axis_y_title}{Title of the axis y}
 }
 \value{
 a

@@ -23,6 +23,7 @@
 alpha_hill_corrplot <- function(table,
                                 facet_orientation = "horizontal",
                                 plot_title = "default") {
+  table <- table[, !colnames(table) %in% "taxonomy"]
   table <- data.frame(t(table))
   
   # Compute Hill numbers
