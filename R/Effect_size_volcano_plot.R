@@ -35,6 +35,9 @@ effect_size_plot <- function(table,
     library(scales)
     library(ggtext)
 
+  if (!col_cond %in% colnames(metadata)) {
+    stop(paste("La columna", col_cond, "no existe en el objeto 'metadata'. Verifica que el nombre esté escrito correctamente."))
+  }
     condiciones <- metadata[[col_cond]]
     
     
@@ -80,7 +83,7 @@ effect_size_plot <- function(table,
             y = bquote(italic("p") ~ " value"),
             color = "Grupo"
         ) +
-        ylim(c(0, 1)) +
+       
         theme_classic() +
         theme(
             axis.text = element_text(size = 15, color = "black"),
@@ -90,29 +93,17 @@ effect_size_plot <- function(table,
         theme(legend.position = "none")
 
     if (show_labels) {
-        p <- p +
-            geom_richtext(
-                aes(
-                    x = threshold_lower, y = 0.95,
-                    label = paste("<b>Lower in", cond, "</b>")
-                ),
-                color = col_inf,
-                size = 5,
-                hjust = 1,
-                vjust = 1,
-                inherit.aes = FALSE
-            ) +
-            geom_richtext(
-                aes(
-                    x = threshold_upper, y = 0.95,
-                    label = paste("<b>Higher in", cond, "</b>")
-                ),
-                color = col_sup,
-                size = 5,
-                hjust = 0,
-                vjust = 1,
-                inherit.aes = FALSE
-            )
+      p <- p +
+        annotate(
+          "richtext", x = threshold_lower, y = 0.95, 
+          label = paste("<b>Lower in", cond, "</b>"), 
+          color = col_inf, size = 5, hjust = 1, vjust = 1
+        ) +
+        annotate(
+          "richtext", x = threshold_upper, y = 0.95, 
+          label = paste("<b>Higher in", cond, "</b>"), 
+          color = col_sup, size = 5, hjust = 0, vjust = 1
+        )
     }
     
     q = p + scale_x_continuous(limits = c(-lim_x, lim_x))+
