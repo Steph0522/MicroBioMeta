@@ -14,6 +14,7 @@
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (default is TRUE).
 #'
 #'
+#'
 #' @return A `ggplot` object with the volcano plot.
 #' @export
 #'
