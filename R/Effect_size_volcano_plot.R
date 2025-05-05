@@ -13,6 +13,8 @@
 #' @param cond Name of the condition that appears first in `table` (used in plot labels).
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (default is TRUE).
 #'
+#'
+#'
 #' @return A `ggplot` object with the volcano plot.
 #' @export
 #'
@@ -35,9 +37,14 @@ effect_size_plot <- function(table,
     library(scales)
     library(ggtext)
 
+  if (!col_cond %in% colnames(metadata)) {
+    stop(paste("La columna", col_cond, "no existe en el objeto 'metadata'. Verifica que el nombre esté escrito correctamente."))
+  }
     condiciones <- metadata[[col_cond]]
-
-    aldex_clr <- aldex.clr(table, condiciones, mc.samples = 128, denom = "all")
+    
+    
+    aldex_clr <- aldex.clr(table[, !colnames(table) %in% "taxonomy"], condiciones, mc.samples = 128, denom = "all")
+    
 
     effect_size <- aldex.effect(
         aldex_clr,
@@ -60,7 +67,8 @@ effect_size_plot <- function(table,
             "Normal"
         )
     )
-
+    
+    lim_x <- max(abs(resultado$effect), na.rm = TRUE)
     p <- ggplot(resultado, aes(x = effect, y = kw.ep, color = grupo)) +
         geom_point(size = 3.5) +
         scale_color_manual(
@@ -77,7 +85,7 @@ effect_size_plot <- function(table,
             y = bquote(italic("p") ~ " value"),
             color = "Grupo"
         ) +
-        ylim(c(0, 1)) +
+       
         theme_classic() +
         theme(
             axis.text = element_text(size = 15, color = "black"),
@@ -87,32 +95,20 @@ effect_size_plot <- function(table,
         theme(legend.position = "none")
 
     if (show_labels) {
-        p <- p +
-            geom_richtext(
-                aes(
-                    x = threshold_lower, y = 0.95,
-                    label = paste("<b>Menor en", cond, "</b>")
-                ),
-                color = col_inf,
-                size = 5,
-                hjust = 1,
-                vjust = 1,
-                inherit.aes = FALSE
-            ) +
-            geom_richtext(
-                aes(
-                    x = threshold_upper, y = 0.95,
-                    label = paste("<b>Mayor en", cond, "</b>")
-                ),
-                color = col_sup,
-                size = 5,
-                hjust = 0,
-                vjust = 1,
-                inherit.aes = FALSE
-            )
+      p <- p +
+        annotate(
+          "richtext", x = threshold_lower, y = 0.95, 
+          label = paste("<b>Lower in", cond, "</b>"), 
+          color = col_inf, size = 5, hjust = 1, vjust = 1
+        ) +
+        annotate(
+          "richtext", x = threshold_upper, y = 0.95, 
+          label = paste("<b>Higher in", cond, "</b>"), 
+          color = col_sup, size = 5, hjust = 0, vjust = 1
+        )
     }
     
-    q = p + scale_x_continuous(limits = c(-3,3))+
+    q = p + scale_x_continuous(limits = c(-lim_x, lim_x))+
       scale_y_continuous(breaks = c(0,0.05,0.25, 0.5, 0.75,1))
 
     return(q)

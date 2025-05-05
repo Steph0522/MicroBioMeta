@@ -11,10 +11,9 @@ relative_abundance_plot(
   level = "genus",
   x_col,
   facet_col = NULL,
-  group_var,
   label = "taxonomy",
   top_n_groups = 15,
-  name_vector = NULL
+  x_axis_title = "Samples"
 )
 }
 \arguments{
@@ -30,11 +29,11 @@ relative_abundance_plot(
 
 \item{facet_col}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment group). Default is \code{NULL}.}
 
-\item{group_var}{Character. Column name in \code{metadata} used to group samples for plotting (e.g., replicate, subject).}
-
 \item{label}{Character. Legend title for the taxa groups. Default is \code{"taxonomy"}.}
 
 \item{top_n_groups}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
+
+\item{x_axis_title}{Character. The tittle that should be in the x-axis (deault = "Samples")}
 }
 \value{
 A \code{ggplot2} object showing a stacked barplot of relative abundances.
@@ -47,7 +46,7 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 \item Relative abundances are calculated per sample (\%).
 \item Taxa names are collapsed to the specified taxonomic \code{level} ("genus" or "phylum").
 \item Only the top \code{top_n_groups} taxa are shown; others are filtered out.
-\item Samples are grouped and ordered according to \code{group_var}.
+\item Samples are grouped and ordered according to \code{x_col}.
 \item Optional faceting by \code{facet_col} if provided.
 \item Taxonomic strings matching \code{"d__Bacteria;__;__;__;__;__"} are automatically removed.
 }

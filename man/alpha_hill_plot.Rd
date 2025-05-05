@@ -12,6 +12,7 @@ alpha_hill_plot(
   x_col,
   fill_col,
   facet_by = NULL,
+  facet_by2 = NULL,
   facet_orientation = "horizontal",
   fill_palette = "colorb",
   custom_palette = NULL,
@@ -23,7 +24,7 @@ alpha_hill_plot(
   legend_title = NULL,
   legend_position = "bottom",
   axis_x_title = NULL,
-  axis_y_title = "Effective number of Species",
+  axis_y_title = "Effective number of features",
   free_y = FALSE
 )
 }
@@ -41,7 +42,9 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{fill_col}{Column in \code{metadata} to define fill color.}
 
-\item{facet_by}{Optional. A metadata column to facet alongside \code{q} (e.g., Treatment, Site).}
+\item{facet_by}{Optional. A metadata column to facet (e.g., Treatment, Site).}
+
+\item{facet_by2}{Optional. A metadata column to double facet (e.g., Treatment, Site).}
 
 \item{facet_orientation}{Whether \code{facet_by} appears in columns ("horizontal", default) or rows ("vertical").}
 

@@ -10,7 +10,7 @@
 #' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n_groups Integer. Number of most abundant taxa groups to display. Default is `15`.
-#' @param x_axis_title
+#' @param x_axis_title Character. The tittle that should be in the x-axis (deault = "Samples")
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
