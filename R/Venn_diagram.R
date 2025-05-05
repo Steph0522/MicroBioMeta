@@ -82,5 +82,10 @@ venn_diagram <- function(table,
     ggplot2::theme_minimal(base_size = 14) +
     ggplot2::theme(legend.position = "none",
                    plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")) +
-    ggplot2::ggtitle(title)
+    ggplot2::ggtitle(title)+
+    ggplot2::theme(axis.title.x = element_blank(), axis.title.y = element_blank())+
+    
+    ggplot2::theme(
+      axis.text.x = element_blank(), 
+      axis.text.y = element_blank()) 
 }
