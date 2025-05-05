@@ -17,8 +17,8 @@
 #' @examples
 random_forest(table = table, 
               metadata = metadata,
-              taxonomy = taxonomia,
-              variable_to_predict = "temporada",
+              taxonomy = taxonomy,
+              variable_to_predict = "condition (example:season,soil,environment)",
               legend_figure =  "Top 15 most important ASVs (Random Forest)")
 =======
 #' @examples random_forest(table = gestacion.recto.filtrada, 
