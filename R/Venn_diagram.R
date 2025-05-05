@@ -1,28 +1,28 @@
 #' Generate a Venn diagram of taxa shared between sample groups
 #'
-#' This function creates a Venn diagram using taxonomic abundance data and metadata,
-#' showing the overlap of taxa among groups defined in the metadata. It uses the `microeco` package
-#' to preprocess and merge samples by group, and `ggplot2` for visualization customization.
+#' This function creates a Venn diagram using either the `microeco` or `ggVennDiagram` package
+#' based on the user's preference. It shows the overlap of taxa among groups defined in the metadata.
 #'
 #' @param table A data frame containing taxonomic abundance data with a column named `"taxonomy"` and subsequent columns as sample IDs.
 #' @param metadata A data frame containing metadata with a column named `"SAMPLEID"` that matches the sample columns in `table`.
 #' @param merge_by A character string specifying the metadata column by which to group and merge samples. Default is `"Tratamiento"`.
 #' @param selected_samples Optional character vector specifying a subset of sample IDs to include in the analysis.
 #' @param title Optional character string for the title of the plot.
+#' @param method Character string: `"microeco"` (default) or `"ggvenn"`, specifying the package to use for Venn diagram generation.
 #'
-#' @return A `ggplot` object representing the Venn diagram.
+#' @return A `ggplot` object or other plot depending on the method.
 #' @export
-#'
-#' @examples
-#' 
-#' 
 venn_diagram <- function(table,
                          metadata,
                          merge_by = "Tratamiento",
                          selected_samples = NULL,
-                         title = NULL) {
+                         title = NULL,
+                         method = "microeco") {
   
-  # Asegurar que los datos son data frames
+  library(dplyr)
+  library(tibble)
+  library(ggplot2)
+  
   table <- as.data.frame(table)
   metadata <- as.data.frame(metadata)
   
@@ -31,6 +31,7 @@ venn_diagram <- function(table,
     stop("La tabla no contiene una columna llamada 'taxonomy'")
   }
   
+  table<- table[,-1]
   # Reordenar la tabla para colocar 'taxonomy' al principio
   table <- table[, c("taxonomy", setdiff(colnames(table), "taxonomy"))]
   
@@ -48,44 +49,78 @@ venn_diagram <- function(table,
     table <- table[, c("taxonomy", selected_samples), drop = FALSE]
   }
   
-  # Verificar que merge_by esté presente en los metadatos
+  
   if (!(merge_by %in% colnames(metadata))) {
     stop(paste("La columna", merge_by, "no existe en los metadatos."))
   }
   
-  # Separar la columna taxonomy (si no se usará) y dejar solo las abundancias
-  table <- table[, -1]
-  
-  # Establecer SAMPLEID como rownames
-  metadata <- tibble::column_to_rownames(metadata, "SAMPLEID")
-  
-  # Crear objeto microeco
-  dataset <- microeco::microtable$new(otu_table = table,
-                                      sample_table = metadata,
-                                      auto_tidy = TRUE)
-  
-  # Combinar muestras por grupo
-  dataset_merged <- dataset$merge_samples(merge_by)
-  t1 <- microeco::trans_venn$new(dataset_merged, ratio = NULL)
-  
-  # Verificar que hay datos para graficar
-  if (nrow(t1$data_summary) == 0) {
-    stop("No hay datos suficientes para generar el diagrama de Venn.")
-  }
-  
-  # Crear gráfico
-  venn_plot <- t1$plot_venn()
-  
-  # Personalizar con ggplot2
-  venn_plot +
-    ggplot2::scale_fill_gradient(low = "lightyellow", high = "red") +
-    ggplot2::theme_minimal(base_size = 14) +
-    ggplot2::theme(legend.position = "none",
-                   plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")) +
-    ggplot2::ggtitle(title)+
-    ggplot2::theme(axis.title.x = element_blank(), axis.title.y = element_blank())+
+  if (method == "ggvenn") {
+    # Usar ggVennDiagram
+    if (!requireNamespace("ggVennDiagram", quietly = TRUE)) {
+      stop("El paquete 'ggVennDiagram' no está instalado.")
+    }
     
-    ggplot2::theme(
-      axis.text.x = element_blank(), 
-      axis.text.y = element_blank()) 
+    metadata_split <- split(metadata$SAMPLEID, metadata[[merge_by]])
+    taxa_list <- lapply(metadata_split, function(samples) {
+      sub_table <- table[, c("taxonomy", samples), drop = FALSE]
+      present_taxa <- sub_table$taxonomy[rowSums(sub_table[,-1] > 0) > 0]
+      unique(present_taxa)
+    })
+    
+    # Eliminar grupos vacíos
+    taxa_list <- taxa_list[sapply(taxa_list, length) > 0]
+    
+    if (length(taxa_list) < 2 || length(taxa_list) > 7) {
+      stop("El número de grupos con datos debe estar entre 2 y 7 para usar 'ggvenn'.")
+    }
+    
+    
+    venn_plot <- ggVennDiagram::ggVennDiagram(taxa_list, label_alpha = 0)
+    
+    if (!inherits(venn_plot, "gg")) {
+      warning("El resultado no es un objeto ggplot. Se devolverá sin personalizar.")
+      return(venn_plot)
+    }
+    
+    venn_plot +
+      ggtitle(title) +
+      theme_minimal(base_size = 14) +
+      theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
+      theme(axis.text.x = element_blank(), axis.text.y = element_blank())+
+      theme(axis.title = element_blank())
+    
+  } else if (method == "microeco") {
+    # Usar microeco
+    if (!requireNamespace("microeco", quietly = TRUE)) {
+      stop("El paquete 'microeco' no está instalado.")
+    }
+    
+    abund_table <- table[, -1]
+    metadata_df <- tibble::column_to_rownames(metadata, "SAMPLEID")
+    
+    dataset <- microeco::microtable$new(otu_table = abund_table,
+                                        sample_table = metadata_df,
+                                        auto_tidy = TRUE)
+    
+    dataset_merged <- dataset$merge_samples(merge_by)
+    t1 <- microeco::trans_venn$new(dataset_merged, ratio = NULL)
+    
+    if (nrow(t1$data_summary) == 0) {
+      stop("No hay datos suficientes para generar el diagrama de Venn.")
+    }
+    
+    t1$plot_venn() +
+      scale_fill_gradient(low = "lightyellow", high = "red") +
+      theme_minimal(base_size = 14) +
+      theme(legend.position = "none",
+            plot.title = element_text(hjust = 0.5, face = "bold")) +
+      theme(axis.text.x = element_blank(), axis.text.y = element_blank())+
+      theme(axis.title = element_blank())+
+      ggtitle(title)
+    
+    
+  } else {
+    stop("El parámetro 'method' debe ser 'microeco' o 'ggvenn'.")
+  }
 }
+
