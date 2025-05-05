@@ -3,31 +3,22 @@
  #Definir la funcion 
 #' Title
 #'
-#' @param table Dataframe, where, the columns are the samples and rows are ASV's or taxa.
-#' @param metadata Dataframe of characteristics or important information of the samples
-#' @param taxonomy Dataframe that contains the ASVs assigned to a taxonomic group 
-#' @param variable_to_predict Variable 
-#' @param col_pallete 
+#' @param table Data frame, where, the columns are the samples and rows are ASV's or taxa.
+#' @param metadata Data frame of characteristics or important information of the samples.
+#' @param taxonomy Data frame that contains the ASVs assigned to a taxonomic group.
+#' @param variable_to_predict Variable to predict from the metadata of the samples analized.
+#' @param col_pallete Blind-friendly color palette 
 #' @param legend_figure Principal title of the figure
 #'
 #' @return A lollipop plot with Top 15 most important ASV´s of random forest analysis .
 #' @export
 #'
 #' @examples
-random_forest(table = gestacion.recto.filtrada, 
-              metadata = metadata.gestacion.recto,
-              taxonomy = taxonomia_0.99,
+random_forest(table = table, 
+              metadata = metadata,
+              taxonomy = taxonomia,
               variable_to_predict = "temporada",
               legend_figure =  "Top 15 most important ASVs (Random Forest)")
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
-#' 
 #' 
 #' 
 #' 
