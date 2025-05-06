@@ -13,22 +13,11 @@
 #' @return A lollipop plot with Top 15 most important ASV´s of random forest analysis .
 #' @export
 #'
-<<<<<<< HEAD
-#' @examples
-random_forest(table = table, 
-              metadata = metadata,
-              taxonomy = taxonomy,
-              variable_to_predict = "condition (example:season,soil,environment)",
-              legend_figure =  "Top 15 most important ASVs (Random Forest)")
-=======
 #' @examples random_forest(table = gestacion.recto.filtrada, 
 #'              metadata = metadata.gestacion.recto,
 #'              taxonomy = taxonomia_0.99,
 #'              variable_to_predict = "temporada",
 #'              legend_figure =  "Top 15 most important ASVs (Random Forest)")
->>>>>>> 96efc1f3b7ffc43cc107ac8b590d67c23c5b8467
-#' 
-#' 
 #' 
 random_forest <- function(table, metadata, taxonomy, variable_to_predict, col_pallete= NULL, legend_figure)
   
