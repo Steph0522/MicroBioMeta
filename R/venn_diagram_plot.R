@@ -12,32 +12,36 @@
 #' @param title Optional character string for the title of the plot.
 #' @param method Character string: `microeco` (default) or `ggvenn`, specifying the package to use for Venn diagram generation.
 #' @param group_colors Optional vector of colors for the groups. If NULL, a default `distiller` scale with `Set3` palette will be used.
+#' @param fill_colors Optional vector of 2 colors for the gradient in `ggvenn` method. First color means low, second means high
 #' @return A ggplot object or other plot depending on the method.
 #' @export
 venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
-                                    selected_samples = NULL, min_prevalence = 0,
-                                    title = NULL, method = "microeco",
-                                    group_colors = NULL) {
+                              selected_samples = NULL, min_prevalence = 0,
+                              title = NULL, method = "microeco",
+                              group_colors = NULL,
+                              fill_colors=NULL) {
   table <- as.data.frame(table)
   metadata <- as.data.frame(metadata)
-
+  
   if (!"taxonomy" %in% colnames(table)) stop("La tabla debe contener 'taxonomy'.")
   if (!merge_by %in% colnames(metadata)) stop("La columna de agrupamiento no existe.")
-
+  
   common_samples <- intersect(colnames(table)[-1], metadata$SAMPLEID)
   table <- table[, c("taxonomy", common_samples), drop = FALSE]
   metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop=FALSE]
   rownames(metadata) <- NULL
-
+  
   if (!is.null(selected_samples)) {
     common_samples <- intersect(selected_samples, colnames(table))
     table <- table[, c("taxonomy", common_samples), drop = FALSE]
     metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop=FALSE]
   }
-
+  
   metadata_split <- split(metadata$SAMPLEID, metadata[[merge_by]])
+  # Eliminar grupos vacíos
+  metadata_split <- metadata_split[sapply(metadata_split, length) > 0]
   num_groups <- length(metadata_split)
-
+  
   if (min_prevalence > 0) {
     table <- table %>%
       dplyr::rowwise() %>%
@@ -45,7 +49,7 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
       dplyr::filter(prev >= min_prevalence) %>%
       dplyr::select(-prev)
   }
-
+  
   # Default palette - Distiller Set3
   use_manual <- !is.null(group_colors)
   if (!use_manual) {
@@ -53,12 +57,14 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
     group_colors <- scales::hue_pal()(num_groups)
   } else {
     group_colors <- rep(group_colors, length.out = num_groups)
+    group_colors <- as.factor(group_colors)
   }
-
+  
   if (method == "ggvenn") {
     if (!requireNamespace("ggVennDiagram", quietly=TRUE)) stop("Instala ggVennDiagram.")
     taxa_list <- lapply(metadata_split, function(samps) unique(table$taxonomy[rowSums(table[,samps,drop=FALSE]>0)>0]))
     names(taxa_list) <- names(metadata_split)
+    
     # Crear conjuntos con filas no nulas dinámicamente para cada grupo
     lista <- lapply(metadata_split, function(samps) {
       subset <- table[, samps, drop = FALSE]
@@ -66,18 +72,18 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
       rownames(subset_core)
     })
     names(lista) <- names(metadata_split)
-    venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0) 
+    venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0, set_color = group_colors) 
     
     if (use_manual) {
-      venn_plot <- venn_plot + ggplot2::scale_fill_manual(values = group_colors)
+      venn_plot <- venn_plot + ggplot2::scale_fill_gradient(low = fill_colors[1], high = fill_colors[2])
     } else {
       venn_plot <- venn_plot + ggplot2::scale_fill_distiller(palette = "Set3", direction = 1)
     }
     
-
+    
   } else if (method == "microeco") {
     if (!requireNamespace("microeco", quietly=TRUE)) stop("Instala microeco.")
-    abund <- table[, -1, drop=FALSE]
+    abund <- as.data.frame(table[, -1, drop=FALSE])
     samp_df <- tibble::column_to_rownames(metadata, "SAMPLEID")
     ds <- microeco::microtable$new(abund, samp_df, auto_tidy=TRUE)
     merged <- ds$merge_samples(merge_by)
@@ -91,8 +97,8 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
     }
     
   } else stop("Método debe ser 'microeco' o 'ggvenn'.")
-
+  
   venn_plot <- venn_plot + ggtitle(title) #+ theme_minimal(base_size=14)
-   venn_plot <- venn_plot + theme(legend.position="none")
+  venn_plot <- venn_plot + theme(legend.position="none")
   return(venn_plot)
 }
