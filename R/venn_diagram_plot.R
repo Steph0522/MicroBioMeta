@@ -1,6 +1,6 @@
 #' Generate a Venn diagram of taxa shared between sample groups
 #'
-#' This function creates a Venn diagram using either the `microeco` or `ggVennDiagram` package
+#' This function creates a Venn diagram using either the `ggVennDiagram` or `ggenn` package
 #' based on the user's preference. It includes additional customization options like
 #' minimum prevalence filtering and custom group color scales (manual).
 #'
@@ -10,9 +10,9 @@
 #' @param selected_samples Optional character vector specifying a subset of sample IDs to include in the analysis.
 #' @param min_prevalence Optional numeric value (0-1) to filter taxa based on minimum prevalence across groups.
 #' @param title Optional character string for the title of the plot.
-#' @param method Character string: `microeco` (default) or `ggvenn`, specifying the package to use for Venn diagram generation.
+#' @param method Character string: `ggVennDiagram` (default) or `ggvenn`, specifying the package to use for Venn diagram generation.
 #' @param group_colors Optional vector of colors for the groups. If NULL, a default `distiller` scale with `Set3` palette will be used.
-#' @param fill_colors Optional vector of 2 colors for the gradient in `ggvenn` method. First color means low, second means high
+
 #' @return A ggplot object or other plot depending on the method.
 #' @export
 venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
@@ -57,10 +57,10 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
     group_colors <- scales::hue_pal()(num_groups)
   } else {
     group_colors <- rep(group_colors, length.out = num_groups)
-    group_colors <- as.factor(group_colors)
+ 
   }
   
-  if (method == "ggvenn") {
+  if (method == "ggvenndiagram") {
     if (!requireNamespace("ggVennDiagram", quietly=TRUE)) stop("Instala ggVennDiagram.")
     taxa_list <- lapply(metadata_split, function(samps) unique(table$taxonomy[rowSums(table[,samps,drop=FALSE]>0)>0]))
     names(taxa_list) <- names(metadata_split)
@@ -77,26 +77,24 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
                                               edge_size = 2) 
     
     if (use_manual) {
-      venn_plot <- venn_plot + ggplot2::scale_fill_gradient(low = fill_colors[1], high = fill_colors[2])
+      venn_plot <- venn_plot + ggplot2::scale_fill_gradient(low = "white", high = "gray10")
     } else {
       venn_plot <- venn_plot + ggplot2::scale_fill_distiller(palette = "Set3", direction = 1)
     }
     
     
-  } else if (method == "microeco") {
-    if (!requireNamespace("microeco", quietly=TRUE)) stop("Instala microeco.")
-    abund <- as.data.frame(table[, -1, drop=FALSE])
-    samp_df <- tibble::column_to_rownames(metadata, "SAMPLEID")
-    ds <- microeco::microtable$new(abund, samp_df, auto_tidy=TRUE)
-    merged <- ds$merge_samples(merge_by)
-    tv <- microeco::trans_venn$new(merged, ratio = "seqratio")
-    if (nrow(tv$data_summary)==0) stop("No hay datos para Venn.")
+  } else if (method == "ggvenn") {
+    if (!requireNamespace("ggvenn", quietly = TRUE)) stop("Instala el paquete 'ggvenn'.")
     
-    if (use_manual) {
-      venn_plot <- tv$plot_venn(color_circle = group_colors,linesize = 3)
-    } else {
-      venn_plot <- tv$plot_venn(color_circle = RColorBrewer::brewer.pal(10, "Set3"),  linesize = 3)
-    }
+    lista <- lapply(metadata_split, function(samps) {
+      subset <- table[, samps, drop = FALSE]
+      subset_core <- subset[rowSums(subset) != 0, ]
+      rownames(subset_core)
+    })
+    names(lista) <- names(metadata_split)
+    
+    
+    venn_plot <- ggvenn::ggvenn(lista, fill_color = group_colors)
     
   } else stop("Método debe ser 'microeco' o 'ggvenn'.")
   
