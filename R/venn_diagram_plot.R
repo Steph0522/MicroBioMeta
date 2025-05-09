@@ -72,7 +72,9 @@ venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
       rownames(subset_core)
     })
     names(lista) <- names(metadata_split)
-    venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0, set_color = group_colors) 
+    venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0,
+                                              set_color = group_colors,
+                                              edge_size = 2) 
     
     if (use_manual) {
       venn_plot <- venn_plot + ggplot2::scale_fill_gradient(low = fill_colors[1], high = fill_colors[2])
