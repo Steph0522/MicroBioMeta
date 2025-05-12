@@ -13,115 +13,98 @@
 #' @return A lollipop plot with Top 15 most important ASV´s of random forest analysis .
 #' @export
 #'
-#' @examples random_forest(table = gestacion.recto.filtrada, 
-#'              metadata = metadata.gestacion.recto,
-#'              taxonomy = taxonomia_0.99,
-#'              variable_to_predict = "temporada",
+#' @examples random_forest(table = table, 
+#'              metadata = metadata,
+#'              variable_to_predict = condition (e.g."season", "environment", "soil")
 #'              legend_figure =  "Top 15 most important ASVs (Random Forest)")
 #' 
-random_forest <- function(table, metadata, taxonomy, variable_to_predict, col_pallete= NULL, legend_figure)
+#1. Definir la funcion 
+random_forest <- function(table, metadata, variable_to_predict, col_pallete= NULL, legend_figure)
   
-  #cargar librerias
-{library(tidyverse)
-  library(ggplot2)
-  library(randomForest)
-  library(dplyr)
+{#Si la columna "taxonomia" está en el otu, entonces elimínala para análisis numérico:
+  taxonomy <- table$taxonomy
+  table_numeric <- table %>% dplyr::select(-taxonomy) 
   
-  # Asegurar que las muestras coincidan
-  if (ncol(table) < nrow(table)) {
-    table <- t(table)
+  if (ncol(table_numeric) < nrow(table_numeric)) {
+    table_numeric <- t(table_numeric)
   }
   
   # Verifica si los nombres de muestra coinciden
-  common_samples <- intersect(rownames(table), rownames(metadata))
+  common_samples <- intersect(rownames(table_numeric), rownames(metadata))
   
   # Filtrar ambos datasets
-  otu_filtered <- table[common_samples, ]
+  otu_filtered <- table_numeric[common_samples, ]
   metadata_filtered <- metadata[common_samples, ]
   
-  # Ejemplo: predecir la variable
-  #variable_to_predict <- as.factor(metadata_filtered[[variable_to_predict]])
-  if (!(variable_to_predict %in% colnames(metadata_filtered))) {
-    stop("La variable a predecir no está en los metadatos.")
-  }
+  # Variable respuesta (por ejemplo, "Grupo")
+  response <- as.factor(metadata_filtered[[variable_to_predict]])
   
-  # Combinar variable temporada con datos OTU
-  # datos_rf <- data.frame(variable_to_predict, otu_filtered)
-  datos_rf <- data.frame(variable = metadata_filtered[[variable_to_predict]], otu_filtered)
-  colnames(datos_rf)[1] <- variable_to_predict
-  
+  # Modelo Random Forest
   #modelo Random Forest
-  modelo_rf <- randomForest(as.formula(paste(variable_to_predict, "~ .")), data = datos_rf, importance = TRUE, ntree = 500)
+  modelo_rf <- randomForest::randomForest(x = otu_filtered, y = response, importance = TRUE, ntree = 500)
   
-  # Obtener la importancia de las variables
-  importancia <- importance(modelo_rf)
+  # Obtener importancia
+  importance_df <- randomForest::importance(modelo_rf)
+  importance_df <- as.data.frame(importance_df)
   
-  # Convertir a data frame con nombres de OTUs
-  importancia_df <- data.frame(OTU = rownames(importancia), importancia)
+  # Ordenar por importancia (MeanDecreaseGini, por ejemplo)
+  importance_df$ASV <- rownames(importance_df)
+  top_asvs <- importance_df %>% dplyr::arrange(desc(MeanDecreaseGini)) %>% head(15)
   
-  # Asegúrate de que la taxonomía tenga un campo OTU si rownames no están como columna
-  taxonomy$OTU <- rownames(taxonomy)
+  #duplicar columna taxonomy para modificar archivo
+  top_asvs <- dplyr::left_join(top_asvs, data.frame(ASV = colnames(table_numeric), taxonomy = taxonomy), by = "ASV") %>%
+    dplyr::mutate(taxonomy_original = taxonomy)
   
-  # Hacemos merge para unir importancia + taxonomía
-  importancia_taxa <- merge(importancia_df, taxonomy, by = "OTU")
+  #separar taxonomy en columnas para agregar leyenda de Phylum
+  top_asvs <- top_asvs %>%
+    tidyr::separate(col= taxonomy_original, into = c("Dominio","Phylum","Class","Orden","Family","Genus","Specie"), sep = ";") 
   
-  # Ordenar de mayor a menor importancia
-  importancia_taxa_ordenada <- importancia_taxa %>% arrange(desc(MeanDecreaseGini))
+  #eliminar todos los espacios en blanco
+  top_asvs<- top_asvs %>%
+    dplyr::mutate(across(everything(), ~ trimws(.)))
   
-  # Mostrar top 10
-  #head(importancia_taxa_ordenada, 15)
-  
-  # Crear una columna con taxonomía simplificada, por ejemplo usando Género
-  importancia_taxa_ordenada$Taxon <- ifelse(
-    is.na(importancia_taxa_ordenada$Genus) | importancia_taxa_ordenada$Genus == "",
-    importancia_taxa_ordenada$Family,  # usa Familia si no hay Género
-    importancia_taxa_ordenada$Genus)
-  
-  #Seleccionar las 15 más importantes
-  top15 <- importancia_taxa_ordenada %>% 
-    slice_max(order_by = MeanDecreaseGini, n = 15)
-  
-  #tabla
-  top15_modificada <- top15 %>%
-    mutate(Taxon = gsub("^g__|^f__|;", "", Taxon)) %>%
-    #mutate_at(c("Taxon"), funs(Taxon=case_when(Taxon=="g__Incertae_Sedis;" ~ "Ruminococcaceae", TRUE~as.character(Taxon)))) %>%
-    mutate_at(c("Phylum"), funs(Phylum=case_when(Phylum=="p__Proteobacteria;" ~ "Pseudomonadata",
-                                                 Phylum=="p__Firmicutes;" ~ "Bacillota",  TRUE~as.character(Phylum)))) %>%
-    mutate(Taxon2=paste0(LETTERS[1:n()], ".", Taxon)) #agregar letras al inicio del nombre en la columna nueva llamda Taxon2
+  #modificar tabla
+  top_asvs.modificada <- top_asvs %>%
+    dplyr::mutate(taxonomy = dplyr::case_when(
+      grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
+      grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+      grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+      grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+      grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+      TRUE ~ "Unclassified")) %>%
+    dplyr::mutate(Phylum = case_when(Phylum=="p__Proteobacteria" ~ "Pseudomonadata",
+                                     Phylum=="p__Firmicutes" ~ "Bacillota",  TRUE~as.character(Phylum))) %>%
+    mutate(taxonomy2=paste0(LETTERS[1:n()], ".", taxonomy)) #agregar letras al inicio del nombre en la columna nueva llamda genero2
   
   
-  # Paleta por defecto si no se proporciona
-  if (is.null(col_pallete)) {
-    col_pallete <- c("#F3C300","#875692","#F38400","#A1CAF1","#BE0032","#C2B280","#848482",
-                     "#008856","#E68FAC","#0067A5","#F99379","#604E97","#F6A600","#B3446C",
-                     "#DCD300","#882D17","#8DB600","#654522","#E25822","#2B3D26")
-  }
+  paleta_colores <- c("#F3C300","#875692","#F38400","#A1CAF1","#BE0032","#C2B280","#848482",
+                      "#008856","#E68FAC","#0067A5","#F99379","#604E97","#F6A600","#B3446C",
+                      "#DCD300","#882D17","#8DB600","#654522","#E25822","#2B3D26")
   
+  #convertir a numerico
+  top_asvs.modificada$MeanDecreaseGini <- as.numeric(top_asvs.modificada$MeanDecreaseGini)
   
-  #Plot
-  lollipop_randomR <- ggplot(top15_modificada, aes(x = reorder(Taxon2, + MeanDecreaseGini), y = MeanDecreaseGini, fill = Phylum)) +
-    geom_segment(aes(x = reorder(Taxon2, + MeanDecreaseGini), 
-                     xend = reorder(Taxon2, + MeanDecreaseGini), 
-                     y = 0, yend = MeanDecreaseGini), 
-                 color = "grey30", lwd = 2) +
-    ylab("Feature importance") +
-    geom_point(size = 9, pch = 21, col = "grey30") +
-    scale_fill_manual(values = col_pallete) + 
-    theme_classic() +
-    coord_flip() +
-    ggtitle(legend_figure) +
-    theme(axis.title.y = element_blank(),
-          axis.title.x = element_text(size = 13, face = "bold"),
-          axis.text.x = element_text(size = 11),
-          axis.text.y = element_text(size = 14, face = "bold"),
-          legend.position = "bottom",
-          legend.title = element_text(size = 11, face = "bold"),
-          legend.text = element_text(size = 10),
-          plot.title = element_text(size = 22, face = "bold"),
-          legend.background = element_rect(colour="black"))
-  
+  #figura
+  lollipop_randomR<- ggplot2::ggplot(top_asvs.modificada, aes(x = reorder(taxonomy2, MeanDecreaseGini), y = MeanDecreaseGini, fill = Phylum)) +
+    ggplot2::geom_segment(aes(x = reorder(taxonomy2, MeanDecreaseGini), 
+                              xend = reorder(taxonomy2, MeanDecreaseGini), 
+                              y = 0, yend = MeanDecreaseGini), 
+                          color = "grey30", lwd = 2) +
+    ggplot2::ylab("Feature importance") +
+    ggplot2::geom_point(size = 9, pch = 21, col = "grey30") +
+    ggplot2::scale_fill_manual(values = paleta_colores) + 
+    ggplot2::theme_classic() +
+    ggplot2::coord_flip() +
+    ggplot2::ggtitle(legend_figure) +
+    ggplot2::theme(axis.title.y = element_blank(),
+                   axis.title.x = element_text(size = 13, face = "bold"),
+                   axis.text.x = element_text(size = 11),
+                   axis.text.y = element_text(size = 14, face = "bold"),
+                   legend.position = "bottom",
+                   legend.title = element_text(size = 11, face = "bold"),
+                   legend.text = element_text(size = 10),
+                   plot.title = element_text(size = 20))
   
   return(lollipop_randomR) 
 }
-
 
