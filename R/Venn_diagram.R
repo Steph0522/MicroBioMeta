@@ -31,31 +31,48 @@ venn_diagram <- function(table,
     stop("La tabla no contiene una columna llamada 'taxonomy'")
   }
   
-  table<- table[,-1]
   # Reordenar la tabla para colocar 'taxonomy' al principio
   table <- table[, c("taxonomy", setdiff(colnames(table), "taxonomy"))]
   
   # Eliminar entradas no informativas
   table <- dplyr::filter(table, taxonomy != "d__Bacteria;__;__;__;__;__")
   
-  # Ordenar muestras en la tabla según metadata
-  ordered_samples <- intersect(metadata$SAMPLEID, colnames(table)[-1])
-  table <- table[, c("taxonomy", ordered_samples)]
-  
-  # Filtrar si se especifica un subconjunto
-  if (!is.null(selected_samples)) {
+  # Sincronizar muestras si selected_samples no está definido
+  if (is.null(selected_samples)) {
+    sample_ids_table <- colnames(table)[-1]
+    sample_ids_metadata <- metadata$SAMPLEID
+    common_samples <- intersect(sample_ids_table, sample_ids_metadata)
+    
+    removed_from_table <- setdiff(sample_ids_table, common_samples)
+    removed_from_metadata <- setdiff(sample_ids_metadata, common_samples)
+    
+    # Mostrar mensaje si se eliminan muestras
+    if (length(removed_from_table) > 0 || length(removed_from_metadata) > 0) {
+      message("Se han eliminado muestras para sincronizar 'table' y 'metadata':")
+      if (length(removed_from_table) > 0) {
+        message(" - De la tabla: ", paste(removed_from_table, collapse = ", "))
+      }
+      if (length(removed_from_metadata) > 0) {
+        message(" - De los metadatos: ", paste(removed_from_metadata, collapse = ", "))
+      }
+    }
+    
+    table <- table[, c("taxonomy", common_samples), drop = FALSE]
+    metadata <- dplyr::filter(metadata, SAMPLEID %in% common_samples)
+    
+  } else {
+    # Filtrar si se especifica un subconjunto
     selected_samples <- intersect(selected_samples, colnames(table))
     metadata <- dplyr::filter(metadata, SAMPLEID %in% selected_samples)
     table <- table[, c("taxonomy", selected_samples), drop = FALSE]
   }
   
-  
+  # Verificar columna de agrupación
   if (!(merge_by %in% colnames(metadata))) {
     stop(paste("La columna", merge_by, "no existe en los metadatos."))
   }
   
   if (method == "ggvenn") {
-    # Usar ggVennDiagram
     if (!requireNamespace("ggVennDiagram", quietly = TRUE)) {
       stop("El paquete 'ggVennDiagram' no está instalado.")
     }
@@ -63,7 +80,7 @@ venn_diagram <- function(table,
     metadata_split <- split(metadata$SAMPLEID, metadata[[merge_by]])
     taxa_list <- lapply(metadata_split, function(samples) {
       sub_table <- table[, c("taxonomy", samples), drop = FALSE]
-      present_taxa <- sub_table$taxonomy[rowSums(sub_table[,-1] > 0) > 0]
+      present_taxa <- sub_table$taxonomy[rowSums(as.matrix(sub_table[,-1, drop = FALSE]) > 0) > 0]
       unique(present_taxa)
     })
     
@@ -73,7 +90,6 @@ venn_diagram <- function(table,
     if (length(taxa_list) < 2 || length(taxa_list) > 7) {
       stop("El número de grupos con datos debe estar entre 2 y 7 para usar 'ggvenn'.")
     }
-    
     
     venn_plot <- ggVennDiagram::ggVennDiagram(taxa_list, label_alpha = 0)
     
@@ -85,12 +101,11 @@ venn_diagram <- function(table,
     venn_plot +
       ggtitle(title) +
       theme_minimal(base_size = 14) +
-      theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-      theme(axis.text.x = element_blank(), axis.text.y = element_blank())+
-      theme(axis.title = element_blank())
+      theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+            axis.text.x = element_blank(), axis.text.y = element_blank(),
+            axis.title = element_blank())
     
   } else if (method == "microeco") {
-    # Usar microeco
     if (!requireNamespace("microeco", quietly = TRUE)) {
       stop("El paquete 'microeco' no está instalado.")
     }
@@ -113,14 +128,12 @@ venn_diagram <- function(table,
       scale_fill_gradient(low = "lightyellow", high = "red") +
       theme_minimal(base_size = 14) +
       theme(legend.position = "none",
-            plot.title = element_text(hjust = 0.5, face = "bold")) +
-      theme(axis.text.x = element_blank(), axis.text.y = element_blank())+
-      theme(axis.title = element_blank())+
+            plot.title = element_text(hjust = 0.5, face = "bold"),
+            axis.text.x = element_blank(), axis.text.y = element_blank(),
+            axis.title = element_blank()) +
       ggtitle(title)
-    
     
   } else {
     stop("El parámetro 'method' debe ser 'microeco' o 'ggvenn'.")
   }
 }
-
