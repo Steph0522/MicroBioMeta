@@ -15,7 +15,8 @@
 #'              legend_figure =  "Top 15 most important ASVs (Random Forest)")
 #' 
 #1. Define function 
-random_forest <- function(table, metadata, variable_to_predict, col_pallete= NULL, legend_figure)
+
+randomF_lollipop_plot <- function(table, metadata, variable_to_predict, col_pallete= NULL, legend_figure)
   
 {#Eliminate taxonomy column for numeric analysis
   taxonomy <- table$taxonomy
