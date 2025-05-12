@@ -1,11 +1,7 @@
-#####RANDOM FOREST CON LOLIPOP####
-
- #Definir la funcion 
-#' Title
+#####RANDOM FOREST WITH LOLIPOP####
 #'
 #' @param table Data frame, where, the columns are the samples and rows are ASV's or taxa.
 #' @param metadata Data frame of characteristics or important information of the samples.
-#' @param taxonomy Data frame that contains the ASVs assigned to a taxonomic group.
 #' @param variable_to_predict Variable to predict from the metadata of the samples analized.
 #' @param col_pallete Blind-friendly color palette.
 #' @param legend_figure Principal title of the figure.
@@ -18,10 +14,10 @@
 #'              variable_to_predict = condition (e.g."season", "environment", "soil")
 #'              legend_figure =  "Top 15 most important ASVs (Random Forest)")
 #' 
-#1. Definir la funcion 
+#1. Define function 
 random_forest <- function(table, metadata, variable_to_predict, col_pallete= NULL, legend_figure)
   
-{#Si la columna "taxonomia" está en el otu, entonces elimínala para análisis numérico:
+{#Eliminate taxonomy column for numeric analysis
   taxonomy <- table$taxonomy
   table_numeric <- table %>% dplyr::select(-taxonomy) 
   
@@ -29,41 +25,40 @@ random_forest <- function(table, metadata, variable_to_predict, col_pallete= NUL
     table_numeric <- t(table_numeric)
   }
   
-  # Verifica si los nombres de muestra coinciden
+  #Verify that samples names samples match
   common_samples <- intersect(rownames(table_numeric), rownames(metadata))
   
-  # Filtrar ambos datasets
+  # Filter both datasets
   otu_filtered <- table_numeric[common_samples, ]
   metadata_filtered <- metadata[common_samples, ]
   
-  # Variable respuesta (por ejemplo, "Grupo")
+  # Define response variable 
   response <- as.factor(metadata_filtered[[variable_to_predict]])
   
-  # Modelo Random Forest
-  #modelo Random Forest
+  # Model Random Forest
   modelo_rf <- randomForest::randomForest(x = otu_filtered, y = response, importance = TRUE, ntree = 500)
   
-  # Obtener importancia
+  # Obtaine importance
   importance_df <- randomForest::importance(modelo_rf)
   importance_df <- as.data.frame(importance_df)
   
-  # Ordenar por importancia (MeanDecreaseGini, por ejemplo)
+  # Order MeanDecreaseGini and get the 15 most important ASVs
   importance_df$ASV <- rownames(importance_df)
   top_asvs <- importance_df %>% dplyr::arrange(desc(MeanDecreaseGini)) %>% head(15)
   
-  #duplicar columna taxonomy para modificar archivo
+  #Duplicate taxonomy column for modify file
   top_asvs <- dplyr::left_join(top_asvs, data.frame(ASV = colnames(table_numeric), taxonomy = taxonomy), by = "ASV") %>%
     dplyr::mutate(taxonomy_original = taxonomy)
   
-  #separar taxonomy en columnas para agregar leyenda de Phylum
+  #Separate taxonomy column for agregate Phylum legend
   top_asvs <- top_asvs %>%
     tidyr::separate(col= taxonomy_original, into = c("Dominio","Phylum","Class","Orden","Family","Genus","Specie"), sep = ";") 
   
-  #eliminar todos los espacios en blanco
+  #Remove all white space
   top_asvs<- top_asvs %>%
     dplyr::mutate(across(everything(), ~ trimws(.)))
   
-  #modificar tabla
+  #Modify table
   top_asvs.modificada <- top_asvs %>%
     dplyr::mutate(taxonomy = dplyr::case_when(
       grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
@@ -74,18 +69,18 @@ random_forest <- function(table, metadata, variable_to_predict, col_pallete= NUL
       TRUE ~ "Unclassified")) %>%
     dplyr::mutate(Phylum = case_when(Phylum=="p__Proteobacteria" ~ "Pseudomonadata",
                                      Phylum=="p__Firmicutes" ~ "Bacillota",  TRUE~as.character(Phylum))) %>%
-    mutate(taxonomy2=paste0(LETTERS[1:n()], ".", taxonomy)) #agregar letras al inicio del nombre en la columna nueva llamda genero2
+    mutate(taxonomy2=paste0(LETTERS[1:n()], ".", taxonomy)) #add letters
   
   
   paleta_colores <- c("#F3C300","#875692","#F38400","#A1CAF1","#BE0032","#C2B280","#848482",
                       "#008856","#E68FAC","#0067A5","#F99379","#604E97","#F6A600","#B3446C",
                       "#DCD300","#882D17","#8DB600","#654522","#E25822","#2B3D26")
   
-  #convertir a numerico
+  #Convert MeanDecreaseGini column to numeric
   top_asvs.modificada$MeanDecreaseGini <- as.numeric(top_asvs.modificada$MeanDecreaseGini)
   
-  #figura
-  lollipop_randomR<- ggplot2::ggplot(top_asvs.modificada, aes(x = reorder(taxonomy2, MeanDecreaseGini), y = MeanDecreaseGini, fill = Phylum)) +
+  #FigurE
+  lollipop <- ggplot2::ggplot(top_asvs.modificada, aes(x = reorder(taxonomy2, MeanDecreaseGini), y = MeanDecreaseGini, fill = Phylum)) +
     ggplot2::geom_segment(aes(x = reorder(taxonomy2, MeanDecreaseGini), 
                               xend = reorder(taxonomy2, MeanDecreaseGini), 
                               y = 0, yend = MeanDecreaseGini), 
@@ -105,6 +100,6 @@ random_forest <- function(table, metadata, variable_to_predict, col_pallete= NUL
                    legend.text = element_text(size = 10),
                    plot.title = element_text(size = 20))
   
-  return(lollipop_randomR) 
+  return(lollipop) 
 }
 
