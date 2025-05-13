@@ -50,8 +50,9 @@ effect_size_plot <- function(table,
         aldex_clr,
         verbose = TRUE,
         include.sample.summary = FALSE,
-        useMC = FALSE,
-        CI = FALSE
+        useMC = TRUE,
+        CI = FALSE,
+        
     )
 
     KW <- aldex.kw(aldex_clr, useMC = FALSE, verbose = FALSE)

@@ -5,6 +5,7 @@ library(tidyverse)
 table = otu #%>% dplyr::select(taxonomy, everything())
 metadata = read.delim("meta.txt", sep = "")%>% rename(SAMPLEID="sample.id")
 metadata = metadata[match(colnames(otu), metadata$SAMPLEID),] %>% filter(!SAMPLEID =="NA")
+devtools::load_all()
 
 alpha_hill_corrplot(table = table[-1],
                     facet_orientation = "horizontal")
@@ -44,8 +45,8 @@ effect_size_plot(
 )
 
 
-venn_diagram(table=table,#%>% tibble::remove_rownames(), 
-             metadata,# %>% remove_rownames(),
+venn_diagram(table=table%>% tibble::remove_rownames(), 
+             metadata %>% remove_rownames(),
              merge_by = "metodo",
              method = "microeco")
 
@@ -53,27 +54,12 @@ venn_diagram(table=table,#%>% tibble::remove_rownames(),
 venn_diagram_plot(table, #%>% remove_rownames(), 
                   metadata,#%>% remove_rownames(),
                   merge_by = "metodo",
-                  min_prevalence = 0,
-                 #group_colors = c("blue", "yellow"),
+                  min_prevalence = 0.7,
+               #  group_colors = c("blue", "yellow"),
                   method = "ggvenn")
 
-fenol <- table %>% dplyr::select(starts_with("F"))
-kit <- table %>% dplyr::select(starts_with("Q"))
-fenolcore <- fenol[rowSums(fenol[sapply(fenol, is.numeric)]) != 0, ]
-kitcore <- kit[rowSums(kit[sapply(kit, is.numeric)]) != 0, ]
+#metadata$metodo <- as.factor(metadata$metodo)
 
-
-compart <- kitcore %>%
-  tibble::rownames_to_column(var = "rownames") %>%
-  inner_join(fenolcore %>% tibble::rownames_to_column(var = "rownames"), by = "rownames")
-
-
-nrow(kitcore)-nrow(compart)
-
-library(ggVennDiagram)
-lista <- list(fenol= rownames(fenolcore),
-              kit = rownames(kitcore))
-
-
-p1 <- ggVennDiagram(lista)
-p1
+randomf_lollipop_plot(table, 
+              metadata, 
+              variable_to_predict = "metodo", top_n = 20)

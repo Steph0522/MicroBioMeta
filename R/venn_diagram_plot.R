@@ -15,90 +15,93 @@
 
 #' @return A ggplot object or other plot depending on the method.
 #' @export
-venn_diagram_plot <- function(table, metadata, merge_by = "Tratamiento",
+venn_diagram_plot <- function(table, metadata, merge_by = NULL,
                               selected_samples = NULL, min_prevalence = 0,
-                              title = NULL, method = "microeco",
-                              group_colors = NULL,
-                              fill_colors=NULL) {
+                              title = NULL, method = "ggvenn",
+                              group_colors = NULL) {
   table <- as.data.frame(table)
   metadata <- as.data.frame(metadata)
   
-  if (!"taxonomy" %in% colnames(table)) stop("La tabla debe contener 'taxonomy'.")
-  if (!merge_by %in% colnames(metadata)) stop("La columna de agrupamiento no existe.")
+  if (!"taxonomy" %in% colnames(table)) stop("Table must contain taxonomy columns'.")
+  if (!merge_by %in% colnames(metadata)) stop("Group or merge column is not in the metadata file.")
   
-  common_samples <- intersect(colnames(table)[-1], metadata$SAMPLEID)
-  table <- table[, c("taxonomy", common_samples), drop = FALSE]
-  metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop=FALSE]
+  common_samples <- intersect(colnames(table), metadata$SAMPLEID)
+  table <- table[, c(common_samples), drop = FALSE]
+  metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop = FALSE]
   rownames(metadata) <- NULL
   
   if (!is.null(selected_samples)) {
     common_samples <- intersect(selected_samples, colnames(table))
-    table <- table[, c("taxonomy", common_samples), drop = FALSE]
-    metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop=FALSE]
+    table <- table[, c(common_samples), drop = FALSE]
+    metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop = FALSE]
   }
   
   metadata_split <- split(metadata$SAMPLEID, metadata[[merge_by]])
-  # Eliminar grupos vacíos
   metadata_split <- metadata_split[sapply(metadata_split, length) > 0]
   num_groups <- length(metadata_split)
-  
-  if (min_prevalence > 0) {
-    table <- table %>%
-      dplyr::rowwise() %>%
-      dplyr::mutate(prev = sum(c_across(-taxonomy) > 0) / length(metadata$SAMPLEID)) %>%
-      dplyr::filter(prev >= min_prevalence) %>%
-      dplyr::select(-prev)
-  }
   
   # Default palette - Distiller Set3
   use_manual <- !is.null(group_colors)
   if (!use_manual) {
-    # default distiller palette
     group_colors <- scales::hue_pal()(num_groups)
   } else {
     group_colors <- rep(group_colors, length.out = num_groups)
- 
   }
   
-  if (method == "ggvenndiagram") {
-    if (!requireNamespace("ggVennDiagram", quietly=TRUE)) stop("Instala ggVennDiagram.")
-    taxa_list <- lapply(metadata_split, function(samps) unique(table$taxonomy[rowSums(table[,samps,drop=FALSE]>0)>0]))
-    names(taxa_list) <- names(metadata_split)
-    
-    # Crear conjuntos con filas no nulas dinámicamente para cada grupo
-    lista <- lapply(metadata_split, function(samps) {
-      subset <- table[, samps, drop = FALSE]
+  # Crear lista según el método
+  lista <- lapply(metadata_split, function(samps) {
+    subset <- table[, samps, drop = FALSE]
+    subset_core <- if (min_prevalence > 0) {
+      subset_core <- subset[rowMeans(subset > 0) >= min_prevalence, ]
+      
+    } else {
       subset_core <- subset[rowSums(subset) != 0, ]
-      rownames(subset_core)
-    })
-    names(lista) <- names(metadata_split)
-    venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0,
-                                              set_color = group_colors,
-                                              edge_size = 2) 
+
+    }
+    rownames(subset_core)
+  })
+  names(lista) <- names(metadata_split)
+  
+  # Selección del método
+  if (method == "ggvenndiagram") {
+    if (!requireNamespace("ggVennDiagram", quietly = TRUE)) stop("Install ggVennDiagram package.")
     
     if (use_manual) {
-      venn_plot <- venn_plot + ggplot2::scale_fill_gradient(low = "white", high = "gray10")
+      venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0,
+                                                set_color = group_colors,
+                                                edge_size = 1) +
+        ggplot2::scale_fill_gradient(low = "white", high = "#5A5A5A", na.value = NA)
     } else {
-      venn_plot <- venn_plot + ggplot2::scale_fill_distiller(palette = "Set3", direction = 1)
+      venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0,
+                                                edge_size = 1) +
+        ggplot2::scale_fill_gradientn(colours = c(
+          "#F3C300", "#875692", "#F38400", "#A1CAF1", "#BE0032",
+          "#C2B280", "#848482", "#008856", "#E68FAC", "#0067A5",
+          "#F99379", "#604E97", "#F6A600", "#B3446C", "#DCD300",
+          "#882D17", "#8DB600", "#654522", "#E25822"
+        ))
     }
     
-    
   } else if (method == "ggvenn") {
-    if (!requireNamespace("ggvenn", quietly = TRUE)) stop("Instala el paquete 'ggvenn'.")
+    if (!requireNamespace("ggvenn", quietly = TRUE)) stop("Install 'ggvenn' package.")
     
-    lista <- lapply(metadata_split, function(samps) {
-      subset <- table[, samps, drop = FALSE]
-      subset_core <- subset[rowSums(subset) != 0, ]
-      rownames(subset_core)
-    })
-    names(lista) <- names(metadata_split)
+    if (use_manual) {
+      venn_plot <- ggvenn::ggvenn(lista, fill_color = group_colors)
+    } else {
+      venn_plot <- ggvenn::ggvenn(lista) + 
+        ggplot2::scale_fill_manual(values = c(
+          "#F3C300", "#875692", "#F38400", "#A1CAF1", "#BE0032",
+          "#C2B280", "#848482", "#008856", "#E68FAC", "#0067A5",
+          "#F99379", "#604E97", "#F6A600", "#B3446C", "#DCD300",
+          "#882D17", "#8DB600", "#654522", "#E25822"
+        ))
+    }
     
-    
-    venn_plot <- ggvenn::ggvenn(lista, fill_color = group_colors)
-    
-  } else stop("Método debe ser 'microeco' o 'ggvenn'.")
+  } else {
+    stop("Method must be 'ggvenn' or 'ggvenndiagram'.")
+  }
   
-  venn_plot <- venn_plot + ggtitle(title) #+ theme_minimal(base_size=14)
-  venn_plot <- venn_plot + theme(legend.position="none")
+  venn_plot <- venn_plot + ggtitle(title) + theme(legend.position = "none")
   return(venn_plot)
 }
+
