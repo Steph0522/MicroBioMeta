@@ -24,93 +24,116 @@
 #'
 #'
 effect_size_plot <- function(table,
-    metadata,
-    col_cond,
-    col_inf,
-    col_sup,
-    threshold_lower,
-    threshold_upper,
-    cond,
-    show_labels = TRUE) {
-    library(ALDEx2)
-    library(ggplot2)
-    library(scales)
-    library(ggtext)
-
+                             metadata,
+                             col_cond,
+                             col_inf,
+                             col_sup,
+                             threshold_lower,
+                             threshold_upper,
+                             cond,
+                             show_labels = TRUE) {
+  library(ALDEx2)
+  library(ggplot2)
+  library(scales)
+  library(ggtext)
+  
   if (!col_cond %in% colnames(metadata)) {
-    stop(paste("La columna", col_cond, "no existe en el objeto 'metadata'. Verifica que el nombre esté escrito correctamente."))
+    stop(
+      paste(
+        "The column",
+        col_cond,
+        "does not exist in the object 'metadata'. Check the name is written correctly."
+      )
+    )
   }
-    condiciones <- metadata[[col_cond]]
+  condiciones <- metadata[[col_cond]]
+  
+  
+  aldex_clr <- aldex.clr(table[, !colnames(table) %in% "taxonomy"],
+                         condiciones,
+                         mc.samples = 128,
+                         denom = "all")
+  
+  
+  effect_size <- aldex.effect(
+    aldex_clr,
+    verbose = TRUE,
+    include.sample.summary = FALSE,
+    useMC = TRUE,
+    CI = FALSE,
     
-    
-    aldex_clr <- aldex.clr(table[, !colnames(table) %in% "taxonomy"], condiciones, mc.samples = 128, denom = "all")
-    
-
-    effect_size <- aldex.effect(
-        aldex_clr,
-        verbose = TRUE,
-        include.sample.summary = FALSE,
-        useMC = TRUE,
-        CI = FALSE,
-        
+  )
+  
+  KW <- aldex.kw(aldex_clr, useMC = FALSE, verbose = FALSE)
+  
+  resultado <- cbind(effect_size, KW)
+  
+  resultado$grupo <- ifelse(
+    resultado$effect <= threshold_lower,
+    "Lower in condition 1",
+    ifelse(
+      resultado$effect >= threshold_upper,
+      "Higher in condition 1",
+      "Normal"
     )
-
-    KW <- aldex.kw(aldex_clr, useMC = FALSE, verbose = FALSE)
-
-    resultado <- cbind(effect_size, KW)
-
-    resultado$grupo <- ifelse(
-        resultado$effect <= threshold_lower,
-        "Menor en condicion 1",
-        ifelse(
-            resultado$effect >= threshold_upper,
-            "Mayor en condicion 1",
-            "Normal"
-        )
-    )
+  )
+  
+  lim_x <- max(abs(resultado$effect), na.rm = TRUE)
+  p <- ggplot(resultado, aes(x = effect, y = kw.ep, color = grupo)) +
+    geom_point(size = 3.5) +
+    scale_color_manual(
+      values = c(
+        "Lower in condition 1" = col_inf,
+        "Normal" = "gray",
+        "Higher in condition 1" = col_sup
+      )
+    ) +
+    geom_vline(
+      xintercept = c(threshold_lower, threshold_upper),
+      linetype = 2,
+      color = "black"
+    ) +
+    geom_hline(yintercept = 0.05,
+               linetype = 2,
+               color = "black") +
+    labs(x = "Effect size",
+         y = bquote(italic("p") ~ " value"),
+         color = "Grupo") +
     
-    lim_x <- max(abs(resultado$effect), na.rm = TRUE)
-    p <- ggplot(resultado, aes(x = effect, y = kw.ep, color = grupo)) +
-        geom_point(size = 3.5) +
-        scale_color_manual(
-            values = c(
-                "Menor en condicion 1" = col_inf,
-                "Normal" = "gray",
-                "Mayor en condicion 1" = col_sup
-            )
-        ) +
-        geom_vline(xintercept = c(threshold_lower, threshold_upper), linetype = 2, color = "black") +
-        geom_hline(yintercept = 0.05, linetype = 2, color = "black") +
-        labs(
-            x = "Effect size",
-            y = bquote(italic("p") ~ " value"),
-            color = "Grupo"
-        ) +
-       
-        theme_classic() +
-        theme(
-            axis.text = element_text(size = 15, color = "black"),
-            axis.title = element_text(size = 15),
-            legend.text = element_text(size = 12)
-        ) +
-        theme(legend.position = "none")
-
-    if (show_labels) {
-      p <- p +
-        annotate(
-          "richtext", x = threshold_lower, y = 0.95, 
-          label = paste("<b>Lower in", cond, "</b>"), 
-          color = col_inf, size = 5, hjust = 1, vjust = 1
-        ) +
-        annotate(
-          "richtext", x = threshold_upper, y = 0.95, 
-          label = paste("<b>Higher in", cond, "</b>"), 
-          color = col_sup, size = 5, hjust = 0, vjust = 1
-        )
-    }
-    
-    q = p + scale_x_continuous(limits = c(-lim_x, lim_x))+
-      scale_y_continuous(breaks = c(0,0.05,0.25, 0.5, 0.75,1))
-
-    return(q)
+    theme_classic() +
+    theme(
+      axis.text = element_text(size = 15, color = "black"),
+      axis.title = element_text(size = 15),
+      legend.text = element_text(size = 12)
+    ) +
+    theme(legend.position = "none")
+  
+  if (show_labels) {
+    p <- p +
+      annotate(
+        "richtext",
+        x = threshold_lower,
+        y = 0.95,
+        label = paste("<b>Lower in", cond, "</b>"),
+        color = col_inf,
+        size = 5,
+        hjust = 1,
+        vjust = 1
+      ) +
+      annotate(
+        "richtext",
+        x = threshold_upper,
+        y = 0.95,
+        label = paste("<b>Higher in", cond, "</b>"),
+        color = col_sup,
+        size = 5,
+        hjust = 0,
+        vjust = 1
+      )
+  }
+  
+  q = p + scale_x_continuous(limits = c(-lim_x, lim_x)) +
+    scale_y_continuous(breaks = c(0, 0.05, 0.25, 0.5, 0.75, 1))
+  
+  return(q)
 }

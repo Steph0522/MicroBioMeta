@@ -54,9 +54,12 @@ venn_diagram(table=table%>% tibble::remove_rownames(),
 venn_diagram_plot(table, #%>% remove_rownames(), 
                   metadata,#%>% remove_rownames(),
                   merge_by = "metodo",
-                  min_prevalence = 0.7,
+                  min_prevalence = 0,
+                #  denom = "all",
                #  group_colors = c("blue", "yellow"),
                   method = "ggvenn")
+
+
 
 #metadata$metodo <- as.factor(metadata$metodo)
 
