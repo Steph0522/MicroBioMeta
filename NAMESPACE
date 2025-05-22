@@ -2,6 +2,7 @@
 
 export(alpha_hill_corrplot)
 export(alpha_hill_plot)
+export(beta_div_plot)
 export(diversidad_alfa)
 export(effect_size_plot)
 export(hill_plot)

@@ -66,3 +66,11 @@ venn_diagram_plot(table, #%>% remove_rownames(),
 randomf_lollipop_plot(table, 
               metadata, 
               variable_to_predict = "metodo", top_n = 20)
+
+
+beta_div_plot(table = table,
+                metadata = metadata,
+              distance = "jaccard",
+              ordination = "PCA", 
+              color_by = "metodo",
+              n_taxa = 5)
