@@ -70,7 +70,22 @@ randomf_lollipop_plot(table,
 
 beta_div_plot(table = table,
                 metadata = metadata,
-              distance = "jaccard",
+              distance ="compositional",
               ordination = "PCA", 
               color_by = "metodo",
               n_taxa = 5)
+
+#data
+data("varechem")
+data("varespec")
+
+#extracting species and env-data
+species_data <- varespec[, 1:18]
+env_data <- varechem[, 2:7]
+metadata = data.frame(ids=1:24, group =c(rep("A",12), rep("B",12)))
+
+cca_biplot(table = t(species_data),
+           env_data = env_data,  
+           metadata = metadata,
+           group_col = "group")
+

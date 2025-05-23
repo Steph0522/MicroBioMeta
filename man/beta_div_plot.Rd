@@ -7,7 +7,7 @@
 beta_div_plot(
   table,
   metadata,
-  distance = "aitchinson",
+  distance = "compositional",
   ordination = "PCA",
   color_by,
   shape_by = NULL,
@@ -19,9 +19,9 @@ beta_div_plot(
 
 \item{metadata}{A data frame with sample metadata. The first column must contain the sample IDs, regardless of the column name.}
 
-\item{distance}{Distance method: one of "euclidean", "bray", "jaccard", "sorensen", or "aitchison".}
+\item{distance}{Distance method: one of "euclidean", "bray", "jaccard", "sorensen", or "compositional" (default).}
 
-\item{ordination}{Ordination method: one of "PCA", "PCoA", or "NMDS".}
+\item{ordination}{Ordination method: one of "PCA" (default), "PCoA", or "NMDS".}
 
 \item{color_by}{Name of the column in \code{metadata} used to color points.}
 
