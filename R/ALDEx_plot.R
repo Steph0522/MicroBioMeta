@@ -1,7 +1,22 @@
 
+#' Heatmap ALDEx
+#'
+#' @param table, Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.
+#' @param conditions, Vector that defines the categories or classes to compare. 
+#' @param effect, Effect size (default: >= 0.8)
+#' @param pvalue_BH, Value p-ajusted (optional) 
+#'
+#' @return A plot with the deferentially abundant taxonomic groups between two categories or groups of samples.
+#' @export
+#'
+#' @examples aldex_plot(table = table, 
+#'                      conditions = conditions,
+#'                      effect = 0.8,
+#'                      pvalue_BH = NULL)
+#' 
 
-#FUNCTION
-aldex_plot <- function(table,
+
+  aldex_plot <- function(table,
                        conditions,
                        effect = 0.8, 
                        pvalue_BH = NULL) {
