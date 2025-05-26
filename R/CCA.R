@@ -49,16 +49,15 @@ cca_biplot <- function(table,
   
   # 2. Escalar variables ambientales seleccionadas
   if (scale_env) {
-    env_scaled <- scale(env_data[, env_vars], scale = TRUE, center = FALSE) %>%
+    env_scaled <-
+      scale(env_data[, env_vars], scale = TRUE, center = FALSE) %>%
       as.data.frame()
   } else {
     env_scaled <- env_data[, env_vars]
   }
   
-  # 3. Asegurar que las filas coincidan entre species_table, env_data y metadata
-  if (!is.null(metadata)) {
-    metadata <- metadata[rownames(species_table), , drop = FALSE]
-  }
+  # 3. Asegurar que las filas coincidan entre species_table y env_data
+  stopifnot(identical(rownames(table), rownames(env_data)))
   
   # 4. Análisis CCA
   set.seed(seed)
@@ -71,11 +70,14 @@ cca_biplot <- function(table,
   sig_vars <- names(which(fit$vectors$pvals < pval_threshold))
   
   if (length(sig_vars) == 0) {
-    warning("No hay variables ambientales significativas (p <", pval_threshold, ")")
+    warning("No hay variables ambientales significativas (p <",
+            pval_threshold,
+            ")")
     return(ggplot() + theme_void() + ggtitle("Sin variables significativas"))
   }
   
-  vectors_scores <- vegan::scores(fit, display = "vectors")[sig_vars, , drop = FALSE] %>%
+  vectors_scores <-
+    vegan::scores(fit, display = "vectors")[sig_vars, , drop = FALSE] %>%
     as.data.frame()
   vectors_scores$Variable <- rownames(vectors_scores)
   
@@ -84,43 +86,64 @@ cca_biplot <- function(table,
     as.data.frame()
   site_scores$SampleID <- rownames(site_scores)
   
+  # 8. Integrar metadata si se proporciona
   if (!is.null(metadata) &&
       !is.null(group_col) && group_col %in% colnames(metadata)) {
+    if (!"SampleID" %in% colnames(metadata)) {
+      metadata$SampleID <- rownames(metadata)
+    }
     
-    site_scores$Group <- metadata[[group_col]]
+    site_scores <-
+      merge(site_scores, metadata[, c("SampleID", group_col)], by = "SampleID", all.x = TRUE)
+    colnames(site_scores)[colnames(site_scores) == group_col] <-
+      "Group"
     
-    # Paleta discreta por defecto (ColorBrewer Set2)
     default_colors <- c(
-      "#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3",
-      "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"
+      "#66c2a5",
+      "#fc8d62",
+      "#8da0cb",
+      "#e78ac3",
+      "#a6d854",
+      "#ffd92f",
+      "#e5c494",
+      "#b3b3b3"
     )
     
     groups_present <- unique(site_scores$Group)
     
     if (is.null(group_colors)) {
-      color_values <- rep(default_colors, length.out = length(groups_present))
+      color_values <-
+        rep(default_colors, length.out = length(groups_present))
       names(color_values) <- groups_present
       group_colors <- color_values
     }
     
-    # Título de leyenda personalizado si se proporciona
-    legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
+    legend_name <-
+      ifelse(is.null(legend_title), group_col, legend_title)
     
-    plot <- ggplot(site_scores, aes(x = CCA1, y = CCA2, color = Group)) +
+    plot <-
+      ggplot(site_scores, aes(x = CCA1, y = CCA2, color = Group)) +
       geom_point(size = 3) +
-      scale_color_manual(name = legend_name, values = group_colors)
+      scale_color_manual(name = legend_name, values = group_colors) +
+      coord_fixed(ratio = 1) +
+      theme_minimal() +
+      theme(aspect.ratio = 1, axis.text = element_text(size = 12))
     
   } else {
     plot <- ggplot(site_scores, aes(x = CCA1, y = CCA2)) +
-      geom_point(size = 3)
+      geom_point(size = 3) +
+      coord_fixed(ratio = 1) +
+      theme_minimal() +
+      theme(aspect.ratio = 1, axis.text = element_text(size = 12))
   }
   
-  # 8. Añadir vectores ambientales escalados
+  # 9. Añadir vectores ambientales escalados
   plot <- plot +
     geom_segment(
       data = vectors_scores,
       aes(
-        x = 0, y = 0,
+        x = 0,
+        y = 0,
         xend = CCA1 * scale_arrows,
         yend = CCA2 * scale_arrows
       ),
@@ -130,21 +153,42 @@ cca_biplot <- function(table,
     ) +
     geom_text(
       data = vectors_scores,
-      aes(x = CCA1 * scale_arrows, y = CCA2 * scale_arrows, label = Variable),
+      aes(
+        x = CCA1 * scale_arrows,
+        y = CCA2 * scale_arrows,
+        label = Variable
+      ),
       color = "black",
       hjust = 0.5,
       vjust = -0.5,
       inherit.aes = FALSE
     )
   
-  # 9. Título del gráfico si se proporciona
+  # 10. Centrar el gráfico en el origen
+  max_range <- max(abs(c(
+    site_scores$CCA1, vectors_scores$CCA1 * scale_arrows
+  )),
+  abs(c(
+    site_scores$CCA2, vectors_scores$CCA2 * scale_arrows
+  )))
+  buffer <- 1.1
+  plot <- plot +
+    scale_x_continuous(limits = c(-max_range, max_range) * buffer) +
+    scale_y_continuous(limits = c(-max_range, max_range) * buffer) +
+    theme(panel.grid.major = element_blank()) +
+    theme(panel.grid.minor = element_blank()) +
+    geom_hline(yintercept = 0,  color = "black") +
+    geom_vline(xintercept = 0,  color = "black") +
+    theme(panel.border = element_rect(
+      fill = NA,
+      colour = "black",
+      linewidth = 0.5
+    ))
+  
+  # 11. Título del gráfico si se proporciona
   if (!is.null(title)) {
     plot <- plot + ggtitle(title)
   }
   
-  plot <- plot + theme_minimal()
-  
   return(plot)
 }
-
-
