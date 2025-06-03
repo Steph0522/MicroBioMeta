@@ -1,6 +1,6 @@
 ###FUNCTION####
 
-heatmap_plot <- function(table,
+heatmap_abundance_plot <- function(table,
                          metadata,
                          condition1,
                          condition2,
