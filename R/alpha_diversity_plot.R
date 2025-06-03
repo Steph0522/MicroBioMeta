@@ -85,10 +85,10 @@ alpha_diversity_plot <- function(
   }
   
   # Estimar índices
-  est_richness <- estimateR(table)  # muestras como filas
+  est_richness <- vegan::estimateR(table)  # muestras como filas
   chao1 <- est_richness["S.chao1", ]
-  shannon <- diversity(table, index = "shannon")
-  simpson <- diversity(table, index = "simpson")
+  shannon <- vegan::diversity(table, index = "shannon")
+  simpson <- vegan::diversity(table, index = "simpson")
   
   # Crear data frame unificado
   results <- data.frame(
