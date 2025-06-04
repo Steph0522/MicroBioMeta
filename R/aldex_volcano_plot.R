@@ -23,7 +23,7 @@
 #'
 #'
 #'
-effect_size_plot <- function(table,
+aldex_volcano_plot <- function(table,
                              metadata,
                              col_cond,
                              col_inf,
@@ -46,27 +46,15 @@ effect_size_plot <- function(table,
       )
     )
   }
-  condiciones <- metadata[[col_cond]]
+  conditions <- metadata[[col_cond]]
   
   
-  aldex_clr <- aldex.clr(table[, !colnames(table) %in% "taxonomy"],
-                         condiciones,
+  aldex_clr <- ALDEx2::aldex(table[, !colnames(table) %in% "taxonomy"],
+                         conditions,
                          mc.samples = 128,
                          denom = "all")
   
-  
-  effect_size <- aldex.effect(
-    aldex_clr,
-    verbose = TRUE,
-    include.sample.summary = FALSE,
-    useMC = TRUE,
-    CI = FALSE,
-    
-  )
-  
-  KW <- aldex.kw(aldex_clr, useMC = FALSE, verbose = FALSE)
-  
-  resultado <- cbind(effect_size, KW)
+  resultado <- aldex_clr
   
   resultado$grupo <- ifelse(
     resultado$effect <= threshold_lower,
@@ -79,7 +67,7 @@ effect_size_plot <- function(table,
   )
   
   lim_x <- max(abs(resultado$effect), na.rm = TRUE)
-  p <- ggplot(resultado, aes(x = effect, y = kw.ep, color = grupo)) +
+  p <- ggplot(resultado, aes(x = effect, y = wi.ep, color = grupo)) +
     geom_point(size = 3.5) +
     scale_color_manual(
       values = c(

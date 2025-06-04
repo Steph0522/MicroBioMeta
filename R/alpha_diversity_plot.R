@@ -62,22 +62,25 @@ alpha_diversity_plot <- function(
     legend_title = NULL,
     legend_position = "bottom",
     axis_x_title = NULL,
-    axis_y_title = "Effective number of features",
+    axis_y_title = "Diversity measure",
     free_y = FALSE, 
     rarefy_depth=NULL) {
   
   
-  table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
+  #considero que esta parte no debería ser necesaria, no sé si es buena idea remover asvs 
+  #que no tengan una identificación taxonómica no quiere decir que no se tengan que considerar
+  #table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   # Remove uninformative taxonomy strings
-  table <- table %>%
-    dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__")
+  #table <- table %>%
+   # dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__")
   
   # Reorder columns based on SAMPLEID order in metadata
   ordered_samples <- metadata[,1]
-  sample_columns <- colnames(table)[-1]
-  ordered_samples <- intersect(ordered_samples, sample_columns)
-  table <- table[, c("taxonomy", ordered_samples)]
-  table<- column_to_rownames(table, "taxonomy")
+  sample_order <- metadata[[1]]
+  common_samples <- intersect(colnames(table), sample_order)
+  if (length(common_samples) == 0) stop("No matching sample names between table and metadata.")
+  table <- table[, common_samples, drop = FALSE]
+  table <- table[, match(sample_order, colnames(table))]
   table <- data.frame(t(table))
   
   if (!is.null(rarefy_depth) && rarefy_depth > 0) {
