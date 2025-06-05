@@ -11,7 +11,7 @@
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n_groups Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The tittle that should be in the x-axis (deault = "Samples")
-#' @param fill_col Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
+#' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
@@ -35,7 +35,7 @@ relative_abundance_plot <- function(table,
                                     label = "taxonomy",
                                     top_n_groups = 15,
                                     x_axis_title = "Samples",
-                                    fill_col = FALSE) {
+                                    add_remained = FALSE) {
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
@@ -96,7 +96,7 @@ relative_abundance_plot <- function(table,
     dplyr::slice_head(n = top_n_groups) %>%
     dplyr::pull(taxonomy)
   
-  if (fill_col) {
+  if (add_remained) {
     top_avg <- table_long %>%
       dplyr::filter(taxonomy %in% top_groups) %>%
       dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%

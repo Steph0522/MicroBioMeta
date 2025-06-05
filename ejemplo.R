@@ -30,7 +30,8 @@ aldex_volcano_plot(
 
 
 
-alpha_hill_corrplot(table = table[-1], facet_orientation = "horizontal")
+alpha_hill_corrplot(table = table[-1],
+                    facet_orientation = "horizontal")
 
 alpha_hill_plot(
   table = table,
@@ -71,7 +72,8 @@ relative_abundance_plot(
   label = "Phylum",
   # facet_col = "edad",
   # group_var = "SAMPLEID",
-  top_n_groups = 10
+  top_n_groups = 10,
+  add_remained  = TRUE,
 )
 
 
