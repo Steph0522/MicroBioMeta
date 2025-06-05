@@ -30,6 +30,17 @@ aldex_heatmap_plot <- function(table,
                                pvalue_colors = list('p-value' = c("<0.001" = '#C70039', "<0.01" = '#FF5733', "<0.05" = "#FFC300", ">0.05" = "#F9E79F")),
                                treatment_colors = c("Higher" = "#808000", "Lower" = "#1B5E20")) {
   
+  #check complexheatmap package
+  
+  if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
+    message("El paquete 'ComplexHeatmap' no está instalado. Instalando desde Bioconductor...")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+    }
+    BiocManager::install("ComplexHeatmap")
+  }
+  library(ComplexHeatmap)
+  
   # Verifica que la columna de condición exista en metadata
   if (!col_cond %in% colnames(metadata)) {
     stop(paste("Column", col_cond, "not found in metadata."))

@@ -13,7 +13,8 @@ relative_abundance_plot(
   facet_col = NULL,
   label = "taxonomy",
   top_n_groups = 15,
-  x_axis_title = "Samples"
+  x_axis_title = "Samples",
+  fill_col = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ relative_abundance_plot(
 \item{top_n_groups}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
 
 \item{x_axis_title}{Character. The tittle that should be in the x-axis (deault = "Samples")}
+
+\item{fill_col}{Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.}
 }
 \value{
 A \code{ggplot2} object showing a stacked barplot of relative abundances.
