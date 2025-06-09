@@ -11,6 +11,7 @@
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n_groups Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The tittle that should be in the x-axis (deault = "Samples")
+#' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
@@ -33,10 +34,11 @@ relative_abundance_plot <- function(table,
                                     facet_col = NULL,
                                     label = "taxonomy",
                                     top_n_groups = 15,
-                                    x_axis_title="Samples") {
-
-  table<- table[,-1]
+                                    x_axis_title = "Samples",
+                                    add_remained = FALSE) {
+  
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
+  
   # Remove uninformative taxonomy strings
   table <- table %>%
     dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__")
@@ -47,35 +49,28 @@ relative_abundance_plot <- function(table,
   ordered_samples <- intersect(ordered_samples, sample_columns)
   table <- table[, c("taxonomy", ordered_samples)]
   
-  # Collapse to genus level if specified
+  # Collapse taxonomy level
   if (level == "genus") {
     table$taxonomy <- gsub(";\\s?s__.*", "", table$taxonomy)
-    table <- table %>%
-      dplyr::group_by(taxonomy) %>%
-      dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE))
   }
-  
-  # Collapse to phylum level if specified
   if (level == "phylum") {
     table$taxonomy <- gsub(";\\s?c__.*", "", table$taxonomy)
-    table <- table %>%
-      dplyr::group_by(taxonomy) %>%
-      dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE))
   }
   
-  # Calculate relative abundance (%)
+  table <- table %>%
+    dplyr::group_by(taxonomy) %>%
+    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE))
+  
+  # Calculate relative abundance
   table[,-1] <- sweep(table[,-1], 2, colSums(table[,-1], na.rm = TRUE), FUN = "/") * 100
   
   # Convert to long format
   table_long <- table %>%
-    tidyr::pivot_longer(cols = -taxonomy,
-                        names_to = "SAMPLEID",
-                        values_to = "RelativeAbundance")
+    tidyr::pivot_longer(cols = -taxonomy, names_to = "SAMPLEID", values_to = "RelativeAbundance")
   
   # Join with metadata
-  columns_to_join <- c("SAMPLEID", x_col, facet_col, x_col)
+  columns_to_join <- c("SAMPLEID", x_col, facet_col)
   columns_to_join <- columns_to_join[!is.na(columns_to_join) & columns_to_join != "NULL"]
-  
   table_long <- dplyr::left_join(
     table_long,
     metadata %>% dplyr::select(dplyr::all_of(columns_to_join)),
@@ -101,14 +96,45 @@ relative_abundance_plot <- function(table,
     dplyr::slice_head(n = top_n_groups) %>%
     dplyr::pull(taxonomy)
   
-  avg_by_group <- avg_by_group %>%
-    dplyr::filter(taxonomy %in% top_groups)
+  if (add_remained) {
+    top_avg <- table_long %>%
+      dplyr::filter(taxonomy %in% top_groups) %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%
+      dplyr::summarise(MeanAbundance = mean(RelativeAbundance, na.rm = TRUE), .groups = "drop")
+    
+    grouping_vars_no_tax <- setdiff(grouping_vars, "taxonomy")
+    summed <- top_avg %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars_no_tax))) %>%
+      dplyr::summarise(SumAbundance = sum(MeanAbundance), .groups = "drop")
+    
+    other_rows <- summed %>%
+      dplyr::mutate(MeanAbundance = pmax(0, 100 - SumAbundance)) %>%
+      dplyr::mutate(taxonomy = "Other") %>%
+      dplyr::select(all_of(grouping_vars), MeanAbundance)
+    
+    avg_by_group <- dplyr::bind_rows(top_avg, other_rows)
+    
+    all_combinations <- tidyr::expand_grid(
+      taxonomy = unique(avg_by_group$taxonomy),
+      !!!setNames(
+        lapply(grouping_vars_no_tax, function(v) unique(avg_by_group[[v]])),
+        grouping_vars_no_tax
+      )
+    )
+    
+    avg_by_group <- dplyr::right_join(all_combinations, avg_by_group, by = grouping_vars)
+    avg_by_group$MeanAbundance[is.na(avg_by_group$MeanAbundance)] <- 0
+  } else {
+    avg_by_group <- avg_by_group %>%
+      dplyr::filter(taxonomy %in% top_groups)
+  }
   
-  # Taxonomic name simplification for SILVA
+  # Simplify taxonomy for SILVA
   if (taxonomy_db == "silva" && level == "genus") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
           grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
           grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
           grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
@@ -121,10 +147,13 @@ relative_abundance_plot <- function(table,
   
   if (taxonomy_db == "silva" && level == "phylum") {
     avg_by_group <- avg_by_group %>%
-      dplyr::mutate(taxonomy = dplyr::case_when(
-        grepl("p__[^;]*", taxonomy) ~ stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .),
-        TRUE ~ "Unclassified"
-      ))
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("p__[^;]*", taxonomy) ~ stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .),
+          TRUE ~ "Unclassified"
+        )
+      )
   }
   
   if (!is.null(facet_col)) {
@@ -141,29 +170,42 @@ relative_abundance_plot <- function(table,
     dplyr::arrange(dplyr::desc(max_abund)) %>%
     dplyr::pull(taxonomy)
   
+  taxonomy_order <- unique(c(setdiff(taxonomy_order, c("Other", "Unclassified")), "Unclassified", "Other"))
   avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = rev(taxonomy_order))
   
-  cbPalette <- grDevices::colorRampPalette(
-    c(
-      "#999999", "#0099CC", "#ff6600", "#FF0066", "#99FF33",
-      "#CC00cc", "#009E73", "#F0E442", "#0072B2", "#ff9900",
-      "#56B4E9", "#FFFFFF", "#99ff90", "#ffff00", "#FF0000"
-    )
-  )(length(unique(avg_by_group$taxonomy)))
+  # ==== CORRECCIÓN PALLETA ====
+  tax_levels <- levels(avg_by_group$taxonomy)
+  tax_levels_no_other <- setdiff(tax_levels, c("Other", "Unclassified"))
   
+  cbPalette <- grDevices::colorRampPalette(
+    c("#99ff10", "#0099CC", "#ff6600", "#FF0066", "#99FF33",
+      "#CC00cc", "#009E73", "#F0E442", "#0072B2", "#ff9900",
+      "#56B4E9", "#FFFFFF", "#99ff90", "#ffff00", "#FF0000")
+  )(length(tax_levels_no_other))
+  
+  names(cbPalette) <- tax_levels_no_other
+  cbPalette["Other"] <- "#D3D3D3"
+  cbPalette["Unclassified"] <- "#666666"
+  
+  # Plot
   p <- ggplot2::ggplot(avg_by_group,
-                       ggplot2::aes(
-                         x = !!rlang::sym(x_col),
-                         y = MeanAbundance,
-                         fill = taxonomy
-                       )) +
-    ggplot2::geom_bar(
-      position = "stack",
-      stat = "identity",
-      width = 0.5,
-      color = "#000000"
+                       ggplot2::aes(x = !!rlang::sym(x_col),
+                                    y = MeanAbundance,
+                                    fill = taxonomy)) +
+    ggplot2::geom_bar(stat = "identity", position = "stack", width = 0.5, color = "#000000") +
+    ggplot2::scale_fill_manual(
+      name = label,
+      values = cbPalette,
+      labels = function(taxa) {
+        if (level == "phylum") {
+          taxa  # texto plano
+        } else {
+          sapply(taxa, function(x) {
+            if (x %in% c("Other", "Unclassified")) x else bquote(italic(.(x)))
+          })
+        }
+      }
     ) +
-    ggplot2::scale_fill_manual(name = label, values = cbPalette) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
@@ -171,7 +213,7 @@ relative_abundance_plot <- function(table,
       axis.title = ggplot2::element_text(size = 14, color = "black"),
       axis.text.x = ggplot2::element_text(size = 12, colour = "black"),
       axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-      legend.text = ggplot2::element_text(size = 10, face = if (level == "genus") "italic" else "plain")
+      legend.text = ggplot2::element_text(size = 10)
     ) +
     ggplot2::ylim(0, 100) +
     ggplot2::ylab("Relative abundance (%)") +
@@ -183,3 +225,4 @@ relative_abundance_plot <- function(table,
   
   return(p)
 }
+
