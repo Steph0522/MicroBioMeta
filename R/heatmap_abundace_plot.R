@@ -61,7 +61,7 @@ heatmap_abundance_plot <- function(table,
     tibble::rownames_to_column(var = "OTUID") %>%
     dplyr::inner_join(metadata, by="OTUID") 
   
-  #transformación de rangos
+  #Transformation of ranges
   heatmap <- heat %>%
     tibble::column_to_rownames(var = "OTUID") %>%
     dplyr::select(starts_with("ASV")) %>% 
