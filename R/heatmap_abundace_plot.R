@@ -23,7 +23,23 @@
 #' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
 #'
-#' @examples
+#' @examples heatmap_plot(table = table_taxonomy, 
+#'                        metadata = metadata.gestacion.recto,
+#'                        condition1 = "poblacion",
+#'                        condition2 = "temporada",
+#'                        condition3 = "sexo",
+#'                        top_n = 50,
+#'                        name_legend_condition1 = "Altitude",
+#'                        name_legend_condition2 = "Season",
+#'                        name_legend_condition3 = "Sex",
+#'                        colors_condition1 = c("#676778","#D9D9C2"),
+#'                        colors_condition2 = c("#0E6251", "#1B5E20"),
+#'                        colors_condition3 = c("#5D3277","#AF6502"),
+#'                        arguments_condition1 = c("2600 masl" = "#676778", "4150 masl"= "#D9D9C2"),
+#'                        arguments_condition2 = c("Reproductive" = "#0E6251", "No Reproductive"= "#1B5E20"),
+#'                        arguments_condition3 = c("Female" = "#5D3277", "Male" ="#AF6502"))
+#' 
+#' 
 heatmap_abundance_plot <- function(table,
                          metadata,
                          condition1,
