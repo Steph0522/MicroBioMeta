@@ -1,24 +1,26 @@
-###FUNCTION####
 
-#' Title
+
+#' HEATMAP OF RELATIVE ABUNDANCE 
+#'
+#'This function create a heatmap to visualize the relative abundance of ASV's, features o bacterial groups.
 #'
 #' @param table Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.
 #' @param metadata Data frame of characteristics or important information of the samples
-#' @param condition1 
-#' @param condition2 
-#' @param condition3 
-#' @param colors_condition1 
-#' @param colors_condition2 
-#' @param colors_condition3 
-#' @param name_legend_condition1 
-#' @param name_legend_condition2 
-#' @param name_legend_condition3 
-#' @param arguments_condition1 
-#' @param arguments_condition2 
-#' @param arguments_condition3 
+#' @param condition1 Variable of the first horizontal annotation
+#' @param condition2 Variable of the second horizontal annotation
+#' @param condition3 Variable of the third horizontal annotation
+#' @param colors_condition1 Color vector for condition 1 
+#' @param colors_condition2 Color vector for condition 2
+#' @param colors_condition3 Color vector for condition 3
+#' @param name_legend_condition1 Title assigned to legend of condition 1 
+#' @param name_legend_condition2 Title assigned to legend of condition 2
+#' @param name_legend_condition3 Title assigned to legend of condition 3
+#' @param arguments_condition1 Vector of specific arguments for condition 1
+#' @param arguments_condition2  Vector of specific arguments for condition 2
+#' @param arguments_condition3  Vector of specific arguments for condition 3
 #' @param top_n Number of features to plot.
 #'
-#' @return
+#' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
 #'
 #' @examples
