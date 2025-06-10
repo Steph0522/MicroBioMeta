@@ -1,5 +1,27 @@
 ###FUNCTION####
 
+#' Title
+#'
+#' @param table Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.
+#' @param metadata Data frame of characteristics or important information of the samples
+#' @param condition1 
+#' @param condition2 
+#' @param condition3 
+#' @param colors_condition1 
+#' @param colors_condition2 
+#' @param colors_condition3 
+#' @param name_legend_condition1 
+#' @param name_legend_condition2 
+#' @param name_legend_condition3 
+#' @param arguments_condition1 
+#' @param arguments_condition2 
+#' @param arguments_condition3 
+#' @param top_n Number of features to plot.
+#'
+#' @return
+#' @export
+#'
+#' @examples
 heatmap_abundance_plot <- function(table,
                          metadata,
                          condition1,
