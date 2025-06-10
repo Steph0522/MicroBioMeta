@@ -153,7 +153,7 @@ lgd4 = ComplexHeatmap::Legend(at = sort(unique(annotation_columns[[condition3]])
 pd.legends <- ComplexHeatmap::packLegend(lgd1, lgd2, lgd3, lgd4)
   
   
-#######HEATMAP#####
+#######HEATMAP FIGURE#####
 heats <- ComplexHeatmap::Heatmap(heatmap, col=my_palette,
                                    heatmap_legend_param = list(direction = "horizontal",
                                                                labels_gp = grid::gpar(fontsize = 7),
