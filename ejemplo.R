@@ -22,6 +22,7 @@ aldex_volcano_plot(
   col_inf = "blue",
   col_sup = "red",
   col_cond = "metodo",
+  type ="effect",
   threshold_lower = -1,
   threshold_upper = 1,
   cond = "kit",
