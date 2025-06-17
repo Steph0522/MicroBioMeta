@@ -36,6 +36,11 @@ aldex_volcano_plot <- function(table,
   }
   
   # Verificar paquetes requeridos
+  # Cargar ggtext explícitamente
+  if (!require(ggtext, quietly = TRUE)) {
+    stop("Package 'ggtext' required for formatted text. Please install it.")
+  }
+  
   if (!requireNamespace("ALDEx2", quietly = TRUE)) {
     stop("Package 'ALDEx2' needed for this function to work. Please install it.")
   }

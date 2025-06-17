@@ -70,19 +70,11 @@ relative_abundance_plot(
   #checar con unite, gg2, gtdb, kraken
   level = "genus",
   x_col = "metodo",
-  label = "Phylum",
+  label = "Genus",
   # facet_col = "edad",
   # group_var = "SAMPLEID",
   top_n_groups = 10,
   add_remained  = TRUE,
-)
-
-
-venn_diagram(
-  table = table %>% tibble::remove_rownames(),
-  metadata %>% remove_rownames(),
-  merge_by = "metodo",
-  method = "microeco"
 )
 
 
@@ -118,6 +110,7 @@ beta_div_plot(
 )
 
 #data
+library(vegan)
 data("varechem")
 data("varespec")
 
@@ -126,7 +119,7 @@ species_data <- varespec[, 1:18]
 env_data <- varechem[, 2:7]
 metadata = data.frame(ids = 1:24, group = c(rep("A", 12), rep("B", 12)))
 
-cca_biplot(
+cca_rda_biplot(
   table = t(species_data),
   env_data = env_data,
   metadata = metadata,
