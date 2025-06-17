@@ -97,6 +97,7 @@ venn_diagram_plot(
 randomf_lollipop_plot(table,
                       metadata,
                       variable_to_predict = "metodo",
+                      col_pallete = c("red", "blue", "green"),
                       top_n = 20)
 
 
