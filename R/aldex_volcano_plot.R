@@ -16,7 +16,6 @@
 #' @return A `ggplot` object with the selected plot.
 #' @export
 #'
-#' @examples
 aldex_volcano_plot <- function(table,
                                metadata,
                                col_cond,

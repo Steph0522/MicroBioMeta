@@ -42,10 +42,56 @@ cca_rda_biplot <- function(table,
   require(ggplot2)
   require(dplyr)
   
-  # 1. Transformación de especies
-  spp_hell <- vegan::decostand(table, method = method)
+  # 1. Process species table (remove last column = taxonomy)
+  taxonomy_col <- ncol(table)
+  spp_table <- table[, -taxonomy_col, drop = FALSE]
   
-  # 2. Escalar variables ambientales seleccionadas
+  # Transpose table
+    spp_table <- t(spp_table)
+  
+  
+  # 2. Process metadata and handle hash IDs
+  if (!is.null(metadata)) {
+    metadata <- as.data.frame(metadata)
+    
+    # Store original IDs for error messages
+    original_table_ids <- rownames(spp_table)
+    original_meta_ids <- if(all(rownames(metadata) == as.character(seq_len(nrow(metadata))))) {
+      metadata[[1]]
+    } else {
+      rownames(metadata)
+    }
+    
+    # Case 1: Exact matching possible
+    common_samples <- intersect(rownames(spp_table), original_meta_ids)
+    
+    # Case 2: No exact matches but same number of samples -> match by position
+    if (length(common_samples) == 0 && nrow(spp_table) == length(original_meta_ids)) {
+      warning("No exact ID matches found. Matching samples by position.", call. = FALSE)
+      rownames(spp_table) <- original_meta_ids
+      common_samples <- original_meta_ids
+    }
+    
+    if (length(common_samples) == 0) {
+      stop("No matching samples found.\n",
+           "Table samples (first 6): ", paste(head(original_table_ids), collapse = ", "), "\n",
+           "Metadata samples (first 6): ", paste(head(original_meta_ids), collapse = ", "), "\n\n",
+           "Solutions:\n",
+           "1. Ensure metadata has a column with matching sample IDs\n",
+           "2. Provide metadata in the same order as the table\n")
+    }
+    
+    # Apply the matching
+    spp_table <- spp_table[common_samples, , drop = FALSE]
+    metadata <- metadata[match(common_samples, original_meta_ids), , drop = FALSE]
+    rownames(metadata) <- common_samples
+  }
+  
+
+  # 4. Transform species data
+  spp_hell <- vegan::decostand(spp_table, method = method)
+  
+  # 2. Scale env data
   if (scale_env) {
     env_scaled <- scale(env_data[, env_vars], scale = TRUE, center = FALSE) %>% as.data.frame()
   } else {
@@ -53,7 +99,7 @@ cca_rda_biplot <- function(table,
   }
   
   # 3. Verificar correspondencia de filas
-  stopifnot(identical(rownames(table), rownames(env_data)))
+  stopifnot(identical(rownames(spp_table), rownames(env_data)))
   
   # 4. Ejecutar CCA o RDA según análisis
   set.seed(seed)
@@ -109,12 +155,12 @@ cca_rda_biplot <- function(table,
     
     legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
     
-    plot <- ggplot(site_scores, aes_string(x = axis_names[1], y = axis_names[2], color = "Group")) +
-      geom_point(size = 3) +
-      scale_color_manual(name = legend_name, values = group_colors)
+    plot <- ggplot(site_scores, aes_string(x = axis_names[1], y = axis_names[2], fill = "Group")) +
+      geom_point(size = 4, shape=21 ) +
+      scale_fill_manual(name = legend_name, values = group_colors)
   } else {
     plot <- ggplot(site_scores, aes_string(x = axis_names[1], y = axis_names[2])) +
-      geom_point(size = 3)
+      geom_point(size = 4, shape=21)
   }
   
   # 9. Añadir vectores ambientales
@@ -160,7 +206,22 @@ cca_rda_biplot <- function(table,
   buffer <- 1.1
   plot <- plot +
     scale_x_continuous(limits = c(-max_range, max_range) * buffer) +
-    scale_y_continuous(limits = c(-max_range, max_range) * buffer)
+    scale_y_continuous(limits = c(-max_range, max_range) * buffer)+
+    theme_linedraw() +
+    theme(axis.text = element_text(colour = "black", size = 8),
+          axis.title = element_text(colour = "black", size = 12),
+          legend.text = element_text(size = 10),
+          legend.title = element_text(size = 10),
+          legend.position = "right",
+          legend.box = "vertical",
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())+
+    geom_vline(xintercept = 0, linetype = 2, color="#88929b") +   #lines-cross
+    geom_hline(yintercept = 0, linetype = 2, color="#88929b") +
+    
+    guides(
+      fill=guide_legend(title=legend_title))+#ylab("CAP2")+xlab("CAP1")+
+    theme(axis.text = element_text(size = 12))
   
   # 11. Título del gráfico
   if (!is.null(title)) {

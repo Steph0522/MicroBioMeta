@@ -2,18 +2,21 @@
 % Please edit documentation in R/aldex_volcano_plot.R
 \name{aldex_volcano_plot}
 \alias{aldex_volcano_plot}
-\title{Volcano plot of effect size}
+\title{This function generates either an effect size plot or a volcano plot based on ALDEx2 results.}
 \usage{
 aldex_volcano_plot(
   table,
   metadata,
   col_cond,
-  col_inf,
-  col_sup,
-  threshold_lower,
-  threshold_upper,
-  cond,
-  show_labels = TRUE
+  type = "volcano",
+  col_inf = "blue",
+  col_sup = "red",
+  threshold_lower = -1.5,
+  threshold_upper = 1.5,
+  cond = NULL,
+  cutoff.pval = 0.05,
+  show_labels = TRUE,
+  taxa = NULL
 )
 }
 \arguments{
@@ -23,28 +26,27 @@ aldex_volcano_plot(
 
 \item{col_cond}{Name of the column in \code{metadata} that contains the experimental conditions.}
 
-\item{col_inf}{Color for points with effect size lower than \code{threshold_lower}.}
+\item{type}{Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.}
 
-\item{col_sup}{Color for points with effect size higher than \code{threshold_upper}.}
+\item{col_inf}{Color for points with effect size/difference lower than threshold (default for "effect" plot).}
 
-\item{threshold_lower}{Lower threshold for effect size (x-axis).}
+\item{col_sup}{Color for points with effect size/difference higher than threshold (default for "effect" plot).}
 
-\item{threshold_upper}{Upper threshold for effect size (x-axis).}
+\item{threshold_lower}{Lower threshold for effect size/difference (x-axis).}
+
+\item{threshold_upper}{Upper threshold for effect size/difference (x-axis).}
 
 \item{cond}{Name of the condition that appears first in \code{table} (used in plot labels).}
 
-\item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (default is TRUE).}
+\item{cutoff.pval}{p-value cutoff for significance (default = 0.05).}
+
+\item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).}
+
+\item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
 }
 \value{
-A \code{ggplot} object with the volcano plot.
+A \code{ggplot} object with the selected plot.
 }
 \description{
-This function generates a volcano plot based on the results of ALDEx2,
-displaying the effect size on the x-axis and the Kruskal-Wallis p-value on the y-axis.
-}
-\examples{
-a
-
-
-
+This function generates either an effect size plot or a volcano plot based on ALDEx2 results.
 }
