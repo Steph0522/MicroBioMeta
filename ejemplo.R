@@ -10,11 +10,13 @@ metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPL
                                                                             "NA")
 devtools::load_all()
 
-aldex_heatmap_plot(table = table, 
-                   metadata = metadata,
-                   col_cond = "metodo",
-                   heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
-                   treatment_colors = c("Higher" = "green", "Lower" = "yellow"))
+aldex_heatmap_plot(
+  table = table,
+  metadata = metadata,
+  col_cond = "metodo",
+  heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
+  treatment_colors = c("Higher" = "green", "Lower" = "yellow")
+)
 
 aldex_volcano_plot(
   table = table,
@@ -22,7 +24,7 @@ aldex_volcano_plot(
   col_inf = "blue",
   col_sup = "red",
   col_cond = "metodo",
-  type ="effect",
+  type = "effect",
   threshold_lower = -1,
   threshold_upper = 1,
   cond = "kit",
@@ -31,7 +33,7 @@ aldex_volcano_plot(
 
 
 
-alpha_hill_corrplot(table = table[-1],
+alpha_hill_corrplot(table = table, 
                     facet_orientation = "horizontal")
 
 alpha_hill_plot(
@@ -62,6 +64,50 @@ alpha_diversity_plot(
   stat = "t.test"
 )
 
+beta_div_plot(
+  table = table,
+  metadata = metadata,
+  distance = "compositional",
+  ordination = "PCA",
+  color_by = "metodo",
+  n_taxa = 5
+)
+
+# let's make some example data for the next analysis
+
+set.seed(123) # For reproducibility
+
+# Create environmental data frame
+env_data <- data.frame(
+  SAMPLEID = c("Fe1", "Fe2", "Fe3", "Fe4", "Fe5", "Fe6", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6"),
+  pH = round(runif(12, 5.5, 7.5), 1),  # pH values between 5.5-7.5
+  Conductivity = round(rnorm(12, mean = 500, sd = 150)),  # µS/cm
+  Organic_Matter = round(rnorm(12, mean = 3, sd = 0.8), 1),  # %
+  Nitrogen = round(rnorm(12, mean = 0.15, sd = 0.05), 2),    # %
+  Phosphorus = round(rnorm(12, mean = 25, sd = 8)),           # mg/kg
+  Potassium = round(rnorm(12, mean = 150, sd = 40)),          # mg/kg
+  Calcium = round(rnorm(12, mean = 500, sd = 200)),           # mg/kg
+  row.names = "SAMPLEID"
+)
+
+# View the generated data
+print(env_data)
+
+cca_rda_biplot(
+  table = table,
+  env_data = env_data,
+  metadata = metadata ,
+  group_col = "metodo"
+)
+
+randomf_lollipop_plot(
+  table,
+  metadata,
+  variable_to_predict = "metodo",
+  col_palette = c("red", "blue", "green"),
+  top_n = 20
+)
+
 
 relative_abundance_plot(
   table = table,
@@ -86,7 +132,7 @@ venn_diagram_plot(
   merge_by = "metodo",
   min_prevalence = 0,
   #  denom = "all",
-  #  group_colors = c("blue", "yellow"),
+  group_colors = c("blue", "yellow"),
   method = "ggvenn"
 )
 
@@ -94,21 +140,8 @@ venn_diagram_plot(
 
 #metadata$metodo <- as.factor(metadata$metodo)
 
-randomf_lollipop_plot(table,
-                      metadata,
-                      variable_to_predict = "metodo",
-                      col_pallete = c("red", "blue", "green"),
-                      top_n = 20)
 
 
-beta_div_plot(
-  table = table,
-  metadata = metadata,
-  distance = "compositional",
-  ordination = "PCA",
-  color_by = "metodo",
-  n_taxa = 5
-)
 
 #data
 library(vegan)
@@ -121,7 +154,7 @@ env_data <- varechem[, 2:7]
 metadata = data.frame(ids = 1:24, group = c(rep("A", 12), rep("B", 12)))
 
 cca_rda_biplot(
-  table = t(species_data),
+  table = species_data,
   env_data = env_data,
   metadata = metadata,
   group_col = "group"
