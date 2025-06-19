@@ -30,12 +30,12 @@ randomf_lollipop_plot <- function(table,
   }
   
   # Extract taxonomy column for later use
-  taxonomy <- table$taxonomy
-  table_numeric <- table %>% dplyr::select(-taxonomy)
+  taxonomy <- ncol(table)
+  table_numeric <- table[-ncols]
   
   # Transpose if samples are in rows
   if (ncol(table_numeric) < nrow(table_numeric)) {
-    table_numeric <- t(table_numeric)
+    table_numeric <- data.frame(t(table_numeric), check.names = F)
   }
   
   # Find common samples between table and metadata
@@ -78,7 +78,7 @@ randomf_lollipop_plot <- function(table,
   # Merge with original taxonomy
   top_asvs <- dplyr::left_join(
     top_asvs,
-    data.frame(ASV = colnames(table_numeric), taxonomy = taxonomy),
+    data.frame(ASV = colnames(as.data.frame(table_numeric)), taxonomy = taxonomy),
     by = "ASV"
   ) %>%
     dplyr::mutate(taxonomy_original = taxonomy)
