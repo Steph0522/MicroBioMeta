@@ -6,6 +6,7 @@
 #' @param top_n Number of top features to plot (default = 15).
 #' @param col_palette Custom color palette (optional).
 #' @param legend_figure Main title for the figure.
+#' @param size the size of the point of the lollipop.
 #' 
 #' @return A lollipop plot showing top important features from random forest analysis.
 #' @export
@@ -18,6 +19,7 @@
 randomf_lollipop_plot <- function(table,
                                   metadata,
                                   top_n = 15,
+                                  size =8,
                                   variable_to_predict,
                                   col_palette = NULL,
                                   legend_figure = NULL) {
@@ -175,7 +177,7 @@ randomf_lollipop_plot <- function(table,
       linewidth = 2
     ) +
     ggplot2::ylab("Feature importance (MeanDecreaseGini)") +
-    ggplot2::geom_point(size = 9, shape = 21, color = "black") +
+    ggplot2::geom_point(size = size, shape = 21, color = "black") +
     ggplot2::scale_fill_manual(values = fill_colors) +
     ggplot2::theme_classic() +
     ggplot2::coord_flip() +

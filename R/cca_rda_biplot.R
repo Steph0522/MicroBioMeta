@@ -194,9 +194,9 @@ cca_rda_biplot <- function(table,
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       panel.border = element_rect(fill = NA, colour = "black", linewidth = 0.5)
-    ) +
-    geom_hline(yintercept = 0, color = "black") +
-    geom_vline(xintercept = 0, color = "black")
+    ) #+
+    #geom_hline(yintercept = 0, color = "black") +
+    #geom_vline(xintercept = 0, color = "black")
   
   # 10. Escalar límites del gráfico
   max_range <- max(abs(c(site_scores[[axis_names[1]]],
@@ -216,8 +216,8 @@ cca_rda_biplot <- function(table,
           legend.box = "vertical",
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())+
-    geom_vline(xintercept = 0, linetype = 2, color="#88929b") +   #lines-cross
-    geom_hline(yintercept = 0, linetype = 2, color="#88929b") +
+    geom_vline(xintercept = 0, linetype = 2, color="#6a737d") +   #lines-cross
+    geom_hline(yintercept = 0, linetype = 2, color="#6a737d") +
     
     guides(
       fill=guide_legend(title=legend_title))+#ylab("CAP2")+xlab("CAP1")+

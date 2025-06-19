@@ -10,6 +10,16 @@ metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPL
                                                                             "NA")
 devtools::load_all()
 
+abundance_heatmap_plot(table = table,
+                       metadata = metadata,
+                       condition1 = "metodo",
+                       condition2 = "edad",
+                       condition3 = "estructura.metodo",
+                       top_n = 20,
+                       cluster = TRUE,
+                       colors_condition1 = c("red", "blue"),
+                       colors_condition2 = c("green", "orange"))
+
 aldex_heatmap_plot(
   table = table,
   metadata = metadata,
@@ -112,7 +122,7 @@ randomf_lollipop_plot(
   metadata,
   variable_to_predict = "metodo",
   col_palette = c("red", "blue", "green"),
-  top_n = 20
+  top_n = 20, size = 6
 )
 
 
@@ -145,24 +155,5 @@ venn_diagram_plot(
 
 
 
-#metadata$metodo <- as.factor(metadata$metodo)
 
 
-
-
-#data
-library(vegan)
-data("varechem")
-data("varespec")
-
-#extracting species and env-data
-species_data <- varespec[, 1:18]
-env_data <- varechem[, 2:7]
-metadata = data.frame(ids = 1:24, group = c(rep("A", 12), rep("B", 12)))
-
-cca_rda_biplot(
-  table = species_data,
-  env_data = env_data,
-  metadata = metadata,
-  group_col = "group"
-)
