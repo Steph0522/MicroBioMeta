@@ -30,8 +30,9 @@ randomf_lollipop_plot <- function(table,
   }
   
   # Extract taxonomy column for later use
-  taxonomy <- ncol(table)
+  ncols <- ncol(table)
   table_numeric <- table[-ncols]
+  taxonomy <- table[ncols]
   
   # Transpose if samples are in rows
   if (ncol(table_numeric) < nrow(table_numeric)) {
