@@ -1,13 +1,5 @@
 #' Genera un diagrama Sankey a partir de una tabla OTU con información taxonómica
 #'
-#' @param table Data frame con una columna de taxonomía  y las demás columnas corresponden a muestras.
-#' @param output_file Nombre del archivo HTML de salida (default: "sankey.html").
-#' @param maxn Número máximo de taxones por nivel a incluir en el diagrama (default: 25).
-#' @param taxRanks Niveles taxonómicos a visualizar (default: c("D","K","P","C","O","F","G","S")).
-#' @param taxonomy_db Base de datos taxonómica, ej: "silva" o "kraken2" (default: "silva").
-
-#' Genera un diagrama Sankey a partir de una tabla OTU con información taxonómica
-#'
 #' @param table Data frame con una columna de taxonomía y las demás columnas corresponden a muestras.
 #' @param output_file Nombre del archivo HTML de salida (default: "sankey.html").
 #' @param maxn Número máximo de taxones por nivel a incluir en el diagrama (default: 25).
@@ -68,6 +60,13 @@ generate_sankey <- function(table, output_file = "sankey.html", maxn = 25,
       rename(abund = ".") %>%
       mutate(taxRank = toupper(substr(level, 1, 1))) %>%
       rownames_to_column(var = "Taxon") %>%
+      # Reemplazos taxonómicos
+      dplyr::mutate(
+        Taxon = gsub("Firmicutes", "Bacillota-D", Taxon),
+        Taxon = gsub("Proteobacteria", "Pseudomonadota", Taxon),
+        Taxon = gsub("Actinobacteriota", "Actinomycetota", Taxon),
+        Taxon = gsub("Cyanobacteria", "Cyanobacteriota", Taxon)
+      ) %>%
       filter(!endsWith(Taxon, "NA")) %>%
       column_to_rownames("Taxon")
   }
