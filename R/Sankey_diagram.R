@@ -4,11 +4,11 @@
 #' @param output_file Nombre del archivo HTML de salida (default: "sankey.html").
 #' @param maxn Número máximo de taxones por nivel a incluir en el diagrama (default: 25).
 #' @param taxRanks Niveles taxonómicos a visualizar (default: c("D","K","P","C","O","F","G","S")).
-#' @param taxonomy_db Base de datos taxonómica, ej: "silva" o "kraken2" (default: "silva").
+#' @param taxonomy_db Base de datos taxonómica, ej: "gg" o "kraken2" (default: "gg").
 
 generate_sankey <- function(table, output_file = "sankey.html", maxn = 25,
                             taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
-                            taxonomy_db = "silva") {
+                            taxonomy_db = "gg") {
   library(dplyr)
   library(tidyr)
   library(stringr)
@@ -37,8 +37,23 @@ generate_sankey <- function(table, output_file = "sankey.html", maxn = 25,
   # Separar niveles taxonómicos
   otu_rel_parse <- otu_rel %>%
     rownames_to_column(var = "Feature.ID") %>%
-    separate(taxonomy, into = c("k", "p", "c", "o", "f", "g", "s"), sep = ";", fill = "right") %>%
-    mutate(across(where(is.character), ~ str_extract(., "[^_]+$")))
+    separate(taxonomy, into = c("k", "p", "c", "o", "f", "g", "s"), sep = ";", fill = "right")
+  
+  # Procesamiento específico según base de datos
+  if (tolower(taxonomy_db) == "silva") {
+    otu_rel_parse <- otu_rel_parse %>%
+      mutate(across(c(k, p, c, o, f, g), ~ str_remove(., "^[a-zA-Z]+__"))) %>%
+      mutate(
+        s = str_trim(s),  # elimina espacios al inicio y final
+        s = str_replace(s, "^\\s*[a-zA-Z]+__", ""),  # elimina prefijo como "s__" incluso con espacios
+        s = str_replace_all(s, "_", " ")  # cambia "_" por espacio
+      )
+    
+  } else {
+    # Para otras bases, extraer solo el nombre sin prefijos
+    otu_rel_parse <- otu_rel_parse %>%
+      mutate(across(where(is.character), ~ str_extract(., "[^_]+$")))
+  }
   
   # Modificación para Kraken2
   if (tolower(taxonomy_db) == "kraken2") {
