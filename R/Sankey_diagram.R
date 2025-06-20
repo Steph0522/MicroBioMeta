@@ -64,7 +64,7 @@ generate_sankey <- function(table, output_file = "sankey.html", maxn = 25,
   get_level_data <- function(df, level, unite_cols) {
     df %>%
       unite(col = !!level, all_of(unite_cols), remove = FALSE) %>%
-      select(all_of(level), where(is.numeric)) %>%
+      select(c(all_of(level), names(df)[sapply(df, is.numeric)])) %>%
       group_by(across(all_of(level))) %>%
       summarise(across(where(is.numeric), sum), .groups = "drop") %>%
       column_to_rownames(var = level) %>%
