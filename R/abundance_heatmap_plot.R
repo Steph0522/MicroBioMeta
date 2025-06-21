@@ -15,6 +15,7 @@
 #' @param name_legend_condition3 Title assigned to legend of condition 3
 #' @param top_n Number of features to plot.
 #' @param cluster Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)
+#' @param show_column_names Logical indicating whether to show column names (TRUE) or not (FALSE)
 #'
 #' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
@@ -26,6 +27,7 @@
 #'                        condition3 = "sexo",
 #'                        top_n = 50,
 #'                        cluster = TRUE,
+#'                        show_column_names = FALSE,
 #'                        name_legend_condition1 = "Altitude",
 #'                        name_legend_condition2 = "Season",
 #'                        name_legend_condition3 = "Sex",
@@ -45,7 +47,8 @@ abundance_heatmap_plot <- function(table,
                                    name_legend_condition2 = NULL,
                                    name_legend_condition3 = NULL,
                                    top_n,
-                                   cluster = TRUE) {
+                                   cluster = TRUE,
+                                   show_column_names = TRUE) {
   
   # Delete taxonomy column
   taxonomy_col <- ncol(table)
@@ -297,7 +300,7 @@ if (!is.null(condition3)) {
     cluster_columns = FALSE,
     cluster_rows = cluster,
     row_order = row_order,  # Añadido para mantener orden cuando cluster=FALSE
-    show_column_names = TRUE,
+    show_column_names = show_column_names,
     show_heatmap_legend = TRUE, 
     top_annotation = if (length(heatmap_annotations) > 0) top_annotation else NULL,
     left_annotation = annphylum

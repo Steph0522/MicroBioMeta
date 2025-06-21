@@ -1,40 +1,38 @@
 library(tidyverse)
+
 getwd()
 
 otu = read.delim("otutable_with_taxonomy.txt",
                  skip = 1,
-                 row.names = 1) %>%
-  dplyr::select(-taxonomy)
+                 row.names = 1)
 
-taxonomy = read.delim("taxonomy.tsv", row.names = 1) %>%
-  dplyr::select(-Confidence)
-
-table = merge_feature_taxonomy(otu, taxonomy)
-
-
-library(tidyverse)
+table = otu 
 metadata = read.delim("meta.txt", sep = "") %>% rename(SAMPLEID = "sample.id")
 metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPLEID ==
                                                                             "NA")
 devtools::load_all()
 
-
-
-abundance_heatmap_plot(
-  table = table,
-  metadata = metadata,
-  condition1 = "metodo",
-  condition2 = "edad",
-  condition3 = "estructura.metodo",
-  top_n = 20,
-  cluster = TRUE,
-  colors_condition1 = c("red", "blue"),
-  colors_condition2 = c("green", "orange"),
-  show_column_names = FALSE
+generate_sankey(
+  table,
+  output_file = "sankey_myxo_silva.html",
+  maxn = 20,
+  taxRanks = c("D","K", "P", "C", "O", "F", "G", "S"),
+  taxonomy_db = "silva"
 )
 
+
+abundance_heatmap_plot(table = table,
+                       metadata = metadata,
+                       condition1 = "metodo",
+                       condition2 = "edad",
+                       condition3 = "estructura.metodo",
+                       top_n = 20,
+                       cluster = TRUE,
+                       colors_condition1 = c("red", "blue"),
+                       colors_condition2 = c("green", "orange"))
+
 aldex_heatmap_plot(
-  table = otu3,
+  table = table,
   metadata = metadata,
   col_cond = "metodo",
   heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
@@ -56,7 +54,8 @@ aldex_volcano_plot(
 
 
 
-alpha_hill_corrplot(table = table, facet_orientation = "horizontal")
+alpha_hill_corrplot(table = table, 
+                    facet_orientation = "horizontal")
 
 alpha_hill_plot(
   table = table,
@@ -90,10 +89,9 @@ beta_div_plot(
   table = table,
   metadata = metadata,
   distance = "compositional",
-  ordination = "PCA",
+  ordination = "PCoA",
   color_by = "metodo",
-  n_taxa = 5,
-  shape_by = "edad"
+  n_taxa = 5
 )
 
 # let's make some example data for the next analysis
@@ -102,34 +100,14 @@ set.seed(123) # For reproducibility
 
 # Create environmental data frame
 env_data <- data.frame(
-  SAMPLEID = c(
-    "Fe1",
-    "Fe2",
-    "Fe3",
-    "Fe4",
-    "Fe5",
-    "Fe6",
-    "Q1",
-    "Q2",
-    "Q3",
-    "Q4",
-    "Q5",
-    "Q6"
-  ),
-  pH = round(runif(12, 5.5, 7.5), 1),
-  # pH values between 5.5-7.5
-  Conductivity = round(rnorm(12, mean = 500, sd = 150)),
-  # µS/cm
-  Organic_Matter = round(rnorm(12, mean = 3, sd = 0.8), 1),
-  # %
-  Nitrogen = round(rnorm(12, mean = 0.15, sd = 0.05), 2),
-  # %
-  Phosphorus = round(rnorm(12, mean = 25, sd = 8)),
-  # mg/kg
-  Potassium = round(rnorm(12, mean = 150, sd = 40)),
-  # mg/kg
-  Calcium = round(rnorm(12, mean = 500, sd = 200)),
-  # mg/kg
+  SAMPLEID = c("Fe1", "Fe2", "Fe3", "Fe4", "Fe5", "Fe6", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6"),
+  pH = round(runif(12, 5.5, 7.5), 1),  # pH values between 5.5-7.5
+  Conductivity = round(rnorm(12, mean = 500, sd = 150)),  # µS/cm
+  Organic_Matter = round(rnorm(12, mean = 3, sd = 0.8), 1),  # %
+  Nitrogen = round(rnorm(12, mean = 0.15, sd = 0.05), 2),    # %
+  Phosphorus = round(rnorm(12, mean = 25, sd = 8)),           # mg/kg
+  Potassium = round(rnorm(12, mean = 150, sd = 40)),          # mg/kg
+  Calcium = round(rnorm(12, mean = 500, sd = 200)),           # mg/kg
   row.names = "SAMPLEID"
 )
 
@@ -144,20 +122,18 @@ cca_rda_biplot(
   analysis = "RDA",
   show_all_env_vectors = TRUE,
   legend_title = "Método",
-  group_colors = c("red", "blue"),
-  env_vars = c("pH", "Nitrogen", "Calcium"),
+  group_colors = c("red", "blue"),env_vars = c("pH", "Nitrogen", "Calcium"),
   title = "tittle"
   
   
 )
 
 randomf_lollipop_plot(
-  otu3,
+  table,
   metadata,
   variable_to_predict = "metodo",
   col_palette = c("red", "blue", "green"),
-  top_n = 20,
-  size = 6
+  top_n = 20, size = 6
 )
 
 
@@ -176,14 +152,6 @@ relative_abundance_plot(
 )
 
 
-generate_sankey(
-  table,
-  output_file = "sankey_myxo.html",
-  maxn = 20,
-  taxonomy_db = "silva"
-)
-
-
 venn_diagram_plot(
   table,
   #%>% remove_rownames(),
@@ -195,3 +163,8 @@ venn_diagram_plot(
   group_colors = c("blue", "yellow"),
   method = "ggvenn"
 )
+
+
+
+
+

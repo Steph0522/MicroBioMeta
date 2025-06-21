@@ -37,7 +37,7 @@ beta_div_plot <- function(table, metadata, distance = "compositional",
   requireNamespace("stringr")
   
   if (ordination == "PCA" && distance != "compositional") {
-    stop("PCA solo está disponible con distancia 'compositional' (Aitchison). Usa otra combinación o cambia a 'PCoA'.")
+    stop("PCA is only available with 'compositional' (Aitchison). Use other combination or change to 'PCoA'.")
   }
   
   tax_col <- names(table)[ncol(table)]
@@ -61,17 +61,19 @@ beta_div_plot <- function(table, metadata, distance = "compositional",
   muestras_metadata_no_en_tabla <- setdiff(metadata_ids, sample_ids)
   
   if(length(muestras_tabla_no_en_metadata) > 0 | length(muestras_metadata_no_en_tabla) > 0) {
-    warning("Diferencias en nombres de muestras detectadas:")
+    warning("Differences of sample names detecteded:")
     if(length(muestras_tabla_no_en_metadata) > 0) {
-      warning(paste("Muestras en tabla no en metadata:", paste(muestras_tabla_no_en_metadata, collapse = ", ")))
+      warning(paste("Samples in table not in metadata:", paste(muestras_tabla_no_en_metadata, collapse = ", ")))
     }
     if(length(muestras_metadata_no_en_tabla) > 0) {
-      warning(paste("Muestras en metadata no en tabla:", paste(muestras_metadata_no_en_tabla, collapse = ", ")))
+      warning(paste("Samples in metadata not in table:", paste(muestras_metadata_no_en_tabla, collapse = ", ")))
     }
   }
   
   colnames(otu_table) <- sample_ids
   metadata[[1]] <- metadata_ids
+  rownames(otu_table) <- feature_ids
+  
   
   common_samples <- intersect(sample_ids, metadata_ids)
   if (length(common_samples) == 0) stop("No matching sample names between table and metadata.")
@@ -80,7 +82,7 @@ beta_div_plot <- function(table, metadata, distance = "compositional",
   
   if (distance == "compositional") {
     set.seed(123)
-    aldex_obj <- ALDEx2::aldex.clr(t(otu_table), mc.samples = 128,
+    aldex_obj <- ALDEx2::aldex.clr(otu_table, mc.samples = 128,
                                    denom = "all", verbose = FALSE, useMC = FALSE)
     otu_trans <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))
     dist_matrix <- dist(otu_trans, method = "euclidean")
