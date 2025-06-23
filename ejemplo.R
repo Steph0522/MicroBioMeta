@@ -34,7 +34,7 @@ abundance_heatmap_plot(
 )
 
 aldex_heatmap_plot(
-  table = otu3,
+  table = table,
   metadata = metadata,
   col_cond = "metodo",
   heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
@@ -152,7 +152,7 @@ cca_rda_biplot(
 )
 
 randomf_lollipop_plot(
-  otu3,
+  table,
   metadata,
   variable_to_predict = "metodo",
   col_palette = c("red", "blue", "green"),
@@ -176,7 +176,7 @@ relative_abundance_plot(
 )
 
 
-generate_sankey(
+abundance_sankey_plot(
   table,
   output_file = "sankey_myxo.html",
   maxn = 20,
@@ -195,3 +195,4 @@ venn_diagram_plot(
   group_colors = c("blue", "yellow"),
   method = "ggvenn"
 )
+

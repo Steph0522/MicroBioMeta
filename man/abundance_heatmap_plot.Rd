@@ -17,7 +17,8 @@ abundance_heatmap_plot(
   name_legend_condition2 = NULL,
   name_legend_condition3 = NULL,
   top_n,
-  cluster = TRUE
+  cluster = TRUE,
+  show_column_names = TRUE
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ abundance_heatmap_plot(
 \item{top_n}{Number of features to plot.}
 
 \item{cluster}{Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)}
+
+\item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
 }
 \value{
 A plot with the fifty (XX) taxonomic groups most abundant.
@@ -61,6 +64,7 @@ abundance_heatmap_plot(table = table_taxonomy,
                        condition3 = "sexo",
                        top_n = 50,
                        cluster = TRUE,
+                       show_column_names = FALSE,
                        name_legend_condition1 = "Altitude",
                        name_legend_condition2 = "Season",
                        name_legend_condition3 = "Sex",

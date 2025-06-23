@@ -185,11 +185,11 @@ randomf_lollipop_plot <- function(table,
     ggplot2::ggtitle(legend_figure) +
     ggplot2::theme(
       axis.title.y = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_text(size = 13, face = "bold"),
+      axis.title.x = ggplot2::element_text(size = 13),
       axis.text.x = ggplot2::element_text(size = 11, color = "black"),
-      axis.text.y = ggplot2::element_text(size = 14, face = "bold.italic", colour = "black"),
+      axis.text.y = ggplot2::element_text(size = 14, face = "italic", colour = "black"),
       legend.position = "bottom",
-      legend.title = ggplot2::element_text(size = 11, face = "bold"),
+      legend.title = ggplot2::element_text(size = 11),
       legend.text = ggplot2::element_text(size = 10),
       plot.title = ggplot2::element_text(size = 20)
     )

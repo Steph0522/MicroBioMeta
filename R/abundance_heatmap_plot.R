@@ -50,6 +50,12 @@ abundance_heatmap_plot <- function(table,
                                    cluster = TRUE,
                                    show_column_names = TRUE) {
   
+  #Check for taxonomy column
+  
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
+  
   # Delete taxonomy column
   taxonomy_col <- ncol(table)
   table_counts <- table[, -taxonomy_col, drop = FALSE]

@@ -6,7 +6,7 @@
 #' @param taxRanks Niveles taxonómicos a visualizar (default: c("D","K","P","C","O","F","G","S")).
 #' @param taxonomy_db Base de datos taxonómica, ej: "gg" o "kraken2" (default: "gg").
 
-generate_sankey <- function(table, output_file = "sankey.html", maxn = 25,
+abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                             taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
                             taxonomy_db = "gg") {
   library(dplyr)
@@ -20,8 +20,8 @@ generate_sankey <- function(table, output_file = "sankey.html", maxn = 25,
   }
   
   # Identificar columna de taxonomía
-  tax_col <- grep("taxonomy|Taxonomy", names(table), ignore.case = TRUE)
-  if(length(tax_col) != 1) stop("No se encontró una única columna de taxonomía en table")
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
   # Reorganizar tabla: taxonomía al final
   table <- table[, c(setdiff(1:ncol(table), tax_col), tax_col)]
