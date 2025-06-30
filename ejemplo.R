@@ -9,6 +9,8 @@ otu = read.delim("otutable_with_taxonomy.txt",
 taxonomy = read.delim("taxonomy.tsv", row.names = 1) %>%
   dplyr::select(-Confidence)
 
+devtools::load_all()
+
 table = merge_feature_taxonomy(otu, taxonomy)
 
 
@@ -16,9 +18,23 @@ library(tidyverse)
 metadata = read.delim("meta.txt", sep = "") %>% rename(SAMPLEID = "sample.id")
 metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPLEID ==
                                                                             "NA")
-devtools::load_all()
+metadata2 = metadata %>% 
+  filter(!metodo =="fenol" | !edad =="viejo")
 
-
+abundance_barplot(
+  table = table,
+  metadata = metadata2,
+  taxonomy_db = "silva",
+  #checar con unite, gg2, gtdb, kraken
+  level = "genus",
+  x_col = "metodo",
+  label = "Genus",
+  facet_col = "edad",
+  width_equal = FALSE,
+  # group_var = "SAMPLEID",
+  top_n_groups = 10,
+  add_remained  = TRUE
+)
 
 abundance_heatmap_plot(
   table = table,
@@ -32,6 +48,14 @@ abundance_heatmap_plot(
   colors_condition2 = c("green", "orange"),
   show_column_names = FALSE
 )
+
+ abundance_sankey_plot(
+  table,
+  output_file = "sankey_myxo.html",
+  maxn = 20,
+  taxonomy_db = "silva"
+)
+
 
 aldex_heatmap_plot(
   table = table,
@@ -72,11 +96,13 @@ alpha_hill_plot(
   stat = "t.test"
 )
 
+
 alpha_diversity_plot(
   table = table %>% remove_rownames(),
   metadata = metadata,
   type = "barplot",
   fill_col = "metodo",
+  #custom_palette = c("red", "blue"),
   x_col = "metodo",
   facet_orientation = "horizontal",
   #   facet_by = "edad",
@@ -90,10 +116,11 @@ beta_div_plot(
   table = table,
   metadata = metadata,
   distance = "compositional",
-  ordination = "PCA",
-  color_by = "metodo",
+  ordination = "NMDS",
+  group_col  = "metodo",
   n_taxa = 5,
-  shape_by = "edad"
+ shape_col =  "edad",
+ arrows = 100
 )
 
 # let's make some example data for the next analysis
@@ -160,28 +187,6 @@ randomf_lollipop_plot(
   size = 6
 )
 
-
-relative_abundance_plot(
-  table = table,
-  metadata = metadata,
-  taxonomy_db = "silva",
-  #checar con unite, gg2, gtdb, kraken
-  level = "genus",
-  x_col = "metodo",
-  label = "Genus",
-  # facet_col = "edad",
-  # group_var = "SAMPLEID",
-  top_n_groups = 10,
-  add_remained  = TRUE,
-)
-
-
-abundance_sankey_plot(
-  table,
-  output_file = "sankey_myxo.html",
-  maxn = 20,
-  taxonomy_db = "silva"
-)
 
 
 venn_diagram_plot(

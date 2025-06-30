@@ -42,6 +42,9 @@ cca_rda_biplot <- function(table,
   require(ggplot2)
   require(dplyr)
   
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
   # 1. Process species table (remove last column = taxonomy)
   taxonomy_col <- ncol(table)
   spp_table <- table[, -taxonomy_col, drop = FALSE]

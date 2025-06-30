@@ -53,6 +53,11 @@ aldex_heatmap_plot <- function(table,
     stop("Exactly two conditions are required for the analysis.")
   }
   
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
+  names(table)[ncol(table)] <- "taxonomy"
+  
   # Prepara tabla de conteos
   table <- table %>% rownames_to_column(var = "OTUID")
   table_counts <- table %>%

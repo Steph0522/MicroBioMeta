@@ -9,28 +9,36 @@ beta_div_plot(
   metadata,
   distance = "compositional",
   ordination = "PCA",
-  color_by,
-  shape_by = NULL,
+  group_col = NULL,
+  group_colors = NULL,
+  shape_col = NULL,
+  legend_title = NULL,
+  arrows_size = 10,
   n_taxa = 5
 )
 }
 \arguments{
-\item{table}{A data frame with abundances. The last column must contain taxonomy information, regardless of its name.}
+\item{table}{A data frame with abundances. The last column must contain taxonomy information.}
 
-\item{metadata}{A data frame with sample metadata. The first column must contain the sample IDs, regardless of the column name.}
+\item{metadata}{A data frame with sample metadata. The first column must contain the sample IDs.}
 
-\item{distance}{Distance method: one of "euclidean", "bray", "jaccard", "sorensen", or "compositional" (default).}
+\item{distance}{Distance method: one of "euclidean", "bray", "jaccard", "sorensen",
+"compositional" (default), "aitchison", or "robust.aitchison".}
 
 \item{ordination}{Ordination method: one of "PCA" (default), "PCoA", or "NMDS".}
 
-\item{color_by}{Name of the column in \code{metadata} used to color points.}
+\item{group_col}{Column in \code{metadata} to fill color points.}
 
-\item{shape_by}{(Optional) Name of the column in \code{metadata} used to shape points.}
+\item{group_colors}{Optional named vector of colors.}
 
-\item{n_taxa}{Number of top contributing taxa to display as arrows in PCA (default = 5).}
+\item{shape_col}{Optional column in \code{metadata} to shape points.}
+
+\item{legend_title}{Optional legend title.}
+
+\item{n_taxa}{Number of top contributing taxa to display as arrows in PCA.}
 }
 \value{
-A \code{ggplot2} object representing the beta diversity ordination plot.
+A \code{ggplot2} object.
 }
 \description{
 This function computes beta diversity using several distance metrics and ordination methods

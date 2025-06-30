@@ -59,6 +59,9 @@ aldex_volcano_plot <- function(table,
     )
   }
   
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
   # Identificar automáticamente la columna taxonómica (última columna)
   if (is.null(taxa)) {
     last_col <- ncol(table)

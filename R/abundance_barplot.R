@@ -26,16 +26,22 @@
 #'
 #' @examples
 #' # relative_abundance_plot(table = your_table, metadata = your_metadata, ...)
-relative_abundance_plot <- function(table,
+abundance_barplot <- function(table,
                                     metadata,
                                     taxonomy_db = "silva",
                                     level = "genus",
                                     x_col,
                                     facet_col = NULL,
+                                    width_equal = FALSE,
                                     label = "taxonomy",
                                     top_n_groups = 15,
                                     x_axis_title = "Samples",
                                     add_remained = FALSE) {
+  
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
+  names(table)[ncol(table)] <- "taxonomy"
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
@@ -220,7 +226,12 @@ relative_abundance_plot <- function(table,
     ggplot2::xlab(x_axis_title)
   
   if (!is.null(facet_col)) {
-    p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(facet_col)), scales = "free_x")
+    if (width_equal) {
+      p <- p + ggplot2::facet_grid(rows = NULL, cols = vars(!!rlang::sym(facet_col)),
+                                    scales = "free_x", space = "free")
+    } else {
+      p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(facet_col)), scales = "free_x")
+    }
   }
   
   return(p)

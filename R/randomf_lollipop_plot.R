@@ -24,6 +24,9 @@ randomf_lollipop_plot <- function(table,
                                   col_palette = NULL,
                                   legend_figure = NULL) {
   
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
   # Set default figure title if not provided
   if (is.null(legend_figure)) {
     legend_figure <- sprintf("Top %d most important features (Random Forest)", top_n)

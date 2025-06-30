@@ -22,7 +22,9 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
   table <- as.data.frame(table)
   metadata <- as.data.frame(metadata)
   
-  if (!"taxonomy" %in% colnames(table)) stop("Table must contain taxonomy columns'.")
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
   if (!merge_by %in% colnames(metadata)) stop("Group or merge column is not in the metadata file.")
   
   common_samples <- intersect(colnames(table), metadata$SAMPLEID)
