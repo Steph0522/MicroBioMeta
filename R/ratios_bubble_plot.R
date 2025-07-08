@@ -184,7 +184,7 @@ ratio_plot <- function(table,
     labs(
       x = x_axis_title,
       y = "Condition",
-      size = "Mean Abundance",
+      size = "Ratio",
       fill = "Condition"
     ) +
     theme_minimal(base_size = 12) +
