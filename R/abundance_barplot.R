@@ -54,13 +54,21 @@ abundance_barplot <- function(table,
   sample_columns <- colnames(table)[-1]
   ordered_samples <- intersect(ordered_samples, sample_columns)
   table <- table[, c("taxonomy", ordered_samples)]
-  
   # Collapse taxonomy level
-  if (level == "genus") {
-    table$taxonomy <- gsub(";\\s?s__.*", "", table$taxonomy)
-  }
   if (level == "phylum") {
     table$taxonomy <- gsub(";\\s?c__.*", "", table$taxonomy)
+  }
+  if (level == "class") {
+    table$taxonomy <- gsub(";\\s?o__.*", "", table$taxonomy)
+  }
+  if (level == "order") {
+    table$taxonomy <- gsub(";\\s?f__.*", "", table$taxonomy)
+  }
+  if (level == "family") {
+    table$taxonomy <- gsub(";\\s?g__.*", "", table$taxonomy)
+  }
+  if (level == "genus") {
+    table$taxonomy <- gsub(";\\s?s__.*", "", table$taxonomy)
   }
   
   table <- table %>%
@@ -150,7 +158,44 @@ abundance_barplot <- function(table,
         )
       )
   }
+  if (taxonomy_db == "silva" && level == "family") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ sub(".*f__([^;]*).*", "\\1", taxonomy),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
   
+  if (taxonomy_db == "silva" && level == "order") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ sub(".*o__([^;]*).*", "\\1", taxonomy),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  
+  if (taxonomy_db == "silva" && level == "class") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ sub(".*c__([^;]*).*", "\\1", taxonomy),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
   if (taxonomy_db == "silva" && level == "phylum") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
@@ -203,7 +248,7 @@ abundance_barplot <- function(table,
       name = label,
       values = cbPalette,
       labels = function(taxa) {
-        if (level == "phylum") {
+        if (level %in% c("phylum", "class", "order", "family")) {
           taxa  # texto plano
         } else {
           sapply(taxa, function(x) {
