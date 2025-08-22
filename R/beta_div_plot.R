@@ -53,7 +53,7 @@ beta_div_plot <- function(table, metadata,
     feature_ids <- rownames(abund_table)
   }
   rownames(abund_table) <- feature_ids
-  otu_table <- as.data.frame(lapply(abund_table, as.numeric))
+  otu_table <- as.data.frame(lapply(abund_table, as.numeric), check.names = FALSE)
   rownames(otu_table) <- feature_ids
   
   
