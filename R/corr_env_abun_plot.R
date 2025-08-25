@@ -46,13 +46,12 @@ corr_env_abund_plot <- function(abund_table,
   
   # Filas comunes
   common_samples <-
-    base::intersect(rownames(abund_table), rownames(env_table))
-  abund <- abund_table[common_samples, , drop = FALSE]
-  env <- env_table[common_samples, , drop = FALSE]
-  
+    base::intersect(colnames(abund_table), rownames(env_table))
+  abund <- abund_table[, common_samples, drop = FALSE]   
+  env <- env_table[common_samples, , drop = FALSE]      
   # Matriz de correlación
   corr_mat <-
-    stats::cor(env, abund, method = method, use = "pairwise.complete.obs")
+    stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
   
   # Clustering jerárquico
   if (hc.order) {
