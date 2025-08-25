@@ -113,10 +113,18 @@ venn_diagram_plot(
   table_taxa,
   metadata,
   merge_by = "ID.CAM",
-  min_prevalence = 0.5,
+  min_prevalence = 0,
   #  denom = "all",
   group_colors = c("blue", "yellow"),
   method = "ggvenn"
+)
+
+
+abundance_sankey_plot(
+  table_taxa2,
+  output_file = "sankey_scel2.html",
+  maxn = 20,
+  taxonomy_db = "silva"
 )
 
 

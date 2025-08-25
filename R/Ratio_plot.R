@@ -1,4 +1,4 @@
-ratio_plot <- function(table,
+ratio_plot2 <- function(table,
                        metadata,
                        condition_col,
                        condition_A,

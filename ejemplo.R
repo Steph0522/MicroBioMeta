@@ -30,7 +30,7 @@ abundance_barplot(
   x_col = "metodo",
   label = "Genus",
   facet_col = "edad",
-  width_equal = FALSE,
+  width_equal = TRUE,
   # group_var = "SAMPLEID",
   top_n_groups = 10,
   add_remained  = TRUE
@@ -116,10 +116,10 @@ beta_div_plot(
   table = table,
   metadata = metadata,
   distance = "compositional",
-  ordination = "NMDS",
+  ordination = "PCA",
   group_col  = "metodo",
   n_taxa = 5,
- shape_col =  "edad",
+ #shape_col =  "edad",
  arrows = 100
 )
 
@@ -187,6 +187,17 @@ randomf_lollipop_plot(
   size = 6
 )
 
+ratio_plot(table,
+           metadata,
+           condition_col = "metodo",
+           condition_A = "kit", 
+           condition_B = "fenol")
+
+ratio_plot2(table,
+           metadata,
+           condition_col = "metodo",
+           condition_A = "kit", 
+           condition_B = "fenol")
 
 
 venn_diagram_plot(
@@ -200,4 +211,8 @@ venn_diagram_plot(
   group_colors = c("blue", "yellow"),
   method = "ggvenn"
 )
+
+
+beta_partition_plot(table, metadata,
+                    group_col="metodo", colors = c("blue", "pink"))
 
