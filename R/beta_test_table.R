@@ -1,8 +1,29 @@
-
-#Table of Permanova or Betadisper 
-
-#This function create a table with the results of permanova or betadisper 
-
+#' Table of Permanova or Betadisper 
+#' 
+#' This function create a table with the results of permanova or betadisper
+#' 
+#' 
+#' @param matriz Distance matrix with columns and rows in the same order
+#' @param metadata Data frame of characteristics or important information of the samples
+#' @param formula_str Model formula
+#' @param method Method for calculate pairwise distances of a matrix
+#' @param test Permanova or betadisper 
+#' @param permutations Number of permutations required
+#' @param strata_var Group or variable within which permutations are restricted
+#' @param decimales Number of decimales required
+#'
+#' @return A table with the results of R2, F and p value 
+#' @export
+#'
+#' @examples.   beta_test_table(matriz= matriz, 
+#'                              metadata= metadata,
+#'                              formula_str = "Origen*Seccion",
+#'                              method = "euclidean", 
+#'                              test = "permanova",
+#'                              permutations = 999,
+#'                              strata_var = "embrion")
+#' 
+#' 
 beta_test_table <- function(matriz,
                             metadata,
                             formula_str,
