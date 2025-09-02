@@ -9,12 +9,9 @@
 #' @param group_col Column in metadata to use as color grouping.
 #' @param shape_col Optional column in metadata for point shapes.
 #' @param legend_title Optional custom legend title.
+#' @param colors Optional named vector of colors for groups.
 #'
-#' @return A list with:
-#' \describe{
-#'   \item{plots}{List of ggplot objects: overall dissimilarity, turnover, nestedness, combined.}
-#'   \item{betadisper}{List of betadisper objects for each component.}
-#' }
+#' @return A combined cowplot panel of beta diversity partition plots.
 #' @export
 
 beta_partition_plot <- function(table, metadata, 
@@ -22,8 +19,10 @@ beta_partition_plot <- function(table, metadata,
                                 group_col = NULL, 
                                 shape_col = NULL, 
                                 legend_title = NULL,
+                                point_size = 3,
                                 colors = NULL) {   
-  
+  suppressWarnings({
+    
   
   # --- 1. Convert to presence/absence ---
   table_pa <- table
@@ -32,7 +31,8 @@ beta_partition_plot <- function(table, metadata,
     tibble::as_tibble(rownames = "SampleID") %>% 
     dplyr::arrange(SampleID) %>% 
     tibble::column_to_rownames(var = "SampleID") %>% 
-    dplyr::select_if(is.numeric) %>% t() %>% as.data.frame()
+    dplyr::select_if(is.numeric) %>% 
+    t() %>% as.data.frame()
   
   colnames(metadata)[1] <- "SampleID"
   
@@ -65,8 +65,10 @@ beta_partition_plot <- function(table, metadata,
   
   # --- 5. Internal plotting function ---
   function_plot_beta <- function(x, env){
-    y <- ggordiplots::gg_ordiplot(x, groups = env[[group_col]], hull = FALSE, 
-                                  spiders = TRUE, ellipse = FALSE, plot = FALSE, label = TRUE)
+    y <- ggordiplots::gg_ordiplot(
+      x, groups = env[[group_col]], hull = FALSE, 
+      spiders = TRUE, ellipse = FALSE, plot = FALSE, label = TRUE
+    )
     
     xlabs <- y$plot$labels$x
     ylabs <- y$plot$labels$y
@@ -80,7 +82,7 @@ beta_partition_plot <- function(table, metadata,
           color = group_col, 
           shape = if(!is.null(shape_col)) shape_col else NULL
         ),
-        size = 3
+        size = point_size
       ) +
       ggplot2::xlab(xlabs) + ggplot2::ylab(ylabs) +
       ggplot2::geom_segment(
@@ -88,18 +90,20 @@ beta_partition_plot <- function(table, metadata,
         ggplot2::aes(x = cntr.x, xend = x, y = cntr.y, yend = y, color = Group),
         show.legend = FALSE
       )
+    
     color_scale <- if(!is.null(colors)) {
       ggplot2::scale_color_manual(values = colors)
     } else {
       ggplot2::scale_color_viridis_d(option = "turbo")
     }
+    
     a <- z +
       ggplot2::geom_label(data = y$df_mean.ord, ggplot2::aes(x = x, y = y, label = Group)) +
       ggplot2::theme_linedraw() +
       ggplot2::geom_vline(xintercept = 0, linetype = 2) +
       ggplot2::geom_hline(yintercept = 0, linetype = 2) +
-      ggplot2::scale_fill_viridis_d(option = "turbo", name = if(!is.null(legend_title)) legend_title else group_col) +
-     # ggplot2::scale_color_viridis_d(option = "turbo") +
+      color_scale +
+      ggplot2::labs(color = if(!is.null(legend_title)) legend_title else group_col) +
       ggplot2::theme(
         axis.text = ggplot2::element_text(colour = "black", size = 12),
         axis.title = ggplot2::element_text(colour = "black", size = 12),
@@ -111,9 +115,16 @@ beta_partition_plot <- function(table, metadata,
         panel.grid.minor = ggplot2::element_blank(),
         plot.margin = grid::unit(c(0, 0, 0, 0), "cm"),
         aspect.ratio = 3/10
+      ) +
+      ggplot2::theme(
+        panel.border = ggplot2::element_blank(),
+        axis.line = ggplot2::element_line(),
+        axis.line.y.right = ggplot2::element_blank(),
+        axis.line.x.top = ggplot2::element_blank()
       )
     
-    return(a)
+    
+    return(a)  # <- faltaba este return + cierre
   }
   
   # --- 6. Generate plots ---
@@ -140,4 +151,5 @@ beta_partition_plot <- function(table, metadata,
   combined_plot <- cowplot::plot_grid(leg, panel, ncol = 1, rel_heights = c(0.1,1))
   
   return(combined_plot)
+  })  # <- aquí se cierra suppressWarnings
 }

@@ -42,6 +42,8 @@ abundance_barplot <- function(table,
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
   names(table)[ncol(table)] <- "taxonomy"
+  names(metadata)[1] <- "SAMPLEID"
+  
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
@@ -221,8 +223,10 @@ abundance_barplot <- function(table,
     dplyr::arrange(dplyr::desc(max_abund)) %>%
     dplyr::pull(taxonomy)
   
-  taxonomy_order <- unique(c(setdiff(taxonomy_order, c("Other", "Unclassified")), "Unclassified", "Other"))
-  avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = rev(taxonomy_order))
+  taxonomy_order <- unique(c("Other", "Unclassified", setdiff(taxonomy_order, c("Other", "Unclassified"))))
+  
+  avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = taxonomy_order)
+  
   
   # ==== CORRECCIÓN PALLETA ====
   tax_levels <- levels(avg_by_group$taxonomy)

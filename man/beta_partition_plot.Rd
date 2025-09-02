@@ -11,6 +11,7 @@ beta_partition_plot(
   group_col = NULL,
   shape_col = NULL,
   legend_title = NULL,
+  point_size = 3,
   colors = NULL
 )
 }
@@ -26,13 +27,11 @@ beta_partition_plot(
 \item{shape_col}{Optional column in metadata for point shapes.}
 
 \item{legend_title}{Optional custom legend title.}
+
+\item{colors}{Optional named vector of colors for groups.}
 }
 \value{
-A list with:
-\describe{
-\item{plots}{List of ggplot objects: overall dissimilarity, turnover, nestedness, combined.}
-\item{betadisper}{List of betadisper objects for each component.}
-}
+A combined cowplot panel of beta diversity partition plots.
 }
 \description{
 This function computes beta diversity partition (Jaccard or Sorensen)

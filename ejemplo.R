@@ -51,7 +51,7 @@ abundance_heatmap_plot(
 
  abundance_sankey_plot(
   table,
-  output_file = "sankey_myxo.html",
+  output_file = "sankey_myxo2.html",
   maxn = 20,
   taxonomy_db = "silva"
 )
@@ -214,5 +214,18 @@ venn_diagram_plot(
 
 
 beta_partition_plot(table, metadata,
-                    group_col="metodo", colors = c("blue", "pink"))
+                    group_col="metodo", colors = c("gray", "blue"), point_size = 4)
 
+
+
+
+beta_diversity_boxplot(
+  table = table,
+  metadata = metadata,
+  comparison_condition1 = c("fenol_vs_kit"),  
+  condition1_col = "metodo",
+ condition2_col = "edad",
+  #color_facets_x = color_facets_x,
+  #color_axis_x = color_axis_x,
+  title_axis_x = "Samples",
+  partition = "turnover", family = "sorensen")

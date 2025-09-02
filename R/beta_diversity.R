@@ -1,6 +1,3 @@
-
-
-
 #' Box plot of beta diversity
 #'
 #' @param table table Data frame where columns are samples and rows are ASVs or taxa.
