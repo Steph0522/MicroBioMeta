@@ -27,50 +27,84 @@
 #' @examples
 #' # relative_abundance_plot(table = your_table, metadata = your_metadata, ...)
 abundance_barplot <- function(table,
-                                    metadata,
-                                    taxonomy_db = "silva",
-                                    level = "genus",
-                                    x_col,
-                                    facet_col = NULL,
-                                    width_equal = FALSE,
-                                    label = "taxonomy",
-                                    top_n_groups = 15,
-                                    x_axis_title = "Samples",
-                                    add_remained = FALSE) {
+                              metadata,
+                              taxonomy_db = "silva",
+                              level = "genus",
+                              x_col,
+                              facet_col = NULL,
+                              width_equal = FALSE,
+                              label = "taxonomy",
+                              top_n_groups = 15,
+                              x_axis_title = "Samples",
+                              add_remained = FALSE) {
   
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
   names(table)[ncol(table)] <- "taxonomy"
-  names(metadata)[1] <- "SAMPLEID"
-  
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
   # Remove uninformative taxonomy strings
   table <- table %>%
-    dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__")
+    dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__") %>%
+    dplyr::filter(taxonomy != "k__Bacteria;__;__;__;__;__")%>%
+    dplyr::filter(taxonomy != "k__Fungi;__;__;__;__;__")%>%
+    dplyr::filter(taxonomy != "k__Fungi;p__;c__;o__;f__;g__")%>%
+    dplyr::filter(taxonomy != "k__Fungi")
   
   # Reorder columns based on SAMPLEID order in metadata
   ordered_samples <- metadata$SAMPLEID
   sample_columns <- colnames(table)[-1]
   ordered_samples <- intersect(ordered_samples, sample_columns)
   table <- table[, c("taxonomy", ordered_samples)]
-  # Collapse taxonomy level
-  if (level == "phylum") {
-    table$taxonomy <- gsub(";\\s?c__.*", "", table$taxonomy)
+  if (taxonomy_db %in% c("silva", "Kraken2", "gg2")) {
+    if (level == "kingdom") {
+      table$taxonomy <- sub(";.*", "", table$taxonomy)
+    }
+    if (level == "phylum") {
+      table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
+    }
+    if (level == "class") {
+      table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
+    }
+    if (level == "order") {
+      table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
+    }
+    if (level == "family") {
+      table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
+    }
+    if (level == "genus") {
+      table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
+    }
+    if (level == "species") {
+      table$taxonomy <- table$taxonomy
+    }
   }
-  if (level == "class") {
-    table$taxonomy <- gsub(";\\s?o__.*", "", table$taxonomy)
-  }
-  if (level == "order") {
-    table$taxonomy <- gsub(";\\s?f__.*", "", table$taxonomy)
-  }
-  if (level == "family") {
-    table$taxonomy <- gsub(";\\s?g__.*", "", table$taxonomy)
-  }
-  if (level == "genus") {
-    table$taxonomy <- gsub(";\\s?s__.*", "", table$taxonomy)
+  
+  # ---- Colapsar taxonomía según nivel ----
+  if (taxonomy_db == "unite") {
+    if (level == "kingdom") {
+      table$taxonomy <- sub(";.*", "", table$taxonomy)
+    }
+    if (level == "phylum") {
+      table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
+    }
+    if (level == "class") {
+      table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
+    }
+    if (level == "order") {
+      table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
+    }
+    if (level == "family") {
+      table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
+    }
+    if (level == "genus") {
+      table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
+    }
+    if (level == "species") {
+      table$taxonomy <- sub(";\\s?sh__.*", "", table$taxonomy)
+    }
   }
   
   table <- table %>%
@@ -145,8 +179,59 @@ abundance_barplot <- function(table,
       dplyr::filter(taxonomy %in% top_groups)
   }
   
+  if (taxonomy_db %in% c("unite","silva", "gg2") && level == "species") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("g__[^;]*;.*s__[^;]*", taxonomy) &
+            !grepl("g__uncultured|g__$|s__uncultured|s__$", taxonomy) ~
+            paste0(
+              stringr::str_extract(taxonomy, "s__[^;]*") %>% sub("s__", "", .)
+            ),
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "g__[^;]*") %>% sub("g__", "", .)),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  if (taxonomy_db == "Kraken2" && level == "species") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("g__[^;]*;.*s__[^;]*", taxonomy) &
+            !grepl("g__uncultured|g__$|s__uncultured|s__$", taxonomy) ~
+            paste0(
+              stringr::str_extract(taxonomy, "g__[^;]*") %>% sub("g__", "", .), " ",
+              stringr::str_extract(taxonomy, "s__[^;]*") %>% sub("s__", "", .)
+            ),
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "g__[^;]*") %>% sub("g__", "", .)),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  
+  
   # Simplify taxonomy for SILVA
-  if (taxonomy_db == "silva" && level == "genus") {
+  if (taxonomy_db %in% c("unite","silva", "Kraken2", "gg2") && level == "genus") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
@@ -160,7 +245,7 @@ abundance_barplot <- function(table,
         )
       )
   }
-  if (taxonomy_db == "silva" && level == "family") {
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "family") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
@@ -174,7 +259,7 @@ abundance_barplot <- function(table,
       )
   }
   
-  if (taxonomy_db == "silva" && level == "order") {
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "order") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
@@ -187,7 +272,7 @@ abundance_barplot <- function(table,
       )
   }
   
-  if (taxonomy_db == "silva" && level == "class") {
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "class") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
@@ -198,7 +283,7 @@ abundance_barplot <- function(table,
         )
       )
   }
-  if (taxonomy_db == "silva" && level == "phylum") {
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "phylum") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
@@ -223,10 +308,8 @@ abundance_barplot <- function(table,
     dplyr::arrange(dplyr::desc(max_abund)) %>%
     dplyr::pull(taxonomy)
   
-  taxonomy_order <- unique(c("Other", "Unclassified", setdiff(taxonomy_order, c("Other", "Unclassified"))))
-  
-  avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = taxonomy_order)
-  
+  taxonomy_order <- unique(c(setdiff(taxonomy_order, c("Other", "Unclassified")), "Unclassified", "Other"))
+  avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = rev(taxonomy_order))
   
   # ==== CORRECCIÓN PALLETA ====
   tax_levels <- levels(avg_by_group$taxonomy)
@@ -252,14 +335,19 @@ abundance_barplot <- function(table,
       name = label,
       values = cbPalette,
       labels = function(taxa) {
-        if (level %in% c("phylum", "class", "order", "family")) {
-          taxa  # texto plano
-        } else {
+        if (level %in% c("genus", "species")) {
           sapply(taxa, function(x) {
-            if (x %in% c("Other", "Unclassified")) x else bquote(italic(.(x)))
+            if (x %in% c("Other", "Unclassified") || grepl("^other ", x)) {
+              x   # texto plano
+            } else {
+              bquote(italic(.(x)))  # en cursivas
+            }
           })
+        } else {
+          taxa  # siempre texto plano
         }
       }
+      
     ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
@@ -277,7 +365,7 @@ abundance_barplot <- function(table,
   if (!is.null(facet_col)) {
     if (width_equal) {
       p <- p + ggplot2::facet_grid(rows = NULL, cols = vars(!!rlang::sym(facet_col)),
-                                    scales = "free_x", space = "free")
+                                   scales = "free_x", space = "free")
     } else {
       p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(facet_col)), scales = "free_x")
     }
@@ -285,4 +373,3 @@ abundance_barplot <- function(table,
   
   return(p)
 }
-
