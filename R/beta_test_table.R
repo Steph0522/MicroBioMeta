@@ -82,10 +82,14 @@ beta_test_table <- function(matriz,
   
   # --- Formato numérico ---
   tabla <- tabla %>%
-    dplyr::mutate(across(where(is.numeric), ~ round(., decimales)))
+    dplyr::mutate(across(where(is.numeric), ~ round(., decimales))) %>%
+    dplyr::mutate(across(everything(), as.character)) %>%
+    dplyr::mutate(across(everything(), ~ ifelse(is.na(.), "-", .)))
   
   # --- Crear ggtexttable ---
-  tab <- ggpubr::ggtexttable(tabla, rows = NULL, theme = ggpubr::ttheme(colnames = ggpubr::colnames_style(fill = "gray", color = "black"), # encabezado gris
+  tab <- ggpubr::ggtexttable(tabla,
+                             rows = NULL,
+                             theme = ggpubr::ttheme(colnames = ggpubr::colnames_style(fill = "gray", color = "black"), # encabezado gris
                                                                         tbody.style = ggpubr::tbody_style(fill = "white")                  # filas en blanco
   )
   )
