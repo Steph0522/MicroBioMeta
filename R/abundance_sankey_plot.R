@@ -35,7 +35,19 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
       dplyr::mutate(s = stringr::str_trim(s),
                     s = stringr::str_replace(s, "^\\s*[a-zA-Z]+__", ""),
                     s = stringr::str_replace_all(s, "_", " "))
-  } else if(tolower(taxonomy_db) == "kraken2") {
+  }else if (tolower(taxonomy_db) == "unite") {
+    
+    otu_rel_parse <- otu_rel_parse %>%
+      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
+      dplyr::mutate(across(c(s), ~ stringr::str_replace_all(., "_", " ")))
+    
+  } else if (tolower(taxonomy_db) %in% c("gg", "gg2", "greengenes2")) {
+    # Greengenes2 usa notación tipo "D_0__Bacteria;D_1__Firmicutes;..."
+    otu_rel_parse <- otu_rel_parse %>%
+      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_remove(., "^D_[0-9]+__"))) %>%
+      dplyr::mutate(across(c(s), ~ stringr::str_replace_all(., "_", " ")))
+ 
+     }else if(tolower(taxonomy_db) == "kraken2") {
     otu_rel_parse <- otu_rel_parse %>%
       dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_extract(., "[^_]+$")),
                     s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g,s,sep=" "), s))
