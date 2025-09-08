@@ -51,8 +51,9 @@ abundance_heatmap_plot(
 
  abundance_sankey_plot(
   table,
-  output_file = "sankey_myxo2.html",
+  output_file = "sankey_myxo3.html",
   maxn = 20,
+  taxRanks = c("P", "C", "G", "S"),
   taxonomy_db = "silva"
 )
 
@@ -94,7 +95,7 @@ alpha_hill_plot(
   free_y = T,
   legend_position = "top",
   stat = "t.test"
-)
+)+theme_classic()
 
 
 alpha_diversity_plot(
@@ -228,4 +229,8 @@ beta_diversity_boxplot(
   #color_facets_x = color_facets_x,
   #color_axis_x = color_axis_x,
   title_axis_x = "Samples",
-  partition = "turnover", family = "sorensen")
+  partition = "shared", family = "sorensen")
+
+corr_env_abund_plot(
+  table = table, env_table = env_data, level = "phylum"
+)

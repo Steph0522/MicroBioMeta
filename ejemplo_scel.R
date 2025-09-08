@@ -94,6 +94,34 @@ table_taxa3 <- merge_feature_taxonomy(table, taxonomy_silva)
 table_taxa4 <- merge_feature_taxonomy(table, taxonomy_silva_weighted)
 
 abundance_barplot(
+  table = table_taxa,
+  metadata = metadata,
+  taxonomy_db = "silva",
+  level = "genus",
+  x_col = "MUESTRA",
+  label = "Genus",
+  facet_col = "SITIO",
+  width_equal = FALSE,
+  # group_var = "SAMPLEID",
+  top_n_groups = 30,
+  add_remained  = TRUE
+)
+
+abundance_barplot(
+  table = table_taxa2,
+  metadata = metadata,
+  taxonomy_db = "silva",
+  level = "genus",
+  x_col = "MUESTRA",
+  label = "Genus",
+  facet_col = "SITIO",
+  width_equal = FALSE,
+  # group_var = "SAMPLEID",
+  top_n_groups = 30,
+  add_remained  = TRUE
+)
+
+abundance_barplot(
   table = table_taxa3,
   metadata = metadata,
   taxonomy_db = "silva",
@@ -122,7 +150,7 @@ abundance_barplot(
 )
 
 abundance_heatmap_plot(
-  table = table_taxa2,
+  table = table_taxa,
   metadata = metadata,
   condition1 = "SITIO",
   condition2 = "ID.CAM",
@@ -166,13 +194,14 @@ beta_div_plot(
 
 
 randomf_lollipop_plot(
-  table_taxa,
+  table_taxa3,
   metadata %>% drop_na(),
   variable_to_predict = "SITIO",
   col_palette = c("red", "blue", "green"),
   top_n = 20,
   size = 6
 )
+
 
 
 
@@ -189,12 +218,13 @@ venn_diagram_plot(
 
 abundance_sankey_plot(
   table_taxa3,
-  output_file <- file.path(getwd(), "sankey_scel4.html"),
-  maxn = 5,
+  output_file <- file.path(getwd(), "sankey_scel_gg2.html"),
+  maxn = 10,
+  taxRanks = c("P", "C", "G", "S"),
   taxonomy_db = "silva"
 )
 
-getwd()
+#getwd()
 #summarice
 
 metadata %>%  group_by(SITIO, ID.CAM) %>% count()
