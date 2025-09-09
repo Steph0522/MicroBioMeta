@@ -48,10 +48,22 @@ abundance_barplot <- function(table,
   # Remove uninformative taxonomy strings
   table <- table %>%
     dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__") %>%
+    dplyr::filter(taxonomy != "d__Bacteria") %>%
+   dplyr::filter(taxonomy != "d__Archaea;__;__;__;__;__") %>%
+    dplyr::filter(taxonomy != "d__Bacteria;p__;c__;o__;f__;g__;s__") %>%
+    dplyr::filter(taxonomy != "d__Archaea;p__;c__;o__;f__;g__;s__") %>%
     dplyr::filter(taxonomy != "k__Bacteria;__;__;__;__;__")%>%
     dplyr::filter(taxonomy != "k__Fungi;__;__;__;__;__")%>%
     dplyr::filter(taxonomy != "k__Fungi;p__;c__;o__;f__;g__")%>%
     dplyr::filter(taxonomy != "k__Fungi")
+  
+  table <- table %>%
+  #   quitar filas vacías o sin clasificación
+    dplyr::filter(!is.na(taxonomy)) %>%
+      # quitar taxonomías con todos los niveles vacíos (__)
+    dplyr::filter(!grepl("(__;?)+$", taxonomy)) %>%
+  # quitar taxonomías que solo llegan al dominio/reino
+    dplyr::filter(!grepl("^(d__|k__)[^;]*;[ _;]*$", taxonomy))
   
   # Reorder columns based on SAMPLEID order in metadata
   ordered_samples <- metadata$SAMPLEID
