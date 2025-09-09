@@ -50,12 +50,15 @@ abundance_barplot <- function(table,
     dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__") %>%
     dplyr::filter(taxonomy != "d__Bacteria") %>%
    dplyr::filter(taxonomy != "d__Archaea;__;__;__;__;__") %>%
+    dplyr::filter(taxonomy != "d__Archaea") %>%
     dplyr::filter(taxonomy != "d__Bacteria;p__;c__;o__;f__;g__;s__") %>%
     dplyr::filter(taxonomy != "d__Archaea;p__;c__;o__;f__;g__;s__") %>%
     dplyr::filter(taxonomy != "k__Bacteria;__;__;__;__;__")%>%
     dplyr::filter(taxonomy != "k__Fungi;__;__;__;__;__")%>%
     dplyr::filter(taxonomy != "k__Fungi;p__;c__;o__;f__;g__")%>%
-    dplyr::filter(taxonomy != "k__Fungi")
+    dplyr::filter(taxonomy != "k__Fungi")%>%
+    dplyr::filter(taxonomy != "Unassigned")%>%
+    dplyr::filter(taxonomy != "d__Eukaryota")
   
   table <- table %>%
   #   quitar filas vacías o sin clasificación
@@ -370,7 +373,7 @@ abundance_barplot <- function(table,
       axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
       legend.text = ggplot2::element_text(size = 10)
     ) +
-    ggplot2::ylim(0, 100) +
+    ggplot2::coord_cartesian(ylim = c(0, 100)) +
     ggplot2::ylab("Relative abundance (%)") +
     ggplot2::xlab(x_axis_title)
   
