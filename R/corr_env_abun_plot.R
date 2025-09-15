@@ -5,39 +5,41 @@
 #' abundances and environmental variables, and visualizes the results as either a heatmap 
 #' (tile) or a bubble plot (circle).
 #'
-#' @param table A data frame containing count data with a column named `taxonomy`. Each 
-#'   row corresponds to a taxon, and each column (besides `taxonomy`) corresponds to a sample.
-#' @param env_table A data frame of environmental variables, with samples as row names.
-#' @param method Correlation method to use. Options include `"spearman"`, `"pearson"`, or `"kendall"`. Default is `"spearman"`.
-#' @param cond_vect Vector with environmental variables to consider in the correlation
-#' @param hc.order Logical. If `TRUE`, performs hierarchical clustering to reorder rows and columns based on correlation similarity. Default is `TRUE`.
-#' @param geom Character. Type of plot to generate: `"tile"` for a heatmap or `"circle"` for a bubble plot. Default is `"tile"`.
-#' @param show_labels Logical. Whether to display correlation values on the plot. Default is `TRUE`.
-#' @param col_palette A vector of colors for the gradient scale. If `NULL`, a default blue-white-red palette is used.
-#' @param invert_axes Logical. If `TRUE`, environmental variables are shown on the x-axis and taxonomic groups on the y-axis. Default is `TRUE`.
-#' @param taxonomy_db Character. Database used for taxonomy annotation. Options are `"silva"` or `"Kraken2"`. Default is `"silva"`.
-#' @param level Character. Taxonomic level for collapsing counts: `"phylum"`, `"genus"`, or `"specie"`. Default is `"genus"`.
+#
 #'
-#' @ret
+#' @param table 
+#' @param env_table 
+#' @param metadata 
+#' @param cond_vect 
+#' @param method 
+#' @param hc.order 
+#' @param geom 
+#' @param show_labels 
+#' @param col_palette 
+#' @param invert_axes 
+#' @param taxonomy_db 
+#' @param level 
+#' @param pval_threshold 
+#'
+#' @return
 #' @export
 #'
 #' @examples
-#' 
-#' 
-
-#colores<- c("pink","white","purple")
-#corr_env_abund_plot(table = abund, 
-#                    env_table = env,
-#                   cond_vect= c("ph","OM")
-#                    method = "pearson", 
-#                    geom = "tile", 
-#                    hc.order = FALSE, 
-#                    col_palette = colores,
-#                    invert_axes = TRUE,
-#                    show_labels = FALSE,
-#                    level = "genus")
-
-
+#'   colores<- c("pink","white","purple")
+#    corr_env_abund_plot(table = table, 
+#     env_table = env_data,
+#     metadata=metadata,
+#     cond_vect= c("pH","OM", "NO3","NH4"),
+#     method = "pearson", 
+#     geom = "tile", 
+#     hc.order = FALSE, 
+#     col_palette = colores,
+#     invert_axes = TRUE,
+#     show_labels = FALSE,
+#     level = "species",
+#     taxonomy_db = "unite",
+#     pval_threshold= 0.05)
+#
 corr_env_abund_plot <- function(table,
                                 env_table,
                                 metadata,
@@ -49,14 +51,31 @@ corr_env_abund_plot <- function(table,
                                 col_palette = NULL,
                                 invert_axes = TRUE,
                                 taxonomy_db = "silva",
-                                level = "genus") {
+                                level = "genus",
+                                pval_threshold= NULL) {
   rownames(table) <- NULL
   
   
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
-  # --- Alinear muestras entre table, env_table y metadata
+  # Remove uninformative taxonomy strings
+  table <- table %>%
+    dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__") %>%
+    dplyr::filter(taxonomy != "d__Bacteria") %>%
+    dplyr::filter(taxonomy != "d__Archaea;__;__;__;__;__") %>%
+    dplyr::filter(taxonomy != "d__Archaea") %>%
+    dplyr::filter(taxonomy != "d__Bacteria;p__;c__;o__;f__;g__;s__") %>%
+    dplyr::filter(taxonomy != "d__Archaea;p__;c__;o__;f__;g__;s__") %>%
+    dplyr::filter(taxonomy != "k__Bacteria;__;__;__;__;__")%>%
+    dplyr::filter(taxonomy != "k__Fungi;__;__;__;__;__")%>%
+    dplyr::filter(taxonomy != "k__Fungi;p__;c__;o__;f__;g__")%>%
+    dplyr::filter(taxonomy != "k__Fungi")%>%
+    dplyr::filter(taxonomy != "Unassigned")%>%
+    dplyr::filter(taxonomy != "d__Eukaryota")
+  
+  
+  #muestras entre table, env_table y metadata
   common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata$SAMPLEID))
   table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
   env_table <- env_table[common_samples, , drop = FALSE]
@@ -64,16 +83,56 @@ corr_env_abund_plot <- function(table,
   rownames(metadata) <- metadata$SAMPLEID
   
   
-  #colapsar la tabla al nivel taxonómico deseado: filo, género o especie
-  if (level == "genus") {
-    table$taxonomy <- gsub(";\\s?s__.*", "", table$taxonomy)
+  #colapsar la tabla al nivel taxonómico deseado
+  if (taxonomy_db %in% c("silva", "Kraken2", "gg2")) {
+    if (level == "kingdom") {
+      table$taxonomy <- sub(";.*", "", table$taxonomy)
+    }
+    if (level == "phylum") {
+      table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
+    }
+    if (level == "class") {
+      table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
+    }
+    if (level == "order") {
+      table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
+    }
+    if (level == "family") {
+      table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
+    }
+    if (level == "genus") {
+      table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
+    }
+    if (level == "species") {
+      table$taxonomy <- table$taxonomy
+    }
   }
-  if (level == "phylum") {
-    table$taxonomy <- gsub(";\\s?c__.*", "", table$taxonomy)
+  
+  # ---- Colapsar taxonomía según nivel ----
+  if (taxonomy_db == "unite") {
+    if (level == "kingdom") {
+      table$taxonomy <- sub(";.*", "", table$taxonomy)
+    }
+    if (level == "phylum") {
+      table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
+    }
+    if (level == "class") {
+      table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
+    }
+    if (level == "order") {
+      table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
+    }
+    if (level == "family") {
+      table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
+    }
+    if (level == "genus") {
+      table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
+    }
+    if (level == "species") {
+      table$taxonomy <- sub(";\\s?sh__.*", "", table$taxonomy)
+    }
   }
-  if (level == "specie") {
-    table$taxonomy <- table$taxonomy
-  }
+  
   
   table <- table %>%
     dplyr::group_by(taxonomy) %>%
@@ -82,44 +141,116 @@ corr_env_abund_plot <- function(table,
   #modificar la columna taxonomy para solo conservar el nombre al nivel que colapsamos
   #esto hace que al graficar salga sólo ese nombre y no toda la taxonomía
   
-  if (taxonomy_db %in% c("silva", "Kraken2") && level == "phylum") {
-    table <- table %>%
+  if (taxonomy_db %in% c("unite","silva", "gg2") && level == "species") {
+    table <-table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
-          grepl("p__[^;]*", taxonomy) ~ stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .),
+          grepl("g__[^;]*;.*s__[^;]*", taxonomy) &
+            !grepl("g__uncultured|g__$|s__uncultured|s__$", taxonomy) ~
+            paste0(
+              stringr::str_extract(taxonomy, "s__[^;]*") %>% sub("s__", "", .)
+            ),
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "g__[^;]*") %>% sub("g__", "", .)),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  if (taxonomy_db == "Kraken2" && level == "species") {
+    table <-table %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("g__[^;]*;.*s__[^;]*", taxonomy) &
+            !grepl("g__uncultured|g__$|s__uncultured|s__$", taxonomy) ~
+            paste0(
+              stringr::str_extract(taxonomy, "g__[^;]*") %>% sub("g__", "", .), " ",
+              stringr::str_extract(taxonomy, "s__[^;]*") %>% sub("s__", "", .)
+            ),
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "g__[^;]*") %>% sub("g__", "", .)),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~
+            paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
           TRUE ~ "Unclassified"
         )
       )
   }
   
-  if (taxonomy_db %in% c("silva", "Kraken2") && level == "genus") {
-    table <- table %>%
+  
+  # Simplify taxonomy for SILVA
+  if (taxonomy_db %in% c("unite","silva", "Kraken2", "gg2") && level == "genus") {
+    table <-table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
-          grepl("g__[^;]*", taxonomy) &
-            !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
-          grepl("f__[^;]*", taxonomy) &
-            !grepl("f__uncultured|f__$", taxonomy) ~ paste0(
-              "other ",
-              stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)
-            ),
-          grepl("o__[^;]*", taxonomy) &
-            !grepl("o__uncultured|o__$", taxonomy) ~ paste0(
-              "other ",
-              stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)
-            ),
-          grepl("c__[^;]*", taxonomy) &
-            !grepl("c__uncultured|c__$", taxonomy) ~ paste0(
-              "other ",
-              stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)
-            ),
-          grepl("p__[^;]*", taxonomy) &
-            !grepl("p__uncultured|p__$", taxonomy) ~ paste0(
-              "other ",
-              stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)
-            ),
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "family") {
+    table <-table %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ sub(".*f__([^;]*).*", "\\1", taxonomy),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "order") {
+    table <-table %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ sub(".*o__([^;]*).*", "\\1", taxonomy),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "class") {
+    table <-table %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ sub(".*c__([^;]*).*", "\\1", taxonomy),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "phylum") {
+    table <-table %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("p__[^;]*", taxonomy) ~ stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .),
           TRUE ~ "Unclassified"
         )
       )
@@ -135,25 +266,51 @@ corr_env_abund_plot <- function(table,
     col_palette <-
       grDevices::colorRampPalette(c("blue", "white", "red"))(200)
   }
-  
-  # Filas comunes
+  # --- Filas comunes
   common_samples <- base::intersect(colnames(table), rownames(env_table))
   counts <- table[, common_samples, drop = FALSE]
   env <- env_table[common_samples, , drop = FALSE]
   
-  # Seleccionar solo las variables ambientales indicadas en el vector cond_vect
+
+  # Seleccionar solo las variables ambientales indicadas en cond_vect, verificando coincidencias
   if (!is.null(cond_vect)) {
+    cond_vect <- cond_vect[cond_vect %in% colnames(env)]
+    if(length(cond_vect) == 0) stop("No matching variables found in env_table")
     env <- env[, cond_vect, drop = FALSE]
   }
   
   
-  # Convertir a abundancias relativas (porcentaje)
-  abund <-
-    sweep(counts, 2, colSums(counts, na.rm = TRUE), FUN = "/") * 100
+  # Filtrar variables constantes
+  env <- env[, apply(env, 2, sd, na.rm = TRUE) > 0, drop = FALSE]
+  abund <- sweep(counts, 2, colSums(counts, na.rm = TRUE), FUN = "/") * 100
+  abund <- abund[apply(abund, 1, sd, na.rm = TRUE) > 0, , drop = FALSE]
   
-  # Matriz de correlación
-  corr_mat <-
-    stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
+  # Matriz de correlación general
+  corr_mat <- stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
+  
+  # --- Calcular p-values si se indica pval_threshold
+  if (!is.null(pval_threshold)) {
+    pval_mat <- matrix(NA, 
+                       nrow = ncol(env), 
+                       ncol = nrow(abund),
+                       dimnames = list(colnames(env), rownames(abund)))
+    
+    for (env_var in colnames(env)) {
+      for (taxon in rownames(abund)) {
+        test <- suppressWarnings(
+          cor.test(env[[env_var]], as.numeric(abund[taxon, ]), method = method)
+        )
+        pval_mat[env_var, taxon] <- test$p.value
+      }
+    }
+    
+    # Mantener solo taxones significativos en al menos una variable
+    signif_taxa <- rownames(abund)[apply(pval_mat, 2, function(x) any(x < pval_threshold, na.rm = TRUE))]
+    abund <- abund[signif_taxa, , drop = FALSE]
+    corr_mat <- stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
+  }
+  
+  
   
   # Clustering jerárquico
   if (hc.order) {
