@@ -40,6 +40,7 @@
 
 corr_env_abund_plot <- function(table,
                                 env_table,
+                                metadata,
                                 cond_vect= NULL,
                                 method = "spearman",
                                 hc.order = TRUE,
@@ -50,6 +51,18 @@ corr_env_abund_plot <- function(table,
                                 taxonomy_db = "silva",
                                 level = "genus") {
   rownames(table) <- NULL
+  
+  
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  
+  # --- Alinear muestras entre table, env_table y metadata
+  common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata$SAMPLEID))
+  table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
+  env_table <- env_table[common_samples, , drop = FALSE]
+  metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop = FALSE]
+  rownames(metadata) <- metadata$SAMPLEID
+  
   
   #colapsar la tabla al nivel taxonómico deseado: filo, género o especie
   if (level == "genus") {
