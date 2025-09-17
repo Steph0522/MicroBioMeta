@@ -61,12 +61,16 @@ abundance_barplot <- function(table,
     dplyr::filter(taxonomy != "d__Eukaryota")
   
   table <- table %>%
-  #   quitar filas vacías o sin clasificación
-    dplyr::filter(!is.na(taxonomy)) %>%
-      # quitar taxonomías con todos los niveles vacíos (__)
-    dplyr::filter(!grepl("(__;?)+$", taxonomy)) %>%
   # quitar taxonomías que solo llegan al dominio/reino
-    dplyr::filter(!grepl("^(d__|k__)[^;]*;[ _;]*$", taxonomy))
+  dplyr::filter(!grepl("^(d__|k__)[^;]*;[ _;]*$", taxonomy))
+  
+  
+  if (taxonomy_db == "gg2") {
+    table <- table %>%
+      # quitar taxonomías con todos los niveles vacíos (__)
+      dplyr::filter(!grepl("(__;?)+$", taxonomy))
+  }
+  
   
   # Reorder columns based on SAMPLEID order in metadata
   ordered_samples <- metadata$SAMPLEID
@@ -246,7 +250,23 @@ abundance_barplot <- function(table,
   
   
   # Simplify taxonomy for SILVA
-  if (taxonomy_db %in% c("unite","silva", "Kraken2", "gg2") && level == "genus") {
+  if (taxonomy_db %in% c("silva") && level == "genus") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$|g__Incertae_Sedis", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$|f__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$|o__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$|c__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$|p__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  
+  
+  if (taxonomy_db %in% c("unite", "Kraken2", "gg2") && level == "genus") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
