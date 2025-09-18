@@ -53,7 +53,8 @@ corr_env_abund_plot <- function(table,
                                 taxonomy_db = "silva",
                                 level = "genus",
                                 pval_threshold= NULL) {
-  rownames(table) <- NULL
+   geom <- match.arg(geom)
+   rownames(table) <- NULL
   
   
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
@@ -141,8 +142,9 @@ corr_env_abund_plot <- function(table,
   #modificar la columna taxonomy para solo conservar el nombre al nivel que colapsamos
   #esto hace que al graficar salga sólo ese nombre y no toda la taxonomía
   
+  
   if (taxonomy_db %in% c("unite","silva", "gg2") && level == "species") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -166,7 +168,7 @@ corr_env_abund_plot <- function(table,
       )
   }
   if (taxonomy_db == "Kraken2" && level == "species") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -194,7 +196,7 @@ corr_env_abund_plot <- function(table,
   
   # Simplify taxonomy for SILVA
   if (taxonomy_db %in% c("silva") && level == "genus") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -210,7 +212,7 @@ corr_env_abund_plot <- function(table,
   
   
   if (taxonomy_db %in% c("unite", "Kraken2", "gg2") && level == "genus") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -224,7 +226,7 @@ corr_env_abund_plot <- function(table,
       )
   }
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "family") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -238,7 +240,7 @@ corr_env_abund_plot <- function(table,
   }
   
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "order") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -251,7 +253,7 @@ corr_env_abund_plot <- function(table,
   }
   
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "class") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -262,7 +264,7 @@ corr_env_abund_plot <- function(table,
       )
   }
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "phylum") {
-    avg_by_group <- avg_by_group %>%
+    table <- table %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -271,6 +273,7 @@ corr_env_abund_plot <- function(table,
         )
       )
   }
+  
   
   # Asegurar que la columna "taxonomy" sea rownames
   if ("taxonomy" %in% colnames(table)) {
