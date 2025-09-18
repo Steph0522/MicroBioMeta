@@ -239,8 +239,8 @@ alpha_diversity_plot <- function(
       strip.background = ggplot2::element_rect(fill = strip_color),
       axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
       axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
-      axis.text.x = ggplot2::element_text(size = 10, color = "black", family = "Times New Roman"),
-      axis.text.y = ggplot2::element_text(size = 10, color = "black", family = "Times New Roman"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
       legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
       legend.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman" ),
       legend.position = if (show_legend) legend_position else "none"
