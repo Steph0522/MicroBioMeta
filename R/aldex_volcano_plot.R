@@ -139,10 +139,10 @@ aldex_volcano_plot <- function(table,
         y = expression("-Log"[10]~"p-value"),
         color = NULL
       ) +
-      ggplot2::theme_classic() +
+      ggplot2::theme_test() +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12, color = "black"),
-        axis.title = ggplot2::element_text(size = 12),
+        axis.text = ggplot2::element_text(size =12, color = "black", family = "Times New Roman"),
+        axis.title = ggplot2::element_text(size = 12, color= "black", family = "Times New Roman"),
         legend.position = "none"
       ) +
       ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x))
@@ -233,10 +233,10 @@ aldex_volcano_plot <- function(table,
         y = expression("-Log"[10]~"p-value"),
         color = NULL
       ) +
-      ggplot2::theme_classic() +
+      ggplot2::theme_test() +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12, color = "black"),
-        axis.title = ggplot2::element_text(size = 12),
+        axis.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+        axis.title = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
         legend.position = "none"
       )
     
@@ -249,6 +249,7 @@ aldex_volcano_plot <- function(table,
           color = "black",
           size = 3,
           vjust = -0.5,
+          fontfamily = "Times New Roman",
           fontface = "italic"
         )
     }

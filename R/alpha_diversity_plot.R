@@ -235,13 +235,14 @@ alpha_diversity_plot <- function(
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
       panel.spacing = grid::unit(1, "lines"),
-      strip.text = ggplot2::element_text(face = "bold", color = "black", size = 15),
+      strip.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman", face = "bold"),
       strip.background = ggplot2::element_rect(fill = strip_color),
-      axis.title.y = ggplot2::element_text(size = 14, face = "bold"),
-      axis.text.y = ggplot2::element_text(size = 10, colour = "black"),
-      axis.text.x = ggplot2::element_text(size = 10, color = "black"),
-      legend.title = ggplot2::element_text(size = 12, face = "bold"),
-      legend.text = ggplot2::element_text(size = 11),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      axis.text.x = ggplot2::element_text(size = 10, color = "black", family = "Times New Roman"),
+      axis.text.y = ggplot2::element_text(size = 10, color = "black", family = "Times New Roman"),
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
+      legend.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman" ),
       legend.position = if (show_legend) legend_position else "none"
     ) + aspect_ratio_theme 
   
@@ -261,7 +262,8 @@ alpha_diversity_plot <- function(
           data = .x,
           method = stat,
           label = "p.format",
-          size = 3,
+          size = 3.5,
+          family= "Times New Roman",
           hide.ns = TRUE,
           mapping = ggplot2::aes(label = ..p.format..),
           label.y = y_val,
@@ -281,6 +283,8 @@ alpha_diversity_plot <- function(
       hjust = -0.5,
       vjust = 1.5,
       fontface = "bold",
+      family= "Times New Roman",
+      size= 6,
       inherit.aes = FALSE
     )
   }

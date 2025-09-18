@@ -387,7 +387,7 @@ abundance_barplot <- function(table,
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
-      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
       strip.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman", face = "bold"),
       axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
       axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),

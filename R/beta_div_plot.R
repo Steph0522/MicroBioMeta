@@ -153,14 +153,17 @@ beta_div_plot <- function(table, metadata,
   p <- p +
     ggplot2::geom_vline(xintercept = 0, linetype = 2) +
     ggplot2::geom_hline(yintercept = 0, linetype = 2) +
-    ggplot2::theme_linedraw() +
+    ggplot2::theme_classic() +
     fill_scale +
     ggplot2::labs(x = x_lab, y = y_lab) +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(colour = "black", size = 12),
-      axis.title = ggplot2::element_text(colour = "black", size = 12),
-      legend.text = ggplot2::element_text(size = 10),
-      legend.title = ggplot2::element_text(size = 12),
+      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
+      axis.text.y = ggplot2::element_text(color = "black", size = 12,  family = "Times New Roman"),
+      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
+      axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
+      legend.text = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
+      legend.title = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
+      plot.title = ggplot2::element_text(color = "black", size = 16, face = "bold", family = "Times New Roman"),
       legend.position = "right",
       legend.box = "vertical",
       panel.grid.major = ggplot2::element_blank(),
@@ -189,7 +192,7 @@ beta_div_plot <- function(table, metadata,
       ggrepel::geom_label_repel(data = rot_df,
                                 aes(x = PC1, y = PC2, label = label),
                                 fill = "white", color = "black",
-                                fontface = "italic", size = 4,
+                                fontface = "italic", size = 4, family= "Times New Roman",
                                 inherit.aes = FALSE)
   }
   
