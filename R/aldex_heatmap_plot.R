@@ -169,17 +169,17 @@ aldex_heatmap_plot <- function(table,
       width = unit(4, "cm")
     ),
     show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 8),
+    annotation_name_gp = grid::gpar(fontsize = 12, fontfamily= "Times New Roman"),
     annotation_name_rot = 0
   )
   
   annP <- ComplexHeatmap::rowAnnotation(
     "p-value" = aldex_plot$p.value,
     simple_anno_size = unit(0.45, "cm"),
-    annotation_name_gp = grid::gpar(fontsize = 8, fontface = "bold"),
+    annotation_name_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "Times New Roman"),
     annotation_legend_param = list(
-      title_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-      labels_gp = grid::gpar(fontsize = 8),
+      title_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "Times New Roman"),
+      labels_gp = grid::gpar(fontsize = 12, fontfamily= "Times New Roman"),
       direction = "vertical"
     ),
     col = pvalue_colors,
@@ -194,10 +194,10 @@ aldex_heatmap_plot <- function(table,
     "Effect size" = aldex_plot$effect,
     col = list("Effect size" = effect_colors),
     simple_anno_size = unit(0.45, "cm"),
-    annotation_name_gp = grid::gpar(fontsize = 8, fontface = "bold"),
+    annotation_name_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "Times New Roman"),
     annotation_legend_param = list(
-      title_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-      labels_gp = grid::gpar(fontsize = 8),
+      title_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "Times New Roman"),
+      labels_gp = grid::gpar(fontsize = 12, fontfamily= "Times New Roman"),
       direction = "vertical"
     ),
     show_legend = TRUE,
@@ -220,13 +220,13 @@ aldex_heatmap_plot <- function(table,
     name = "Median clr value",
     heatmap_legend_param = list(
       direction = "vertical",
-      labels_gp = grid::gpar(fontsize = 8),
-      title_gp = grid::gpar(fontsize = 8, fontface = "bold"),
+      labels_gp = grid::gpar(fontsize = 12, fontfamily= "Times New Roman"),
+      title_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "Times New Roman"),
       legend_height = unit(2, "cm")
     ),
-    column_names_gp = grid::gpar(fontsize = 8, fontface = "bold"),
+    column_names_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "Times New Roman"),
     col = heatmap_colors,
-    row_names_gp = grid::gpar(fontsize = 8, fontface = "italic"),
+    row_names_gp = grid::gpar(fontsize = 12, fontface = "italic", fontfamily= "Times New Roman"),
     show_heatmap_legend = TRUE
   )
   
