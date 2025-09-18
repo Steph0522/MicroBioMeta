@@ -35,10 +35,14 @@ alpha_hill_corrplot <- function(table,
   )
   
   # Define common plot parameters
-  base_theme <- ggplot2::theme_bw() +
+  base_theme <- ggplot2::theme_test() +
     ggplot2::theme(legend.title = ggplot2::element_blank(), 
                    legend.position = "none", 
-                   axis.text = element_text(colour = "black"))
+                   axis.title.x = element_text(color = "black", family = "Times New Roman", size = 12),
+                   axis.title.y = element_text(color = "black", family = "Times New Roman", size = 12),
+                   axis.text.y = element_text(colour = "black", family = "Times New Roman", size = 9),
+                   axis.text.x = element_text(colour = "black", family = "Times New Roman", size = 8))
+                   
   
   # Adjust aspect ratio if vertical
   aspect_ratio_theme <- if (facet_orientation == "horizontal") {NULL } else { 0.5}
@@ -89,10 +93,10 @@ alpha_hill_corrplot <- function(table,
       return(grid_plot)
     } else if (tolower(plot_title) == "default") {
       title <- cowplot::ggdraw() +
-        cowplot::draw_label("Alpha diversity vs sequencing depth", fontface = 'bold')
+        cowplot::draw_label("Alpha diversity vs sequencing depth", fontface = 'bold', fontfamily= 'Times New Roman')
     } else {
       title <- cowplot::ggdraw() +
-        cowplot::draw_label(plot_title, fontface = 'bold')
+        cowplot::draw_label(plot_title, fontface = 'bold', fontfamily= 'Times New Roman')
     }
     cowplot::plot_grid(title, grid_plot, ncol = 1, rel_heights = c(0.1, 1))
   } else {
