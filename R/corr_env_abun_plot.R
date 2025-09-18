@@ -142,7 +142,7 @@ corr_env_abund_plot <- function(table,
   #esto hace que al graficar salga sólo ese nombre y no toda la taxonomía
   
   if (taxonomy_db %in% c("unite","silva", "gg2") && level == "species") {
-    table <-table %>%
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -166,7 +166,7 @@ corr_env_abund_plot <- function(table,
       )
   }
   if (taxonomy_db == "Kraken2" && level == "species") {
-    table <-table %>%
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -193,8 +193,24 @@ corr_env_abund_plot <- function(table,
   
   
   # Simplify taxonomy for SILVA
-  if (taxonomy_db %in% c("unite","silva", "Kraken2", "gg2") && level == "genus") {
-    table <-table %>%
+  if (taxonomy_db %in% c("silva") && level == "genus") {
+    avg_by_group <- avg_by_group %>%
+      dplyr::mutate(
+        taxonomy = dplyr::case_when(
+          taxonomy == "Other" ~ "Other",
+          grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$|g__Incertae_Sedis", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$|f__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$|o__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$|c__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$|p__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          TRUE ~ "Unclassified"
+        )
+      )
+  }
+  
+  
+  if (taxonomy_db %in% c("unite", "Kraken2", "gg2") && level == "genus") {
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
@@ -208,45 +224,45 @@ corr_env_abund_plot <- function(table,
       )
   }
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "family") {
-    table <-table %>%
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
-          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ sub(".*f__([^;]*).*", "\\1", taxonomy),
-          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
-          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
-          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$|f__Incertae_Sedis", taxonomy) ~ sub(".*f__([^;]*).*", "\\1", taxonomy),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$|o__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$|c__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$|p__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
           TRUE ~ "Unclassified"
         )
       )
   }
   
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "order") {
-    table <-table %>%
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
-          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ sub(".*o__([^;]*).*", "\\1", taxonomy),
-          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
-          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$|o__Incertae_Sedis", taxonomy) ~ sub(".*o__([^;]*).*", "\\1", taxonomy),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$|c__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$|p__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
           TRUE ~ "Unclassified"
         )
       )
   }
   
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "class") {
-    table <-table %>%
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
-          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ sub(".*c__([^;]*).*", "\\1", taxonomy),
-          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
+          grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$|c__Incertae_Sedis", taxonomy) ~ sub(".*c__([^;]*).*", "\\1", taxonomy),
+          grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$|p__Incertae_Sedis", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
           TRUE ~ "Unclassified"
         )
       )
   }
   if (taxonomy_db %in% c("unite","silva", "Kraken2","gg2") && level == "phylum") {
-    table <-table %>%
+    avg_by_group <- avg_by_group %>%
       dplyr::mutate(
         taxonomy = dplyr::case_when(
           taxonomy == "Other" ~ "Other",
