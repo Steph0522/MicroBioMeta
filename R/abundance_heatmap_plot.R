@@ -175,7 +175,7 @@ abundance_heatmap_plot <- function(table,
     Phylum = annotation_rows$phylum, 
     show_legend = FALSE,
     show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 11, fontface="bold"),
+    annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "Times New Roman"),
     gp = grid::gpar(col = "white"),
     col = cols_phyl
   )
@@ -186,7 +186,7 @@ abundance_heatmap_plot <- function(table,
     at = unique(annotation_rows$phylum), 
     legend_gp = grid::gpar(fill = c5.phylum), 
     title = "Phylum", 
-    labels_gp = grid::gpar(fontsize=11)))
+    labels_gp = grid::gpar(fontsize=12, fontfamily= "Times New Roman")))
   
   
   # Process condition1 if exists
@@ -208,7 +208,7 @@ abundance_heatmap_plot <- function(table,
       col = setNames(list(color_mapping), condition1),
       show_legend = FALSE,
       show_annotation_name = TRUE,
-      annotation_name_gp = grid::gpar(fontsize = 11, fontface="bold"),
+      annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "Times New Roman"),
       gp = grid::gpar(col = "white")
     )
     
@@ -216,7 +216,7 @@ abundance_heatmap_plot <- function(table,
       at = names(color_mapping),
       legend_gp = grid::gpar(fill = color_mapping),
       title = if (!is.null(name_legend_condition1)) name_legend_condition1 else condition1,
-      labels_gp = grid::gpar(fontsize=11)
+      labels_gp = grid::gpar(fontsize=12, fontfamily= "Times New Roman")
     )
   }
 #Process condition2 if exists
@@ -238,7 +238,7 @@ if (!is.null(condition2)) {
     col = setNames(list(color_mapping), condition2),
     show_legend = FALSE,
     show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 11, fontface="bold"),
+    annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "Times New Roman"),
     gp = grid::gpar(col = "white")
   )
   
@@ -246,7 +246,7 @@ if (!is.null(condition2)) {
     at = names(color_mapping),
     legend_gp = grid::gpar(fill = color_mapping),
     title = if (!is.null(name_legend_condition2)) name_legend_condition2 else condition2,
-    labels_gp = grid::gpar(fontsize=11)
+    labels_gp = grid::gpar(fontsize=12, fontfamily= "Times New Roman")
   )
 }
 
@@ -269,7 +269,7 @@ if (!is.null(condition3)) {
     col = setNames(list(color_mapping), condition3),
     show_legend = FALSE,
     show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 11, fontface="bold"),
+    annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "Times New Roman"),
     gp = grid::gpar(col = "white")
   )
   
@@ -277,7 +277,7 @@ if (!is.null(condition3)) {
     at = names(color_mapping),
     legend_gp = grid::gpar(fill = color_mapping),
     title = if (!is.null(name_legend_condition3)) name_legend_condition3 else condition3,
-    labels_gp = grid::gpar(fontsize=11)
+    labels_gp = grid::gpar(fontsize=12, fontfamily= "Times New Roman")
   )
 }
 
@@ -293,16 +293,16 @@ if (!is.null(condition3)) {
     col = my_palette,
     heatmap_legend_param = list(
       direction = "horizontal",
-      labels_gp = grid::gpar(fontsize = 7),
-      legend_gp = grid::gpar(fontsize = 9),
+      labels_gp = grid::gpar(fontsize = 8.4, fontfamily= "Times New Roman"),
+      legend_gp = grid::gpar(fontsize = 10.4, fontfamily= "Times New Roman"),
       title = "Relative abundance (%)",
       title_position = "topcenter",
       at = c(0,1,2,3,5,8,10,25, 50, 100),
       break_dist = 1
     ),
     rect_gp = grid::gpar(col = "black", lwd = 0.5),    
-    row_names_gp = grid::gpar(fontsize = 7, fontface = "italic"), 
-    column_names_gp = grid::gpar(fontsize=7),
+    row_names_gp = grid::gpar(fontsize = 11, fontface = "italic", fontfamily= "Times New Roman"), 
+    column_names_gp = grid::gpar(fontsize=11, fontfamily= "Times New Roman"),
     cluster_columns = FALSE,
     cluster_rows = cluster,
     row_order = row_order,  # Añadido para mantener orden cuando cluster=FALSE

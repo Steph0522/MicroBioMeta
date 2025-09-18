@@ -387,11 +387,13 @@ abundance_barplot <- function(table,
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
-      legend.title = ggplot2::element_text(size = 12),
-      axis.title = ggplot2::element_text(size = 14, color = "black"),
-      axis.text.x = ggplot2::element_text(size = 12, colour = "black"),
-      axis.text.y = ggplot2::element_text(size = 12, colour = "black"),
-      legend.text = ggplot2::element_text(size = 10)
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      strip.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman", face = "bold"),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+      legend.text = ggplot2::element_text(size = 12, family = "Times New Roman")
     ) +
     ggplot2::coord_cartesian(ylim = c(0, 100)) +
     ggplot2::ylab("Relative abundance (%)") +
