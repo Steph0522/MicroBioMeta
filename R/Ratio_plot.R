@@ -135,10 +135,16 @@ ratio_plot2 <- function(table,
     labs(
       x = "Ratio",
       y = x_axis_title,
-      fill = "Dominant Condition"
-    ) +
+      fill = "Dominant Condition") +
     coord_cartesian(xlim = x_limits) +
-    theme_minimal(base_size = 12)
+    theme_test(base_size = 12) + 
+    theme(
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
+      legend.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"))
   
   return(p)
 }
