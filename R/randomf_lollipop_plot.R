@@ -178,7 +178,7 @@ randomf_lollipop_plot <- function(table,
         yend = MeanDecreaseGini
       ),
       color = "black", 
-      linewidth = 2
+      linewidth = 1
     ) +
     ggplot2::ylab("Feature importance (MeanDecreaseGini)") +
     ggplot2::geom_point(size = size, shape = 21, color = "black") +
@@ -188,13 +188,13 @@ randomf_lollipop_plot <- function(table,
     ggplot2::ggtitle(legend_figure) +
     ggplot2::theme(
       axis.title.y = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_text(size = 13),
-      axis.text.x = ggplot2::element_text(size = 11, color = "black"),
-      axis.text.y = ggplot2::element_text(size = 14, face = "italic", colour = "black"),
-      legend.position = "bottom",
-      legend.title = ggplot2::element_text(size = 11),
-      legend.text = ggplot2::element_text(size = 10),
-      plot.title = ggplot2::element_text(size = 20)
+      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
+      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
+      axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman", face = "italic"),
+      legend.position = "right",
+      legend.title = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman", face = "bold"),
+      legend.text = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
+      plot.title = ggplot2::element_text(color = "black", size = 16, face = "bold", family = "Times New Roman")
     )
   
   return(lollipop) 
