@@ -105,10 +105,10 @@ beta_partition_plot <- function(table, metadata,
       color_scale +
       ggplot2::labs(color = if(!is.null(legend_title)) legend_title else group_col) +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(colour = "black", size = 12),
-        axis.title = ggplot2::element_text(colour = "black", size = 12),
-        legend.text = ggplot2::element_text(size = 10),
-        legend.title = ggplot2::element_text(size = 12),
+        axis.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+        axis.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
+        legend.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+        legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
         legend.position = "right",
         legend.box = "vertical",
         panel.grid.major = ggplot2::element_blank(),
@@ -139,14 +139,13 @@ beta_partition_plot <- function(table, metadata,
   
   leg <- cowplot::get_legend(plot_jac)
   panel <- cowplot::plot_grid(
-    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + 
-      ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(index, " dissimilarity (mean = ", mean_jac, ")")),
-    plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::ylab("") + ggplot2::xlab("DIM1") + 
-      ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
-    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::ylab("") + ggplot2::xlab("DIM1") + 
-      ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")")),
-    ncol = 3, align = "hv", labels = c("A", "B", "C")
-  )
+    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = element_text(size = 12, color = "black", family = "Times New Roman", face = "bold")) +
+      ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(index, " dissimilarity (mean = ", mean_jac, ")")),
+     plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = element_text(size = 12, color = "black", family = "Times New Roman", face = "bold")) +
+      ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
+    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = element_text(size = 12, color = "black", family = "Times New Roman", face = "bold")) +
+      ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")")),
+    ncol = 3, align = "hv", labels = c("A", "B", "C"), label_fontfamily = "Times New Roman", color = "black", label_fontface = "bold" )
   
   combined_plot <- cowplot::plot_grid(leg, panel, ncol = 1, rel_heights = c(0.1,1))
   
