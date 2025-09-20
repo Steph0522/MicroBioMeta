@@ -103,7 +103,7 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
     stop("Method must be 'ggvenn' or 'ggvenndiagram'.")
   }
   
-  venn_plot <- venn_plot + ggtitle(title) + theme(legend.position = "none")
+  venn_plot <- venn_plot + ggtitle(title) + theme(legend.position = "top")
   return(venn_plot)
 }
 
