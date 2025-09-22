@@ -36,18 +36,30 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                     s = stringr::str_replace(s, "^\\s*[a-zA-Z]+__", ""),
                     s = stringr::str_replace_all(s, "_", " "))
   }else if (tolower(taxonomy_db) == "unite") {
- ###checar, porque da problemas con los incertea sedis   
+    otu_rel_parse <- otu_rel_parse %>%
+      # eliminar prefijos tipo k__, p__, c__, etc., pero conservar "incertae sedis"
+      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ ifelse(grepl("incertae sedis", .), ., stringr::str_remove(., "^[a-zA-Z]+__")))) %>%
+      # reemplazar guiones bajos por espacios en todas las columnas
+      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_replace_all(., "_", " ")))
+  
+  
+  } else if (tolower(taxonomy_db) %in% c("gg", "gg2", "greengenes2")) {
+    
     otu_rel_parse <- otu_rel_parse %>%
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
-      dplyr::mutate(across(c(s), ~ stringr::str_replace_all(., "_", " ")))
-    
-  } else if (tolower(taxonomy_db) %in% c("gg", "gg2", "greengenes2")) {
-   
-    otu_rel_parse <- otu_rel_parse %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_remove(., "^D_[0-9]+__"))) %>%
-      dplyr::mutate(across(c(s), ~ stringr::str_replace_all(., "_", " ")))
- 
-     }else if(tolower(taxonomy_db) == "kraken2") {
+      dplyr::mutate(dplyr::across(c(p,c,o,f,g), ~ stringr::str_replace(., "_[A-Z](_\\d+)?$", ""))) %>%
+      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g), ~ stringr::str_replace_all(., "_", " "))) %>%
+      
+      # limpiar la especie
+      dplyr::mutate(
+        s = stringr::str_replace(s, "^s__", ""),                   
+        s = stringr::str_replace(s, "_[A-Z](_\\d+)?$", ""),       
+        s = stringr::str_replace_all(s, "_", " "),               
+        s = stringr::str_trim(s)                                   
+      )
+  
+  
+  }else if(tolower(taxonomy_db) == "kraken2") {
     otu_rel_parse <- otu_rel_parse %>%
       dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_extract(., "[^_]+$")),
                     s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g,s,sep=" "), s))
