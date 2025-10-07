@@ -64,7 +64,9 @@ alpha_diversity_plot <- function(
     axis_x_title = NULL,
     axis_y_title = "Diversity measure",
     free_y = FALSE, 
-    rarefy_depth=NULL) {
+    rarefy_depth=NULL,
+    save_table = TRUE,
+    table_filename = "diversity.txt") {
   
   
   #considero que esta parte no debería ser necesaria, no sé si es buena idea remover asvs 
@@ -103,6 +105,18 @@ alpha_diversity_plot <- function(
   
   # Unir con metadata por SAMPLEID
   results <- dplyr::left_join(results, metadata, by = "SAMPLEID")
+  
+  # Guardar tabla si se solicita
+  if (save_table) {
+    utils::write.table(
+      results,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    )
+    message(paste("Table saved as:", table_filename))
+  }
   
   results[[fill_col]] <- factor(results[[fill_col]], levels = unique(results[[fill_col]]))
   results[[x_col]] <- factor(results[[x_col]], levels = unique(results[[x_col]]))
