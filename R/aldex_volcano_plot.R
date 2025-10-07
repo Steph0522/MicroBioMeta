@@ -27,7 +27,9 @@ aldex_volcano_plot <- function(table,
                                cond = NULL,
                                cutoff.pval = 0.05,
                                show_labels = TRUE,
-                               taxa = NULL) {
+                               taxa = NULL,
+                               save_table = TRUE,
+                               table_filename = "aldex_pval_effect.txt") {
   
   # Verificar que type tiene un valor válido
   if (!type %in% c("effect", "volcano")) {
@@ -82,6 +84,10 @@ aldex_volcano_plot <- function(table,
   
   aldex_clr <- ALDEx2::aldex(table, conditions, mc.samples = 128, denom = "all")
   
+  
+  
+  
+  
   # Procesar datos taxonómicos para ambos tipos de gráficos
   processed_data <- aldex_clr %>%
     tibble::rownames_to_column(var = "Feature.ID") %>%
@@ -95,6 +101,19 @@ aldex_volcano_plot <- function(table,
         TRUE ~ Feature.ID
       )
     )
+  
+  # Guardar tabla si se solicita
+  if (save_table) {
+    utils::write.table(
+      processed_data,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    ) 
+    message(paste("Table saved as:", table_filename))
+  }
+  
   
   if (type == "effect") {
     # Preparar datos para effect plot
