@@ -36,7 +36,9 @@ abundance_barplot <- function(table,
                               label = "taxonomy",
                               top_n_groups = 15,
                               x_axis_title = "Samples",
-                              add_remained = FALSE) {
+                              add_remained = FALSE,
+                              save_table = TRUE,
+                              table_filename = "relative_abundance.txt") {
   
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
@@ -132,6 +134,18 @@ abundance_barplot <- function(table,
   
   # Calculate relative abundance
   table[,-1] <- sweep(table[,-1], 2, colSums(table[,-1], na.rm = TRUE), FUN = "/") * 100
+  
+  # Guardar tabla si se solicita
+  if (save_table) {
+    utils::write.table(
+      table,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    ) 
+    message(paste("Table saved as:", table_filename))
+  }
   
   # Convert to long format
   table_long <- table %>%
