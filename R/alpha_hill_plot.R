@@ -63,7 +63,9 @@ alpha_hill_plot <- function(
     legend_position = "bottom",
     axis_x_title = NULL,
     axis_y_title = "Effective number of features",
-    free_y = FALSE) {
+    free_y = FALSE,
+    save_table = TRUE,
+    table_filename = "hill.txt") {
   
   sample_order <- metadata[[1]]
   common_samples <- intersect(colnames(table), sample_order)
@@ -79,6 +81,19 @@ alpha_hill_plot <- function(
     q2 = hillR::hill_taxa(comm = table, q = 2),
     metadata
   )
+  
+  # Guardar tabla si se solicita
+  if (save_table) {
+    utils::write.table(
+      results,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    )
+    message(paste("Table saved as:", table_filename))
+  }
+  
   
   results[[fill_col]] <- factor(results[[fill_col]], levels = unique(results[[fill_col]]))
   results[[x_col]] <- factor(results[[x_col]], levels = unique(results[[x_col]]))
