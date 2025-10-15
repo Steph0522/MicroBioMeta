@@ -52,7 +52,9 @@ corr_env_abund_plot <- function(table,
                                 invert_axes = TRUE,
                                 taxonomy_db = "silva",
                                 level = "genus",
-                                pval_threshold= NULL) {
+                                pval_threshold= NULL,
+                                save_table = TRUE,
+                                table_filename = "corr.txt") {
    geom <- match.arg(geom)
    rownames(table) <- NULL
   
@@ -84,60 +86,47 @@ corr_env_abund_plot <- function(table,
   rownames(metadata) <- metadata$SAMPLEID
   
   
-  #colapsar la tabla al nivel taxonómico deseado
+  # --- Colapsar la tabla al nivel taxonómico deseado ---
   if (taxonomy_db %in% c("silva", "Kraken2", "gg2")) {
-    if (level == "kingdom") {
-      table$taxonomy <- sub(";.*", "", table$taxonomy)
-    }
-    if (level == "phylum") {
-      table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
-    }
-    if (level == "class") {
-      table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
-    }
-    if (level == "order") {
-      table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
-    }
-    if (level == "family") {
-      table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
-    }
-    if (level == "genus") {
-      table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
-    }
-    if (level == "species") {
-      table$taxonomy <- table$taxonomy
-    }
+    if (level == "kingdom") table$taxonomy <- sub(";.*", "", table$taxonomy)
+    if (level == "phylum") table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
+    if (level == "class") table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
+    if (level == "order") table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
+    if (level == "family") table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
+    if (level == "genus") table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
+    if (level == "species") table$taxonomy <- table$taxonomy
   }
   
-  # ---- Colapsar taxonomía según nivel ----
   if (taxonomy_db == "unite") {
-    if (level == "kingdom") {
-      table$taxonomy <- sub(";.*", "", table$taxonomy)
-    }
-    if (level == "phylum") {
-      table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
-    }
-    if (level == "class") {
-      table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
-    }
-    if (level == "order") {
-      table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
-    }
-    if (level == "family") {
-      table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
-    }
-    if (level == "genus") {
-      table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
-    }
-    if (level == "species") {
-      table$taxonomy <- sub(";\\s?sh__.*", "", table$taxonomy)
-    }
+    if (level == "kingdom") table$taxonomy <- sub(";.*", "", table$taxonomy)
+    if (level == "phylum") table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
+    if (level == "class") table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
+    if (level == "order") table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
+    if (level == "family") table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
+    if (level == "genus") table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
+    if (level == "species") table$taxonomy <- sub(";\\s?sh__.*", "", table$taxonomy)
   }
   
+  # --- Limpieza profunda antes de agrupar ---
+  table$taxonomy <- table$taxonomy %>%
+    trimws() %>%                    # quita espacios antes/después
+    gsub("\\s+", " ", .) %>%        # espacios dobles → uno solo
+    gsub(";+$", "", .) %>%          # elimina ; al final
+    gsub("_+$", "", .) %>%          # elimina guiones bajos residuales
+    gsub("\\.$", "", .)             # elimina puntos finales
   
+  # --- Agrupar y colapsar realmente ---
   table <- table %>%
     dplyr::group_by(taxonomy) %>%
-    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE))
+    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
+    as.data.frame()
+  
+ # rownames(table) <- make.unique(table$taxonomy)
+  #table$taxonomy <- NULL
+  
+
+  
   
   #modificar la columna taxonomy para solo conservar el nombre al nivel que colapsamos
   #esto hace que al graficar salga sólo ese nombre y no toda la taxonomía
@@ -274,6 +263,13 @@ corr_env_abund_plot <- function(table,
       )
   }
   
+  # --- Agrupar y colapsar realmente ---
+  table <- table %>%
+    dplyr::group_by(taxonomy) %>%
+    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
+    as.data.frame()
+  
   
   # Asegurar que la columna "taxonomy" sea rownames
   if ("taxonomy" %in% colnames(table)) {
@@ -306,6 +302,23 @@ corr_env_abund_plot <- function(table,
   
   # Matriz de correlación general
   corr_mat <- stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
+  
+  # Guardar tabla si se solicita
+  if (save_table) {
+    # Convertir a data frame y conservar nombres de filas
+    corr_df <- as.data.frame(corr_mat)
+    corr_df <- cbind(Taxon = rownames(corr_df), corr_df)
+    
+    utils::write.table(
+      corr_df,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    )
+    
+    message(paste("Table saved as:", table_filename))
+  }
   
   # --- Calcular p-values si se indica pval_threshold
   if (!is.null(pval_threshold)) {
