@@ -27,7 +27,9 @@ beta_diversity_boxplot <- function(
     color_axis_x = NULL,
     title_axis_x = "Condition",
     partition = c("shared","turnover","nestedness"),
-    family = c("sorensen","jaccard")
+    family = c("sorensen","jaccard"),
+    save_table = TRUE,
+    table_filename = "betadiv_table.txt"
 ) {
   
   # --- Ensure required packages ---
@@ -77,6 +79,17 @@ beta_diversity_boxplot <- function(
     beta_df <- dplyr::filter(beta_df, condition1_group %in% comparison_condition1)
   }
   
+  
+  if (save_table) {
+    utils::write.table(
+      beta_df,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    )
+    message(paste("Table saved as:", table_filename))
+  }
   # --- Default palettes if missing ---
   n_groups <- length(unique(beta_df$condition1_group))
   if(is.null(color_axis_x)) color_axis_x <- RColorBrewer::brewer.pal(max(3,n_groups),"Paired")[1:n_groups]
