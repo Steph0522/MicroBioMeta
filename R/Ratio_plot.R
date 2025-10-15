@@ -9,7 +9,9 @@ ratio_plot2 <- function(table,
                        x_axis_title = "Taxon",
                        fill_palette = c("#1f77b4", "#ff7f0e", "#999999"),  # A, B, Neutral
                        x_limits = NULL,
-                       neutral_threshold = 1) {
+                       neutral_threshold = 1,
+                       save_table = TRUE,
+                       table_filename = "ratio.txt") {
   library(tidyverse)
   
   # Filtrar metadatos
@@ -110,6 +112,18 @@ ratio_plot2 <- function(table,
       )
     ) %>%
     ungroup()
+  
+  #guardar tabla
+  if (save_table) {
+    utils::write.table(
+      summary_data,
+      file = table_filename,
+      sep = "\t",
+      quote = FALSE,
+      row.names = FALSE
+    )
+    message(paste("Table saved as:", table_filename))
+  }
   
   # Top N por abundancia
   top_taxa <- summary_data %>%
