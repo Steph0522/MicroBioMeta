@@ -103,7 +103,10 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
     stop("Method must be 'ggvenn' or 'ggvenndiagram'.")
   }
   
-  venn_plot <- venn_plot + ggtitle(title) + theme(legend.position = "top")
+  venn_plot <- venn_plot + 
+               ggtitle(title) + 
+               theme(legend.position = "right",
+                     legend.text = ggplot2::element_text(size = 28, family = "Times New Roman"))
   return(venn_plot)
 }
 

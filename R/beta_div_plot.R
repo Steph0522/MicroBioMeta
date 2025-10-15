@@ -196,5 +196,13 @@ beta_div_plot <- function(table, metadata,
                                 inherit.aes = FALSE)
   }
   
+  # --- Centrar ejes simétricamente ---
+  x_limits <- range(merged[[names(ord_df)[1]]], na.rm = TRUE)
+  y_limits <- range(merged[[names(ord_df)[2]]], na.rm = TRUE)
+  max_range <- max(abs(x_limits), abs(y_limits))
+  p <- p + ggplot2::coord_cartesian(xlim = c(-max_range, max_range),
+                                    ylim = c(-max_range, max_range)) +
+    ggplot2::coord_fixed()  # Mantiene proporción 1:1
+  
   return(p)
 }
