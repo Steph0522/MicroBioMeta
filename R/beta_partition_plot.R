@@ -20,7 +20,9 @@ beta_partition_plot <- function(table, metadata,
                                 shape_col = NULL, 
                                 legend_title = NULL,
                                 point_size = 3,
-                                colors = NULL) {   
+                                colors = NULL,
+                                save_table = TRUE,
+                                table_filename = "SAMPLE1") {   
   suppressWarnings({
     
   
@@ -58,6 +60,44 @@ beta_partition_plot <- function(table, metadata,
   jacs <- vegan::betadisper(jac, factor(env1[[group_col]]))
   jtus <- vegan::betadisper(jtu, factor(env1[[group_col]]))
   jnes <- vegan::betadisper(jne, factor(env1[[group_col]]))
+  
+  # Guardar tabla si se solicita
+  if (save_table) {
+    
+    # convertir betadisper en data.frame
+    betadisper_to_df <- function(bd_obj) {
+      data.frame(
+        SampleID = names(bd_obj$distances),
+        Group = bd_obj$group,
+        Distance_to_Centroid = bd_obj$distances,
+        bd_obj$vectors,  # coordenadas PCoA
+        check.names = FALSE
+      )
+    }
+    
+    # Crear los data frames
+    jacs_df <- betadisper_to_df(jacs)
+    jtus_df <- betadisper_to_df(jtus)
+    jnes_df <- betadisper_to_df(jnes)
+    
+    # Obtener nombre base sin extensión
+    base_name <- tools::file_path_sans_ext(table_filename)
+    
+    # Generar nombres únicos
+    file_jacs <- paste0(base_name, "_jacs.txt")
+    file_jtus <- paste0(base_name, "_jtus.txt")
+    file_jnes <- paste0(base_name, "_jnes.txt")
+    
+    # Guardar cada tabla
+    utils::write.table(jacs_df, file = file_jacs, sep = "\t", quote = FALSE, row.names = FALSE)
+    utils::write.table(jtus_df, file = file_jtus, sep = "\t", quote = FALSE, row.names = FALSE)
+    utils::write.table(jnes_df, file = file_jnes, sep = "\t", quote = FALSE, row.names = FALSE)
+    
+    message("Tables saved as:")
+    message(file_jacs)
+    message(file_jtus)
+    message(file_jnes)
+  }
   
   mean_jac <- round(mean(as.dist(jac)), 3)
   mean_turn <- round(mean(as.dist(jtu)), 3)
