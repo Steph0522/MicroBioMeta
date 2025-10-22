@@ -1,8 +1,6 @@
-# MicroBioMeta <img src="man/figures/logo.jpg" alt="Logo" width="150" align="right"/>
+# 🧬 MicroBioMeta <img src="man/figures/logo.jpg" alt="Logo" width="150" align="right"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# 🧬 MicroBioMeta
 
 <!-- badges: start -->
 
