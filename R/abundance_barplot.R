@@ -401,13 +401,13 @@ abundance_barplot <- function(table,
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
-      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Arial", face = "bold"),
-      strip.text = ggplot2::element_text(size = 12, color = "black", family = "Arial", face = "bold"),
-      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Arial"),
-      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Arial"),
-      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "Arial"),
-      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "Arial"),
-      legend.text = ggplot2::element_text(size = 12, family = "Arial")
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "sans", face = "bold"),
+      strip.text = ggplot2::element_text(size = 12, color = "black", family = "sans", face = "bold"),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "sans"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "sans"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "sans"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "sans"),
+      legend.text = ggplot2::element_text(size = 12, family = "sans")
     ) +
     ggplot2::coord_cartesian(ylim = c(0, 100)) +
     ggplot2::ylab("Relative abundance (%)") +
