@@ -401,13 +401,13 @@ abundance_barplot <- function(table,
     ggplot2::theme_bw() +
     ggplot2::theme(
       panel.grid = ggplot2::element_blank(),
-      legend.title = ggplot2::element_text(size = 14, color = "black", family = "mono", face = "bold"),
-      strip.text = ggplot2::element_text(size = 12, color = "black", family = "mono", face = "bold"),
-      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "mono"),
-      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "mono"),
-      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "mono"),
-      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "mono"),
-      legend.text = ggplot2::element_text(size = 12, family = "mono")
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold"),
+      strip.text = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold"),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "serif"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "serif"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+      legend.text = ggplot2::element_text(size = 12, family = "serif")
     ) +
     ggplot2::coord_cartesian(ylim = c(0, 100)) +
     ggplot2::ylab("Relative abundance (%)") +
