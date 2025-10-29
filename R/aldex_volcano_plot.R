@@ -160,8 +160,8 @@ aldex_volcano_plot <- function(table,
       ) +
       ggplot2::theme_test() +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(size =12, color = "black", family = "Times New Roman"),
-        axis.title = ggplot2::element_text(size = 12, color= "black", family = "Times New Roman"),
+        axis.text = ggplot2::element_text(size =12, color = "black", family = "serif"),
+        axis.title = ggplot2::element_text(size = 12, color= "black", family = "serif"),
         legend.position = "none"
       ) +
       ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x))
@@ -173,7 +173,7 @@ aldex_volcano_plot <- function(table,
           data = top_taxa,
           ggplot2::aes(label = taxa),
           color = "black",
-          fontfamily = "Times New Roman",
+          fontfamily = "serif",
           size = 3,
           vjust = -0.5,
           fontface = "italic"
@@ -187,7 +187,7 @@ aldex_volcano_plot <- function(table,
           "richtext",
           x = threshold_lower,
           y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("<b style='color:", col_inf, "; font-family:Times New Roman; font-size:14pt;'>Lower in ", cond, "</b>"),
+          label = paste0("<b style='color:", col_inf, "; font-family:serif; font-size:14pt;'>Lower in ", cond, "</b>"),
           size = 5,
           hjust = 1,
           vjust = 1
@@ -196,7 +196,7 @@ aldex_volcano_plot <- function(table,
           "richtext",
           x = threshold_upper,
           y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("<b style='color:", col_sup, "; font-family:Times New Roman; font-size:14pt;'>Higher in ", cond, "</b>"),
+          label = paste0("<b style='color:", col_sup, "; font-family:serif; font-size:14pt;'>Higher in ", cond, "</b>"),
           size = 5,
           hjust = 0,
           vjust = 1
@@ -255,8 +255,8 @@ aldex_volcano_plot <- function(table,
       ) +
       ggplot2::theme_test() +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
-        axis.title = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+        axis.text = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+        axis.title = ggplot2::element_text(size = 12, color = "black", family = "serif"),
         legend.position = "none"
       )
     
@@ -269,7 +269,7 @@ aldex_volcano_plot <- function(table,
           color = "black",
           size = 3,
           vjust = -0.5,
-          fontfamily = "Times New Roman",
+          fontfamily = "serif",
           fontface = "italic"
         )
     }

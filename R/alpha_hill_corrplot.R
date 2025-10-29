@@ -41,10 +41,10 @@ alpha_hill_corrplot <- function(table,
     ggplot2::theme(
       legend.title = ggplot2::element_blank(), 
       legend.position = "none", 
-      axis.title.x = ggplot2::element_text(color = "black", family = "Times New Roman", size = 12),
-      axis.title.y = ggplot2::element_text(color = "black", family = "Times New Roman", size = 12),
-      axis.text.y = ggplot2::element_text(colour = "black", family = "Times New Roman", size = 8),
-      axis.text.x = ggplot2::element_text(colour = "black", family = "Times New Roman", size = 4)
+      axis.title.x = ggplot2::element_text(color = "black", family = "serif", size = 12),
+      axis.title.y = ggplot2::element_text(color = "black", family = "serif", size = 12),
+      axis.text.y = ggplot2::element_text(colour = "black", family = "serif", size = 8),
+      axis.text.x = ggplot2::element_text(colour = "black", family = "serif", size = 4)
     )
   
   # --- Relación de aspecto ---
@@ -61,7 +61,7 @@ alpha_hill_corrplot <- function(table,
       label.x = 3,
       label.sep = "\n",
       size = 4.5,
-      family = "Times New Roman",
+      family = "serif",
       fontface = "bold",
       color = "black"
     )
@@ -81,7 +81,7 @@ alpha_hill_corrplot <- function(table,
       label.x = 3,
       label.sep = "\n",
       size = 4.5,
-      family = "Times New Roman",
+      family = "serif",
       fontface = "bold",
       color = "black"
     )
@@ -101,7 +101,7 @@ alpha_hill_corrplot <- function(table,
       label.x = 3,
       label.sep = "\n",
       size = 4.5,
-      family = "Times New Roman",
+      family = "serif",
       fontface = "bold",
       color = "black"
     )
@@ -116,7 +116,7 @@ alpha_hill_corrplot <- function(table,
       q0_vs_depth, q1_vs_depth, q2_vs_depth,
       labels = c("A", "B", "C"),
       nrow = 1,
-      label_fontfamily = "Times New Roman",
+      label_fontfamily = "serif",
       label_fontface = "bold",
       label_size = 16
     )
@@ -125,7 +125,7 @@ alpha_hill_corrplot <- function(table,
       q0_vs_depth, q1_vs_depth, q2_vs_depth,
       labels = c("A", "B", "C"),
       ncol = 1,
-      label_fontfamily = "Times New Roman",
+      label_fontfamily = "serif",
       label_fontface = "bold",
       label_size = 16
     )
@@ -139,12 +139,12 @@ alpha_hill_corrplot <- function(table,
       title <- cowplot::ggdraw() +
         cowplot::draw_label("Alpha diversity vs sequencing depth",
                             fontface = "bold",
-                            fontfamily = "Times New Roman")
+                            fontfamily = "serif")
     } else {
       title <- cowplot::ggdraw() +
         cowplot::draw_label(plot_title,
                             fontface = "bold",
-                            fontfamily = "Times New Roman")
+                            fontfamily = "serif")
     }
     cowplot::plot_grid(title, grid_plot, ncol = 1, rel_heights = c(0.1, 1))
   } else {
