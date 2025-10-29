@@ -27,18 +27,18 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
   
   if (!merge_by %in% colnames(metadata)) stop("Group or merge column is not in the metadata file.")
   
-  common_samples <- intersect(colnames(table), metadata$SAMPLEID)
+  common_samples <- intersect(colnames(table), metadata[[1]])
   table <- table[, c(common_samples), drop = FALSE]
-  metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop = FALSE]
+  metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
   rownames(metadata) <- NULL
   
   if (!is.null(selected_samples)) {
     common_samples <- intersect(selected_samples, colnames(table))
     table <- table[, c(common_samples), drop = FALSE]
-    metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop = FALSE]
+    metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
   }
   
-  metadata_split <- split(metadata$SAMPLEID, metadata[[merge_by]])
+  metadata_split <- split(metadata[[1]], metadata[[merge_by]])
   metadata_split <- metadata_split[sapply(metadata_split, length) > 0]
   num_groups <- length(metadata_split)
   
