@@ -94,8 +94,7 @@ alpha_hill_plot(
   #     facet_by2 = "estructura",
   free_y = T,
   legend_position = "top",
-  stat = "t.test"
-)+theme_classic()
+  stat = "t.test")
 
 
 alpha_diversity_plot(

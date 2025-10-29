@@ -1,0 +1,13 @@
+q0	q1	q2	SAMPLEID	metodo	edad	estructura	edad.metodo	estructura.metodo	Individuo
+39	7.53467668712112	5.6270056971986	Fe1	fenol	joven	plasmodio	fenol-joven	plasmodiofenol	P1
+58	6.37318562832873	3.92625772998305	Fe2	fenol	viejo	plasmodio	fenol-joven	plasmodiofenol	P1
+47	10.4479941153425	6.53114924413099	Fe3	fenol	joven	plasmodio	fenol-joven	plasmodiofenol	P1
+37	3.99621785943377	2.62455803499362	Fe4	fenol	viejo	plasmodio	fenol-joven	plasmodiofenol	P2
+30	7.70816544416646	5.54826423782736	Fe5	fenol	joven	plasmodio	fenol-joven	plasmodiofenol	P2
+36	6.87255230944209	4.32124196649028	Fe6	fenol	viejo	plasmodio	fenol-joven	plasmodiofenol	P2
+38	11.0482852907754	7.35417795339573	Q1	kit	joven	plasmodio	kit-joven	plasmodiokit	P3
+46	8.56978271985385	5.58129143173387	Q2	kit	viejo	plasmodio	kit-joven	plasmodiokit	P3
+82	11.725370468488	5.80104756955963	Q3	kit	joven	plasmodio	kit-joven	plasmodiokit	P3
+39	5.40596442678337	3.51225993132075	Q4	kit	viejo	plasmodio	kit-joven	plasmodiokit	P4
+38	8.34490712032971	5.11221076660268	Q5	kit	joven	plasmodio	kit-joven	plasmodiokit	P4
+43	8.72280870623139	5.89152593557475	Q6	kit	viejo	plasmodio	kit-joven	plasmodiokit	P4
