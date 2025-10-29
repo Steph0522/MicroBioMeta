@@ -64,20 +64,21 @@ aldex_volcano_plot <- function(table,
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
-  table <- column_to_rownames(table, var = colnames(table)[tax_col])
+  # table <- column_to_rownames(table, var = colnames(table)[tax_col])
   
-  # Identificar automáticamente la columna taxonómica (última columna)
-  #if (is.null(taxa)) {
-   # last_col <- ncol(table)
-    #taxa_colname <- colnames(table)[last_col]
-    #taxa <- data.frame(
-     # Feature.ID = rownames(table),
-      #Taxon = table[[taxa_colname]],
-      #stringsAsFactors = FALSE
-    #)
-    # Eliminar la última columna de table para el análisis
-    #table <- table[, -last_col, drop = FALSE]
-  #}
+  
+  #Identificar automáticamente la columna taxonómica (última columna)
+  if (is.null(taxa)) {
+    last_col <- ncol(table)
+    taxa_colname <- colnames(table)[last_col]
+    taxa <- data.frame(
+      Feature.ID = rownames(table),
+      Taxon = table[[taxa_colname]],
+      stringsAsFactors = FALSE
+    )
+    #  Eliminar la última columna de table para el análisis
+    table <- table[, -last_col, drop = FALSE]
+  }
   
   conditions <- metadata[[col_cond]]
   groups <- unique(conditions)
@@ -92,15 +93,15 @@ aldex_volcano_plot <- function(table,
   
   # Procesar datos taxonómicos para ambos tipos de gráficos
   processed_data <- aldex_clr %>%
-    tibble::rownames_to_column(var = "Taxon") %>%
-   # dplyr::left_join(taxa, by = "Feature.ID") %>%
+    tibble::rownames_to_column(var = "Feature.ID") %>%
+    dplyr::left_join(taxa, by = "Feature.ID") %>%
     dplyr::mutate(
       taxa = dplyr::case_when(
         stringr::str_detect(Taxon, "g__") ~ stringr::str_extract(Taxon, "(?<=g__)[^_;]+"),
         stringr::str_detect(Taxon, "f__") ~ stringr::str_extract(Taxon, "(?<=f__)[^_;]+"),
         stringr::str_detect(Taxon, "c__") ~ stringr::str_extract(Taxon, "(?<=c__)[^_;]+"),
         stringr::str_detect(Taxon, "o__") ~ stringr::str_extract(Taxon, "(?<=o__)[^_;]+"),
-        TRUE ~ Taxon
+        TRUE ~ Feature.ID
       )
     )
   
@@ -162,8 +163,8 @@ aldex_volcano_plot <- function(table,
       ) +
       ggplot2::theme_test() +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(size =12, color = "black", family = "serif"),
-        axis.title = ggplot2::element_text(size = 12, color= "black", family = "serif"),
+        axis.text = ggplot2::element_text(size =12, color = "black", family = "Times New Roman"),
+        axis.title = ggplot2::element_text(size = 12, color= "black", family = "Times New Roman"),
         legend.position = "none"
       ) +
       ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x))
@@ -175,7 +176,7 @@ aldex_volcano_plot <- function(table,
           data = top_taxa,
           ggplot2::aes(label = taxa),
           color = "black",
-          fontfamily = "serif",
+          fontfamily = "Times New Roman",
           size = 3,
           vjust = -0.5,
           fontface = "italic"
@@ -189,7 +190,7 @@ aldex_volcano_plot <- function(table,
           "richtext",
           x = threshold_lower,
           y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("<b style='color:", col_inf, "; font-family:serif; font-size:14pt;'>Lower in ", cond, "</b>"),
+          label = paste0("<b style='color:", col_inf, "; font-family:Times New Roman; font-size:14pt;'>Lower in ", cond, "</b>"),
           size = 5,
           hjust = 1,
           vjust = 1
@@ -198,7 +199,7 @@ aldex_volcano_plot <- function(table,
           "richtext",
           x = threshold_upper,
           y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("<b style='color:", col_sup, "; font-family:serif; font-size:14pt;'>Higher in ", cond, "</b>"),
+          label = paste0("<b style='color:", col_sup, "; font-family:Times New Roman; font-size:14pt;'>Higher in ", cond, "</b>"),
           size = 5,
           hjust = 0,
           vjust = 1
@@ -257,8 +258,8 @@ aldex_volcano_plot <- function(table,
       ) +
       ggplot2::theme_test() +
       ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12, color = "black", family = "serif"),
-        axis.title = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+        axis.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
+        axis.title = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
         legend.position = "none"
       )
     
@@ -271,7 +272,7 @@ aldex_volcano_plot <- function(table,
           color = "black",
           size = 3,
           vjust = -0.5,
-          fontfamily = "serif",
+          fontfamily = "Times New Roman",
           fontface = "italic"
         )
     }
