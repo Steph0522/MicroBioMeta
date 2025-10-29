@@ -79,11 +79,11 @@ corr_env_abund_plot <- function(table,
   
   
   #muestras entre table, env_table y metadata
-  common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata$SAMPLEID))
+  common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata[[1]]))
   table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
   env_table <- env_table[common_samples, , drop = FALSE]
-  metadata <- metadata[metadata$SAMPLEID %in% common_samples, , drop = FALSE]
-  rownames(metadata) <- metadata$SAMPLEID
+  metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
+  rownames(metadata) <- metadata[[1]]
   
   
   # --- Colapsar la tabla al nivel taxonómico deseado ---
