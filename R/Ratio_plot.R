@@ -153,12 +153,12 @@ ratio_plot2 <- function(table,
     coord_cartesian(xlim = x_limits) +
     theme_test(base_size = 12) + 
     theme(
-      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
-      legend.text = ggplot2::element_text(size = 12, family = "Times New Roman"),
-      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
-      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
-      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
-      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"))
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold"),
+      legend.text = ggplot2::element_text(size = 12, family = "serif"),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "serif"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "serif"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "serif"))
   
   return(p)
 }

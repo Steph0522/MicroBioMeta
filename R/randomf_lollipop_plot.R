@@ -188,13 +188,13 @@ randomf_lollipop_plot <- function(table,
     ggplot2::ggtitle(legend_figure) +
     ggplot2::theme(
       axis.title.y = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
-      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
-      axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman", face = "italic"),
+      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
+      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+      axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "serif", face = "italic"),
       legend.position = "right",
-      legend.title = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman", face = "bold"),
-      legend.text = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
-      plot.title = ggplot2::element_text(color = "black", size = 16, face = "bold", family = "Times New Roman")
+      legend.title = ggplot2::element_text(color = "black", size = 14, family = "serif", face = "bold"),
+      legend.text = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+      plot.title = ggplot2::element_text(color = "black", size = 16, face = "bold", family = "serif")
     )
   
   return(lollipop) 
