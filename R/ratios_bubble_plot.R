@@ -190,11 +190,11 @@ ratio_plot <- function(table,
     theme_classic(base_size = 12) +
     coord_flip() +
     theme(
-      legend.title = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman", face = "bold"),
-      legend.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
-      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
-      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "Times New Roman"),
-      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
-      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"))
+      legend.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold"),
+      legend.text = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "serif"),
+      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "serif"),
+      axis.text.x = ggplot2::element_text(size = 12, color = "black", family = "serif"),
+      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "serif"))
   
 }
