@@ -111,14 +111,14 @@ beta_diversity_boxplot <- function(
       ggplot2::labs(fill = "Comparison")+
       ggplot2::theme_test() + 
       ggplot2::theme(
-        axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
-        axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
-        axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
-        axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
-        strip.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman", face = "bold"),
+        axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "serif"),
+        axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
+        axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+        axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+        strip.text = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold"),
         legend.position = "right",
-        legend.title = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman", face = "bold"),
-        legend.text = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman")) + 
+        legend.title = ggplot2::element_text(color = "black", size = 14, family = "serif", face = "bold"),
+        legend.text = ggplot2::element_text(color = "black", size = 12, family = "serif")) + 
       ggh4x::facet_grid2(
         stats::as.formula(paste(". ~", paste0(condition2_col,".x"))),
         scales="free_x",
