@@ -157,13 +157,13 @@ beta_div_plot <- function(table, metadata,
     fill_scale +
     ggplot2::labs(x = x_lab, y = y_lab) +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
-      axis.text.y = ggplot2::element_text(color = "black", size = 12,  family = "Times New Roman"),
-      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
-      axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman"),
-      legend.text = ggplot2::element_text(color = "black", size = 12, family = "Times New Roman"),
-      legend.title = ggplot2::element_text(color = "black", size = 14, family = "Times New Roman", face = "bold"),
-      plot.title = ggplot2::element_text(color = "black", size = 16, family = "Times New Roman", face = "bold"),
+      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+      axis.text.y = ggplot2::element_text(color = "black", size = 12,  family = "serif"),
+      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
+      axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "serif"),
+      legend.text = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+      legend.title = ggplot2::element_text(color = "black", size = 14, family = "serif", face = "bold"),
+      plot.title = ggplot2::element_text(color = "black", size = 16, family = "serif", face = "bold"),
       legend.position = "right",
       legend.box = "vertical",
       panel.grid.major = ggplot2::element_blank(),
@@ -192,7 +192,7 @@ beta_div_plot <- function(table, metadata,
       ggrepel::geom_label_repel(data = rot_df,
                                 aes(x = PC1, y = PC2, label = label),
                                 fill = "white", color = "black",
-                                fontface = "italic", size = 4, family= "Times New Roman",
+                                fontface = "italic", size = 4, family= "serif",
                                 inherit.aes = FALSE)
   }
   

@@ -186,7 +186,7 @@ cca_rda_biplot <- function(table,
       ),
       color = "black",
       size = 5,
-      family = "Times New Roman",
+      family = "serif",
       hjust = 0.5,
       vjust = -0.5,
       inherit.aes = FALSE
@@ -213,13 +213,13 @@ cca_rda_biplot <- function(table,
     scale_x_continuous(limits = c(-max_range, max_range) * buffer) +
     scale_y_continuous(limits = c(-max_range, max_range) * buffer)+
     theme_classic() +
-    theme(axis.text.x = element_text(color = "black", size = 12, family = "Times New Roman"),
-          axis.text.y = element_text(color = "black", size = 12, family = "Times New Roman"),
-          axis.title.x = element_text(color = "black", size = 14, family = "Times New Roman"),
-          axis.title.y = element_text(color = "black", size = 14, family = "Times New Roman"),
-          legend.text = element_text(color = "black", size = 12, family = "Times New Roman"),
-          legend.title = element_text(color = "black", size = 14, family = "Times New Roman", face = "bold"),
-          plot.title = element_text(color = "black", size = 16, family = "Times New Roman", face = "bold"),
+    theme(axis.text.x = element_text(color = "black", size = 12, family = "serif"),
+          axis.text.y = element_text(color = "black", size = 12, family = "serif"),
+          axis.title.x = element_text(color = "black", size = 14, family = "serif"),
+          axis.title.y = element_text(color = "black", size = 14, family = "serif"),
+          legend.text = element_text(color = "black", size = 12, family = "serif"),
+          legend.title = element_text(color = "black", size = 14, family = "serif", face = "bold"),
+          plot.title = element_text(color = "black", size = 16, family = "serif", face = "bold"),
           legend.position = "right",
           legend.box = "vertical",
           panel.grid.major = element_blank(),
@@ -229,7 +229,7 @@ cca_rda_biplot <- function(table,
     
     guides(
       fill=guide_legend(title=legend_title))+#ylab("CAP2")+xlab("CAP1")+
-    theme(axis.text = element_text(color = "black", size = 12, family = "Times New Roman"))
+    theme(axis.text = element_text(color = "black", size = 12, family = "serif"))
   
   # 11. Título del gráfico
   if (!is.null(title)) {
