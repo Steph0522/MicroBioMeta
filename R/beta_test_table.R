@@ -3,7 +3,7 @@
 #' This function create a table with the results of permanova or betadisper
 #' 
 #' 
-#' @param matriz Distance matrix with columns and rows in the same order
+#' @param matriz Distance matrix or data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.
 #' @param metadata Data frame of characteristics or important information of the samples
 #' @param formula_str Model formula
 #' @param method Method for calculate pairwise distances of a matrix
@@ -15,16 +15,22 @@
 #' @return A table with the results of R2, F and p value 
 #' @export
 #'
-#' @examples.   beta_test_table(matriz= matriz, 
+#' @examples.   1. Data frame
+#'              beta_test_table(table = table, 
 #'                              metadata= metadata,
-#'                              formula_str = "Origen*Seccion",
+#'                              formula_str = "metodo*edad",
 #'                              method = "euclidean", 
 #'                              test = "permanova",
 #'                              permutations = 999,
-#'                              strata_var = "embrion")
-#' 
-#' 
-beta_test_table <- function(matriz,
+#'                              strata_var = "Individuo")
+#'              
+#'              2. Matrix
+#'              beta_test_table(table = matriz, 
+#'                              metadata= metadata,
+#'                              formula_str = "Origen",
+#'                              test = "betadisper")
+#'              
+beta_test_table <- function(table,
                             metadata,
                             formula_str,
                             method = "euclidean", 
@@ -34,6 +40,33 @@ beta_test_table <- function(matriz,
                             decimales = 3) {
   
   test <- match.arg(test)
+  
+  # --- Aceptar también data.frame como matriz ---
+  if (is.data.frame(table)) {
+    # Si la última columna parece taxonomía, eliminarla
+    tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
+    if (length(tax_cols) > 0) {
+      table <- table[, -tax_cols[1], drop = FALSE]
+      message("Columna de taxonomía eliminada automáticamente.")
+    }
+    
+    # Convertir solo columnas numéricas
+    num_cols <- sapply(table, is.numeric)
+    if (!all(num_cols)) {
+      warning("Se detectaron columnas no numéricas en 'table', serán excluidas automáticamente.")
+    }
+    table <- as.matrix(table[, num_cols, drop = FALSE])
+  } else if (!is.matrix(table)) {
+    stop("'table' debe ser una matriz o un data.frame con columnas numéricas.")
+  }
+  
+  # --- Detectar orientación ---
+  if (ncol(table) == nrow(metadata)) {
+    message("Detectada orientación: columnas = muestras. Transponiendo matriz...")
+    table <- t(table)
+  } else if (nrow(table) != nrow(metadata)) {
+    stop("Las dimensiones de 'table' y 'metadata' no coinciden: cada muestra debe tener una fila en metadata.")
+  }
   
   # --- Verificaciones ---
   if (test == "permanova") {
@@ -52,13 +85,11 @@ beta_test_table <- function(matriz,
     strata <- metadata[[strata_var]]
   }
   
-  
   # --- PERMANOVA ---
   if (test == "permanova") {
-    dist_matrix <- vegan::vegdist(matriz, method = method) 
+    dist_matrix <- vegan::vegdist(table, method = method) 
     resultado <- vegan::adonis2(as.formula(paste("dist_matrix ~", formula_str)),
                                 data = metadata,
-                                method = method,
                                 permutations = permutations,
                                 strata = strata,
                                 by = "terms")   
@@ -70,7 +101,7 @@ beta_test_table <- function(matriz,
   # --- BETADISPER / PERMDISP ---
   if (test == "betadisper") {
     var_group <- all.vars(as.formula(paste("~", formula_str)))[1]
-    dist_matrix <- vegan::vegdist(matriz, method = method)
+    dist_matrix <- vegan::vegdist(table, method = method)
     disp <- vegan::betadisper(dist_matrix, metadata[[var_group]])
     perm <- vegan::permutest(disp, permutations = permutations)
     
@@ -79,31 +110,42 @@ beta_test_table <- function(matriz,
     rownames(tabla) <- NULL
   }
   
-  
   # --- Formato numérico ---
   tabla <- tabla %>%
     dplyr::mutate(across(where(is.numeric), ~ round(., decimales))) %>%
     dplyr::mutate(across(everything(), as.character)) %>%
     dplyr::mutate(across(everything(), ~ ifelse(is.na(.), "-", .)))
   
-  # --- Crear ggtexttable ---
+  # --- Crear tabla visual ---
   tab <- ggpubr::ggtexttable(tabla,
                              rows = NULL,
-                             theme = ggpubr::ttheme(colnames = ggpubr::colnames_style(fill = "gray", color = "black"), # encabezado gris
-                                                                        tbody.style = ggpubr::tbody_style(fill = "white")                  # filas en blanco
-  )
+                             theme = ggpubr::ttheme(
+                               colnames = ggpubr::colnames_style(
+                                 fill = "gray", 
+                                 color = "black",
+                                 face = "bold",
+                                 size = 12,
+                                 fontface = "plain",
+                                 fontfamily = "serif"
+                               ),
+                               tbody.style = ggpubr::tbody_style(
+                                 fill = "white",
+                                 color = "black",
+                                 size = 12,
+                                 fontfamily = "serif"
+                               )
+                             )
   )
   
-  # --- Agregar línea gruesa bajo encabezado ---
-  tab <- tab %>% ggpubr::tab_add_hline(at.row = 1, row.side = "top", linewidth = 4) %>%
+  # --- Líneas bajo encabezado ---
+  tab <- tab %>%
+    ggpubr::tab_add_hline(at.row = 1, row.side = "top", linewidth = 4) %>%
     ggpubr::tab_add_hline(at.row = 2, row.side = "top", linewidth = 4)
   
-  # --- Resaltar p-valores automáticamente ---
+  # --- Resaltar p-valores ---
   col_p <- grep("Pr", names(tabla), ignore.case = TRUE)
   if (length(col_p) > 0) {
-    # convertir a num para comparación
     p_values <- suppressWarnings(as.numeric(tabla[[col_p]]))
-    # filas con p < 0.05
     filas_signif <- which(!is.na(p_values) & p_values < 0.05)
     if (length(filas_signif) > 0) {
       for (fila in filas_signif) {
@@ -112,5 +154,9 @@ beta_test_table <- function(matriz,
     }
   }
   
+  # --- Mensaje final ---
+  message("✅ Análisis completado correctamente.")
+  
   return(tab)
 }
+
