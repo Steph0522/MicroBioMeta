@@ -75,7 +75,7 @@ abundance_barplot <- function(table,
   
   
   # Reorder columns based on SAMPLEID order in metadata
-  ordered_samples <- metadata$SAMPLEID
+  ordered_samples <- metadata[[1]]
   sample_columns <- colnames(table)[-1]
   ordered_samples <- intersect(ordered_samples, sample_columns)
   table <- table[, c("taxonomy", ordered_samples)]
