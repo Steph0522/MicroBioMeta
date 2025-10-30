@@ -64,21 +64,31 @@ aldex_volcano_plot <- function(table,
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
-  # table <- column_to_rownames(table, var = colnames(table)[tax_col])
   
+  # Nombre exacto de la columna
+  tax_name <- names(table)[tax_col]
+  
+  # Agrupar por taxonomía y sumar las demás columnas numéricas
+  table <- table %>%
+    dplyr::group_by(.data[[tax_name]]) %>%
+    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE),
+                     .groups = "drop")
+  
+  rownames(table)<- NULL 
+  table <- column_to_rownames(table, var = tax_name)
   
   #Identificar automáticamente la columna taxonómica (última columna)
-  if (is.null(taxa)) {
-    last_col <- ncol(table)
-    taxa_colname <- colnames(table)[last_col]
-    taxa <- data.frame(
-      Feature.ID = rownames(table),
-      Taxon = table[[taxa_colname]],
-      stringsAsFactors = FALSE
-    )
-    #  Eliminar la última columna de table para el análisis
-    table <- table[, -last_col, drop = FALSE]
-  }
+  # if (is.null(taxa)) {
+  #  last_col <- ncol(table)
+  # taxa_colname <- colnames(table)[last_col]
+  #  taxa <- data.frame(
+  #   Feature.ID = rownames(table),
+  #  Taxon = table[[taxa_colname]],
+  #  stringsAsFactors = FALSE
+  #)
+  #  Eliminar la última columna de table para el análisis
+  #  table <- table[, -last_col, drop = FALSE]
+  #}
   
   conditions <- metadata[[col_cond]]
   groups <- unique(conditions)
@@ -93,15 +103,15 @@ aldex_volcano_plot <- function(table,
   
   # Procesar datos taxonómicos para ambos tipos de gráficos
   processed_data <- aldex_clr %>%
-    tibble::rownames_to_column(var = "Feature.ID") %>%
-    dplyr::left_join(taxa, by = "Feature.ID") %>%
+    tibble::rownames_to_column(var = "Taxon") %>%
+    #dplyr::left_join(taxa, by = "Feature.ID") %>%
     dplyr::mutate(
       taxa = dplyr::case_when(
         stringr::str_detect(Taxon, "g__") ~ stringr::str_extract(Taxon, "(?<=g__)[^_;]+"),
         stringr::str_detect(Taxon, "f__") ~ stringr::str_extract(Taxon, "(?<=f__)[^_;]+"),
         stringr::str_detect(Taxon, "c__") ~ stringr::str_extract(Taxon, "(?<=c__)[^_;]+"),
         stringr::str_detect(Taxon, "o__") ~ stringr::str_extract(Taxon, "(?<=o__)[^_;]+"),
-        TRUE ~ Feature.ID
+        TRUE ~ Taxon  
       )
     )
   
