@@ -1,0 +1,192 @@
+---
+title: "Metabarcoding"
+author: 
+  - name: Your name
+    affiliation:
+    - Your institution
+    email: your.email@somewhere.com
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('MicroBioMeta')`"
+vignette: >
+  %\VignetteIndexEntry{metabarcoding}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+# Metabarcoding
+
+For this example, we are going to use metabarcoding data: 16S for bacteria and 18S for fungi.
+
+The data is taken from:
+[16S](https://www.nature.com/articles/s41598-021-81551-7)
+[18S](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
+
+
+First, Let's call the package:
+
+```{r "start", message=FALSE}
+library("MicroBioMeta")
+library(tidyverse)
+```
+
+Then, Load the data:
+
+```{r}
+library(qiime2R)
+bacteria_table <- qiime2R::read_qza("../man/Data/dada2.200.trimmed.single.filtered.cleaned.qza")$data %>% as.data.frame()
+
+fungi_table <- qiime2R::read_qza("../man/Data/merge_table_240_noplant_filtered_nous.qza")$data %>% as.data.frame()
+
+metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>% rename(SAMPLEID=`#SampleID`) %>% filter(Month=="2")%>%
+  mutate(
+    Treatment = factor(
+      case_when(
+        Treatment == 1 ~ "TC",
+        Treatment == 2 ~ "TD",
+        Treatment == 3 ~ "TED",
+        TRUE ~ as.character(Treatment)
+      ),
+      levels = c("TC", "TD", "TED")
+    )
+  )
+metadata2 <- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% rename(SAMPLEID=`#SampleID`)%>%
+  mutate(
+    Treatment = factor(
+      case_when(
+        Treatment == 1 ~ "TC",
+        Treatment == 2 ~ "TD",
+        Treatment == 3 ~ "TED",
+        TRUE ~ as.character(Treatment)
+      ),
+      levels = c("TC", "TD", "TED")
+    )
+  )
+
+
+bacteria_table_filter <- bacteria_table[match(metadata$SAMPLEID, colnames(bacteria_table)),]
+
+
+taxonomy_bacteria <- read_qza("../man/Data/taxonomy_dada2.200.trimmed.single.seqs.qza")$data %>% as.data.frame() %>% rename(taxonomy=Taxon) %>% dplyr::select(-Confidence) %>% column_to_rownames(var = "Feature.ID")
+taxonomy_fungi <- read_qza("../man/Data/taxonomy_blast_240_0.97.qza")$data %>% as.data.frame()%>% rename(taxonomy=Taxon) %>% dplyr::select(-Consensus)%>% column_to_rownames(var = "Feature.ID")
+
+
+```
+
+
+## Pre-processing data
+
+In order to use the data as input for functions of `MicroBioMeta` should contain a biom format with the column of *taxonomy* at the end. 
+
+```{r}
+
+table_bac <- merge_feature_taxonomy(table = bacteria_table_filter,
+                                    taxonomy = taxonomy_bacteria)
+
+table_fung <- merge_feature_taxonomy(table = fungi_table, 
+                                     taxonomy = taxonomy_fungi)
+
+```
+
+## Composition exploration
+
+### Abundance barplots
+
+```{r}
+abundance_barplot(table = table_bac,
+                  metadata = metadata,
+                  taxonomy_db = "silva",
+                  level = "phylum", 
+                  x_col = "Type_of_soil", 
+                  facet_col = "Treatment", 
+                  add_remained = TRUE,
+                  label =   "Phylum",
+                  save_table = FALSE)+
+  theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+
+```
+
+```{r}
+abundance_barplot(table = table_fung,
+                  metadata = metadata2,
+                  x_col = "Treatment", 
+                  facet_col = "Type_of_soil", 
+                  add_remained = TRUE,  
+                  label =   "Genera",
+                  save_table = FALSE)+
+  theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+```
+
+### Abundance heatmaps
+
+```{r, warning=FALSE}
+abundance_heatmap_plot(table = table_bac,
+                  metadata = metadata,
+                  top_n = 30,
+                  show_column_names = FALSE,
+                  condition1 = "Type_of_soil", 
+                  condition2 = "Treatment")
+```
+
+
+```{r, warning=FALSE}
+abundance_heatmap_plot(table = table_fung,
+                  metadata = metadata2,
+                  top_n = 30,
+                  show_column_names = FALSE,
+                  condition1 = "Type_of_soil", 
+                  condition2 = "Treatment")
+```
+
+
+## Alpha diversity 
+
+```{r, warning=FALSE}
+alpha_hill_corrplot(table = table_bac)
+
+```
+
+```{r, warning=FALSE}
+alpha_hill_corrplot(table = table_fung)
+```
+```{r, warning=FALSE}
+alpha_hill_plot(table = table_bac, 
+                metadata = metadata%>% filter(SAMPLEID %in% colnames(table_bac)),
+                x_col = "Treatment",
+                fill_col = "Treatment",
+                facet_by = "Type_of_soil",
+                facet_orientation = "vertical",
+                save_table = FALSE)
+```
+
+```{r, warning=FALSE}
+alpha_hill_plot(table = table_fung, 
+                metadata = metadata%>% filter(SAMPLEID %in% colnames(table_fung)),
+                x_col = "Treatment",
+                fill_col = "Treatment",
+                facet_by = "Type_of_soil",
+                facet_orientation = "horizontal",
+                save_table = FALSE)
+```
+## Beta diversity
+
+```{r, warning=FALSE}
+beta_div_plot(table = table_bac, 
+              metadata = metadata, 
+              group_col = "Type_of_soil",
+              shape_col = "Treatment")
+```
+
+```{r, warning=FALSE}
+beta_div_plot(table = table_fung, 
+              metadata = metadata2, 
+              group_col = "Type_of_soil",
+              shape_col = "Treatment",distance = "aitchison", ordination = "NMDS")
+```
+
+

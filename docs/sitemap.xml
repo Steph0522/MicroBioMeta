@@ -1,39 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/Introduction_to_MicroBioMeta.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pca_compos.html</loc>
-  </url>
-  <url>
-    <loc>/reference/permanova_compos.html</loc>
-  </url>
-  <url>
-    <loc>/SUPPORT.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/installing.html</loc></url>
+<url><loc>/articles/Introduction_to_MicroBioMeta.html</loc></url>
+<url><loc>/articles/metabarcoding.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>/CONTRIBUTING.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/abundance_barplot.html</loc></url>
+<url><loc>/reference/abundance_heatmap_plot.html</loc></url>
+<url><loc>/reference/abundance_sankey_plot.html</loc></url>
+<url><loc>/reference/aldex_heatmap_plot.html</loc></url>
+<url><loc>/reference/aldex_volcano_plot.html</loc></url>
+<url><loc>/reference/alpha_diversity_plot.html</loc></url>
+<url><loc>/reference/alpha_hill_corrplot.html</loc></url>
+<url><loc>/reference/alpha_hill_plot.html</loc></url>
+<url><loc>/reference/beta_diversity_boxplot.html</loc></url>
+<url><loc>/reference/beta_div_plot.html</loc></url>
+<url><loc>/reference/beta_partition_plot.html</loc></url>
+<url><loc>/reference/beta_plot.html</loc></url>
+<url><loc>/reference/cca_rda_biplot.html</loc></url>
+<url><loc>/reference/corr_env_abund_plot.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/merge_feature_taxonomy.html</loc></url>
+<url><loc>/reference/pca_compos.html</loc></url>
+<url><loc>/reference/permanova_compos.html</loc></url>
+<url><loc>/reference/randomf_lollipop_plot.html</loc></url>
+<url><loc>/reference/ratio_plot.html</loc></url>
+<url><loc>/reference/venn_diagram_plot.html</loc></url>
+<url><loc>/SUPPORT.html</loc></url>
 </urlset>
+

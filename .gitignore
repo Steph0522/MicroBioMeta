@@ -9,3 +9,6 @@
 .quarto
 inst/doc
 dev/
+/doc/
+/Meta/
+docs
