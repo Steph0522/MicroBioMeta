@@ -1,34 +1,85 @@
 ratio_plot2 <- function(table,
-                       metadata,
-                       condition_col,
-                       condition_A,
-                       condition_B,
-                       taxonomy_db = "silva",
-                       top_n = 30,
-                       level = "genus",
-                       x_axis_title = "Taxon",
-                       fill_palette = c("#1f77b4", "#ff7f0e", "#999999"),  # A, B, Neutral
-                       x_limits = NULL,
-                       neutral_threshold = 1,
-                       save_table = TRUE,
-                       table_filename = "ratio.txt") {
+                        metadata,
+                        condition_col,
+                        condition_A,
+                        condition_B,
+                        taxonomy_db = "silva",
+                        top_n = 30,
+                        level = "genus",
+                        x_axis_title = "Taxon",
+                        fill_palette = c("#1f77b4", "#ff7f0e", "#999999"),  # A, B, Neutral
+                        x_limits = NULL,
+                        neutral_threshold = 1,
+                        save_table = TRUE,
+                        table_filename = "ratio.txt") {
   library(tidyverse)
   
-  # Filtrar metadatos
+  # --- Filtrar metadatos ---
   metadata_sub <- metadata %>%
     filter(.data[[condition_col]] %in% c(condition_A, condition_B)) %>%
     select(SampleID = 1, Condition = all_of(condition_col))
   
   samples <- metadata_sub$SampleID
   
-  # Colapsar por taxón
-  abundance_raw <- table %>%
-    select(taxonomy, all_of(samples)) %>%
-    group_by(taxonomy) %>%
-    summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = "drop")
+  # --- Ordenar columnas y empatar con metadata ---
+  table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
+  ordered_samples <- intersect(metadata[, 1], colnames(table)[-1])
+  table <- table[, c("taxonomy", ordered_samples)]
   
-  # Corregir taxonomía
-  abundance_raw <- abundance_raw %>%
+  # --- Asegurar identificadores únicos ---
+  if (!is.null(rownames(table))) {
+    table <- tibble::rownames_to_column(table, var = "OTU_ID")
+  } else {
+    table$OTU_ID <- paste0("OTU_", seq_len(nrow(table)))
+  }
+  
+  # --- Limpiar terminaciones vacías en la taxonomía ---
+  table$taxonomy <- gsub("(;__)+$", "", table$taxonomy)
+  
+  # --- Determinar índice del nivel taxonómico ---
+  level_idx <- switch(level,
+                      kingdom = 1, phylum = 2, class = 3, order = 4,
+                      family = 5, genus = 6, species = 7)
+  
+  # --- Calcular profundidad taxonómica de cada OTU ---
+  get_depth <- function(tax) {
+    levels <- unlist(strsplit(tax, ";"))
+    sum(grepl("__", levels))
+  }
+  table$depth <- sapply(table$taxonomy, get_depth)
+  
+  # --- Separar filas según resolución taxonómica ---
+  lowres <- table[table$depth < level_idx, ]    
+  highres <- table[table$depth >= level_idx, ]  
+  
+  # --- Recortar y colapsar taxonomías con suficiente resolución ---
+  highres$taxonomy <- sapply(highres$taxonomy, function(tax) {
+    levels <- unlist(strsplit(tax, ";"))
+    paste(levels[1:level_idx], collapse = ";")
+  })
+  
+  # --- Colapsar correctamente taxones repetidos ---
+  highres <- highres %>%
+    group_by(taxonomy) %>%
+    summarise(
+      OTU_ID = paste(unique(OTU_ID), collapse = ";"),
+      across(where(is.numeric), sum, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  
+  # --- Combinar lowres y highres ---
+  table_final <- dplyr::bind_rows(
+    lowres[, c("OTU_ID", "taxonomy", ordered_samples)],
+    highres[, c("OTU_ID", "taxonomy", ordered_samples)]
+  )
+  
+  # --- Limpiar tabla final ---
+  table_final <- table_final[, c("OTU_ID",  ordered_samples, "taxonomy")]
+  table_final <- tibble::column_to_rownames(table_final, "OTU_ID")
+  
+  # --- Corregir taxonomía ---
+  abundance_raw <- table_final %>%
     mutate(
       taxonomy = case_when(
         taxonomy_db == "Kraken2" & level == "specie" ~ case_when(
@@ -68,25 +119,21 @@ ratio_plot2 <- function(table,
         ),
         TRUE ~ taxonomy
       )
-    ) %>%
-    group_by(taxonomy) %>%
-    summarise(across(where(is.numeric), sum, na.rm = TRUE), .groups = "drop")
+    )
   
-  # Abundancia relativa
+  # --- Abundancia relativa ---
   abundance_rel <- abundance_raw %>%
-    column_to_rownames("taxonomy") %>%
-    sweep(2, colSums(.), FUN = "/") %>%
-    as.data.frame() %>%
-    rownames_to_column("taxonomy")
+    mutate(across(where(is.numeric), ~ .x / sum(.x, na.rm = TRUE) * 100))
   
-  # Formato largo
+  # --- Formato largo ---
   long_data <- abundance_rel %>%
-    pivot_longer(-taxonomy, names_to = "SampleID", values_to = "Abundance") %>%
+    rownames_to_column("OTU_ID") %>%
+    pivot_longer(cols = all_of(ordered_samples), names_to = "SampleID", values_to = "Abundance") %>%
     left_join(metadata_sub, by = "SampleID")
   
-  # Cálculo de medias y ratios
+  # --- Cálculo de medias y ratios (manteniendo ASVs) ---
   summary_data <- long_data %>%
-    group_by(taxonomy, Condition) %>%
+    group_by(OTU_ID, taxonomy, Condition) %>%
     summarise(MeanAbundance = mean(Abundance), .groups = "drop") %>%
     pivot_wider(
       names_from = Condition,
@@ -100,7 +147,7 @@ ratio_plot2 <- function(table,
         (.data[[condition_A]] - .data[[condition_B]]) / .data[[condition_B]],
         (.data[[condition_B]] - .data[[condition_A]]) / .data[[condition_A]]
       ),
-      Dominant = if_else(.data[[condition_A]] > .data[[condition_B]],
+      Dominant = if_else(.data[[condition_A]] > .data[[condition_B]], 
                          condition_A,
                          condition_B),
       MeanAbund = mean(c(.data[[condition_A]], .data[[condition_B]]), na.rm = TRUE) * 100,
@@ -112,6 +159,16 @@ ratio_plot2 <- function(table,
       )
     ) %>%
     ungroup()
+  
+  # --- Crear etiqueta combinada para ASVs repetidos ---
+  summary_data <- summary_data %>%
+    mutate(
+      taxonomy_display = if_else(
+        duplicated(taxonomy) | duplicated(taxonomy, fromLast = TRUE),
+        paste0(taxonomy, " (", OTU_ID, ")"),
+        taxonomy
+      )
+    )
   
   #guardar tabla
   if (save_table) {
@@ -140,7 +197,7 @@ ratio_plot2 <- function(table,
   p <- ggplot(top_taxa,
               aes(
                 x = SignedRatio,
-                y = reorder(taxonomy, MeanAbund),
+                y = reorder(taxonomy_display, MeanAbund),
                 fill = RatioCategory
               )) +
     geom_point(shape = 21, color = "black", alpha = 0.85, size = 5) +  # tamaño fijo
