@@ -21,6 +21,16 @@ metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPL
 metadata2 = metadata %>% 
   filter(!metodo =="fenol" | !edad =="viejo")
 
+##opcional colapsar a algún nivel taxonómico
+ collapse_table(
+  table = table,
+  metadata = metadata,
+  level = "genus",
+  rel_abun = FALSE,
+  export_txt = FALSE
+)
+
+
 abundance_barplot(
   table = table,
   metadata = metadata2,
