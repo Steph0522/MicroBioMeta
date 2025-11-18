@@ -55,8 +55,8 @@ corr_env_abund_plot <- function(table,
                                 pval_threshold= NULL,
                                 save_table = TRUE,
                                 table_filename = "corr.txt") {
-   geom <- match.arg(geom)
-   rownames(table) <- NULL
+  geom <- match.arg(geom)
+  rownames(table) <- NULL
   
   
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
@@ -85,47 +85,68 @@ corr_env_abund_plot <- function(table,
   metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
   rownames(metadata) <- metadata[[1]]
   
+  # --- Ordenar columnas y empatar con metadata ---
+  table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
+  ordered_samples <- intersect(metadata[, 1], colnames(table)[-1])
+  table <- table[, c("taxonomy", ordered_samples)]
   
-  # --- Colapsar la tabla al nivel taxonómico deseado ---
-  if (taxonomy_db %in% c("silva", "Kraken2", "gg2")) {
-    if (level == "kingdom") table$taxonomy <- sub(";.*", "", table$taxonomy)
-    if (level == "phylum") table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
-    if (level == "class") table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
-    if (level == "order") table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
-    if (level == "family") table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
-    if (level == "genus") table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
-    if (level == "species") table$taxonomy <- table$taxonomy
+  # --- Asegurar identificadores únicos ---
+  if (!is.null(rownames(table))) {
+    table <- tibble::rownames_to_column(table, var = "OTU_ID")
+  } else {
+    table$OTU_ID <- paste0("OTU_", seq_len(nrow(table)))
   }
   
-  if (taxonomy_db == "unite") {
-    if (level == "kingdom") table$taxonomy <- sub(";.*", "", table$taxonomy)
-    if (level == "phylum") table$taxonomy <- sub(";\\s?c__.*", "", table$taxonomy)
-    if (level == "class") table$taxonomy <- sub(";\\s?o__.*", "", table$taxonomy)
-    if (level == "order") table$taxonomy <- sub(";\\s?f__.*", "", table$taxonomy)
-    if (level == "family") table$taxonomy <- sub(";\\s?g__.*", "", table$taxonomy)
-    if (level == "genus") table$taxonomy <- sub(";\\s?s__.*", "", table$taxonomy)
-    if (level == "species") table$taxonomy <- sub(";\\s?sh__.*", "", table$taxonomy)
+  # --- Limpiar terminaciones vacías en la taxonomía ---
+  table$taxonomy <- gsub("(;__)+$", "", table$taxonomy)
+  
+  # --- Determinar índice del nivel taxonómico ---
+  level_idx <- switch(level,
+                      kingdom = 1, phylum = 2, class = 3, order = 4,
+                      family = 5, genus = 6, species = 7)
+  
+  # --- Calcular profundidad taxonómica de cada OTU ---
+  get_depth <- function(tax) {
+    levels <- unlist(strsplit(tax, ";"))
+    sum(grepl("__", levels))
   }
+  table$depth <- sapply(table$taxonomy, get_depth)
   
-  # --- Limpieza profunda antes de agrupar ---
-  table$taxonomy <- table$taxonomy %>%
-    trimws() %>%                    # quita espacios antes/después
-    gsub("\\s+", " ", .) %>%        # espacios dobles → uno solo
-    gsub(";+$", "", .) %>%          # elimina ; al final
-    gsub("_+$", "", .) %>%          # elimina guiones bajos residuales
-    gsub("\\.$", "", .)             # elimina puntos finales
+  # --- Separar filas según resolución taxonómica ---
+  lowres <- table[table$depth < level_idx, ]    
+  highres <- table[table$depth >= level_idx, ]  
   
-  # --- Agrupar y colapsar realmente ---
-  table <- table %>%
-    dplyr::group_by(taxonomy) %>%
-    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE)) %>%
-    dplyr::ungroup() %>%
-    as.data.frame()
+  # --- Recortar y colapsar taxonomías con suficiente resolución ---
+  highres$taxonomy <- sapply(highres$taxonomy, function(tax) {
+    levels <- unlist(strsplit(tax, ";"))
+    paste(levels[1:level_idx], collapse = ";")
+  })
   
- # rownames(table) <- make.unique(table$taxonomy)
+  # --- Colapsar correctamente taxones repetidos ---
+  highres <- highres %>%
+    group_by(taxonomy) %>%
+    summarise(
+      OTU_ID = paste(unique(OTU_ID), collapse = ";"),
+      across(where(is.numeric), sum, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  
+  # --- Combinar lowres y highres ---
+  table_final <- dplyr::bind_rows(
+    lowres[, c("OTU_ID", "taxonomy", ordered_samples)],
+    highres[, c("OTU_ID", "taxonomy", ordered_samples)]
+  )
+  
+  # --- Limpiar tabla final ---
+  table_final <- table_final[, c("OTU_ID",  ordered_samples, "taxonomy")]
+  table_final <- tibble::column_to_rownames(table_final, "OTU_ID")
+  
+  
+  # rownames(table) <- make.unique(table$taxonomy)
   #table$taxonomy <- NULL
   
-
+  table <- table_final
   
   
   #modificar la columna taxonomy para solo conservar el nombre al nivel que colapsamos
@@ -263,18 +284,23 @@ corr_env_abund_plot <- function(table,
       )
   }
   
-  # --- Agrupar y colapsar realmente ---
+  # 1️⃣ Convertir nombres de fila en columna OTU_ID
   table <- table %>%
-    dplyr::group_by(taxonomy) %>%
-    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE)) %>%
-    dplyr::ungroup() %>%
-    as.data.frame()
+    rownames_to_column(var = "OTU_ID")
+  
+  # 2️⃣ Crear una nueva tabla llamada taxon con OTU_ID y taxonomy
+  taxon <- table %>%
+    select(OTU_ID, taxonomy)
+  
+  # 3️⃣ Eliminar la columna taxonomy de table
+  table <- table %>%
+    select(-taxonomy)
+  
+  # 4️⃣ Convertir OTU_ID nuevamente en nombres de fila
+  table <- table %>%
+    column_to_rownames(var = "OTU_ID")
   
   
-  # Asegurar que la columna "taxonomy" sea rownames
-  if ("taxonomy" %in% colnames(table)) {
-    table <- tibble::column_to_rownames(table, "taxonomy")
-  }
   
   # Paleta por defecto
   if (is.null(col_palette)) {
@@ -286,7 +312,7 @@ corr_env_abund_plot <- function(table,
   counts <- table[, common_samples, drop = FALSE]
   env <- env_table[common_samples, , drop = FALSE]
   
-
+  
   # Seleccionar solo las variables ambientales indicadas en cond_vect, verificando coincidencias
   if (!is.null(cond_vect)) {
     cond_vect <- cond_vect[cond_vect %in% colnames(env)]
@@ -302,6 +328,8 @@ corr_env_abund_plot <- function(table,
   
   # Matriz de correlación general
   corr_mat <- stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
+  
+  
   
   # Guardar tabla si se solicita
   if (save_table) {
@@ -359,14 +387,24 @@ corr_env_abund_plot <- function(table,
   corr_df <- reshape2::melt(corr_mat,
                             varnames = c("Environmental", "Group"),
                             value.name = "Correlation")
+  # --- Añadir taxonomía a los resultados derretidos ---
+  # corr_df$Group son los OTU_ID, vamos a unir con la tabla taxon
+  corr_df <- dplyr::left_join(
+    corr_df,
+    taxon,
+    by = c("Group" = "OTU_ID")
+  )
   
+  # Reemplazar "Group" por el nombre taxonómico
+  corr_df$Taxon <- corr_df$taxonomy
+  corr_df$taxonomy <- NULL
   # Base del gráfico
   if (invert_axes) {
     p <- ggplot2::ggplot(corr_df,
-                         ggplot2::aes(x = Environmental, y = Group, fill = Correlation))
+                         ggplot2::aes(x = Environmental, y = Taxon, fill = Correlation))
   } else {
     p <- ggplot2::ggplot(corr_df,
-                         ggplot2::aes(x = Group, y = Environmental, fill = Correlation))
+                         ggplot2::aes(x = Taxon, y = Environmental, fill = Correlation))
   }
   
   # Elegir tipo de gráfico, "tile" es como heatmap y "circle" como bubbleplot
