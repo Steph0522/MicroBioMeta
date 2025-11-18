@@ -179,9 +179,82 @@ beta_div_plot <- function(table, metadata,
     rot_df$PC1 <- rot_df$PC1 * arrows_size
     rot_df$PC2 <- rot_df$PC2 * arrows_size
     rot_df$Taxon <- taxonomy[match(rot_df$Feature.ID, feature_ids)]
-    rot_df$label <- stringr::str_extract(rot_df$Taxon, "(?<=__)[^;]*$") 
-    rot_df$label <- gsub(" ", "\n", rot_df$label)
+    #rot_df$label <- stringr::str_extract(rot_df$Taxon, "(?<=__)[^;]*$") 
+    #rot_df$label <- gsub(" ", "\n", rot_df$label)
     
+    ###
+    extract_clean_label <- function(taxon_string, taxonomy_db = "silva") {
+      
+      # --- 1) Manejo de NA o vacío ---
+      if (is.na(taxon_string) || taxon_string == "" || taxon_string == "Other") {
+        return("Other")
+      }
+      
+      # --- 2) Separar por niveles taxonómicos ---
+      levels <- unlist(strsplit(taxon_string, ";"))
+      levels <- trimws(levels)
+      
+      # --- 3) Limpieza por base de datos ---
+      clean_by_db <- list(
+        
+        silva = function(x) sub("^[a-zA-Z]__", "", x),
+        gg    = function(x) sub("^[a-zA-Z]__", "", x),
+        unite = function(x) sub("^[a-zA-Z]__", "", x),
+        Kraken2 = function(x) sub("^[a-zA-Z]__", "", x,) 
+      )
+      
+      cleaner <- clean_by_db[[taxonomy_db]]
+      
+      # Si no existe el limpiador, usar limpieza genérica
+      if (is.null(cleaner)) {
+        cleaner <- function(x) sub(".*__", "", x)
+      }
+      
+      # --- 4) Limpiar niveles ---
+      levels_clean <- vapply(levels, cleaner, FUN.VALUE = character(1))
+      levels_clean <- trimws(levels_clean)
+      
+      
+      # --- 5) Selección del nivel más específico válido ---
+      invalid_terms <- c("", " ", "NA", "na", "unclassified", "Unassigned", "uncultured", "__")
+      
+      for (i in length(levels_clean):1) {
+        
+        lvl <- levels_clean[i]
+        
+        if (!lvl %in% invalid_terms) {
+          
+          # ▸ Regla especial: Kraken2 species → concatenar "Genus species"
+          if (taxonomy_db == "Kraken2" && grepl("s__", levels[i])) {
+            
+            genus_full <- stringr::str_extract(taxon_string, "g__[^;]*")
+            
+            if (!is.na(genus_full)) {
+              genus <- sub("g__", "", genus_full)
+              species <- lvl
+              
+              # Evitar errores por empties
+              if (genus != "" && species != "") {
+                # opcional: reemplazar underscores
+                species <- gsub("_", " ", species)
+                return(paste(genus, species))
+              }
+            }
+          }
+          
+          # Nivel normal
+          return(lvl)
+        }
+      }
+      
+      return("Unclassified")
+    }
+    
+    
+    
+    rot_df$label <- sapply(rot_df$Taxon, extract_clean_label)
+    rot_df$label <- gsub(" ", "\n", rot_df$label)
+    ###  
     
     p <- p +
       ggplot2::geom_segment(data = rot_df,
