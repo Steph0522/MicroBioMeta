@@ -161,14 +161,28 @@ ratio_plot2 <- function(table,
     ungroup()
   
   # --- Crear etiqueta combinada para ASVs repetidos ---
+  # Crear etiquetas cortas ASV1, ASV2, ...
+  summary_data <- summary_data %>%
+    mutate(ASV_label = paste0("ASV", row_number()))
+  
+  #summary_data <- summary_data %>%
+   # mutate(
+    #  taxonomy_display = if_else(
+     #   duplicated(taxonomy) | duplicated(taxonomy, fromLast = TRUE),
+      #  paste0(taxonomy, " (", OTU_ID, ")"),
+       # taxonomy
+      #)
+    #)
+  
   summary_data <- summary_data %>%
     mutate(
       taxonomy_display = if_else(
         duplicated(taxonomy) | duplicated(taxonomy, fromLast = TRUE),
-        paste0(taxonomy, " (", OTU_ID, ")"),
+        paste0(taxonomy, " (", ASV_label, ")"),
         taxonomy
       )
     )
+  
   
   #guardar tabla
   if (save_table) {
