@@ -216,13 +216,18 @@ beta_div_plot <- function(table, metadata,
       
       
       # --- 5) Selección del nivel más específico válido ---
-      invalid_terms <- c("", " ", "NA", "na", "unclassified", "Unassigned", "uncultured", "__")
+      invalid_literals <- c("", " ", "NA", "na", "unclassified", "Unassigned",
+                            "uncultured", "uncultured_soil", "__")
+      
+      invalid_regex <- c("bacteriap[0-9]+")
       
       for (i in length(levels_clean):1) {
         
         lvl <- levels_clean[i]
         
-        if (!lvl %in% invalid_terms) {
+        # ESTA ES LA LÍNEA CORREGIDA
+        if (!(lvl %in% invalid_literals) && 
+            !any(grepl(invalid_regex, lvl, ignore.case = TRUE))) {
           
           # ▸ Regla especial: Kraken2 species → concatenar "Genus species"
           if (taxonomy_db == "Kraken2" && grepl("s__", levels[i])) {
