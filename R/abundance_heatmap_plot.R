@@ -99,7 +99,7 @@ abundance_heatmap_plot <- function(table,
                                      TRUE~as.character(phylum)))
   warning("Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:\n",
           "\nReference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/")
-
+  
   
   ordered_taxa <- table_abundance$taxa
   
@@ -143,7 +143,7 @@ abundance_heatmap_plot <- function(table,
     row_order <- NULL
   }
   
-
+  
   # Annotation row 
   annotation_rows <- table_abundance %>%
     dplyr::select(OTUID, phylum) %>%
@@ -163,7 +163,7 @@ abundance_heatmap_plot <- function(table,
   }
   
   # Color palette for heatmap
-  my_palette <- viridis::viridis(n = 12, option = "C", direction = -1)
+  my_palette <- viridis::viridis(n = 13, option = "C", direction = -1)
   
   # Color for phylum annotations
   unique_phyla <- unique(annotation_rows$phylum)
@@ -219,69 +219,69 @@ abundance_heatmap_plot <- function(table,
       labels_gp = grid::gpar(fontsize=12, fontfamily= "serif")
     )
   }
-#Process condition2 if exists
-if (!is.null(condition2)) {
-  unique_vals <- sort(unique(annotation_columns[[condition2]]))
-  
-  if (is.null(colors_condition2)) {
-    colors_condition2 <- viridis::inferno(length(unique_vals))
-  } else if (length(colors_condition2) < length(unique_vals)) {
-    colors_condition2 <- c(colors_condition2, 
-                           viridis::inferno(length(unique_vals) - length(colors_condition2)))
+  #Process condition2 if exists
+  if (!is.null(condition2)) {
+    unique_vals <- sort(unique(annotation_columns[[condition2]]))
+    
+    if (is.null(colors_condition2)) {
+      colors_condition2 <- viridis::inferno(length(unique_vals))
+    } else if (length(colors_condition2) < length(unique_vals)) {
+      colors_condition2 <- c(colors_condition2, 
+                             viridis::inferno(length(unique_vals) - length(colors_condition2)))
+    }
+    
+    color_mapping <- setNames(colors_condition2[1:length(unique_vals)], unique_vals)
+    
+    heatmap_annotations$ann2 <- ComplexHeatmap::HeatmapAnnotation(
+      df = annotation_columns[condition2],
+      which = "column",
+      col = setNames(list(color_mapping), condition2),
+      show_legend = FALSE,
+      show_annotation_name = TRUE,
+      annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
+      gp = grid::gpar(col = "white")
+    )
+    
+    legend_list$lgd3 <- ComplexHeatmap::Legend(
+      at = names(color_mapping),
+      legend_gp = grid::gpar(fill = color_mapping),
+      title = if (!is.null(name_legend_condition2)) name_legend_condition2 else condition2,
+      labels_gp = grid::gpar(fontsize=12, fontfamily= "serif")
+    )
   }
   
-  color_mapping <- setNames(colors_condition2[1:length(unique_vals)], unique_vals)
-  
-  heatmap_annotations$ann2 <- ComplexHeatmap::HeatmapAnnotation(
-    df = annotation_columns[condition2],
-    which = "column",
-    col = setNames(list(color_mapping), condition2),
-    show_legend = FALSE,
-    show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
-    gp = grid::gpar(col = "white")
-  )
-  
-  legend_list$lgd3 <- ComplexHeatmap::Legend(
-    at = names(color_mapping),
-    legend_gp = grid::gpar(fill = color_mapping),
-    title = if (!is.null(name_legend_condition2)) name_legend_condition2 else condition2,
-    labels_gp = grid::gpar(fontsize=12, fontfamily= "serif")
-  )
-}
-
-# Process condition3 if exists
-if (!is.null(condition3)) {
-  unique_vals <- sort(unique(annotation_columns[[condition3]]))
-  
-  if (is.null(colors_condition3)) {
-    colors_condition3 <- viridis::plasma(length(unique_vals))
-  } else if (length(colors_condition3) < length(unique_vals)) {
-    colors_condition3 <- c(colors_condition3, 
-                           viridis::plasma(length(unique_vals) - length(colors_condition3)))
+  # Process condition3 if exists
+  if (!is.null(condition3)) {
+    unique_vals <- sort(unique(annotation_columns[[condition3]]))
+    
+    if (is.null(colors_condition3)) {
+      colors_condition3 <- viridis::plasma(length(unique_vals))
+    } else if (length(colors_condition3) < length(unique_vals)) {
+      colors_condition3 <- c(colors_condition3, 
+                             viridis::plasma(length(unique_vals) - length(colors_condition3)))
+    }
+    
+    color_mapping <- setNames(colors_condition3[1:length(unique_vals)], unique_vals)
+    
+    heatmap_annotations$ann3 <- ComplexHeatmap::HeatmapAnnotation(
+      df = annotation_columns[condition3],
+      which = "column",
+      col = setNames(list(color_mapping), condition3),
+      show_legend = FALSE,
+      show_annotation_name = TRUE,
+      annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
+      gp = grid::gpar(col = "white")
+    )
+    
+    legend_list$lgd4 <- ComplexHeatmap::Legend(
+      at = names(color_mapping),
+      legend_gp = grid::gpar(fill = color_mapping),
+      title = if (!is.null(name_legend_condition3)) name_legend_condition3 else condition3,
+      labels_gp = grid::gpar(fontsize=12, fontfamily= "serif")
+    )
   }
   
-  color_mapping <- setNames(colors_condition3[1:length(unique_vals)], unique_vals)
-  
-  heatmap_annotations$ann3 <- ComplexHeatmap::HeatmapAnnotation(
-    df = annotation_columns[condition3],
-    which = "column",
-    col = setNames(list(color_mapping), condition3),
-    show_legend = FALSE,
-    show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
-    gp = grid::gpar(col = "white")
-  )
-  
-  legend_list$lgd4 <- ComplexHeatmap::Legend(
-    at = names(color_mapping),
-    legend_gp = grid::gpar(fill = color_mapping),
-    title = if (!is.null(name_legend_condition3)) name_legend_condition3 else condition3,
-    labels_gp = grid::gpar(fontsize=12, fontfamily= "serif")
-  )
-}
-
-# Combine all annotations
+  # Combine all annotations
   top_annotation <- do.call(c, unname(heatmap_annotations))
   
   # Combine all legends
@@ -297,9 +297,7 @@ if (!is.null(condition3)) {
       legend_gp = grid::gpar(fontsize = 10.4, fontfamily= "serif"),
       title = "Relative abundance (%)",
       title_position = "topcenter",
-      at = c(0,1,2,3,5,8,10,25, 50, 100),
-      break_dist = 1
-    ),
+      at = 0:12),
     rect_gp = grid::gpar(col = "black", lwd = 0.5),    
     row_names_gp = grid::gpar(fontsize = 11, fontface = "italic", fontfamily= "serif"), 
     column_names_gp = grid::gpar(fontsize=11, fontfamily= "serif"),
