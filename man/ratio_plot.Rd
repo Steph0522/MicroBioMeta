@@ -38,6 +38,12 @@ ratio_plot(
 
 \item{fill_palette}{}
 }
+\value{
+A ggplot2 object.
+}
 \description{
 ratio_plot
+}
+\examples{
+NULL
 }

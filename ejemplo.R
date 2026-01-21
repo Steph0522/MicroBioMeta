@@ -243,3 +243,7 @@ beta_diversity_boxplot(
 corr_env_abund_plot(
   table = table, env_table = env_data, level = "phylum"
 )
+
+
+
+permanova_compos(table, metadata, form="metodo")

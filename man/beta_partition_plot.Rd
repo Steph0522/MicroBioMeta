@@ -12,7 +12,9 @@ beta_partition_plot(
   shape_col = NULL,
   legend_title = NULL,
   point_size = 3,
-  colors = NULL
+  colors = NULL,
+  save_table = TRUE,
+  table_filename = "SAMPLE1"
 )
 }
 \arguments{

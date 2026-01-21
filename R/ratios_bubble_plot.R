@@ -11,10 +11,12 @@
 #' @param x_axis_title 
 #' @param fill_palette 
 #'
-#' @return
+#' @return A ggplot2 object.
 #' @export
 #'
 #' @examples
+#' NULL
+
 ratio_plot <- function(table,
                                  metadata,
                                  condition_col,

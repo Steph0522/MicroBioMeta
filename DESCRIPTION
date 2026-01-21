@@ -11,13 +11,16 @@ BugReports: https://support.bioconductor.org/tag/MicroBioMeta
 biocViews: Software
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: 
     BiocStyle,
     knitr,
     RefManageR,
     rmarkdown,
     sessioninfo,
-    testthat
+    testthat,
+    viridis,
+    magick,
+    ComplexHeatmap
 Config/testthat/edition: 3
 VignetteBuilder: knitr

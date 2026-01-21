@@ -7,11 +7,10 @@
 #' @param export_txt 
 #' @param file_name 
 #'
-#' @return
+#' @return a table collapsed by taxonomic level
 #' @export
 #'
-#' @examples
-#' collapse_table(
+#' @examples collapse_table(
 #               table,
 #               metadata,
 #               level = "genus",

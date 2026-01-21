@@ -26,7 +26,9 @@ alpha_diversity_plot(
   axis_x_title = NULL,
   axis_y_title = "Diversity measure",
   free_y = FALSE,
-  rarefy_depth = NULL
+  rarefy_depth = NULL,
+  save_table = TRUE,
+  table_filename = "diversity.txt"
 )
 }
 \arguments{

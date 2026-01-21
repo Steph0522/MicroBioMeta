@@ -25,7 +25,9 @@ alpha_hill_plot(
   legend_position = "bottom",
   axis_x_title = NULL,
   axis_y_title = "Effective number of features",
-  free_y = FALSE
+  free_y = FALSE,
+  save_table = TRUE,
+  table_filename = "hill.txt"
 )
 }
 \arguments{

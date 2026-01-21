@@ -16,7 +16,9 @@ aldex_volcano_plot(
   cond = NULL,
   cutoff.pval = 0.05,
   show_labels = TRUE,
-  taxa = NULL
+  taxa = NULL,
+  save_table = TRUE,
+  table_filename = "aldex_pval_effect.txt"
 )
 }
 \arguments{

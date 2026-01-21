@@ -21,11 +21,10 @@
 #' @param level 
 #' @param pval_threshold 
 #'
-#' @return
+#' @return A ggplot2 object.
 #' @export
 #'
-#' @examples
-#'   colores<- c("pink","white","purple")
+#' @examples colores<- c("pink","white","purple")
 #    corr_env_abund_plot(table = table, 
 #     env_table = env_data,
 #     metadata=metadata,

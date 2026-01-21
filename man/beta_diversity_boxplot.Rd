@@ -7,17 +7,16 @@
 beta_diversity_boxplot(
   table,
   metadata,
-  comparison_condition1,
-  comparison_condition2,
-  condition1.x,
-  condition1.y,
-  condition2.x = NULL,
-  condition2.y = NULL,
-  color_facets_x,
-  color_axis_x,
+  comparison_condition1 = NULL,
+  condition1_col,
+  condition2_col = NULL,
+  color_facets_x = NULL,
+  color_axis_x = NULL,
   title_axis_x = "Condition",
   partition = c("shared", "turnover", "nestedness"),
-  family = c("sorensen", "jaccard")
+  family = c("sorensen", "jaccard"),
+  save_table = TRUE,
+  table_filename = "betadiv_table.txt"
 )
 }
 \arguments{
@@ -25,32 +24,28 @@ beta_diversity_boxplot(
 
 \item{metadata}{Data frame with sample metadata. First column must match sample names in table.}
 
-\item{comparison_condition1}{Vector of comparisons for first condition (x-axis grouping).}
+\item{comparison_condition1}{Optional vector of comparison labels for the first condition.}
 
-\item{comparison_condition2}{Vector of comparisons for second condition (facet or grouping).}
+\item{condition1_col}{Column name in metadata for the first condition.}
 
-\item{condition1.x}{Column name in metadata for facet/grouping along x-axis.}
+\item{condition2_col}{Optional column name in metadata for the second condition (used as facet).}
 
-\item{condition1.y}{Column name in metadata for x-axis.}
+\item{color_facets_x}{Optional vector of colors for facet strips. Defaults to RColorBrewer "Set2".}
 
-\item{condition2.x}{Column name in metadata for second comparison (optional).}
+\item{color_axis_x}{Optional named vector of colors for x-axis groups. Defaults to RColorBrewer "Set2".}
 
-\item{condition2.y}{Column name in metadata for second comparison (optional).}
+\item{title_axis_x}{Title for the x-axis.}
 
-\item{color_facets_x}{Vector of colors for facet strips.}
-
-\item{color_axis_x}{Named vector of colors for x-axis groups.}
-
-\item{title_axis_x}{String for x-axis title.}
-
-\item{partition}{Type of beta diversity to compute: "shared", "turnover", "nestedness".}
+\item{partition}{Type of beta diversity to compute: "shared", "turnover", or "nestedness".}
 
 \item{family}{Family for turnover/nestedness calculation: "sorensen" or "jaccard".}
 }
 \value{
-List with plot (\code{plot}) and the processed beta diversity data (\code{data}).
+A ggplot2 figure object.
 }
 \description{
 This function calculates beta diversity (shared species, turnover, or nestedness)
-and generates a ggplot2 boxplot with facets and custom coloring.
+and generates a ggplot2 boxplot with facets and custom coloring. The user only
+needs to specify the metadata column(s) to be used for comparisons; the function
+constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
 }

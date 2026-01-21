@@ -7,6 +7,7 @@
 corr_env_abund_plot(
   table,
   env_table,
+  metadata,
   cond_vect = NULL,
   method = "spearman",
   hc.order = TRUE,
@@ -15,36 +16,48 @@ corr_env_abund_plot(
   col_palette = NULL,
   invert_axes = TRUE,
   taxonomy_db = "silva",
-  level = "genus"
+  level = "genus",
+  pval_threshold = NULL,
+  save_table = TRUE,
+  table_filename = "corr.txt"
 )
 }
 \arguments{
-\item{table}{A data frame containing count data with a column named \code{taxonomy}. Each
-row corresponds to a taxon, and each column (besides \code{taxonomy}) corresponds to a sample.}
+\item{table}{}
 
-\item{env_table}{A data frame of environmental variables, with samples as row names.}
+\item{env_table}{}
 
-\item{cond_vect}{Vector with environmental variables to consider in the correlation}
+\item{metadata}{}
 
-\item{method}{Correlation method to use. Options include \code{"spearman"}, \code{"pearson"}, or \code{"kendall"}. Default is \code{"spearman"}.}
+\item{cond_vect}{}
 
-\item{hc.order}{Logical. If \code{TRUE}, performs hierarchical clustering to reorder rows and columns based on correlation similarity. Default is \code{TRUE}.}
+\item{method}{}
 
-\item{geom}{Character. Type of plot to generate: \code{"tile"} for a heatmap or \code{"circle"} for a bubble plot. Default is \code{"tile"}.}
+\item{hc.order}{}
 
-\item{show_labels}{Logical. Whether to display correlation values on the plot. Default is \code{TRUE}.}
+\item{geom}{}
 
-\item{col_palette}{A vector of colors for the gradient scale. If \code{NULL}, a default blue-white-red palette is used.}
+\item{show_labels}{}
 
-\item{invert_axes}{Logical. If \code{TRUE}, environmental variables are shown on the x-axis and taxonomic groups on the y-axis. Default is \code{TRUE}.}
+\item{col_palette}{}
 
-\item{taxonomy_db}{Character. Database used for taxonomy annotation. Options are \code{"silva"} or \code{"Kraken2"}. Default is \code{"silva"}.}
+\item{invert_axes}{}
 
-\item{level}{Character. Taxonomic level for collapsing counts: \code{"phylum"}, \code{"genus"}, or \code{"specie"}. Default is \code{"genus"}.}
+\item{taxonomy_db}{}
+
+\item{level}{}
+
+\item{pval_threshold}{}
+}
+\value{
+A ggplot2 object.
 }
 \description{
 This function calculates the relative abundances of taxa at a specified taxonomic level
 (phylum, genus, or species) from a count table, computes correlations between these
 abundances and environmental variables, and visualizes the results as either a heatmap
 (tile) or a bubble plot (circle).
+}
+\examples{
+colores<- c("pink","white","purple")
 }

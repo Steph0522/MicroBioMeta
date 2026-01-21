@@ -228,3 +228,6 @@ abundance_sankey_plot(
 #summarice
 
 metadata %>%  group_by(SITIO, ID.CAM) %>% count()
+devtools::load_all()
+
+MicroBioMeta::beta_

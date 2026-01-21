@@ -15,7 +15,9 @@ abundance_barplot(
   label = "taxonomy",
   top_n_groups = 15,
   x_axis_title = "Samples",
-  add_remained = FALSE
+  add_remained = FALSE,
+  save_table = TRUE,
+  table_filename = "relative_abundance.txt"
 )
 }
 \arguments{
