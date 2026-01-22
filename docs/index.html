@@ -36,8 +36,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/installing.html">Quick installation</a></li>
-    <li><a class="dropdown-item" href="articles/metabarcoding.html">Metabarcoding</a></li>
+<li><a class="dropdown-item" href="articles/metabarcoding.html">Metabarcoding</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -54,12 +53,11 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="id_-microbiometa-">🧬 MicroBioMeta <img src="reference/figures/logo.jpg" alt="Logo" width="150" align="right"><a class="anchor" aria-label="anchor" href="#id_-microbiometa-"></a>
-</h1></div>
+  <main id="main" class="col-md-9"><p># 🧬 MicroBioMeta <img src="reference/figures/logo.jpg" alt="Logo" width="150" align="right"></p>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
+<!-- badges: end -->
 <p>The goal of <code>MicroBioMeta</code> is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way</p>
 <div class="section level2">
 <h2 id="id_-contributors">👩‍💻 Contributors<a class="anchor" aria-label="anchor" href="#id_-contributors"></a>
@@ -91,51 +89,7 @@
 <h2 id="green_book-examples">
 <span class="emoji" data-emoji="green_book">📗</span> Examples<a class="anchor" aria-label="anchor" href="#green_book-examples"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/Steph0522/MicroBioMeta" class="external-link">"MicroBioMeta"</a></span><span class="op">)</span></span>
-<span><span class="co">## basic example code</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="books-citation">
-<span class="emoji" data-emoji="books">📚</span> Citation<a class="anchor" aria-label="anchor" href="#books-citation"></a>
-</h2>
-<p>Below is the citation output from using <code>citation('MicroBioMeta')</code> in R. Please run this yourself to check for any updates on how to cite <strong>MicroBioMeta</strong>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"MicroBioMeta"</span><span class="op">)</span>, bibtex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; To cite package 'MicroBioMeta' in publications use:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Steph0522 (2025). _MicrobioMeta_. doi:10.18129/B9.bioc.MicroBioMeta</span></span>
-<span><span class="co">#&gt;   &lt;https://doi.org/10.18129/B9.bioc.MicroBioMeta&gt;,</span></span>
-<span><span class="co">#&gt;   https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package</span></span>
-<span><span class="co">#&gt;   version 0.99.0, &lt;http://www.bioconductor.org/packages/MicroBioMeta&gt;.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   @Manual{,</span></span>
-<span><span class="co">#&gt;     title = {MicrobioMeta},</span></span>
-<span><span class="co">#&gt;     author = {{Steph0522}},</span></span>
-<span><span class="co">#&gt;     year = {2025},</span></span>
-<span><span class="co">#&gt;     url = {http://www.bioconductor.org/packages/MicroBioMeta},</span></span>
-<span><span class="co">#&gt;     note = {https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package version 0.99.0},</span></span>
-<span><span class="co">#&gt;     doi = {10.18129/B9.bioc.MicroBioMeta},</span></span>
-<span><span class="co">#&gt;   }</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Steph0522 (2025). "MicrobioMeta." _bioRxiv_. doi:10.1101/TODO</span></span>
-<span><span class="co">#&gt;   &lt;https://doi.org/10.1101/TODO&gt;,</span></span>
-<span><span class="co">#&gt;   &lt;https://www.biorxiv.org/content/10.1101/TODO&gt;.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   @Article{,</span></span>
-<span><span class="co">#&gt;     title = {MicrobioMeta},</span></span>
-<span><span class="co">#&gt;     author = {{Steph0522}},</span></span>
-<span><span class="co">#&gt;     year = {2025},</span></span>
-<span><span class="co">#&gt;     journal = {bioRxiv},</span></span>
-<span><span class="co">#&gt;     doi = {10.1101/TODO},</span></span>
-<span><span class="co">#&gt;     url = {https://www.biorxiv.org/content/10.1101/TODO},</span></span>
-<span><span class="co">#&gt;   }</span></span></code></pre></div>
-<p>Please note that the <code>MicroBioMeta</code> was only made possible thanks to many other R and bioinformatics software authors, which are cited either in the vignettes and/or the paper(s) describing this package.</p>
+<p>For examples and uses go to the <a href="https://steph0522.github.io/MicroBioMeta/" class="external-link">web page</a></p>
 </div>
 <div class="section level2">
 <h2 id="raised_hands-code-of-conduct">
@@ -157,7 +111,7 @@
 <p>For more details, check the <code>dev</code> directory.</p>
 <p>This package was developed using <em><a href="https://bioconductor.org/packages/3.18/biocthis" class="external-link">biocthis</a></em>.</p>
 </div>
-</div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -192,7 +146,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Stephanie Hereira <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Stephanie Hereira <br><small class="roles"> Author, maintainer </small>   </li>
 </ul>
 </div>
 
@@ -202,14 +156,6 @@
 <li><a href="https://github.com/Steph0522/MicroBioMeta/issues" class="external-link"><img src="https://img.shields.io/github/issues/Steph0522/MicroBioMeta" alt="GitHub issues"></a></li>
 <li><a href="https://github.com/Steph0522/MicroBioMeta/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/Steph0522/MicroBioMeta" alt="GitHub pulls"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://bioconductor.org/checkResults/release/bioc-LATEST/MicroBioMeta" class="external-link"><img src="http://www.bioconductor.org/shields/build/release/bioc/MicroBioMeta.svg" alt="Bioc release status"></a></li>
-<li><a href="https://bioconductor.org/checkResults/devel/bioc-LATEST/MicroBioMeta" class="external-link"><img src="http://www.bioconductor.org/shields/build/devel/bioc/MicroBioMeta.svg" alt="Bioc devel status"></a></li>
-<li><a href="http://bioconductor.org/packages/stats/bioc/MicroBioMeta/" class="external-link"><img src="https://bioconductor.org/shields/downloads/release/MicroBioMeta.svg" alt="Bioc downloads rank"></a></li>
-<li><a href="https://support.bioconductor.org/tag/MicroBioMeta" class="external-link"><img src="https://bioconductor.org/shields/posts/MicroBioMeta.svg" alt="Bioc support"></a></li>
-<li><a href="https://bioconductor.org/packages/release/bioc/html/MicroBioMeta.html#since" class="external-link"><img src="https://bioconductor.org/shields/years-in-bioc/MicroBioMeta.svg" alt="Bioc history"></a></li>
-<li><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/MicroBioMeta/" class="external-link"><img src="https://bioconductor.org/shields/lastcommit/devel/bioc/MicroBioMeta.svg" alt="Bioc last commit"></a></li>
-<li><a href="https://bioconductor.org/packages/release/bioc/html/MicroBioMeta.html#since" class="external-link"><img src="https://bioconductor.org/shields/dependencies/release/MicroBioMeta.svg" alt="Bioc dependencies"></a></li>
-<li><a href="https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml" class="external-link"><img src="https://github.com/Steph0522/MicroBioMeta/actions/workflows/R-CMD-check-bioc.yaml/badge.svg" alt="R-CMD-check-bioc"></a></li>
 </ul>
 </div>
 
@@ -222,7 +168,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

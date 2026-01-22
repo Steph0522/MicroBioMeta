@@ -8,6 +8,7 @@
 #' @param conditions, Vector that defines the categories or classes to compare.
 #' @param effect, Effect size (default: >= 0.8)
 #' @param pvalue_BH, Value p-ajusted (optional)
+#' @param formula, Formula of the model 
 #'
 #' @return A plot with the deferentially abundant taxonomic groups between two categories or groups of samples.
 #' @export
@@ -15,62 +16,44 @@
 #' @examples ancomb_plot(table = table,
 #'                      conditions = conditions,
 #'                      effect = 0.8,
+#'                      formula = formula, 
 #'                      pvalue_BH = NULL)
 #'
 
-ancombc_heatmap_plot <- function(table,
-                               metadata,
-                               col_cond,
-                               effect_threshold = 0.8,
-                               pvalue_BH = NULL,
-                               cluster_rows = FALSE,
-                               cluster_columns = FALSE,
-                               heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("#cbdbcd", "#759c8a", "#00544d")),
-                               effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("lightsalmon4", "white", "lightseagreen")),
-                               pvalue_colors = list('p-value' = c("<0.001" = '#C70039', "<0.01" = '#FF5733', "<0.05" = "#FFC300", ">0.05" = "#F9E79F")),
-                               treatment_colors = c("Higher" = "#808000", "Lower" = "#1B5E20")) {
-  
+ancombc_plot <- function(table,
+                         metadata,
+                         col_cond,
+                         prv_cut = 0.1,
+                         formula = NULL,
+                         rand_formula = NULL) {
   #check ANCOMBC package
   
   if (!requireNamespace("ANCOMBC", quietly = TRUE)) {
-    message("El paquete 'ANCOMBC' no está instalado. Instalando desde Bioconductor...")
+    message("El paquete 'ANCOMBC' is not installed. Installing from Bioconductor...")
     if (!requireNamespace("BiocManager", quietly = TRUE)) {
       install.packages("BiocManager")
     }
     BiocManager::install("ANCOMBC")
   }
-  library(ANCOMBC)
   
-  
-  # Verifica que la columna de condición exista en metadata
-  if (!col_cond %in% colnames(metadata)) {
+#check condition in metadata
+    if (!col_cond %in% colnames(metadata)) {
     stop(paste("Column", col_cond, "not found in metadata."))
   }
   
-  # Extrae condiciones
-  conditions <- metadata[[col_cond]]
-  unique_conditions <- unique(conditions)
-  if (length(unique_conditions) != 2) {
-    stop("Exactly two conditions are required for the analysis.")
-  }
   
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
   names(table)[ncol(table)] <- "taxonomy"
   
-  # Prepara tabla de conteos
+ # counts table
   table <- table 
   table_counts <- table %>%
     dplyr::select(-taxonomy) 
   
-  # Validar correspondencia condiciones vs muestras
-  if (length(conditions) != ncol(table_counts)) {
-    stop("Number of conditions does not match number of samples.")
-  }
   
-  
-  # crear objeto phyloseq porque así lo pide ancombc
+  # create phyloseq object 
   
   otumat= table_counts %>% as.matrix()
   taxa= table %>% dplyr::select(Taxon=taxonomy) %>% rownames_to_column(var = "Feature.ID")
@@ -80,172 +63,139 @@ ancombc_heatmap_plot <- function(table,
   TAX = tax_table(taxmat)
   sampledata = sample_data(metadata %>% column_to_rownames(var = "SAMPLEID"))
   physeq = phyloseq(OTU, TAX, sampledata )
-  
-  
-  
-  # Corre ancombc
-  ancomb_results <- ANCOMBC::ancombc(
-    reads = table_counts,
-    conditions = conditions,
-    mc.samples = 128,
-    effect = TRUE,
-    test = "t",
-    verbose = TRUE,
-    denom = "all",
-    include.sample.summary = FALSE
-  )
-  
-  # Verifica que existan las columnas necesarias
-  if (!all(c("effect", "wi.eBH") %in% colnames(ancomb_results))) {
-    stop("Columns 'effect' or 'wi.eBH' missing in ancomb2 results.")
-  }
-  
-  # Filtra resultados según thresholds
-  ancomb_filtered <- ancomb_results
-  
-  if (effect_threshold > 0 && !is.null(pvalue_BH)) {
-    ancomb_filtered <- ancomb_results %>%
-      dplyr::filter(abs(effect) >= effect_threshold, wi.eBH <= pvalue_BH)
-  } else if (effect_threshold > 0) {
-    ancomb_filtered <- ancomb_results %>%
-      dplyr::filter(abs(effect) >= effect_threshold)
-  } else if (!is.null(pvalue_BH)) {
-    ancomb_filtered <- ancomb_results %>%
-      dplyr::filter(wi.eBH <= pvalue_BH)
-  }
-  
-  # Prepare data for heatmap
-  ancomb_plot <- ancomb_filtered %>%
-    tibble::rownames_to_column("OTUID") %>%
-    dplyr::left_join(table %>% dplyr::select(OTUID, taxonomy), by = "OTUID") %>%
-    dplyr::mutate(
-      seccion = dplyr::case_when(
-        diff.btw < 0 ~ paste("Lower in", unique_conditions[2]),
-        diff.btw > 0 ~ paste("Higher in", unique_conditions[1]),
-        TRUE ~ "No Change"
-      ),
-      taxonomy = dplyr::case_when(
-        grepl("g__[^;]*", taxonomy) &
-          !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
-        grepl("f__[^;]*", taxonomy) &
-          !grepl("f__uncultured|f__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)
-          ),
-        grepl("o__[^;]*", taxonomy) &
-          !grepl("o__uncultured|o__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)
-          ),
-        grepl("c__[^;]*", taxonomy) &
-          !grepl("c__uncultured|c__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)
-          ),
-        grepl("p__[^;]*", taxonomy) &
-          !grepl("p__uncultured|p__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)
-          ),
-        TRUE ~ "Unclassified"
-      ),
-      taxonomy = stringr::str_trim(taxonomy),
-      taxonomy = make.unique(taxonomy),
-      p.value = dplyr::case_when(
-        wi.eBH <= 0.001 ~ "<0.001",
-        wi.eBH <= 0.01 ~ "<0.01",
-        wi.eBH <  0.05 ~ "<0.05",
-        TRUE ~ ">0.05"
-      )
-    ) %>%
-    dplyr::arrange(diff.btw)
-  
-  rab_cols <- paste0("rab.win.", unique_conditions)
-  heat_data <- ancomb_plot %>%
-    dplyr::select(taxonomy, all_of(rab_cols)) %>%
-    dplyr::rename_with(~ unique_conditions, all_of(rab_cols)) %>%
-    tibble::column_to_rownames(var = "taxonomy") %>%
-    as.matrix()
-  
-  treatment_colors_full <- setNames(
-    treatment_colors,
-    c(
-      paste("Higher in", unique_conditions[1]),
-      paste("Lower in", unique_conditions[2])
-    )
-  )
-  
-  barpl <- ANCOMBC::rowAnnotation(
-    "difference \nbetween groups" = ANCOMBC::anno_barplot(
-      ancomb_plot$diff.btw,
-      which = "row",
-      gp = grid::gpar(fill = treatment_colors_full[ancomb_plot$seccion]),
-      width = unit(4, "cm")
-    ),
-    show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 8),
-    annotation_name_rot = 0
-  )
-  
-  annP <- ANCOMBC::rowAnnotation(
-    "p-value" = ancomb_plot$p.value,
-    simple_anno_size = unit(0.45, "cm"),
-    annotation_name_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-    annotation_legend_param = list(
-      title_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-      labels_gp = grid::gpar(fontsize = 8),
-      direction = "vertical"
-    ),
-    col = pvalue_colors,
-    show_legend = TRUE,
-    gp = grid::gpar(col = "white"),
-    show_annotation_name = TRUE
-  )
-  
-  
+  physeq_filt <- prune_taxa(apply(otu_table(physeq), 1, var) > 0, physeq)
+  dat <- mia::makeTreeSummarizedExperimentFromPhyloseq(physeq_filt)
 
-  left_annotation <- ANCOMBC::rowAnnotation(
-    "Effect size" = ancomb_plot$effect,
-    col = list("Effect size" = effect_colors),
-    simple_anno_size = unit(0.45, "cm"),
-    annotation_name_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-    annotation_legend_param = list(
-      title_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-      labels_gp = grid::gpar(fontsize = 8),
-      direction = "vertical"
-    ),
-    show_legend = TRUE,
-    gp = grid::gpar(col = "white"),
-    show_annotation_name = TRUE
-  )
+
+
+  # run ancombc
+  ancomb_results <- ANCOMBC::ancombc2(
+    data = dat, assay_name = "counts",
+    rank = "Genus",
+    fix_formula= formula, p_adj_method = "holm",
+    pseudo_sens = TRUE,
+    prv_cut = prv_cut,lib_cut = 1000,s0_perc = 0.05,
+    group = col_cond,
+    struc_zero = TRUE,neg_lb = TRUE)
+  
+  res_prim = ancomb_results$res
   
   
+ 
+  conditions <- unique(metadata[[col_cond]])
+
+
+  # plot if has 2 conditions
+
+  df_cond = res_prim %>%
+    dplyr::select(taxon, contains(col_cond)) 
+  pattern <- paste0("^", col_cond, ".*")
+  colnames(res_prim) <- gsub(pattern, col_cond, colnames(res_prim))
+  lfc_col <- grep("^lfc_", names(df_cond), value = TRUE)[1]
+  diff_col <- grep("^diff_", names(df_cond), value = TRUE)[1]
+  se_col <- grep("^se_", names(df_cond), value = TRUE)[1]
+
+
   
-  heatmap <- ANCOMBC::Heatmap(
-    heat_data,
-    cluster_rows = cluster_rows,
-    cluster_columns = cluster_columns,
-    width = grid::unit(ncol(heat_data) * 7, "mm"),
-    height = grid::unit(nrow(heat_data) * 6, "mm"),
-    column_names_rot = 90,
-    rect_gp = grid::gpar(col = "white", lwd = 2),
-    left_annotation = left_annotation,
-    right_annotation = barpl,
-    name = "Median clr value",
-    heatmap_legend_param = list(
-      direction = "vertical",
-      labels_gp = grid::gpar(fontsize = 8),
-      title_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-      legend_height = unit(2, "cm")
-    ),
-    column_names_gp = grid::gpar(fontsize = 8, fontface = "bold"),
-    col = heatmap_colors,
-    row_names_gp = grid::gpar(fontsize = 8, fontface = "italic"),
-    show_heatmap_legend = TRUE
-  )
+  df_condition <- df_cond %>%
+    filter(if_any(matches(diff_col), ~ . == TRUE)) %>%
+    arrange(desc(.data[[lfc_col]])) %>%
+    mutate(direct = ifelse(.data[[lfc_col]] > 0,
+                           "Positive LFC", "Negative LFC"))
   
-  ANCOMBC::draw(heatmap,
-                       heatmap_legend_side = "right",
-                       annotation_legend_side = "right")
-  return(invisible(heatmap))
+  df_condition$taxon = factor( df_condition$taxon, levels =  df_condition$taxon)
+  df_condition$direct = factor(df_condition$direct, 
+                             levels = c("Positive LFC", "Negative LFC"))
+  cond2 <- unique(metadata[[col_cond]])[2]
+  
+  fig = df_condition %>%
+    ggplot(aes(x = taxon, y = .data[[lfc_col]], fill = direct)) + 
+    geom_bar(stat = "identity", width = 0.7, color = "black", 
+             position = position_dodge(width = 0.4)) +
+    geom_errorbar(aes(ymin = .data[[lfc_col]] - .data[[se_col]], 
+                      ymax = .data[[lfc_col]] + .data[[se_col]]), 
+                  width = 0.2, position = position_dodge(0.05), color = "black") + 
+    labs(x = NULL, y = "Log fold change", 
+         title = paste("Log fold changes as one unit increase", "in",conditions )) + 
+    scale_fill_discrete(name = NULL) +
+    scale_color_discrete(name = NULL) +
+    theme_bw() + 
+    theme(plot.title = element_text(hjust = 0.5),
+          panel.grid.minor.y = element_blank(),
+          axis.text.x = element_text(angle = 60, hjust = 1,
+                                     color = df_condition$color))
+  
+  #plot it has more than 2 conditions
+  
+  df_cond = res_prim %>%
+    dplyr::select(taxon, contains(col_cond)) 
+  conditions <- unique(metadata[[col_cond]])
+
+  diff_cols <- paste0("diff_", col_cond,conditions[-1])
+  lfc_cols  <- paste0("lfc_", col_cond,conditions[-1])
+  
+  dfs_list <- list()
+  
+  for(i in seq_along(conditions[-1])) {
+    df_temp <- df_cond %>%
+      filter(.data[[diff_cols[i]]] == TRUE) %>%
+      mutate(
+        value = round(.data[[lfc_cols[i]]], 2)
+      ) %>%
+      select(taxon, value)
+    
+    # Guardar en la lista con nombre dinámico
+    dfs_list[[conditions[i]]] <- df_temp
+  }
+  
+  df_fig1 <- df_cond %>%
+    dplyr::filter(diff_cols[[3]] == TRUE | 
+                    diff_cols[[3]] == TRUE)  %>%
+    mutate(
+      lfc1 = ifelse(.data[[diff_cols[2]]] == TRUE, 
+                    round(.data[[lfc_cols[2]]], 2), 0),
+      lfc2 = ifelse(data[[diff_cols[3]]] == TRUE, 
+                    round(.data[[lfc_cols[3]]], 2), 0)
+    ) %>%
+    pivot_longer(cols = lfc1:lfc2, names_to = "group", values_to = "value") %>%
+    arrange(taxon)
+  
+  
+  df_fig2 <- df_cond %>%
+    filter(if_any(all_of(diff_cols), ~ . == TRUE)) %>%   
+    mutate(
+      lfc1 = ifelse(.data[[lfc_cols[1]]] == 1, round(.data[[lfc_cols[1]]], 2), 0),
+      lfc2 = ifelse(.data[[lfc_cols[3]]] == 1, round(.data[[lfc_cols[2]]], 2), 0)
+    ) %>%
+    pivot_longer(cols = lfc1:lfc2, names_to = "group", values_to = "value") %>%
+    arrange(taxon)
+
+  df_fig_bmi = df_fig_bmi1 %>%
+    dplyr::left_join(df_fig_bmi2, by = c("taxon", "group"))
+  
+  df_fig_bmi$group = recode(df_fig_bmi$group, 
+                            `lfc1` = "Overweight - Obese",
+                            `lfc2` = "Lean - Obese")
+  df_fig_bmi$group = factor(df_fig_bmi$group, 
+                            levels = c("Overweight - Obese",
+                                       "Lean - Obese"))
+  
+  lo = floor(min(df_fig_bmi$value))
+  up = ceiling(max(df_fig_bmi$value))
+  mid = (lo + up)/2
+  fig_bmi = df_fig_bmi %>%
+    ggplot(aes(x = group, y = taxon, fill = value)) + 
+    geom_tile(color = "black") +
+    scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                         na.value = "white", midpoint = mid, limit = c(lo, up),
+                         name = NULL) +
+    geom_text(aes(group, taxon, label = value, color = color), size = 4) +
+    scale_color_identity(guide = "none") +
+    labs(x = NULL, y = NULL, title = "Log fold changes as compared to obese subjects") +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5))
+  fig_bmi
+  
+  
+  return(invisible(fig))
 }
