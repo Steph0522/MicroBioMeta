@@ -13,7 +13,7 @@ For this example, we are going to use metabarcoding data: 16S for bacteria and 1
 
 The data is taken from: [16S](https://www.nature.com/articles/s41598-021-81551-7) [18S](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
-First, Let's call the package:
+First, Let's call the `MicroBioMeta` package:
 
 ```{r "start", message=FALSE}
 library("MicroBioMeta")
@@ -22,10 +22,12 @@ library("MicroBioMeta")
 
 Let's call other packages needed:
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(qiime2R)
 ```
+
+tidyverse is used for all the data wrangling and visualizations
 
 Then, Load the data and reformat:
 
