@@ -53,6 +53,13 @@ beta_partition_plot <- function(table, metadata,
   }
   
   # --- 3. Merge with metadata ---
+  
+  #if (!"SampleID" %in% colnames(metadata)) {
+   # stop("La tabla metadata no contiene una columna llamada 'SampleID'")
+  #}
+  
+  names(metadata)[1] <- "SampleID"
+  
   env1 <- table_pa %>% tibble::as_tibble(rownames = "SampleID") %>%
     dplyr::inner_join(metadata, by = "SampleID")
   
