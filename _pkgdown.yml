@@ -1,12 +1,11 @@
-url: https://steph0522.github.io/MicroBioMeta/
-
-home:
-  title: "MicroBioMeta: an R package for microbiome analysis and visualizations"
-  description: "Visualizations for microbiome data: abundance, alpha, beta and others."
-
 template:
-  bootstrap: 5
-  bootswatch: flatly
+  params:
+    bootswatch: flatly
+    ganalytics: UA-000000-01
+  opengraph:
+    twitter:
+      creator: "@Steph0522"
+      card: summary_large_image
 
 navbar:
   structure:
