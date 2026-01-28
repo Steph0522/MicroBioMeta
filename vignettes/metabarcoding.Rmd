@@ -2,7 +2,7 @@
 title: "metabarcoding"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{InterProScan profile creation}
+  %\VignetteIndexEntry{metabarcoding}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
 ---
