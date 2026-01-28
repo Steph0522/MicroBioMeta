@@ -1,13 +1,26 @@
 url: https://steph0522.github.io/MicroBioMeta/
-
 template:
   bootstrap: 5
-  bootswatch: flatly
-  opengraph:
-    twitter:
-      creator: "@Steph0522"
-      card: summary_large_image
+  light-switch: true
+  bootswatch: simplex
+  bslib:
+    primary: "#a2bf48"
 
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github, lightswitch]
+  bg: primary
+    
+home:
+  title: "MicroBioMeta: an R package for microbiome analysis and visualizations"
+  description: "Visualizations for microbiome data: abundance, alpha, beta and others."
+
+articles:
+- title: Metabarcoding
+  navbar: ~
+  contents:
+  - metabarcoding
 
 reference:
   - title: Pre-processing.
@@ -50,14 +63,11 @@ reference:
       - '`cca_rda_biplot`'
       - '`corr_env_abund_plot`'
       - '`venn_diagram_plot`'
-
-articles:      
-  left:
-    - icon: fa-home
-      href: index.html
-    - text: Articles
-      menu:
-        - text: Metabarcoding
-          href: articles/metabarcoding.html
-
-# <- ¡LÍNEA VACÍA AL FINAL!
+  
+authors:
+  Stephanie Hereira:
+    href: https://github.com/Steph0522/
+  Nina Montoya:
+    href: https://github.com/NinaMontoya
+  Karla Zarco:
+    href: https://github.com/KarlaZG
