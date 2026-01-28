@@ -1,13 +1,11 @@
 ---
-title: "Metabarcoding"
+title: "metabarcoding"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{InterProScan profile creation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
 ---
-
-# Metabarcoding
 
 For this example, we are going to use metabarcoding data: 16S for bacteria and 18S for fungi.
 

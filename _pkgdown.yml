@@ -1,68 +1,68 @@
-url: https://steph0522.github.io/MicroBioMeta/
-template:
-  bootstrap: 5
-  light-switch: true
-  bootswatch: simplex
-  bslib:
-    primary: "#a2bf48"
-
-navbar:
-  structure:
-    left:  [intro, reference, articles, news]
-    right: [search, github, lightswitch]
-  bg: primary
-    
 home:
   title: "MicroBioMeta: an R package for microbiome analysis and visualizations"
   description: "Visualizations for microbiome data: abundance, alpha, beta and others."
 
-articles:
-- title: Metabarcoding
-  navbar: ~
-  contents:
-  - metabarcoding
+url: https://steph0522.github.io/MicroBioMeta/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    vignettes:
+     text: articles
+     menu:
+     - text: metabarcoding
+       href: articles/metabarcoding.html
+
+    
+
 
 reference:
-  - title: Pre-processing.
+  - title: Pre-processing data.
     desc: Functions used for pre process data.
     contents:
-      - '`collapse_table`'
-      - '`merge_feature_taxonomy`'
+      - collapse_table
+      - merge_feature_taxonomy
   - title: Alpha diversity
   - title: Abundance visualizations
     desc: Functions used for abundance visualizations.
     contents:
-      - '`abundance_barplot`'
-      - '`abundance_heatmap_plot`'
-      - '`abundance_sankey_plot`'
+      - abundance_barplot
+      - abundance_heatmap_plot
+      - abundance_sankey_plot
   - title: Alpha diversity
     desc: Functions used for alpha diversity index and analyses. 
     contents:
-      - '`alpha_hill_corrplot`'
-      - '`alpha_hill_plot`'
-      - '`alpha_diversity_plot`'
+      - alpha_hill_corrplot
+      - alpha_hill_plot
+      - alpha_diversity_plot
   - title: Beta diversity
     desc: Functions used for betadiversity analyses and visualizations.
     contents:
-      - '`beta_div_plot`'
-      - '`beta_diversity_boxplot`'
-      - '`beta_plot`'
-      - '`beta_partition_plot`'
-      - '`beta_test_table`'
+      - beta_div_plot
+      - beta_diversity_boxplot
+      - beta_plot
+      - beta_partition_plot
+      - beta_test_table
   - title: Important taxa
     desc: Functions used to identify important taxa
     contents:
-      - '`aldex_heatmap_plot`'
-      - '`aldex_volcano_plot`'
-      - '`ancombc_plot`'
-      - '`randomf_lollipop_plot`'
-      - '`ratio_plot`'
+      - aldex_heatmap_plot
+      - aldex_volcano_plot
+      - ancombc_plot
+      - randomf_lollipop_plot
+      - ratio_plot
   - title: Other functions
     desc: Functions used for other analyses
     contents:
-      - '`cca_rda_biplot`'
-      - '`corr_env_abund_plot`'
-      - '`venn_diagram_plot`'
+      - cca_rda_biplot
+      - corr_env_abund_plot
+      - venn_diagram_plot
   
 authors:
   Stephanie Hereira:
