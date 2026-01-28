@@ -1,60 +1,64 @@
+url: https://steph0522.github.io/MicroBioMeta/
+
 template:
-  params:
-    bootswatch: flatly
-    ganalytics: UA-000000-01
+  bootstrap: 5
+  bootswatch: flatly
   opengraph:
     twitter:
       creator: "@Steph0522"
       card: summary_large_image
 
+navbar:
+  left:
+    - icon: fa-home
+      href: index.html
+    - text: Articles
+      menu:
+        - text: Metabarcoding
+          href: articles/metabarcoding.html
+
 reference:
-  - title: Pre-processing.
-    desc: Functions used for pre process data.
+  - title: Pre-processing
+    desc: Functions used for pre-process data
     contents:
-      - '`collapse_table`'
-      - '`merge_feature_taxonomy`'
-  - title: Alpha diversity
+      - collapse_table
+      - merge_feature_taxonomy
+
   - title: Abundance visualizations
-    desc: Functions used for abundance visualizations.
+    desc: Functions used for abundance visualizations
     contents:
-      - '`abundance_barplot`'
-      - '`abundance_heatmap_plot`'
-      - '`abundance_sankey_plot`'
+      - abundance_barplot
+      - abundance_heatmap_plot
+      - abundance_sankey_plot
+
   - title: Alpha diversity
-    desc: Functions used for alpha diversity index and analyses. 
+    desc: Functions used for alpha diversity analyses
     contents:
-      - '`alpha_hill_corrplot`'
-      - '`alpha_hill_plot`'
-      - '`alpha_diversity_plot`'
+      - alpha_hill_corrplot
+      - alpha_hill_plot
+      - alpha_diversity_plot
+
   - title: Beta diversity
-    desc: Functions used for betadiversity analyses and visualizations.
+    desc: Functions used for beta diversity analyses
     contents:
-      - '`beta_div_plot`'
-      - '`beta_diversity_boxplot`'
-      - '`beta_plot`'
-      - '`beta_partition_plot`'
-      - '`beta_test_table`'
+      - beta_div_plot
+      - beta_diversity_boxplot
+      - beta_plot
+      - beta_partition_plot
+      - beta_test_table
+
   - title: Important taxa
     desc: Functions used to identify important taxa
     contents:
-      - '`aldex_heatmap_plot`'
-      - '`aldex_volcano_plot`'
-      - '`ancombc_plot`'
-      - '`randomf_lollipop_plot`'
-      - '`ratio_plot`'
+      - aldex_heatmap_plot
+      - aldex_volcano_plot
+      - ancombc_plot
+      - randomf_lollipop_plot
+      - ratio_plot
+
   - title: Other functions
-    desc: Functions used for other analyses
+    desc: Other utilities
     contents:
-      - '`cca_rda_biplot`'
-      - '`corr_env_abund_plot`'
-      - '`venn_diagram_plot`'
-
-left:
-  - icon: fa-home
-    href: index.html
-  - text: "How To"
-    menu: 
-      - text: Metabarcoding
-        href: articles/metabarcoding.html
-
-# <- ¡LÍNEA VACÍA AL FINAL!
+      - cca_rda_biplot
+      - corr_env_abund_plot
+      - venn_diagram_plot
