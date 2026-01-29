@@ -8,6 +8,8 @@ template:
       card: summary_large_image
 
 navbar:
+  logo:
+    src: man/figures/logo.png
   structure:
     left: [intro, reference, articles, news]
     right: [search, github]
