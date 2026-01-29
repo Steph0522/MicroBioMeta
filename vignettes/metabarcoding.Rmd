@@ -1,5 +1,5 @@
 ---
-title: "metabarcoding"
+title: "Metabarcoding"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{metabarcoding}
@@ -7,15 +7,18 @@ vignette: >
   %\VignetteEncoding{UTF-8} 
 ---
 
-For this example, we are going to use metabarcoding data: 16S for bacteria and 18S for fungi.
+For this example, we will use metabarcoding data, specifically 16S for bacteria and 18S for fungi.
 
-The data is taken from: [16S](https://www.nature.com/articles/s41598-021-81551-7) [18S](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
+The data is taken from:
+
+For 16S: [Hereira-Pacheco, S.E., Navarro-Noya, Y.E. & Dendooven, L. The root endophytic bacterial community of Ricinus communis L. resembles the seeds community more than the rhizosphere bacteria independent of soil water content. Sci Rep 11, 2173 (2021). https://doi.org/10.1038/s41598-021-81551-7](https://doi.org/10.1038/s41598-021-81551-7)]
+
+For 18S: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities under drought conditions in Ricinus communis. Fungal Ecology, 63, 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
 First, Let's call the `MicroBioMeta` package:
 
 ```{r "start", message=FALSE}
 library("MicroBioMeta")
-
 ```
 
 Let's call other packages needed:
@@ -25,9 +28,9 @@ library(tidyverse)
 library(qiime2R)
 ```
 
-tidyverse is used for all the data wrangling and visualizations
+[`tidyverse`](Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D. A., François, R., ... & Yutani, H. (2019). Welcome to the Tidyverse. Journal of open source software, 4(43), 1686.) is used for all the data wrangling and visualizations and [`qiime2R`](https://github.com/jbisanz/qiime2R) for calling `.qza` objects as output from [`QIIME2`](Estaki, M., Jiang, L., Bokulich, N. A., McDonald, D., González, A., Kosciolek, T., ... & Knight, R. (2020). QIIME 2 enables comprehensive end‐to‐end analysis of diverse microbiome data and comparative studies with publicly available data. Current protocols in bioinformatics, 70(1), e100.).
 
-Then, Load the data and reformat:
+Then, Load the data and reformat. Notice the data we are loading came from processing in [`QIIME2`](Estaki, M., Jiang, L., Bokulich, N. A., McDonald, D., González, A., Kosciolek, T., ... & Knight, R. (2020). QIIME 2 enables comprehensive end‐to‐end analysis of diverse microbiome data and comparative studies with publicly available data. Current protocols in bioinformatics, 70(1), e100.) , so the `read_qza` function is used to import this data into R, also we could export the data within [`QIIME2`](Estaki, M., Jiang, L., Bokulich, N. A., McDonald, D., González, A., Kosciolek, T., ... & Knight, R. (2020). QIIME 2 enables comprehensive end‐to‐end analysis of diverse microbiome data and comparative studies with publicly available data. Current protocols in bioinformatics, 70(1), e100.) and then import the data as `.txt`.
 
 ```{r}
 
@@ -81,7 +84,9 @@ taxonomy_fungi <- read_qza("../man/Data/taxonomy_blast_240_0.97.qza")$data %>% a
 
 ## Pre-processing data
 
-In order to use the data as input for functions of `MicroBioMeta` should contain a biom format with the column of *taxonomy* at the end.
+In order to use the data as input for functions of `MicroBioMeta` should contain a biom format with the column of **taxonomy** at the end.
+
+In case your data is not in this format, we could use the `merge_feature_taxonomy` function to set the data in this format. This format will allow the use of taxonomy identity without load another object into R.
 
 ```{r}
 
@@ -95,13 +100,31 @@ table_fung <- merge_feature_taxonomy(table = fungi_table,
 
 ## Composition exploration
 
+`MicroBioMeta` has several functions to explore composition, taxonomic identity, and abundance. Let's explore each of them.
+
 ### Abundance barplots
+
+Abundance barplots are useful to identify patterns in community composition based on taxonomic identity.\
+This function generates stacked barplots of relative abundances using an abundance table and a metadata file as input.
+
+The `taxonomy_db` parameter specifies the taxonomic reference database used for taxonomic assignment (e.g., SILVA, GTDB, UNITE).\
+The `x_col` parameter indicates the column in the metadata used for grouping samples along the x-axis, while `facet_col` defines the metadata column used to split the plot into facets.
+
+The `level` parameters allow us to choose the taxonomic level to collapse.
+
+The `top_n_groups` controls the number of most abundant taxa displayed in the barplot.
+
+If `add_remain = TRUE`, the relative abundances are completed to 100% by adding a gray category representing the remaining taxa not explicitly displayed; if `FALSE`, only the selected taxa are shown.\
+The `label` parameter defines the legend title displayed in the plot.
+
+Finally, when `save.table = TRUE`, the function also returns a table containing the relative abundances (percentages) used to generate the plot.\
 
 ```{r}
 abundance_barplot(table = table_bac,
                   metadata = metadata,
                   taxonomy_db = "silva",
                   level = "phylum", 
+                  top_n_groups = 15,
                   x_col = "Type_of_soil", 
                   facet_col = "Treatment", 
                   add_remained = TRUE,
@@ -123,6 +146,17 @@ abundance_barplot(table = table_fung,
 ```
 
 ### Abundance heatmaps
+
+The input `table` must be a data frame containing taxonomic features (rows) and samples (columns).\
+The `metadata` argument provides sample-level information used to annotate the heatmap.
+
+The parameters `condition1`, `condition2`, and `condition3` define up to three metadata variables to be displayed as horizontal annotations above the heatmap.\
+Custom color palettes for each annotation can be specified using `colors_condition1`, `colors_condition2`, and `colors_condition3`, respectively.\
+Legend titles for these annotations can be customized with `name_legend_condition1`, `name_legend_condition2`, and `name_legend_condition3`.
+
+The `top_n` argument controls the number of most abundant features included in the heatmap.\
+If `cluster = TRUE`, rows are hierarchically clustered; if `FALSE`, features are ordered by decreasing relative abundance.\
+The `show_column_names` parameter determines whether sample names are displayed in the heatmap.
 
 ```{r, warning=FALSE}
 abundance_heatmap_plot(table = table_bac,
@@ -175,14 +209,14 @@ alpha_hill_plot(table = table_fung,
 
 ## Beta diversity
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 beta_div_plot(table = table_bac, 
               metadata = metadata, 
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 beta_div_plot(table = table_fung, 
               metadata = metadata2, 
               group_col = "Type_of_soil",

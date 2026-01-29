@@ -1,0 +1,154 @@
+# 🧬 MicroBioMeta ![MicroBioMeta logo](reference/figures/logo.jpg)
+
+The goal of `MicroBioMeta` is to support beginners in microbiome data
+analysis, whether working with metagenomic or metabarcoding datasets. It
+enables users with limited experience in R to explore, visualize, and
+analyze results with minimal coding and customization. This helps save
+time on scripting, while still producing statistically robust results
+and publication-ready figures in an intuitive and accessible way
+
+## 👩‍💻 Contributors
+
+- Stephanie Hereira - lead developer.
+- Nina Montoya - co-developer and functions.
+- Karla Zarco - co-developer and functions.
+
+## 💻 Installation instructions
+
+``` r
+install.packages("devtools")
+library(devtools)
+install_github("Steph0522/MicroBioMeta")
+library(MicroBioMeta)
+
+or with BiocManager:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("Steph0522/MicroBioMeta")
+```
+
+## 📗 Examples
+
+For examples and uses go to the [web
+page](https://steph0522.github.io/MicroBioMeta/)
+
+## 🙌 Code of Conduct
+
+Please note that the `MicroBioMeta` project is released with a
+[Contributor Code of
+Conduct](http://bioconductor.org/about/code-of-conduct/). By
+contributing to this project, you agree to abide by its terms.
+
+## 🔨 Development tools
+
+- Continuous code testing is possible thanks to [GitHub
+  actions](https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/)
+  through *[usethis](https://CRAN.R-project.org/package=usethis)*,
+  *[remotes](https://CRAN.R-project.org/package=remotes)*, and
+  *[rcmdcheck](https://CRAN.R-project.org/package=rcmdcheck)* customized
+  to use [Bioconductor’s docker
+  containers](https://www.bioconductor.org/help/docker/) and
+  *[BiocCheck](https://bioconductor.org/packages/3.18/BiocCheck)*.
+- Code coverage assessment is possible thanks to
+  [codecov](https://codecov.io/gh) and
+  *[covr](https://CRAN.R-project.org/package=covr)*.
+- The [documentation website](http://Steph0522.github.io/MicroBioMeta)
+  is automatically updated thanks to
+  *[pkgdown](https://CRAN.R-project.org/package=pkgdown)*.
+- The code is styled automatically thanks to
+  *[styler](https://CRAN.R-project.org/package=styler)*.
+- The documentation is formatted thanks to
+  *[devtools](https://CRAN.R-project.org/package=devtools)* and
+  *[roxygen2](https://CRAN.R-project.org/package=roxygen2)*.
+
+For more details, check the `dev` directory.
+
+This package was developed using
+
+# Package index
+
+## Pre-processing data.
+
+Functions used for pre process data.
+
+- [`collapse_table()`](https://steph0522.github.io/MicroBioMeta/reference/collapse_table.md)
+  : Title
+- [`merge_feature_taxonomy()`](https://steph0522.github.io/MicroBioMeta/reference/merge_feature_taxonomy.md)
+  : Merge feature table and taxonomy
+
+## Alpha diversity
+
+## Abundance visualizations
+
+Functions used for abundance visualizations.
+
+- [`abundance_barplot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_barplot.md)
+  : Relative abundance barplot
+- [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md)
+  : Heatmap of relative abundance
+- [`abundance_sankey_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_sankey_plot.md)
+  : Genera un diagrama Sankey a partir de una tabla OTU con información
+  taxonómica
+
+## Alpha diversity
+
+Functions used for alpha diversity index and analyses.
+
+- [`alpha_hill_corrplot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_hill_corrplot.md)
+  : Alpha diversity correlation plot
+- [`alpha_hill_plot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_hill_plot.md)
+  : Alpha diversity plot
+- [`alpha_diversity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_diversity_plot.md)
+  : Alpha diversity plot
+
+## Beta diversity
+
+Functions used for betadiversity analyses and visualizations.
+
+- [`beta_div_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_div_plot.md)
+  : Beta diversity plot with multiple distance and ordination methods
+- [`beta_diversity_boxplot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_diversity_boxplot.md)
+  : Beta Diversity Boxplot
+- [`beta_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_plot.md)
+  : Box plot of beta diversity
+- [`beta_partition_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_partition_plot.md)
+  : Beta diversity partition (Jaccard/Sorensen)
+- [`beta_test_table()`](https://steph0522.github.io/MicroBioMeta/reference/beta_test_table.md)
+  : Table of Permanova or Betadisper
+
+## Important taxa
+
+Functions used to identify important taxa
+
+- [`aldex_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_heatmap_plot.md)
+  : Heatmap ALDEx
+- [`aldex_volcano_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_volcano_plot.md)
+  : This function generates either an effect size plot or a volcano plot
+  based on ALDEx2 results.
+- [`ancombc_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ancombc_plot.md)
+  : barplot ancombc
+- [`randomf_lollipop_plot()`](https://steph0522.github.io/MicroBioMeta/reference/randomf_lollipop_plot.md)
+  : Generate a Lollipop plot from random forest results
+- [`ratio_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ratio_plot.md)
+  : ratio_plot
+
+## Other functions
+
+Functions used for other analyses
+
+- [`cca_rda_biplot()`](https://steph0522.github.io/MicroBioMeta/reference/cca_rda_biplot.md)
+  : CCA/RDA Biplot with ggplot2
+- [`corr_env_abund_plot()`](https://steph0522.github.io/MicroBioMeta/reference/corr_env_abund_plot.md)
+  : Plot Correlation Between Environmental Variables and Taxonomic
+  Groups
+- [`venn_diagram_plot()`](https://steph0522.github.io/MicroBioMeta/reference/venn_diagram_plot.md)
+  : Generate a Venn diagram of taxa shared between sample groups
+
+# Articles
+
+### All vignettes
+
+- [metabarcoding](https://steph0522.github.io/MicroBioMeta/articles/metabarcoding.md):

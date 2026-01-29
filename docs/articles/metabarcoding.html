@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>metabarcoding • MicroBioMeta</title>
+<title>Metabarcoding • MicroBioMeta</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="metabarcoding">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Metabarcoding">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -55,7 +55,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/metabarcoding.html">metabarcoding</a>
+      <a href="../articles/metabarcoding.html">Metabarcoding</a>
     </li>
   </ul>
 </li>
@@ -83,7 +83,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>metabarcoding</h1>
+      <h1 data-toc-skip>Metabarcoding</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/Steph0522/MicroBioMeta/blob/HEAD/vignettes/metabarcoding.Rmd" class="external-link"><code>vignettes/metabarcoding.Rmd</code></a></small>
@@ -93,9 +93,17 @@
 
     
     
-<p>For this example, we are going to use metabarcoding data: 16S for
-bacteria and 18S for fungi.</p>
-<p>The data is taken from: <a href="https://www.nature.com/articles/s41598-021-81551-7" class="external-link">16S</a> <a href="https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028" class="external-link">18S</a></p>
+<p>For this example, we will use metabarcoding data, specifically 16S
+for bacteria and 18S for fungi.</p>
+<p>The data is taken from:</p>
+<p>For 16S: <a href="https://doi.org/10.1038/s41598-021-81551-7" class="external-link">Hereira-Pacheco, S.E.,
+Navarro-Noya, Y.E. &amp; Dendooven, L. The root endophytic bacterial
+community of Ricinus communis L. resembles the seeds community more than
+the rhizosphere bacteria independent of soil water content. Sci Rep 11,
+2173 (2021). https://doi.org/10.1038/s41598-021-81551-7</a>] For 18S: <a href="https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028" class="external-link">Hereira-Pacheco,
+S. E., Estrada-Torres, A., Dendooven, L., &amp; Navarro-Noya, Y. E.
+(2023). Shifts in root-associated fungal communities under drought
+conditions in Ricinus communis. Fungal Ecology, 63, 101225.</a></p>
 <p>First, Let’s call the <code>MicroBioMeta</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/Steph0522/MicroBioMeta" class="external-link">"MicroBioMeta"</a></span><span class="op">)</span></span></code></pre></div>
@@ -103,8 +111,14 @@ bacteria and 18S for fungi.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">qiime2R</span><span class="op">)</span></span></code></pre></div>
-<p>tidyverse is used for all the data wrangling and visualizations</p>
-<p>Then, Load the data and reformat:</p>
+<p><a href="Wickham,%20H.,%20Averick,%20M.,%20Bryan,%20J.,%20Chang,%20W.,%20McGowan,%20L.%20D.%20A.,%20Fran%C3%A7ois,%20R.,%20...%20&amp;%20Yutani,%20H.%20(2019).%20Welcome%20to%20the%20Tidyverse.%20Journal%20of%20open%20source%20software,%204(43),%201686."><code>tidyverse</code></a>
+is used for all the data wrangling and visualizations and <a href="https://github.com/jbisanz/qiime2R" class="external-link"><code>qiime2R</code></a> for
+calling <code>.qza</code> objects as output from <a href="Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20Gonz%C3%A1lez,%20A.,%20Kosciolek,%20T.,%20...%20&amp;%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end%E2%80%90to%E2%80%90end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100."><code>QIIME2</code></a>.</p>
+<p>Then, Load the data and reformat. Notice the data we are loading came
+from processing in <a href="Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20Gonz%C3%A1lez,%20A.,%20Kosciolek,%20T.,%20...%20&amp;%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end%E2%80%90to%E2%80%90end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100."><code>QIIME2</code></a>
+, so the <code>read_qza</code> function is used to import this data into
+R, also we could export the data within <a href="Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20Gonz%C3%A1lez,%20A.,%20Kosciolek,%20T.,%20...%20&amp;%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end%E2%80%90to%E2%80%90end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100."><code>QIIME2</code></a>
+and then import the data as <code>.txt</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bacteria_table</span> <span class="op">&lt;-</span> <span class="fu">qiime2R</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"../man/Data/dada2.200.trimmed.single.filtered.cleaned.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -155,7 +169,11 @@ bacteria and 18S for fungi.</p>
 </h2>
 <p>In order to use the data as input for functions of
 <code>MicroBioMeta</code> should contain a biom format with the column
-of <em>taxonomy</em> at the end.</p>
+of <strong>taxonomy</strong> at the end.</p>
+<p>In case your data is not in this format, we could use the
+<code>merge_feature_taxonomy</code> function to set the data in this
+format. This format will allow the use of taxonomy identity without load
+another object into R.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">table_bac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_feature_taxonomy.html">merge_feature_taxonomy</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">bacteria_table_filter</span>,</span>
 <span>                                    taxonomy <span class="op">=</span> <span class="va">taxonomy_bacteria</span><span class="op">)</span></span></code></pre></div>
@@ -172,14 +190,41 @@ of <em>taxonomy</em> at the end.</p>
 <div class="section level2">
 <h2 id="composition-exploration">Composition exploration<a class="anchor" aria-label="anchor" href="#composition-exploration"></a>
 </h2>
+<p><code>MicroBioMeta</code> has several functions to explore
+composition, taxonomic identity, and abundance. Let’s explore each of
+them.</p>
 <div class="section level3">
 <h3 id="abundance-barplots">Abundance barplots<a class="anchor" aria-label="anchor" href="#abundance-barplots"></a>
 </h3>
+<p>Abundance barplots are useful to identify patterns in community
+composition based on taxonomic identity.<br>
+This function generates stacked barplots of relative abundances using an
+abundance table and a metadata file as input.</p>
+<p>The <code>taxonomy_db</code> parameter specifies the taxonomic
+reference database used for taxonomic assignment (e.g., SILVA, GTDB,
+UNITE).<br>
+The <code>x_col</code> parameter indicates the column in the metadata
+used for grouping samples along the x-axis, while <code>facet_col</code>
+defines the metadata column used to split the plot into facets.</p>
+<p>The <code>level</code> parameters allow us to choose the taxonomic
+level to collapse.</p>
+<p>The <code>top_n_groups</code> controls the number of most abundant
+taxa displayed in the barplot.</p>
+<p>If <code>add_remain = TRUE</code>, the relative abundances are
+completed to 100% by adding a gray category representing the remaining
+taxa not explicitly displayed; if <code>FALSE</code>, only the selected
+taxa are shown.<br>
+The <code>label</code> parameter defines the legend title displayed in
+the plot.</p>
+<p>Finally, when <code>save.table = TRUE</code>, the function also
+returns a table containing the relative abundances (percentages) used to
+generate the plot.<br></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_barplot.html">abundance_barplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata</span>,</span>
 <span>                  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
 <span>                  level <span class="op">=</span> <span class="st">"phylum"</span>, </span>
+<span>                  top_n_groups <span class="op">=</span> <span class="fl">15</span>,</span>
 <span>                  x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>, </span>
 <span>                  facet_col <span class="op">=</span> <span class="st">"Treatment"</span>, </span>
 <span>                  add_remained <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -201,6 +246,27 @@ of <em>taxonomy</em> at the end.</p>
 <div class="section level3">
 <h3 id="abundance-heatmaps">Abundance heatmaps<a class="anchor" aria-label="anchor" href="#abundance-heatmaps"></a>
 </h3>
+<p>The input <code>table</code> must be a data frame containing
+taxonomic features (rows) and samples (columns).<br>
+The <code>metadata</code> argument provides sample-level information
+used to annotate the heatmap.</p>
+<p>The parameters <code>condition1</code>, <code>condition2</code>, and
+<code>condition3</code> define up to three metadata variables to be
+displayed as horizontal annotations above the heatmap.<br>
+Custom color palettes for each annotation can be specified using
+<code>colors_condition1</code>, <code>colors_condition2</code>, and
+<code>colors_condition3</code>, respectively.<br>
+Legend titles for these annotations can be customized with
+<code>name_legend_condition1</code>,
+<code>name_legend_condition2</code>, and
+<code>name_legend_condition3</code>.</p>
+<p>The <code>top_n</code> argument controls the number of most abundant
+features included in the heatmap.<br>
+If <code>cluster = TRUE</code>, rows are hierarchically clustered; if
+<code>FALSE</code>, features are ordered by decreasing relative
+abundance.<br>
+The <code>show_column_names</code> parameter determines whether sample
+names are displayed in the heatmap.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata</span>,</span>
@@ -255,17 +321,8 @@ of <em>taxonomy</em> at the end.</p>
 <span>              metadata <span class="op">=</span> <span class="va">metadata</span>, </span>
 <span>              group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>              shape_col <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Loading required namespace: ggrepel</span></span></code></pre>
-<pre><code><span><span class="co">## Loading required namespace: ALDEx2</span></span></code></pre>
-<pre><code><span><span class="co">## no conditions provided: forcing denom = 'all'</span></span></code></pre>
-<pre><code><span><span class="co">## no conditions provided: forcing conds = 'NA'</span></span></code></pre>
-<pre><code><span><span class="co">## conditions vector supplied</span></span></code></pre>
-<pre><code><span><span class="co">## operating in serial mode</span></span></code></pre>
-<pre><code><span><span class="co">## computing center with all features</span></span></code></pre>
-<pre><code><span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_div_plot.html">beta_div_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>, </span>
 <span>              metadata <span class="op">=</span> <span class="va">metadata2</span>, </span>
 <span>              group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
@@ -381,8 +438,6 @@ of <em>taxonomy</em> at the end.</p>
 <span><span class="co">## *** Best solution was not repeated -- monoMDS stopping criteria:</span></span>
 <span><span class="co">##      7: no. of iterations &gt;= maxit</span></span>
 <span><span class="co">##     93: stress ratio &gt; sratmax</span></span></code></pre>
-<pre><code><span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 </div>
   </div>
