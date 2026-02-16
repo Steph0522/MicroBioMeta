@@ -1,5 +1,3 @@
-#'Abundance sankey plot 
-#'
 #' Generate a Sankey diagram from an OTU table with taxonomic information
 #'
 #' @param table Dataframe with one column for taxonomy and the other columns correspond to samples.
