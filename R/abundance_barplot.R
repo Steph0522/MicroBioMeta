@@ -24,8 +24,20 @@
 #'
 #' @export
 #'
-#' @examples
-#' # relative_abundance_plot(table = your_table, metadata = your_metadata, ...)
+#' @examples abundance_barplot( table = table_taxa,
+#'                              metadata = metadata,
+#'                              taxonomy_db = "silva",
+#'                              level = "genus",
+#'                              x_col = "MUESTRA",
+#'                              label = "Genus",
+#'                              facet_col = "SITIO",
+#'                              width_equal = FALSE,
+#'                              group_var = "SAMPLEID",
+#'                              top_n = 30,
+#'                              add_remained  = TRUE)
+
+
+
 abundance_barplot <- function(table,
                               metadata,
                               taxonomy_db = "silva",
