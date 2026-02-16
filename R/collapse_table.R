@@ -1,12 +1,24 @@
-#' Title
+#' Collapse table
+#' Collapse an OTU/ASV table by taxonomic level
 #'
-#' @param table 
-#' @param metadata 
-#' @param level 
-#' @param rel_abun 
-#' @param export_txt 
-#' @param file_name 
+#' Collapses an abundance table by a specified taxonomic rank (e.g. genus,
+#' family, phylum), summing counts across features that share the same taxonomy.
+#' Features with lower taxonomic resolution than the selected level are retained
+#' unchanged. Optionally converts counts to relative abundance and exports the
+#' collapsed table to a tab-delimited file.
 #'
+#' @param table A data frame containing an OTU/ASV abundance table. Must include
+#'   a column with OTUID, one with taxonomy and sample columns with numeric counts.
+#' @param metadata A data frame containing sample metadata. The first column is
+#'   used to define the order of samples in the output table.
+#' @param level Character string specifying the taxonomic level to collapse to.
+#'   ("kingdom","phylum","class","order","family","genus" or"species".
+#' @param rel_abun Logical. If TRUE, converts counts to relative abundance
+#'   (%) per sample.
+#' @param export_txt Logical. If TRUE, exports the collapsed table as a
+#'   tab-delimited text file.
+#' @param file_name Character. Name of the output file when
+#'   export_txt = TRUE.
 #' @return a table collapsed by taxonomic level
 #' @export
 #'

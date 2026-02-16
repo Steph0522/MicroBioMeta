@@ -9,7 +9,7 @@
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
 #' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
-#' @param top_n_groups Integer. Number of most abundant taxa groups to display. Default is `15`.
+#' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The tittle that should be in the x-axis (deault = "Samples")
 #' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
@@ -17,7 +17,7 @@
 #' @details
 #' - Relative abundances are calculated per sample (%).
 #' - Taxa names are collapsed to the specified taxonomic `level` ("genus" or "phylum").
-#' - Only the top `top_n_groups` taxa are shown; others are filtered out.
+#' - Only the top `top_n` taxa are shown; others are filtered out.
 #' - Samples are grouped and ordered according to `x_col`.
 #' - Optional faceting by `facet_col` if provided.
 #' - Taxonomic strings matching `"d__Bacteria;__;__;__;__;__"` are automatically removed.
@@ -34,7 +34,7 @@ abundance_barplot <- function(table,
                               facet_col = NULL,
                               width_equal = FALSE,
                               label = "taxonomy",
-                              top_n_groups = 15,
+                              top_n = 15,
                               x_axis_title = "Samples",
                               add_remained = FALSE,
                               save_table = TRUE,
@@ -176,7 +176,7 @@ abundance_barplot <- function(table,
   
   top_groups <- overall_means %>%
     dplyr::arrange(dplyr::desc(MeanAbundance)) %>%
-    dplyr::slice_head(n = top_n_groups) %>%
+    dplyr::slice_head(n = top_n) %>%
     dplyr::pull(taxonomy)
   
   if (add_remained) {

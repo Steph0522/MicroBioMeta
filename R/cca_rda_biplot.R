@@ -22,6 +22,8 @@
 #'
 #' @return A `ggplot` object displaying the biplot with sample scores and environmental vectors.
 #' @export
+#' 
+#' @examples
 
 cca_rda_biplot <- function(table,
                        env_data,
