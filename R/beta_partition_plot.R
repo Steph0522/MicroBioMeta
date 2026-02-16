@@ -13,6 +13,14 @@
 #'
 #' @return A combined cowplot panel of beta diversity partition plots.
 #' @export
+#' 
+#' @examples
+#' beta_partition_plot(table=table,
+#'                     metadata= metadata,
+#'                     group_col="metodo", 
+#'                     point_size = 4,
+#'                     colors = c("gray", "blue"))
+
 
 beta_partition_plot <- function(table, metadata, 
                                 index = "jaccard", 
