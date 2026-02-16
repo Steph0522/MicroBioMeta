@@ -8,7 +8,11 @@
 #' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
 #' @param taxonomy_db Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").
 #'
-#'@examples
+#'@examples abundance_sankey_plot(table= table_taxa,
+#'                                 output_file <- file.path(getwd(), "sankey_scel_gg2.html"),
+#'                                 maxn = 10,
+#'                                 taxRanks = c("P", "C", "G", "S"),
+#'                                 taxonomy_db = "silva")
 #'  
 #'  
 
