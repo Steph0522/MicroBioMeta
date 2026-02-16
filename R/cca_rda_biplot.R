@@ -24,7 +24,19 @@
 #' @export
 #' 
 #' @examples
-
+#'cca_rda_biplot(table = table,
+#'               env_data = env_data,
+#'               env_vars = c("pH", "Nitrogen", "Calcium"),
+#'               metadata = metadata ,
+#'               group_col = "metodo",
+#'               analysis = "RDA",
+#'               show_all_env_vectors = TRUE,
+#'               legend_title = "Método",
+#'               group_colors = c("red", "blue"),
+#'               title = "title")
+#'
+#'
+#'
 cca_rda_biplot <- function(table,
                        env_data,
                        env_vars,

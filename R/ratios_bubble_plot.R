@@ -30,12 +30,18 @@
 #' @export
 #'
 #' @examples
-#' ratio_plot(
-#'   table = table,
-#'   metadata = metadata,
-#'   condition_col = "Treatment",
-#'   condition_A = "Control",
-#'   condition_B = "Compost",
+#' ratio_plot(table,
+#'             metadata,
+#'             condition_col = "metodo",
+#'             condition_A = "kit", 
+#'             condition_B = "fenol")
+#'
+#'
+#' ratio_plot(table = table,
+#'            metadata = metadata,
+#'            condition_col = "Treatment",
+#'            condition_A = "Control",
+#'            condition_B = "Compost",
 #'   level = "genus",
 #'   top_n = 20
 #' )

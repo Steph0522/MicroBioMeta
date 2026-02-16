@@ -1,6 +1,6 @@
 #' Generate a Sankey diagram from an OTU table with taxonomic information
 #'
-#' @param table Dataframe with one column for taxonomy and the other columns correspond to samples.
+#' @param table Data frame with one column for taxonomy and the other columns correspond to samples.
 #' @param output_file Output HTML file name (default: "sankey.html").
 #' @param maxn Maximum number of taxa per level to include in the diagram (default: 25).
 #' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
