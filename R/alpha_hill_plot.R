@@ -31,7 +31,7 @@
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples alpha_hill_plot(table = table_taxa,
-#'                            metadata = metadata %>% filter(!SAMPLEID=="30"),
+#'                            metadata = metadata,
 #'                            type = "boxplot",
 #'                            fill_col = "SITIO",
 #'                            x_col = "SITIO",
