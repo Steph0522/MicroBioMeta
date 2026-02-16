@@ -41,7 +41,7 @@
 #' @return A ggplot2 object.
 #' @export
 #'
-#' @examples colores<- c("pink","white","purple")
+#' @examples color<- c("pink","white","purple")
 #    corr_env_abund_plot(table = table, 
 #     env_table = env_data,
 #     metadata=metadata,
@@ -49,10 +49,10 @@
 #     method = "pearson", 
 #     geom = "tile", 
 #     hc.order = FALSE, 
-#     col_palette = colores,
+#     col_palette = color,
 #     invert_axes = TRUE,
 #     show_labels = FALSE,
-#     level = "species",
+#     level = "phylum",
 #     taxonomy_db = "unite",
 #     pval_threshold= 0.05)
 #
