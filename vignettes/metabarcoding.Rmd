@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8} 
 ---
 
-For this example, we will use metabarcoding data, specifically 16S for bacteria and 18S for fungi.
+For this example, we will use *metabarcoding* data, specifically 16S for bacteria and 18S for fungi.
 
 The data is taken from:
 
@@ -28,9 +28,9 @@ library(tidyverse)
 library(qiime2R)
 ```
 
-[`tidyverse`](Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D. A., François, R., ... & Yutani, H. (2019). Welcome to the Tidyverse. Journal of open source software, 4(43), 1686.) is used for all the data wrangling and visualizations and [`qiime2R`](https://github.com/jbisanz/qiime2R) for calling `.qza` objects as output from [`QIIME2`](Estaki, M., Jiang, L., Bokulich, N. A., McDonald, D., González, A., Kosciolek, T., ... & Knight, R. (2020). QIIME 2 enables comprehensive end‐to‐end analysis of diverse microbiome data and comparative studies with publicly available data. Current protocols in bioinformatics, 70(1), e100.).
+[`tidyverse`](Wickham,%20H.,%20Averick,%20M.,%20Bryan,%20J.,%20Chang,%20W.,%20McGowan,%20L.%20D.%20A.,%20François,%20R.,%20...%20&%20Yutani,%20H.%20(2019).%20Welcome%20to%20the%20Tidyverse.%20Journal%20of%20open%20source%20software,%204(43),%201686.) is used for all the data wrangling and visualizations and [`qiime2R`](https://github.com/jbisanz/qiime2R) for calling `.qza` objects as output from [`QIIME2`](Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20González,%20A.,%20Kosciolek,%20T.,%20...%20&%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end‐to‐end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100.).
 
-Then, Load the data and reformat. Notice the data we are loading came from processing in [`QIIME2`](Estaki, M., Jiang, L., Bokulich, N. A., McDonald, D., González, A., Kosciolek, T., ... & Knight, R. (2020). QIIME 2 enables comprehensive end‐to‐end analysis of diverse microbiome data and comparative studies with publicly available data. Current protocols in bioinformatics, 70(1), e100.) , so the `read_qza` function is used to import this data into R, also we could export the data within [`QIIME2`](Estaki, M., Jiang, L., Bokulich, N. A., McDonald, D., González, A., Kosciolek, T., ... & Knight, R. (2020). QIIME 2 enables comprehensive end‐to‐end analysis of diverse microbiome data and comparative studies with publicly available data. Current protocols in bioinformatics, 70(1), e100.) and then import the data as `.txt`.
+Then, Load the data and reformat. Notice the data we are loading came from processing in [`QIIME2`](Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20González,%20A.,%20Kosciolek,%20T.,%20...%20&%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end‐to‐end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100.) , so the `read_qza` function is used to import this data into R, also we could export the data within [`QIIME2`](Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20González,%20A.,%20Kosciolek,%20T.,%20...%20&%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end‐to‐end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100.) and then import the data as `.txt`.
 
 ```{r}
 
@@ -84,9 +84,9 @@ taxonomy_fungi <- read_qza("../man/Data/taxonomy_blast_240_0.97.qza")$data %>% a
 
 ## Pre-processing data
 
-In order to use the data as input for functions of `MicroBioMeta` should contain a biom format with the column of **taxonomy** at the end.
+In order to use the data as input for functions of `MicroBioMeta` should be in a `biom` format with the column of **taxonomy** at the end.
 
-In case your data is not in this format, we could use the `merge_feature_taxonomy` function to set the data in this format. This format will allow the use of taxonomy identity without load another object into R.
+In case your data is not in a `biom` form, we could use the `merge_feature_taxonomy` function to set the data in this format. This format will allow the use of taxonomy identity without load another object into R.
 
 ```{r}
 
@@ -178,6 +178,16 @@ abundance_heatmap_plot(table = table_fung,
 
 ## Alpha diversity
 
+Alpha diversity describes the diversity within individual samples. In `MicroBioMeta`, alpha diversity can be explored using several metrics, including traditional indices such as richness, Shannon, and Simpson. In addition, the package implements functions based on the **Hill numbers framework**, which provides a unified way to represent these indices as members of the same family of diversity measures. Hill numbers are parameterized by the order *q*, which controls the sensitivity of the metric to species abundances. For example, *q*=0 corresponds to species richness, *q*=1 to the exponential of Shannon entropy, and *q*=2 to the inverse Simpson index. This formulation facilitates consistent comparison among diversity measures and allows researchers to evaluate how diversity patterns change depending on the weight given to rare versus abundant taxa.
+
+### Correlation among Hill numbers
+
+The `alpha_hill_corrplot()` function calculates Hill numbers for different orders (typically, 𝑞=0,1,2) and visualizes the correlations among them using a correlation plot.
+
+This plot helps evaluate how strongly diversity metrics of different orders are related to the depth sequencing.
+
+The table argument must be a data frame containing features (rows) and samples (columns).
+
 ```{r, warning=FALSE}
 alpha_hill_corrplot(table = table_bac)
 
@@ -186,6 +196,18 @@ alpha_hill_corrplot(table = table_bac)
 ```{r, warning=FALSE}
 alpha_hill_corrplot(table = table_fung)
 ```
+
+### Alpha diversity visualization
+
+The `alpha_hill_plot()` function calculates Hill numbers and visualizes alpha diversity patterns across experimental conditions using boxplots.
+
+The `metadata` argument provides sample-level information used to group and visualize the samples.
+
+The `x_col` parameter specifies the metadata column used on the x-axis, while `fill_col` controls the grouping used to color the boxplots.
+
+The `facet_by` argument allows splitting the plot according to a metadata variable, and `facet_orientation` controls whether facets are arranged horizontally or vertically.
+
+If `save_table = TRUE`, the function also returns a table containing the alpha diversity values calculated for each sample.
 
 ```{r, warning=FALSE}
 alpha_hill_plot(table = table_bac, 
@@ -221,4 +243,4 @@ beta_div_plot(table = table_fung,
               metadata = metadata2, 
               group_col = "Type_of_soil",
               shape_col = "Treatment",distance = "aitchison", ordination = "NMDS")
-```
+``
