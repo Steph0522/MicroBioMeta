@@ -18,6 +18,16 @@
 #'
 #' @return A ggplot2 figure object.
 #' @export
+#' 
+#' @examples
+#' beta_diversity_boxplot(table = table,
+#'                        metadata = metadata,
+#'                        comparison_condition1 = c("fenol_vs_kit"),  
+#'                        condition1_col = "metodo",
+#'                        condition2_col = "edad",
+#'                        title_axis_x = "Samples",
+#'                        partition = "shared", family = "sorensen")
+#' 
 beta_diversity_boxplot <- function(
     table, metadata,
     comparison_condition1 = NULL,

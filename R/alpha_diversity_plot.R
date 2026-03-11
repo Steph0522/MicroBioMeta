@@ -31,6 +31,21 @@
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples
+#' 
+#'alpha_diversity_plot(table = table %>% remove_rownames(),
+#'                     metadata = metadata,
+#'                     type = "barplot",
+#'                     fill_col = "metodo",
+#'                     #custom_palette = c("red", "blue"),
+#'                     x_col = "metodo",
+#'                     facet_orientation = "horizontal",
+#'                     #   facet_by = "edad",
+#'                     facet_by2 = "estructura",
+#'                     free_y = T,
+#'                     legend_position = "top",
+#'                     stat = "t.test")
+#'
+#'
 #' library(vegan)
 #' data(dune)
 #' data(dune.env)
@@ -40,8 +55,9 @@
 #'     x_col = "Management",
 #'     fill_col = "Management",
 #'     facet_by = "Use",
-#'     facet_orientation = "vertical"
-#' )
+#'     facet_orientation = "vertical" )
+#'     
+#'     
 alpha_diversity_plot <- function(
     table,
     metadata,

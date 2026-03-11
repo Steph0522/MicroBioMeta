@@ -1,21 +1,50 @@
-#' ratio_plot
+#'Compare taxon abundance ratios between two conditions
 #'
-#' @param table 
-#' @param metadata 
-#' @param condition_col 
-#' @param condition_A 
-#' @param condition_B 
-#' @param taxonomy_db 
-#' @param top_n 
-#' @param level 
-#' @param x_axis_title 
-#' @param fill_palette 
+#' Computes relative abundances from a taxonomic abundance table and compares
+#' two experimental conditions by calculating a directional abundance ratio
+#' for each taxon. Taxa are ranked by mean abundance and visualized as a bubble
+#' plot, where bubble size represents mean relative abundance and color indicates
+#' the dominant condition.
 #'
-#' @return A ggplot2 object.
+#' @param table A data frame containing a taxonomic abundance table with a
+#'  taxonomy column and sample columns with numeric counts.
+#' @param metadata A data frame containing sample metadata. The first column must
+#'   correspond to sample IDs and include a column defining the experimental
+#'   conditions.
+#' @param condition_col Character. Name of the metadata column defining the
+#'   experimental condition.
+#' @param condition_A Character. Name of the first condition to compare.
+#' @param condition_B Character. Name of the second condition to compare.
+#' @param taxonomy_db Character. Taxonomic database used for annotation.
+#'  ("silva","Kraken2").
+#' @param top_n Integer. Number of taxa with the highest mean abundance to display.
+#' @param level Character. Taxonomic level to use for comparison
+#'   (e.g. "phylum", "genus", "species").
+#' @param x_axis_title Character. Label for the x-axis (taxon names).
+#' @param fill_palette Character vector of colors used to represent the dominant
+#'   condition.
+#'
+#' @return A ggplot2 object showing abundance ratios between the two
+#'   conditions.
+#'
 #' @export
 #'
 #' @examples
-#' NULL
+#' ratio_plot(table,
+#'             metadata,
+#'             condition_col = "metodo",
+#'             condition_A = "kit", 
+#'             condition_B = "fenol")
+#'
+#'
+#' ratio_plot(table = table,
+#'            metadata = metadata,
+#'            condition_col = "Treatment",
+#'            condition_A = "Control",
+#'            condition_B = "Compost",
+#'   level = "genus",
+#'   top_n = 20
+#' )
 
 ratio_plot <- function(table,
                                  metadata,

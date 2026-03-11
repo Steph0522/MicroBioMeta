@@ -30,7 +30,18 @@
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
-#' @examples
+#' @examples alpha_hill_plot(table = table_taxa,
+#'                            metadata = metadata,
+#'                            type = "boxplot",
+#'                            fill_col = "SITIO",
+#'                            x_col = "SITIO",
+#'                            facet_orientation = "horizontal",
+#                             facet_by = "edad",
+#                             facet_by2 = "estructura",
+#'                            free_y = T,
+#'                            legend_position = "top",
+#'                            stat = "kruskal.test")
+#' 
 #' library(vegan)
 #' data(dune)
 #' data(dune.env)

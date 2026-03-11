@@ -13,10 +13,18 @@
 #' @param group_colors Optional named vector of colors.
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
-#' @param n_taxa Number of top contributing taxa to display as arrows in PCA.
+#' @param top_n Number of top contributing taxa to display as arrows in PCA.
 #'
 #' @return A `ggplot2` object.
 #' @export
+#' @examples      beta_div_plot(table = table_taxa,
+#'                               metadata = metadata1,
+#'                               distance = "aitchison",
+#'                               ordination = "NMDS",
+#'                               group_col  = "SITIO",
+#'                               top_n = 5,
+#'                               arrows = 100)
+#' 
 
 beta_div_plot <- function(table, metadata, 
                           distance = "compositional",
@@ -26,7 +34,7 @@ beta_div_plot <- function(table, metadata,
                           shape_col = NULL,
                           legend_title = NULL,
                           arrows_size = 10,
-                          n_taxa = 5) {
+                          top_n = 5) {
   
   requireNamespace("vegan")
   requireNamespace("ggplot2")
@@ -175,7 +183,7 @@ beta_div_plot <- function(table, metadata,
     rot_df <- as.data.frame(ord_res$rotation)
     rot_df$Feature.ID <- rownames(rot_df)
     rot_df$mag <- sqrt(rot_df$PC1^2 + rot_df$PC2^2)
-    rot_df <- rot_df[order(rot_df$mag, decreasing = TRUE), ][1:n_taxa, ]
+    rot_df <- rot_df[order(rot_df$mag, decreasing = TRUE), ][1:top_n, ]
     rot_df$PC1 <- rot_df$PC1 * arrows_size
     rot_df$PC2 <- rot_df$PC2 * arrows_size
     rot_df$Taxon <- taxonomy[match(rot_df$Feature.ID, feature_ids)]

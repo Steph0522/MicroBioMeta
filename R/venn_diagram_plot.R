@@ -15,6 +15,15 @@
 
 #' @return A ggplot object or other plot depending on the method.
 #' @export
+#' @examples    venn_diagram_plot(table= table_taxa,
+#'                                 metadata=metadata,
+#'                                 merge_by = "ID.CAM",
+#'                                 min_prevalence = 0,
+#'                                 denom = "all",
+#'                                 group_colors = c("blue", "yellow"),
+#'                                 method = "ggvenn")
+#'                                 
+#' 
 venn_diagram_plot <- function(table, metadata, merge_by = NULL,
                               selected_samples = NULL, min_prevalence = 0,
                               title = NULL, method = "ggvenn",

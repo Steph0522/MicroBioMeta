@@ -7,24 +7,41 @@
 #'
 #
 #'
-#' @param table 
-#' @param env_table 
-#' @param metadata 
-#' @param cond_vect 
-#' @param method 
-#' @param hc.order 
-#' @param geom 
-#' @param show_labels 
-#' @param col_palette 
-#' @param invert_axes 
-#' @param taxonomy_db 
-#' @param level 
-#' @param pval_threshold 
+#' @param table A data frame containing a taxonomic abundance table with a
+#'   taxonomy column and sample columns with numeric counts.
+#' @param env_table A data frame or matrix of environmental variables, with
+#'   samples as row names.
+#' @param metadata A data frame containing sample metadata. The first column
+#'   must correspond to sample identifiers.
+#' @param cond_vect Character vector of environmental variables to include in
+#'   the correlation analysis. If NULL, all available variables are used.
+#' @param method Character. Correlation method passed to stats::cor and
+#'   stats::cor.test}. Supported options include ("spearman","pearson", and "kendall").
+#' @param hc.order Logical. If TRUE, applies hierarchical clustering to
+#'   reorder taxa and environmental variables in the plot.
+#' @param geom Character. Type of visualization to generate: "tile"
+#'   (heatmap) or "circle" (bubble plot).
+#' @param show_labels Logical. If TRUE, displays correlation values on
+#'   the plot.
+#' @param col_palette Character vector defining the color palette for correlation
+#'   values. If NULL, a blue–white–red palette is used.
+#' @param invert_axes Logical. If TRUE, swaps x and y axes in the plot.
+#' @param taxonomy_db Character. Taxonomic database used for annotation and
+#'   parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").
+#' @param level Character. Taxonomic level to collapse taxa to. One of
+#'   ("kingdom", "phylum","class","order", "family", "genus" or "species".
+#' @param pval_threshold Numeric. Optional p-value threshold to retain only taxa
+#'   showing significant correlations with at least one environmental variable.
+#'   If \code{NULL}, no significance filtering is applied.
+#' @param save_table Logical. If TRUE, saves the correlation matrix as a
+#'   tab-delimited text file.
+#' @param table_filename Character. Name of the output file used when
+#'   save_table = TRUE}.
 #'
 #' @return A ggplot2 object.
 #' @export
 #'
-#' @examples colores<- c("pink","white","purple")
+#' @examples color<- c("pink","white","purple")
 #    corr_env_abund_plot(table = table, 
 #     env_table = env_data,
 #     metadata=metadata,
@@ -32,10 +49,10 @@
 #     method = "pearson", 
 #     geom = "tile", 
 #     hc.order = FALSE, 
-#     col_palette = colores,
+#     col_palette = color,
 #     invert_axes = TRUE,
 #     show_labels = FALSE,
-#     level = "species",
+#     level = "phylum",
 #     taxonomy_db = "unite",
 #     pval_threshold= 0.05)
 #
