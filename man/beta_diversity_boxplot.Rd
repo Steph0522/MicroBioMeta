@@ -49,3 +49,13 @@ and generates a ggplot2 boxplot with facets and custom coloring. The user only
 needs to specify the metadata column(s) to be used for comparisons; the function
 constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
 }
+\examples{
+beta_diversity_boxplot(table = table,
+                       metadata = metadata,
+                       comparison_condition1 = c("fenol_vs_kit"),  
+                       condition1_col = "metodo",
+                       condition2_col = "edad",
+                       title_axis_x = "Samples",
+                       partition = "shared", family = "sorensen")
+
+}

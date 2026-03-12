@@ -38,7 +38,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -124,7 +124,23 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example using a data frame</span></span></span>
+<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>                metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>                formula_str <span class="op">=</span> <span class="st">"metodo*edad"</span>,</span></span>
+<span class="r-in"><span>                method <span class="op">=</span> <span class="st">"euclidean"</span>,</span></span>
+<span class="r-in"><span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
+<span class="r-in"><span>                permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
+<span class="r-in"><span>                strata_var <span class="op">=</span> <span class="st">"Individuo"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in beta_test_table(table = table, metadata = metadata, formula_str = "metodo*edad",     method = "euclidean", test = "permanova", permutations = 999,     strata_var = "Individuo"):</span> 'table' debe ser una matriz o un data.frame con columnas numéricas.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example using a matrix</span></span></span>
+<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span>table <span class="op">=</span> <span class="va">matriz</span>,</span></span>
+<span class="r-in"><span>                metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>                formula_str <span class="op">=</span> <span class="st">"Origen"</span>,</span></span>
+<span class="r-in"><span>                test <span class="op">=</span> <span class="st">"betadisper"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'matriz' not found</span>
+</code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

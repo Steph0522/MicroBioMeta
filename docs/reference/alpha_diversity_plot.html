@@ -40,7 +40,7 @@ It supports palette customization, faceting, and statistical comparison."><meta 
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -197,7 +197,23 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vegandevs.github.io/vegan/" class="external-link">vegan</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">alpha_diversity_plot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span> <span class="op">%&gt;%</span> <span class="fu">remove_rownames</span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>                    type <span class="op">=</span> <span class="st">"barplot"</span>,</span></span>
+<span class="r-in"><span>                    fill_col <span class="op">=</span> <span class="st">"metodo"</span>,</span></span>
+<span class="r-in"><span>                    <span class="co">#custom_palette = c("red", "blue"),</span></span></span>
+<span class="r-in"><span>                    x_col <span class="op">=</span> <span class="st">"metodo"</span>,</span></span>
+<span class="r-in"><span>                    facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span></span>
+<span class="r-in"><span>                    <span class="co">#   facet_by = "edad",</span></span></span>
+<span class="r-in"><span>                    facet_by2 <span class="op">=</span> <span class="st">"estructura"</span>,</span></span>
+<span class="r-in"><span>                    free_y <span class="op">=</span> <span class="cn">T</span>,</span></span>
+<span class="r-in"><span>                    legend_position <span class="op">=</span> <span class="st">"top"</span>,</span></span>
+<span class="r-in"><span>                    stat <span class="op">=</span> <span class="st">"t.test"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'metadata' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vegandevs.github.io/vegan/" class="external-link">vegan</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: permute</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dune</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dune.env</span><span class="op">)</span></span></span>
@@ -207,9 +223,10 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 <span class="r-in"><span>    x_col <span class="op">=</span> <span class="st">"Management"</span>,</span></span>
 <span class="r-in"><span>    fill_col <span class="op">=</span> <span class="st">"Management"</span>,</span></span>
 <span class="r-in"><span>    facet_by <span class="op">=</span> <span class="st">"Use"</span>,</span></span>
-<span class="r-in"><span>    facet_orientation <span class="op">=</span> <span class="st">"vertical"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span>    facet_orientation <span class="op">=</span> <span class="st">"vertical"</span> <span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dune.env %&gt;% tibble::rownames_to_column("SampleID"):</span> could not find function "%&gt;%"</span>
+<span class="r-in"><span>    </span></span>
+<span class="r-in"><span>    </span></span>
 </code></pre></div>
     </div>
   </div>

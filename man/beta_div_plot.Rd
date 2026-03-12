@@ -14,7 +14,7 @@ beta_div_plot(
   shape_col = NULL,
   legend_title = NULL,
   arrows_size = 10,
-  n_taxa = 5
+  top_n = 5
 )
 }
 \arguments{
@@ -35,7 +35,7 @@ beta_div_plot(
 
 \item{legend_title}{Optional legend title.}
 
-\item{n_taxa}{Number of top contributing taxa to display as arrows in PCA.}
+\item{top_n}{Number of top contributing taxa to display as arrows in PCA.}
 }
 \value{
 A \code{ggplot2} object.
@@ -44,4 +44,14 @@ A \code{ggplot2} object.
 This function computes beta diversity using several distance metrics and ordination methods
 (PCA, PCoA, NMDS). It requires an abundance table with taxonomy, metadata, and allows customization
 of color and shape aesthetics. It also supports compositional transformation via ALDEx2.
+}
+\examples{
+     beta_div_plot(table = table_taxa,
+                              metadata = metadata1,
+                              distance = "aitchison",
+                              ordination = "NMDS",
+                              group_col  = "SITIO",
+                              top_n = 5,
+                              arrows = 100)
+
 }

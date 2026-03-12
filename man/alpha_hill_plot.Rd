@@ -83,6 +83,16 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
+alpha_hill_plot(table = table_taxa,
+                           metadata = metadata,
+                           type = "boxplot",
+                           fill_col = "SITIO",
+                           x_col = "SITIO",
+                           facet_orientation = "horizontal",
+                           free_y = T,
+                           legend_position = "top",
+                           stat = "kruskal.test")
+
 library(vegan)
 data(dune)
 data(dune.env)

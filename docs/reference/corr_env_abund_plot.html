@@ -41,7 +41,7 @@ abundances and environmental variables, and visualizes the results as either a h
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -99,55 +99,78 @@ abundances and environmental variables, and visualizes the results as either a h
 
 
 <dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd></dd>
+<dd><p>A data frame containing a taxonomic abundance table with a
+taxonomy column and sample columns with numeric counts.</p></dd>
 
 
 <dt id="arg-env-table">env_table<a class="anchor" aria-label="anchor" href="#arg-env-table"></a></dt>
-<dd></dd>
+<dd><p>A data frame or matrix of environmental variables, with
+samples as row names.</p></dd>
 
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
-<dd></dd>
+<dd><p>A data frame containing sample metadata. The first column
+must correspond to sample identifiers.</p></dd>
 
 
 <dt id="arg-cond-vect">cond_vect<a class="anchor" aria-label="anchor" href="#arg-cond-vect"></a></dt>
-<dd></dd>
+<dd><p>Character vector of environmental variables to include in
+the correlation analysis. If NULL, all available variables are used.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd></dd>
+<dd><p>Character. Correlation method passed to stats::cor and
+stats::cor.test. Supported options include ("spearman", "pearson", "kendall").</p></dd>
 
 
 <dt id="arg-hc-order">hc.order<a class="anchor" aria-label="anchor" href="#arg-hc-order"></a></dt>
-<dd></dd>
+<dd><p>Logical. If TRUE, applies hierarchical clustering to
+reorder taxa and environmental variables in the plot.</p></dd>
 
 
 <dt id="arg-geom">geom<a class="anchor" aria-label="anchor" href="#arg-geom"></a></dt>
-<dd></dd>
+<dd><p>Character. Type of visualization to generate: "tile"
+(heatmap) or "circle" (bubble plot).</p></dd>
 
 
 <dt id="arg-show-labels">show_labels<a class="anchor" aria-label="anchor" href="#arg-show-labels"></a></dt>
-<dd></dd>
+<dd><p>Logical. If TRUE, displays correlation values on
+the plot.</p></dd>
 
 
 <dt id="arg-col-palette">col_palette<a class="anchor" aria-label="anchor" href="#arg-col-palette"></a></dt>
-<dd></dd>
+<dd><p>Character vector defining the color palette for correlation
+values. If NULL, a blue–white–red palette is used.</p></dd>
 
 
 <dt id="arg-invert-axes">invert_axes<a class="anchor" aria-label="anchor" href="#arg-invert-axes"></a></dt>
-<dd></dd>
+<dd><p>Logical. If TRUE, swaps x and y axes in the plot.</p></dd>
 
 
 <dt id="arg-taxonomy-db">taxonomy_db<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db"></a></dt>
-<dd></dd>
+<dd><p>Character. Taxonomic database used for annotation and
+parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
-<dd></dd>
+<dd><p>Character. Taxonomic level to collapse taxa to. One of
+("kingdom", "phylum", "class", "order", "family", "genus", "species").</p></dd>
 
 
 <dt id="arg-pval-threshold">pval_threshold<a class="anchor" aria-label="anchor" href="#arg-pval-threshold"></a></dt>
-<dd></dd>
+<dd><p>Numeric. Optional p-value threshold to retain only taxa
+showing significant correlations with at least one environmental variable.
+If <code>NULL</code>, no significance filtering is applied.</p></dd>
+
+
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If TRUE, saves the correlation matrix as a
+tab-delimited text file.</p></dd>
+
+
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. Name of the output file used when
+save_table = TRUE.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -157,7 +180,7 @@ abundances and environmental variables, and visualizes the results as either a h
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">colores</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pink"</span>,<span class="st">"white"</span>,<span class="st">"purple"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">color</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pink"</span>,<span class="st">"white"</span>,<span class="st">"purple"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>

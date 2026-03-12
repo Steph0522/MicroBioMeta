@@ -15,21 +15,21 @@
 #' @return A table with the results of R2, F and p value 
 #' @export
 #'
-#' @examples.   1. Data frame
-#'              beta_test_table(table = table, 
-#'                              metadata= metadata,
-#'                              formula_str = "metodo*edad",
-#'                              method = "euclidean", 
-#'                              test = "permanova",
-#'                              permutations = 999,
-#'                              strata_var = "Individuo")
-#'              
-#'              2. Matrix
-#'              beta_test_table(table = matriz, 
-#'                              metadata= metadata,
-#'                              formula_str = "Origen",
-#'                              test = "betadisper")
-#'              
+#' @examples
+#' # Example using a data frame
+#' beta_test_table(table = table,
+#'                 metadata = metadata,
+#'                 formula_str = "metodo*edad",
+#'                 method = "euclidean",
+#'                 test = "permanova",
+#'                 permutations = 999,
+#'                 strata_var = "Individuo")
+#'
+#' # Example using a matrix
+#' beta_test_table(table = matriz,
+#'                 metadata = metadata,
+#'                 formula_str = "Origen",
+#'                 test = "betadisper")
 beta_test_table <- function(table,
                             metadata,
                             formula_str,
@@ -47,25 +47,22 @@ beta_test_table <- function(table,
     tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
     if (length(tax_cols) > 0) {
       table <- table[, -tax_cols[1], drop = FALSE]
-      message("Columna de taxonomía eliminada automáticamente.")
     }
     
     # Convertir solo columnas numéricas
     num_cols <- sapply(table, is.numeric)
     if (!all(num_cols)) {
-      warning("Se detectaron columnas no numéricas en 'table', serán excluidas automáticamente.")
     }
     table <- as.matrix(table[, num_cols, drop = FALSE])
   } else if (!is.matrix(table)) {
-    stop("'table' debe ser una matriz o un data.frame con columnas numéricas.")
+    stop("'table' must be a matrix or dataframe")
   }
   
   # --- Detectar orientación ---
   if (ncol(table) == nrow(metadata)) {
-    message("Detectada orientación: columnas = muestras. Transponiendo matriz...")
     table <- t(table)
   } else if (nrow(table) != nrow(metadata)) {
-    stop("Las dimensiones de 'table' y 'metadata' no coinciden: cada muestra debe tener una fila en metadata.")
+    stop("Dimensons of table and metadata don't match.")
   }
   
   # --- Verificaciones ---
@@ -73,7 +70,7 @@ beta_test_table <- function(table,
     vars <- all.vars(as.formula(paste("~", formula_str)))
     vars_in_metadata <- vars %in% colnames(metadata)
     if (!all(vars_in_metadata)) {
-      stop(paste("Las variables", paste(vars[!vars_in_metadata], collapse=", "), "no están en metadata"))
+      stop(paste("Variables", paste(vars[!vars_in_metadata], collapse=", "), "are not in metadata"))
     }
   }
   
@@ -154,9 +151,7 @@ beta_test_table <- function(table,
     }
   }
   
-  # --- Mensaje final ---
-  message("✅ Análisis completado correctamente.")
-  
+
   return(tab)
 }
 

@@ -16,7 +16,7 @@
 #' @param cond_vect Character vector of environmental variables to include in
 #'   the correlation analysis. If NULL, all available variables are used.
 #' @param method Character. Correlation method passed to stats::cor and
-#'   stats::cor.test}. Supported options include ("spearman","pearson", and "kendall").
+#'   stats::cor.test. Supported options include ("spearman", "pearson", "kendall").
 #' @param hc.order Logical. If TRUE, applies hierarchical clustering to
 #'   reorder taxa and environmental variables in the plot.
 #' @param geom Character. Type of visualization to generate: "tile"
@@ -29,14 +29,14 @@
 #' @param taxonomy_db Character. Taxonomic database used for annotation and
 #'   parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").
 #' @param level Character. Taxonomic level to collapse taxa to. One of
-#'   ("kingdom", "phylum","class","order", "family", "genus" or "species".
+#'   ("kingdom", "phylum", "class", "order", "family", "genus", "species").
 #' @param pval_threshold Numeric. Optional p-value threshold to retain only taxa
 #'   showing significant correlations with at least one environmental variable.
 #'   If \code{NULL}, no significance filtering is applied.
 #' @param save_table Logical. If TRUE, saves the correlation matrix as a
 #'   tab-delimited text file.
 #' @param table_filename Character. Name of the output file used when
-#'   save_table = TRUE}.
+#'   save_table = TRUE.
 #'
 #' @return A ggplot2 object.
 #' @export

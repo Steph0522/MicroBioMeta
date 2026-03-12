@@ -38,7 +38,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -144,6 +144,23 @@
     <p>A <code>ggplot</code> object with the selected plot.</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">aldex_volcano_plot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>                    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>                    col_inf <span class="op">=</span> <span class="st">"blue"</span>,</span></span>
+<span class="r-in"><span>                    col_sup <span class="op">=</span> <span class="st">"red"</span>,</span></span>
+<span class="r-in"><span>                    col_cond <span class="op">=</span> <span class="st">"metodo"</span>,</span></span>
+<span class="r-in"><span>                    type <span class="op">=</span> <span class="st">"effect"</span>,</span></span>
+<span class="r-in"><span>                    threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                    threshold_upper <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                    cond <span class="op">=</span> <span class="st">"kit"</span>,</span></span>
+<span class="r-in"><span>                    show_labels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in aldex_volcano_plot(table = table, metadata = metadata, col_inf = "blue",     col_sup = "red", col_cond = "metodo", type = "effect", threshold_lower = -1,     threshold_upper = 1, cond = "kit", show_labels = TRUE):</span> Package 'ggtext' required for formatted text. Please install it.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

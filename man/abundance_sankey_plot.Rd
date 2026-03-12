@@ -2,7 +2,7 @@
 % Please edit documentation in R/abundance_sankey_plot.R
 \name{abundance_sankey_plot}
 \alias{abundance_sankey_plot}
-\title{Genera un diagrama Sankey a partir de una tabla OTU con información taxonómica}
+\title{Generate a Sankey diagram from an OTU table with taxonomic information}
 \usage{
 abundance_sankey_plot(
   table,
@@ -13,16 +13,25 @@ abundance_sankey_plot(
 )
 }
 \arguments{
-\item{table}{Data frame con una columna de taxonomía y las demás columnas corresponden a muestras.}
+\item{table}{Data frame with one column for taxonomy and the other columns correspond to samples.}
 
-\item{output_file}{Nombre del archivo HTML de salida (default: "sankey.html").}
+\item{output_file}{Output HTML file name (default: "sankey.html").}
 
-\item{maxn}{Número máximo de taxones por nivel a incluir en el diagrama (default: 25).}
+\item{maxn}{Maximum number of taxa per level to include in the diagram (default: 25).}
 
-\item{taxRanks}{Niveles taxonómicos a visualizar (default: c("D","K","P","C","O","F","G","S")).}
+\item{taxRanks}{Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).}
 
-\item{taxonomy_db}{Base de datos taxonómica, ej: "gg" o "kraken2" (default: "gg").}
+\item{taxonomy_db}{Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").}
 }
 \description{
-Genera un diagrama Sankey a partir de una tabla OTU con información taxonómica
+Generate a Sankey diagram from an OTU table with taxonomic information
+}
+\examples{
+abundance_sankey_plot(table= table_taxa,
+                                output_file <- file.path(getwd(), "sankey_scel_gg2.html"),
+                                maxn = 10,
+                                taxRanks = c("P", "C", "G", "S"),
+                                taxonomy_db = "silva")
+ 
+ 
 }

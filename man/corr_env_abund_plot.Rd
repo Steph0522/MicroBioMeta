@@ -23,31 +23,50 @@ corr_env_abund_plot(
 )
 }
 \arguments{
-\item{table}{}
+\item{table}{A data frame containing a taxonomic abundance table with a
+taxonomy column and sample columns with numeric counts.}
 
-\item{env_table}{}
+\item{env_table}{A data frame or matrix of environmental variables, with
+samples as row names.}
 
-\item{metadata}{}
+\item{metadata}{A data frame containing sample metadata. The first column
+must correspond to sample identifiers.}
 
-\item{cond_vect}{}
+\item{cond_vect}{Character vector of environmental variables to include in
+the correlation analysis. If NULL, all available variables are used.}
 
-\item{method}{}
+\item{method}{Character. Correlation method passed to stats::cor and
+stats::cor.test. Supported options include ("spearman", "pearson", "kendall").}
 
-\item{hc.order}{}
+\item{hc.order}{Logical. If TRUE, applies hierarchical clustering to
+reorder taxa and environmental variables in the plot.}
 
-\item{geom}{}
+\item{geom}{Character. Type of visualization to generate: "tile"
+(heatmap) or "circle" (bubble plot).}
 
-\item{show_labels}{}
+\item{show_labels}{Logical. If TRUE, displays correlation values on
+the plot.}
 
-\item{col_palette}{}
+\item{col_palette}{Character vector defining the color palette for correlation
+values. If NULL, a blue–white–red palette is used.}
 
-\item{invert_axes}{}
+\item{invert_axes}{Logical. If TRUE, swaps x and y axes in the plot.}
 
-\item{taxonomy_db}{}
+\item{taxonomy_db}{Character. Taxonomic database used for annotation and
+parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").}
 
-\item{level}{}
+\item{level}{Character. Taxonomic level to collapse taxa to. One of
+("kingdom", "phylum", "class", "order", "family", "genus", "species").}
 
-\item{pval_threshold}{}
+\item{pval_threshold}{Numeric. Optional p-value threshold to retain only taxa
+showing significant correlations with at least one environmental variable.
+If \code{NULL}, no significance filtering is applied.}
+
+\item{save_table}{Logical. If TRUE, saves the correlation matrix as a
+tab-delimited text file.}
+
+\item{table_filename}{Character. Name of the output file used when
+save_table = TRUE.}
 }
 \value{
 A ggplot2 object.
@@ -59,5 +78,5 @@ abundances and environmental variables, and visualizes the results as either a h
 (tile) or a bubble plot (circle).
 }
 \examples{
-colores<- c("pink","white","purple")
+color<- c("pink","white","purple")
 }

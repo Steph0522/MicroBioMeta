@@ -2,7 +2,7 @@
 title: "Metabarcoding"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{metabarcoding}
+  %\VignetteIndexEntry{Metabarcoding}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
 ---
@@ -28,9 +28,11 @@ library(tidyverse)
 library(qiime2R)
 ```
 
-[`tidyverse`](Wickham,%20H.,%20Averick,%20M.,%20Bryan,%20J.,%20Chang,%20W.,%20McGowan,%20L.%20D.%20A.,%20François,%20R.,%20...%20&%20Yutani,%20H.%20(2019).%20Welcome%20to%20the%20Tidyverse.%20Journal%20of%20open%20source%20software,%204(43),%201686.) is used for all the data wrangling and visualizations and [`qiime2R`](https://github.com/jbisanz/qiime2R) for calling `.qza` objects as output from [`QIIME2`](Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20González,%20A.,%20Kosciolek,%20T.,%20...%20&%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end‐to‐end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100.).
+[`tidyverse`](https://tidyverse.org/) is used for all the data wrangling and visualizations and [`qiime2R`](https://github.com/jbisanz/qiime2R) for calling `.qza` objects as output from [`QIIME2`](https://qiime2.org/).
 
-Then, Load the data and reformat. Notice the data we are loading came from processing in [`QIIME2`](Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20González,%20A.,%20Kosciolek,%20T.,%20...%20&%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end‐to‐end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100.) , so the `read_qza` function is used to import this data into R, also we could export the data within [`QIIME2`](Estaki,%20M.,%20Jiang,%20L.,%20Bokulich,%20N.%20A.,%20McDonald,%20D.,%20González,%20A.,%20Kosciolek,%20T.,%20...%20&%20Knight,%20R.%20(2020).%20QIIME%202%20enables%20comprehensive%20end‐to‐end%20analysis%20of%20diverse%20microbiome%20data%20and%20comparative%20studies%20with%20publicly%20available%20data.%20Current%20protocols%20in%20bioinformatics,%2070(1),%20e100.) and then import the data as `.txt`.
+Then, Load the data and reformat. Notice the data we are loading came from processing in [`QIIME2`](https://qiime2.org/) , so the `read_qza` function is used to import this data into R, also we could export the data within [`QIIME2`](https://qiime2.org/) and then import the data as `.txt`.
+
+First, Let's call all raw data:
 
 ```{r}
 
@@ -39,7 +41,7 @@ bacteria_table <- qiime2R::read_qza("../man/Data/dada2.200.trimmed.single.filter
 fungi_table <- qiime2R::read_qza("../man/Data/merge_table_240_noplant_filtered_nous.qza")$data %>% 
   as.data.frame()
 
-metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>% rename(SAMPLEID =`#SampleID`) %>% 
+bacteria_metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>% rename(SAMPLEID =`#SampleID`) %>% 
   filter(Month == "2") %>%
   mutate(Treatment = factor(
     case_when(
@@ -51,7 +53,7 @@ metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>% rename(S
     levels = c("TC", "TD", "TED")
   ))
 
-metadata2 <- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% rename(SAMPLEID=`#SampleID`)%>%
+fungi_metadata<- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% rename(SAMPLEID=`#SampleID`)%>%
   mutate(
     Treatment = factor(
       case_when(
@@ -64,11 +66,6 @@ metadata2 <- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% renam
     )
   )
 
-
-
-bacteria_table_filter <- bacteria_table[match(metadata$SAMPLEID, colnames(bacteria_table)), ]
-
-
 taxonomy_bacteria <- read_qza("../man/Data/taxonomy_dada2.200.trimmed.single.seqs.qza")$data %>%
   as.data.frame() %>% rename(taxonomy = Taxon) %>% 
   dplyr::select(-Confidence) %>% 
@@ -79,7 +76,34 @@ taxonomy_fungi <- read_qza("../man/Data/taxonomy_blast_240_0.97.qza")$data %>% a
   dplyr::select(-Consensus) %>% 
   column_to_rownames(var = "Feature.ID")
 
+```
 
+Then, Let's filter and manage data. It is a good practice to use table and metadata that contains de same information and samples and in the same order.
+
+For bacteria:
+
+```{r}
+samples_bac <- bacteria_metadata$SAMPLEID[
+  bacteria_metadata$SAMPLEID %in% colnames(bacteria_table)]
+
+table_bacteria <- bacteria_table[, samples_bac]
+
+metadata_bacteria <- bacteria_metadata[
+  bacteria_metadata$SAMPLEID %in% samples_bac, ]
+```
+
+and for fungi:
+
+```{r}
+samples_fun <- fungi_metadata$SAMPLEID[
+  fungi_metadata$SAMPLEID %in% colnames(fungi_table)
+]
+
+table_fungi <- fungi_table[, samples_fun]
+
+metadata_fungi <- fungi_metadata[
+  fungi_metadata$SAMPLEID %in% samples_fun,
+]
 ```
 
 ## Pre-processing data
@@ -90,10 +114,10 @@ In case your data is not in a `biom` form, we could use the `merge_feature_taxon
 
 ```{r}
 
-table_bac <- merge_feature_taxonomy(table = bacteria_table_filter,
+table_bac <- merge_feature_taxonomy(table = table_bacteria,
                                     taxonomy = taxonomy_bacteria)
 
-table_fung <- merge_feature_taxonomy(table = fungi_table, 
+table_fung <- merge_feature_taxonomy(table = table_fungi, 
                                      taxonomy = taxonomy_fungi)
 
 ```
@@ -121,10 +145,10 @@ Finally, when `save.table = TRUE`, the function also returns a table containing 
 
 ```{r}
 abundance_barplot(table = table_bac,
-                  metadata = metadata,
+                  metadata = metadata_bacteria,
                   taxonomy_db = "silva",
                   level = "phylum", 
-                  top_n_groups = 15,
+                  top_n = 15,
                   x_col = "Type_of_soil", 
                   facet_col = "Treatment", 
                   add_remained = TRUE,
@@ -136,7 +160,7 @@ abundance_barplot(table = table_bac,
 
 ```{r}
 abundance_barplot(table = table_fung,
-                  metadata = metadata2,
+                  metadata = metadata_fungi,
                   x_col = "Treatment", 
                   facet_col = "Type_of_soil", 
                   add_remained = TRUE,  
@@ -160,7 +184,7 @@ The `show_column_names` parameter determines whether sample names are displayed 
 
 ```{r, warning=FALSE}
 abundance_heatmap_plot(table = table_bac,
-                  metadata = metadata,
+                  metadata = metadata_bacteria,
                   top_n = 30,
                   show_column_names = FALSE,
                   condition1 = "Type_of_soil", 
@@ -169,7 +193,7 @@ abundance_heatmap_plot(table = table_bac,
 
 ```{r, warning=FALSE}
 abundance_heatmap_plot(table = table_fung,
-                  metadata = metadata2,
+                  metadata = metadata_fungi,
                   top_n = 30,
                   show_column_names = FALSE,
                   condition1 = "Type_of_soil", 
@@ -188,10 +212,14 @@ This plot helps evaluate how strongly diversity metrics of different orders are 
 
 The table argument must be a data frame containing features (rows) and samples (columns).
 
+For the bacteria, we can observed that at all orders of *q* there is a strong correlation with sequencing depth.
+
 ```{r, warning=FALSE}
 alpha_hill_corrplot(table = table_bac)
 
 ```
+
+But, for fungi data this correlation is just strong and significative at *q*=0, it means for richness but not to the others *q* orders.
 
 ```{r, warning=FALSE}
 alpha_hill_corrplot(table = table_fung)
@@ -211,7 +239,7 @@ If `save_table = TRUE`, the function also returns a table containing the alpha d
 
 ```{r, warning=FALSE}
 alpha_hill_plot(table = table_bac, 
-                metadata = metadata%>% filter(SAMPLEID %in% colnames(table_bac)),
+                metadata = metadata_bacteria,
                 x_col = "Treatment",
                 fill_col = "Treatment",
                 facet_by = "Type_of_soil",
@@ -219,9 +247,9 @@ alpha_hill_plot(table = table_bac,
                 save_table = FALSE)
 ```
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.height=6, fig.width=6}
 alpha_hill_plot(table = table_fung, 
-                metadata = metadata%>% filter(SAMPLEID %in% colnames(table_fung)),
+                metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
                 facet_by = "Type_of_soil",
@@ -229,18 +257,129 @@ alpha_hill_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
+Also, we can visualize other metrics considering classic alpha diversity indexes. Also, using the parameter stat it is possible to set an statistical comparison indication the method to use:
+
+```{r, warning=FALSE, fig.height=6, fig.width=6}
+alpha_diversity_plot(table = table_fung, 
+                metadata = metadata_fungi,
+                x_col = "Treatment",
+                fill_col = "Treatment",
+                facet_by = "Type_of_soil",
+                facet_orientation = "horizontal",stat = "anova",
+                save_table = FALSE)
+```
+
 ## Beta diversity
+
+Beta diversity describes the differences in community composition among samples. These analyses help determine whether microbial communities vary across environmental conditions, treatments, or experimental groups.
+
+`MicroBioMeta` provides several tools to explore beta diversity, including ordination methods, statistical tests for community differences, and partitioning approaches that separate shared and unique components of diversity. These functions allow both visual exploration of compositional patterns and formal hypothesis testing.
+
+### Ordination of community composition
+
+The `beta_div_plot()` function calculates pairwise dissimilarities among samples and visualizes the results using an ordination method. By default, the function uses common ecological distance metrics (e.g., Bray–Curtis or Euclidean) and dimensionality reduction techniques such as **PCoA**, **PCA**, or **NMDS**. Accounting for compositional data in the examples `aitchinson` and `compositional` distances are used. Compositional refers to the *clr* (log centered ratio) transformation made by `ALDEx2` package.
+
+The `group_col` parameter specifies the metadata column used to color the samples, while `shape_col` allows an additional metadata variable to be displayed using different point shapes.
+
+The `distance` argument defines the dissimilarity metric used to calculate beta diversity, and `ordination` specifies the ordination method applied to visualize the distances among samples.
 
 ```{r, warning=FALSE, message=FALSE}
 beta_div_plot(table = table_bac, 
-              metadata = metadata, 
+              metadata = metadata_bacteria, 
+               distance = "compositional",
+              ordination = "PCA",
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
 
-```{r, warning=FALSE, message=FALSE}
-beta_div_plot(table = table_fung, 
-              metadata = metadata2, 
-              group_col = "Type_of_soil",
-              shape_col = "Treatment",distance = "aitchison", ordination = "NMDS")
-``
+```{r}
+beta_div_plot(table = table_fung,                
+              metadata = metadata_fungi,                
+              group_col = "Type_of_soil",               
+              shape_col = "Treatment",
+              distance = "aitchison", 
+              ordination = "NMDS")
+
+```
+
+### Statistical tests for beta diversity
+
+The `beta_test_table()` function performs statistical tests to evaluate whether community composition differs among experimental groups.
+
+The `formula_str` argument specifies the experimental design using a formula syntax similar to linear models in R. The `method` parameter defines the distance metric used to calculate dissimilarities, and the `test` argument specifies the statistical method (e.g., **PERMANOVA**).
+
+The `permutations` parameter determines the number of permutations used to estimate statistical significance.
+
+```{r}
+beta_test_table(table = table_bac, 
+                metadata= metadata_bacteria,
+                formula_str = "Type_of_soil*Treatment",
+                method = "euclidean", 
+                test = "permanova",
+                permutations = 999)
+```
+
+```{r}
+beta_test_table(table = table_fung, 
+                metadata= metadata_fungi,
+                formula_str = "Type_of_soil*Treatment",
+                method = "euclidean", 
+                test = "permanova",
+                permutations = 999)
+```
+
+### Beta diversity partitioning
+
+Beta diversity can also be decomposed into different components that describe how communities differ. The `beta_partition_plot()` function partitions beta diversity into shared and unique fractions based on selected dissimilarity indices.
+
+The `index` argument specifies the dissimilarity family used for the partition (e.g., Jaccard or Sørensen). The `group_col` and `shape_col` parameters define how samples are visualized according to metadata variables.
+
+```{r, fig.width=18}
+beta_partition_plot(
+  table = table_bac,
+  metadata = metadata_bacteria,
+  index = "jaccard",
+  group_col = "Type_of_soil",
+  shape_col = "Treatment", 
+  save_table = FALSE)
+```
+
+```{r, fig.width=18}
+beta_partition_plot(
+  table = table_fung,
+  metadata = metadata_fungi,
+  index = "jaccard",
+  group_col = "Type_of_soil",
+  shape_col = "Treatment", 
+  save_table = FALSE)
+```
+
+### Pairwise beta diversity visualization
+
+The `beta_diversity_boxplot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples.
+
+The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
+
+If `save_table = TRUE`, the function also returns a table containing the beta diversity values used to generate the plot.
+
+```{r}
+beta_diversity_boxplot(table = table_bac,
+                       metadata = metadata_bacteria,
+                       condition1_col = "Type_of_soil",
+                       condition2_col = "Treatment",
+                       title_axis_x = "Samples",
+                       partition = "shared", family = "jaccard", 
+                       save_table = FALSE)
+
+```
+
+```{r}
+beta_diversity_boxplot(table = table_fung,
+                       metadata = metadata_fungi,
+                       condition1_col = "Type_of_soil",
+                       condition2_col = "Treatment",
+                       title_axis_x = "Samples",
+                       partition = "shared", family = "jaccard", 
+                       save_table = FALSE)
+
+```

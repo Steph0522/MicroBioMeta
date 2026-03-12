@@ -2,7 +2,7 @@
 % Please edit documentation in R/ratios_bubble_plot.R
 \name{ratio_plot}
 \alias{ratio_plot}
-\title{ratio_plot}
+\title{Compare taxon abundance ratios between two conditions}
 \usage{
 ratio_plot(
   table,
@@ -18,32 +18,58 @@ ratio_plot(
 )
 }
 \arguments{
-\item{table}{}
+\item{table}{A data frame containing a taxonomic abundance table with a
+taxonomy column and sample columns with numeric counts.}
 
-\item{metadata}{}
+\item{metadata}{A data frame containing sample metadata. The first column must
+correspond to sample IDs and include a column defining the experimental
+conditions.}
 
-\item{condition_col}{}
+\item{condition_col}{Character. Name of the metadata column defining the
+experimental condition.}
 
-\item{condition_A}{}
+\item{condition_A}{Character. Name of the first condition to compare.}
 
-\item{condition_B}{}
+\item{condition_B}{Character. Name of the second condition to compare.}
 
-\item{taxonomy_db}{}
+\item{taxonomy_db}{Character. Taxonomic database used for annotation.
+("silva","Kraken2").}
 
-\item{top_n}{}
+\item{top_n}{Integer. Number of taxa with the highest mean abundance to display.}
 
-\item{level}{}
+\item{level}{Character. Taxonomic level to use for comparison
+(e.g. "phylum", "genus", "species").}
 
-\item{x_axis_title}{}
+\item{x_axis_title}{Character. Label for the x-axis (taxon names).}
 
-\item{fill_palette}{}
+\item{fill_palette}{Character vector of colors used to represent the dominant
+condition.}
 }
 \value{
-A ggplot2 object.
+A ggplot2 object showing abundance ratios between the two
+conditions.
 }
 \description{
-ratio_plot
+Computes relative abundances from a taxonomic abundance table and compares
+two experimental conditions by calculating a directional abundance ratio
+for each taxon. Taxa are ranked by mean abundance and visualized as a bubble
+plot, where bubble size represents mean relative abundance and color indicates
+the dominant condition.
 }
 \examples{
-NULL
+ratio_plot(table,
+            metadata,
+            condition_col = "metodo",
+            condition_A = "kit", 
+            condition_B = "fenol")
+
+
+ratio_plot(table = table,
+           metadata = metadata,
+           condition_col = "Treatment",
+           condition_A = "Control",
+           condition_B = "Compost",
+  level = "genus",
+  top_n = 20
+)
 }

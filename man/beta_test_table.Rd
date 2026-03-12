@@ -39,19 +39,18 @@ A table with the results of R2, F and p value
 This function create a table with the results of permanova or betadisper
 }
 \examples{
-.   1. Data frame
-             beta_test_table(table = table, 
-                             metadata= metadata,
-                             formula_str = "metodo*edad",
-                             method = "euclidean", 
-                             test = "permanova",
-                             permutations = 999,
-                             strata_var = "Individuo")
-             
-             2. Matrix
-             beta_test_table(table = matriz, 
-                             metadata= metadata,
-                             formula_str = "Origen",
-                             test = "betadisper")
-             
+# Example using a data frame
+beta_test_table(table = table,
+                metadata = metadata,
+                formula_str = "metodo*edad",
+                method = "euclidean",
+                test = "permanova",
+                permutations = 999,
+                strata_var = "Individuo")
+
+# Example using a matrix
+beta_test_table(table = matriz,
+                metadata = metadata,
+                formula_str = "Origen",
+                test = "betadisper")
 }

@@ -40,7 +40,7 @@ minimum prevalence filtering and custom group color scales (manual)."><meta name
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -126,6 +126,20 @@ minimum prevalence filtering and custom group color scales (manual).</p>
     <p>A ggplot object or other plot depending on the method.</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span>   <span class="fu">venn_diagram_plot</span><span class="op">(</span>table<span class="op">=</span> <span class="va">table_taxa</span>,</span></span>
+<span class="r-in"><span>                                metadata<span class="op">=</span><span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>                                merge_by <span class="op">=</span> <span class="st">"ID.CAM"</span>,</span></span>
+<span class="r-in"><span>                                min_prevalence <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>                                denom <span class="op">=</span> <span class="st">"all"</span>,</span></span>
+<span class="r-in"><span>                                group_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"yellow"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                                method <span class="op">=</span> <span class="st">"ggvenn"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in venn_diagram_plot(table = table_taxa, metadata = metadata, merge_by = "ID.CAM",     min_prevalence = 0, denom = "all", group_colors = c("blue",         "yellow"), method = "ggvenn"):</span> unused argument (denom = "all")</span>
+<span class="r-in"><span>                                </span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

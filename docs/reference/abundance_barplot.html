@@ -38,7 +38,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -78,7 +78,7 @@
 <span>  facet_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  width_equal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"taxonomy"</span>,</span>
-<span>  top_n_groups <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">15</span>,</span>
 <span>  x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
 <span>  add_remained <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -118,7 +118,7 @@
 <dd><p>Character. Legend title for the taxa groups. Default is <code>"taxonomy"</code>.</p></dd>
 
 
-<dt id="arg-top-n-groups">top_n_groups<a class="anchor" aria-label="anchor" href="#arg-top-n-groups"></a></dt>
+<dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
 <dd><p>Integer. Number of most abundant taxa groups to display. Default is <code>15</code>.</p></dd>
 
 
@@ -139,7 +139,7 @@
 
 <ul><li><p>Relative abundances are calculated per sample (%).</p></li>
 <li><p>Taxa names are collapsed to the specified taxonomic <code>level</code> ("genus" or "phylum").</p></li>
-<li><p>Only the top <code>top_n_groups</code> taxa are shown; others are filtered out.</p></li>
+<li><p>Only the top <code>top_n</code> taxa are shown; others are filtered out.</p></li>
 <li><p>Samples are grouped and ordered according to <code>x_col</code>.</p></li>
 <li><p>Optional faceting by <code>facet_col</code> if provided.</p></li>
 <li><p>Taxonomic strings matching <code>"d__Bacteria;__;__;__;__;__"</code> are automatically removed.</p></li>
@@ -147,7 +147,18 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># relative_abundance_plot(table = your_table, metadata = your_metadata, ...)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">abundance_barplot</span><span class="op">(</span> table <span class="op">=</span> <span class="va">table_taxa</span>,</span></span>
+<span class="r-in"><span>                             metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>                             taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span></span>
+<span class="r-in"><span>                             level <span class="op">=</span> <span class="st">"genus"</span>,</span></span>
+<span class="r-in"><span>                             x_col <span class="op">=</span> <span class="st">"MUESTRA"</span>,</span></span>
+<span class="r-in"><span>                             label <span class="op">=</span> <span class="st">"Genus"</span>,</span></span>
+<span class="r-in"><span>                             facet_col <span class="op">=</span> <span class="st">"SITIO"</span>,</span></span>
+<span class="r-in"><span>                             width_equal <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>                             group_var <span class="op">=</span> <span class="st">"SAMPLEID"</span>,</span></span>
+<span class="r-in"><span>                             top_n <span class="op">=</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>                             add_remained  <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in abundance_barplot(table = table_taxa, metadata = metadata, taxonomy_db = "silva",     level = "genus", x_col = "MUESTRA", label = "Genus", facet_col = "SITIO",     width_equal = FALSE, group_var = "SAMPLEID", top_n = 30,     add_remained = TRUE):</span> unused argument (group_var = "SAMPLEID")</span>
 </code></pre></div>
     </div>
   </div>

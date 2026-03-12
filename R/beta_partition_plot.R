@@ -32,7 +32,23 @@ beta_partition_plot <- function(table, metadata,
                                 save_table = TRUE,
                                 table_filename = "SAMPLE1") {   
   suppressWarnings({
-    
+
+    # --- Aceptar también data.frame como matriz ---
+    if (is.data.frame(table)) {
+      
+      # buscar columna de taxonomía
+      tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
+      
+      if (length(tax_cols) > 0) {
+        table <- table[, -tax_cols[1], drop = FALSE]
+      }
+      
+      # conservar solo columnas numéricas
+      table <- table[, sapply(table, is.numeric), drop = FALSE]
+      
+      # convertir a matriz
+      table <- as.matrix(table)
+    }
   
   # --- 1. Convert to presence/absence ---
   table_pa <- table

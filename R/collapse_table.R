@@ -21,14 +21,14 @@
 #'   export_txt = TRUE.
 #' @return a table collapsed by taxonomic level
 #' @export
-#'
-#' @examples collapse_table(
-#               table,
-#               metadata,
-#               level = "genus",
-#               rel_abun = FALSE,
-#               export_txt = FALSE
-#               )
+#' @examples
+#' collapse_table(
+#'   table = table,
+#'   metadata = metadata,
+#'   level = "genus",
+#'   rel_abun = FALSE,
+#'   export_txt = FALSE
+#' )
 
 collapse_table <- function(table,
                           metadata,

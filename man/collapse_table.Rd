@@ -2,7 +2,8 @@
 % Please edit documentation in R/collapse_table.R
 \name{collapse_table}
 \alias{collapse_table}
-\title{Title}
+\title{Collapse table
+Collapse an OTU/ASV table by taxonomic level}
 \usage{
 collapse_table(
   table,
@@ -14,24 +15,40 @@ collapse_table(
 )
 }
 \arguments{
-\item{table}{}
+\item{table}{A data frame containing an OTU/ASV abundance table. Must include
+a column with OTUID, one with taxonomy and sample columns with numeric counts.}
 
-\item{metadata}{}
+\item{metadata}{A data frame containing sample metadata. The first column is
+used to define the order of samples in the output table.}
 
-\item{level}{}
+\item{level}{Character string specifying the taxonomic level to collapse to.
+("kingdom","phylum","class","order","family","genus" or"species".}
 
-\item{rel_abun}{}
+\item{rel_abun}{Logical. If TRUE, converts counts to relative abundance
+(\%) per sample.}
 
-\item{export_txt}{}
+\item{export_txt}{Logical. If TRUE, exports the collapsed table as a
+tab-delimited text file.}
 
-\item{file_name}{}
+\item{file_name}{Character. Name of the output file when
+export_txt = TRUE.}
 }
 \value{
 a table collapsed by taxonomic level
 }
 \description{
-Title
+Collapses an abundance table by a specified taxonomic rank (e.g. genus,
+family, phylum), summing counts across features that share the same taxonomy.
+Features with lower taxonomic resolution than the selected level are retained
+unchanged. Optionally converts counts to relative abundance and exports the
+collapsed table to a tab-delimited file.
 }
 \examples{
 collapse_table(
+  table = table,
+  metadata = metadata,
+  level = "genus",
+  rel_abun = FALSE,
+  export_txt = FALSE
+)
 }

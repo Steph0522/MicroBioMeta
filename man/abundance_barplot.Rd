@@ -13,7 +13,7 @@ abundance_barplot(
   facet_col = NULL,
   width_equal = FALSE,
   label = "taxonomy",
-  top_n_groups = 15,
+  top_n = 15,
   x_axis_title = "Samples",
   add_remained = FALSE,
   save_table = TRUE,
@@ -35,7 +35,7 @@ abundance_barplot(
 
 \item{label}{Character. Legend title for the taxa groups. Default is \code{"taxonomy"}.}
 
-\item{top_n_groups}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
+\item{top_n}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
 
 \item{x_axis_title}{Character. The tittle that should be in the x-axis (deault = "Samples")}
 
@@ -51,12 +51,22 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 \itemize{
 \item Relative abundances are calculated per sample (\%).
 \item Taxa names are collapsed to the specified taxonomic \code{level} ("genus" or "phylum").
-\item Only the top \code{top_n_groups} taxa are shown; others are filtered out.
+\item Only the top \code{top_n} taxa are shown; others are filtered out.
 \item Samples are grouped and ordered according to \code{x_col}.
 \item Optional faceting by \code{facet_col} if provided.
 \item Taxonomic strings matching \code{"d__Bacteria;__;__;__;__;__"} are automatically removed.
 }
 }
 \examples{
-# relative_abundance_plot(table = your_table, metadata = your_metadata, ...)
+abundance_barplot( table = table_taxa,
+                             metadata = metadata,
+                             taxonomy_db = "silva",
+                             level = "genus",
+                             x_col = "MUESTRA",
+                             label = "Genus",
+                             facet_col = "SITIO",
+                             width_equal = FALSE,
+                             group_var = "SAMPLEID",
+                             top_n = 30,
+                             add_remained  = TRUE)
 }

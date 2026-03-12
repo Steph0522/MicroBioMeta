@@ -84,6 +84,21 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
+
+alpha_diversity_plot(table = table \%>\% remove_rownames(),
+                    metadata = metadata,
+                    type = "barplot",
+                    fill_col = "metodo",
+                    #custom_palette = c("red", "blue"),
+                    x_col = "metodo",
+                    facet_orientation = "horizontal",
+                    #   facet_by = "edad",
+                    facet_by2 = "estructura",
+                    free_y = T,
+                    legend_position = "top",
+                    stat = "t.test")
+
+
 library(vegan)
 data(dune)
 data(dune.env)
@@ -93,6 +108,7 @@ alpha_hill_plot(
     x_col = "Management",
     fill_col = "Management",
     facet_by = "Use",
-    facet_orientation = "vertical"
-)
+    facet_orientation = "vertical" )
+    
+    
 }

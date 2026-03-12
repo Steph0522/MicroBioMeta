@@ -38,7 +38,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -119,7 +119,15 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">randomf_lollipop_plot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">otu_table</span>, </span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="fu">randomf_lollipop_plot</span><span class="op">(</span>table<span class="op">=</span> <span class="va">table_taxa3</span>,</span></span>
+<span class="r-in"><span>                                  metadata<span class="op">=</span> <span class="va">metadata</span> <span class="op">%&gt;%</span> <span class="fu">drop_na</span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                                  variable_to_predict <span class="op">=</span> <span class="st">"SITIO"</span>,</span></span>
+<span class="r-in"><span>                                  col_palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span>, <span class="st">"green"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                                  top_n <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>                                  size <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'table_taxa3' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">randomf_lollipop_plot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">otu_table</span>, </span></span>
 <span class="r-in"><span>                     metadata <span class="op">=</span> <span class="va">sample_metadata</span>,</span></span>
 <span class="r-in"><span>                     variable_to_predict <span class="op">=</span> <span class="st">"season"</span>,</span></span>
 <span class="r-in"><span>                     legend_figure <span class="op">=</span> <span class="st">"Top important features (Random Forest)"</span><span class="op">)</span></span></span>

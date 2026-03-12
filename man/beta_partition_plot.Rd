@@ -39,3 +39,10 @@ A combined cowplot panel of beta diversity partition plots.
 This function computes beta diversity partition (Jaccard or Sorensen)
 using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
 }
+\examples{
+beta_partition_plot(table=table,
+                    metadata= metadata,
+                    group_col="metodo", 
+                    point_size = 4,
+                    colors = c("gray", "blue"))
+}

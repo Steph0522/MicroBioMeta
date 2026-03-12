@@ -52,3 +52,17 @@ A \code{ggplot} object with the selected plot.
 \description{
 This function generates either an effect size plot or a volcano plot based on ALDEx2 results.
 }
+\examples{
+aldex_volcano_plot(table = table,
+                    metadata = metadata,
+                    col_inf = "blue",
+                    col_sup = "red",
+                    col_cond = "metodo",
+                    type = "effect",
+                    threshold_lower = -1,
+                    threshold_upper = 1,
+                    cond = "kit",
+                    show_labels = TRUE)
+
+
+}

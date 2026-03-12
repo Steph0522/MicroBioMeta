@@ -61,3 +61,18 @@ Performs Canonical Correspondence Analysis (CCA) or Redundancy Analysis (RDA) ba
 and selected environmental variables, returning a biplot with ggplot2 that visualizes
 sample scores and environmental vectors.
 }
+\examples{
+cca_rda_biplot(table = table,
+              env_data = env_data,
+              env_vars = c("pH", "Nitrogen", "Calcium"),
+              metadata = metadata ,
+              group_col = "metodo",
+              analysis = "RDA",
+              show_all_env_vectors = TRUE,
+              legend_title = "Método",
+              group_colors = c("red", "blue"),
+              title = "title")
+
+
+
+}

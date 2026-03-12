@@ -40,7 +40,7 @@ sample scores and environmental vectors."><meta name="twitter:card" content="sum
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
     </li>
   </ul></li>
 <li>
@@ -161,6 +161,34 @@ sample scores and environmental vectors.</p>
     <p>A <code>ggplot</code> object displaying the biplot with sample scores and environmental vectors.</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">cca_rda_biplot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>              env_data <span class="op">=</span> <span class="va">env_data</span>,</span></span>
+<span class="r-in"><span>              env_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"Nitrogen"</span>, <span class="st">"Calcium"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              metadata <span class="op">=</span> <span class="va">metadata</span> ,</span></span>
+<span class="r-in"><span>              group_col <span class="op">=</span> <span class="st">"metodo"</span>,</span></span>
+<span class="r-in"><span>              analysis <span class="op">=</span> <span class="st">"RDA"</span>,</span></span>
+<span class="r-in"><span>              show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>              legend_title <span class="op">=</span> <span class="st">"Método"</span>,</span></span>
+<span class="r-in"><span>              group_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              title <span class="op">=</span> <span class="st">"title"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: ggplot2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: 'dplyr'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from 'package:stats':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from 'package:base':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in cca_rda_biplot(table = table, env_data = env_data, env_vars = c("pH",     "Nitrogen", "Calcium"), metadata = metadata, group_col = "metodo",     analysis = "RDA", show_all_env_vectors = TRUE, legend_title = "Método",     group_colors = c("red", "blue"), title = "title"):</span> There is no taxonomy column in the table</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
