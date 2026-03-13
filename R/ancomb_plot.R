@@ -11,7 +11,6 @@
 #' @param formula, Formula of the model 
 #'
 #' @return A plot with the deferentially abundant taxonomic groups between two categories or groups of samples.
-#' @export
 #'
 #' @examples ancomb_plot(table = table,
 #'                      conditions = conditions,

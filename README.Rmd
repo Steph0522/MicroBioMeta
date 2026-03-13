@@ -1,4 +1,4 @@
-# 🧬 MicroBioMeta <img src="man/figures/logo.jpg" alt="MicroBioMeta logo" style="max-width:150px; height:auto;" align="right"/>
+# 🧬 MicroBioMeta <img src="man/figures/logo.jpg" alt="MicroBioMeta logo" width="80" align="right"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -33,14 +33,6 @@ install.packages("devtools")
 library(devtools)
 install_github("Steph0522/MicroBioMeta")
 library(MicroBioMeta)
-
-or with BiocManager:
-
-``` r
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-}
-BiocManager::install("Steph0522/MicroBioMeta")
 ```
 
 ## :green_book: Examples

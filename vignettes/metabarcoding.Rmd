@@ -11,7 +11,7 @@ For this example, we will use *metabarcoding* data, specifically 16S for bacteri
 
 The data is taken from:
 
-For 16S: [Hereira-Pacheco, S.E., Navarro-Noya, Y.E. & Dendooven, L. The root endophytic bacterial community of Ricinus communis L. resembles the seeds community more than the rhizosphere bacteria independent of soil water content. Sci Rep 11, 2173 (2021). https://doi.org/10.1038/s41598-021-81551-7](https://doi.org/10.1038/s41598-021-81551-7)]
+For 16S: [Hereira-Pacheco, S.E., Navarro-Noya, Y.E. & Dendooven, L. The root endophytic bacterial community of Ricinus communis L. resembles the seeds community more than the rhizosphere bacteria independent of soil water content. Sci Rep 11, 2173 (2021). https://doi.org/10.1038/s41598-021-81551-7](https://doi.org/10.1038/s41598-021-81551-7)
 
 For 18S: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities under drought conditions in Ricinus communis. Fungal Ecology, 63, 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
@@ -51,7 +51,12 @@ bacteria_metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>%
       TRUE ~ as.character(Treatment)
     ),
     levels = c("TC", "TD", "TED")
-  ))
+  ))%>%
+  mutate(Type_of_soil = 
+    case_when(
+      Type_of_soil == "Rizosphere" ~ "Rhizosphere",
+      Type_of_soil == "Non-rizospheric" ~ "Bulk soil",
+      TRUE ~ as.character(Type_of_soil)))
 
 fungi_metadata<- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% rename(SAMPLEID=`#SampleID`)%>%
   mutate(
@@ -64,7 +69,13 @@ fungi_metadata<- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% r
       ),
       levels = c("TC", "TD", "TED")
     )
-  )
+  )%>%
+  mutate(Type_of_soil = 
+    case_when(
+      Type_of_soil == "Rizospheric" ~ "Rhizosphere",
+      Type_of_soil == "Non-rizospheric" ~ "Bulk soil",
+         TRUE ~ as.character(Type_of_soil)))
+
 
 taxonomy_bacteria <- read_qza("../man/Data/taxonomy_dada2.200.trimmed.single.seqs.qza")$data %>%
   as.data.frame() %>% rename(taxonomy = Taxon) %>% 
@@ -269,6 +280,92 @@ alpha_diversity_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
+### Shared taxa between sample groups
+
+Another way to explore alpha diversity patterns is by examining **which taxa are shared or unique among groups of samples**. The function `venn_diagram_plot()` generates Venn diagrams that summarize the overlap of taxa between groups defined in the metadata.
+
+The function can optionally filter taxa using a **minimum prevalence threshold**, allowing the visualization to focus only on taxa consistently detected within each group.
+
+Next, we generate a Venn diagram grouping samples according to the soil compartment.
+
+```{r, fig.width=16, fig.height=12}
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0 )
+```
+
+This plot shows the number of taxa that are **unique to each soil compartment** and those **shared among groups**.
+
+#### Collapsing the table by taxonomic level
+
+Microbial community tables are often generated at the **ASV or OTU level**, which can contain hundreds or thousands of features. For interpretation and visualization, it is often useful to aggregate these features at a higher **taxonomic rank**, such as genus or family.
+
+The function `collapse_table()` performs this aggregation by grouping features that share the same taxonomy at a specified level and summing their abundances across samples. Taxa that do not reach the selected taxonomic resolution are retained without modification.
+
+The function returns a **list with two elements**:
+
+-   **`collapsed_table`**: a wide-format abundance table where rows correspond to taxa collapsed at the selected level and columns correspond to samples.
+
+-   **`long_format`**: the same information in long format, which is useful for downstream plotting or statistical analyses.
+
+-   For example, the following code collapses the fungal abundance table to the **genus level**.
+
+```{r, fig.width=16, fig.height=12}
+
+table_genus <- collapse_table(
+  table = table_fung,
+  metadata = metadata_fungi,
+  level = "genus"
+)
+
+venn_diagram_plot(
+  table = table_genus$collapsed_table,
+  metadata = metadata_fungi,
+  merge_by = "Type_of_soil"
+)
+```
+
+By default, `collapse_table()` returns the **raw counts** summed at the selected taxonomic level. However, microbial community data are often easier to interpret when expressed as **relative abundance**, since sequencing depth can vary across samples.
+
+Setting `rel_abun = TRUE` converts the counts of each sample into **percentages**, where the total abundance per sample sums to 100%.
+
+#### Filtering taxa by prevalence
+
+Sometimes it is useful to visualize only taxa that occur frequently within each group. This can be done using the `min_prevalence` parameter.
+
+For example, the following diagram includes only taxa present in **at least 20% of the samples within each group**.
+
+```{r, fig.width=16, fig.height=12}
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0.2 )
+```
+
+#### Customizing group colors
+
+The function also allows custom colors for the groups.
+
+```{r, fig.width=16, fig.height=12}
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0,   
+                  group_colors = c("#1B9E77", "#D95F02", "#7570B3") )
+```
+
+#### Alternative plotting method
+
+By default the function uses the package **ggvenn**, but it can also generate the diagram using **ggVennDiagram**.
+
+```{r}
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  method = "ggvenndiagram" )
+```
+
 ## Beta diversity
 
 Beta diversity describes the differences in community composition among samples. These analyses help determine whether microbial communities vary across environmental conditions, treatments, or experimental groups.
@@ -379,7 +476,186 @@ beta_diversity_boxplot(table = table_fung,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        title_axis_x = "Samples",
-                       partition = "shared", family = "jaccard", 
+                       partition = "shared", 
+                       family = "jaccard", 
                        save_table = FALSE)
 
 ```
+
+## Differential abundant analysis
+
+`MicroBioMeta` provides several functions to explore **differentially abundant taxa between conditions**. These analyses help identify microbial features that vary significantly across environments or experimental groups.
+
+Two functions rely on a **compositional data analysis framework implemented in the package** [ALDEx2]{.underline}. This approach accounts for the compositional nature of sequencing data by using Monte Carlo Dirichlet instances and centered log-ratio transformations, making it more appropriate for high-throughput sequencing datasets than traditional count-based methods.
+
+The functions:
+
+-   `aldex_volcano_plot()` visualizes differential abundance results using a **volcano plot**.
+
+-   `aldex_heatmap_plot()` highlights significant taxa in a **heatmap representation**.
+
+-   Additionally, two complementary approaches help identify **important taxa that discriminate between groups**:
+
+-   `ratio_plot()` highlights taxa based on **log-ratio differences between conditions**.
+
+-   `randomf_lollipop_plot()` uses a **Random Forest model** to identify features that best predict a given variable, visualized as a **lollipop plot of feature importance**.
+
+-   Since ALDEx2 performs **pairwise comparisons**, we first subset the data to include only two experimental conditions.
+
+### Example: Bacterial data
+
+First, we filter the metadata to retain only two soil compartments.
+
+```{r}
+metadata_bacteria_compar <-  metadata_bacteria %>% 
+  filter(Type_of_soil == "Roots" | Type_of_soil =="Rhizosphere")
+
+table_bacteria_compar <- table_bacteria[match(metadata_bacteria_compar$SAMPLEID, colnames(table_bacteria))]
+
+table_bac_compar <- merge_feature_taxonomy(table_bacteria_compar, taxonomy_bacteria)
+
+```
+
+We can visualize differential abundance using a **volcano plot**.
+
+```{r, fig.width=12, fig.height=10, message=FALSE, warning=FALSE}
+aldex_volcano_plot(table = table_bac_compar, 
+                   metadata = metadata_bacteria_compar,
+                   col_cond = "Type_of_soil",
+                   type = "volcano" )
+
+```
+
+### Example: Fungal data
+
+We follow the same procedure but visualize the results with a **heatmap**.
+
+```{r}
+metadata_fungi_compar <-  metadata_fungi %>% 
+  filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Rhizosphere")
+
+table_fungi_compar <- table_fung[match(metadata_fungi_compar$SAMPLEID, colnames(table_fung))]
+
+table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
+
+```
+
+```{r, fig.width=12, message=FALSE, warning=FALSE}
+aldex_heatmap_plot(table = table_fung_compar, 
+                   metadata = metadata_fungi_compar,
+                   col_cond = "Type_of_soil")
+
+```
+
+### Identifying important taxa
+
+The functions `randomf_lollipop_plot()` and `ratio_plot()` can also be used to highlight taxa that contribute most strongly to the observed differences between conditions.
+
+For example, a **Random Forest model** can be used to identify the taxa that best predict the soil compartment:
+
+```{r}
+randomf_lollipop_plot(table = table_bac, metadata = metadata_bacteria, top_n = 10, variable_to_predict = "Type_of_soil")
+```
+
+Alternatively, taxa with the strongest **log-ratio differences between two conditions** can be visualized using:
+
+```{r, fig.height=6}
+ratio_plot(table = table_fung_compar, 
+           metadata = metadata_fungi_compar, 
+           condition_col = "Type_of_soil", 
+           top_n = 20, 
+           condition_A = "Rhizosphere", 
+           condition_B = "Bulk soil")
+```
+
+## Environmental analyses
+
+## Environmental analyses
+
+MicroBioMeta provides two functions to explore the relationship between **environmental variables** and **microbial community composition**:
+
+-    `corr_env_abund_plot()` — computes correlations between taxonomic abundance and environmental variables.
+
+-    `cca_rda_biplot()` — performs constrained ordination using **Canonical Correspondence Analysis (CCA)** or **Redundancy Analysis (RDA)**.
+
+#### Preparing the environmental table
+
+Environmental variables must be organized in a **data frame where rows correspond to samples and columns correspond to environmental variables**.
+
+In this example, environmental variables are extracted from the metadata.
+
+```{r}
+env_table_bac <- metadata_bacteria %>% 
+  dplyr::select(SAMPLEID, pH:Arbus_per) %>% 
+  remove_rownames() %>% 
+  column_to_rownames(var = "SAMPLEID")
+```
+
+#### Correlation between environmental variables and taxonomic abundance
+
+The function `corr_env_abund_plot()` calculates correlations between **environmental variables** and **taxonomic relative abundances** at a selected taxonomic level.
+
+Example using **phylum-level abundances**:
+
+```{r, fig.height=10}
+corr_env_abund_plot(table = table_bac, 
+                    env_table = env_table_bac, 
+                    metadata = metadata_bacteria, 
+                    level = "phylum",  
+                    save_table = FALSE)
+
+```
+
+This function produces a **correlation heatmap** showing how environmental variables relate to taxonomic abundances.
+
+### Alternative visualization
+
+Correlations can also be displayed using circle markers instead of tiles:
+
+```{r, fig.height=10}
+corr_env_abund_plot(table = table_bac, 
+                    env_table = env_table_bac,
+                    metadata = metadata_bacteria, 
+                    level = "phylum",  
+                    save_table = FALSE, 
+                    geom = "circle")
+
+```
+
+#### Constrained ordination (CCA / RDA)
+
+The function `cca_rda_biplot()` performs a constrained ordination analysis to evaluate how environmental variables explain variation in microbial community composition.
+
+Before running the analysis, ensure that the **sample order in the environmental table matches the metadata**.
+
+```{r, eval=FALSE}
+rownames(env_table_bac) <- env_table_bac$SAMPLEID
+
+env_table_bac <- env_table_bac[
+  match(metadata_bacteria$SAMPLEID, rownames(env_table_bac)), ]
+
+```
+
+Then run the RDA analysis:
+
+```{r, eval=FALSE}
+
+cca_rda_biplot(table = table_bac, 
+               env_data = env_table_bac, 
+               metadata = metadata_bacteria, 
+               env_vars = c("pH","TN","WHC", "EC", "Clay"),
+               analysis = "RDA",
+               show_all_env_vectors = TRUE,
+               group_col = "Type_of_soil")
+
+```
+
+This analysis produces a **biplot** where:
+
+-    **Points** represent samples
+
+-   **Colors** indicate sample groups defined in the metadata.
+
+-    **Arrows** represent environmental variables and their direction of influence on community structure.
+
+-    Environmental vectors pointing in similar directions indicate **positive associations**, while vectors pointing in opposite directions suggest **negative relationships**
