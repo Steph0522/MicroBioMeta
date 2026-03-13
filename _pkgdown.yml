@@ -18,7 +18,7 @@ navbar:
      text: articles
      menu:
      - text: Metabarcoding
-       href: articles/Metabarcoding.html
+       href: articles/metabarcoding.html
 
     
 
