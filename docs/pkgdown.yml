@@ -2,5 +2,5 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  Metabarcoding: Metabarcoding.html
-last_built: 2026-03-13T05:44Z
+  metabarcoding: metabarcoding.html
+last_built: 2026-03-13T05:52Z

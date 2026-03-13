@@ -55,7 +55,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/Metabarcoding.html">Metabarcoding</a>
+      <a href="../articles/metabarcoding.html">Metabarcoding</a>
     </li>
   </ul>
 </li>
@@ -86,8 +86,8 @@
       <h1 data-toc-skip>Metabarcoding</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Steph0522/MicroBioMeta/blob/HEAD/vignettes/Metabarcoding.Rmd" class="external-link"><code>vignettes/Metabarcoding.Rmd</code></a></small>
-      <div class="hidden name"><code>Metabarcoding.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/Steph0522/MicroBioMeta/blob/HEAD/vignettes/metabarcoding.Rmd" class="external-link"><code>vignettes/metabarcoding.Rmd</code></a></small>
+      <div class="hidden name"><code>metabarcoding.Rmd</code></div>
 
     </div>
 
@@ -262,7 +262,7 @@ generate the plot.<br></p>
 <span>                  label <span class="op">=</span>   <span class="st">"Phylum"</span>,</span>
 <span>                  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">50</span>, hjust <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_barplot.html">abundance_barplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -272,7 +272,7 @@ generate the plot.<br></p>
 <span>                  label <span class="op">=</span>   <span class="st">"Genera"</span>,</span>
 <span>                  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">50</span>, hjust <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="abundance-heatmaps">Abundance heatmaps<a class="anchor" aria-label="anchor" href="#abundance-heatmaps"></a>
@@ -305,7 +305,7 @@ names are displayed in the heatmap.</p>
 <span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                  condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>, </span>
 <span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -313,7 +313,7 @@ names are displayed in the heatmap.</p>
 <span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                  condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>, </span>
 <span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -347,13 +347,13 @@ and samples (columns).</p>
 there is a strong correlation with sequencing depth.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corrplot.html">alpha_hill_corrplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
 <p>But, for fungi data this correlation is just strong and significative
 at <em>q</em>=0, it means for richness but not to the others <em>q</em>
 orders.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corrplot.html">alpha_hill_corrplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="alpha-diversity-visualization">Alpha diversity visualization<a class="anchor" aria-label="anchor" href="#alpha-diversity-visualization"></a>
@@ -379,7 +379,7 @@ containing the alpha diversity values calculated for each sample.</p>
 <span>                facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>                facet_orientation <span class="op">=</span> <span class="st">"vertical"</span>,</span>
 <span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>, </span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -388,7 +388,7 @@ containing the alpha diversity values calculated for each sample.</p>
 <span>                facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
 <span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="576"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="576"></p>
 <p>Also, we can visualize other metrics considering classic alpha
 diversity indexes. Also, using the parameter stat it is possible to set
 an statistical comparison indication the method to use:</p>
@@ -400,7 +400,7 @@ an statistical comparison indication the method to use:</p>
 <span>                facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,stat <span class="op">=</span> <span class="st">"anova"</span>,</span>
 <span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="576"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="shared-taxa-between-sample-groups">Shared taxa between sample groups<a class="anchor" aria-label="anchor" href="#shared-taxa-between-sample-groups"></a>
@@ -420,7 +420,7 @@ soil compartment.</p>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="1536"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="1536"></p>
 <p>This plot shows the number of taxa that are <strong>unique to each
 soil compartment</strong> and those <strong>shared among
 groups</strong>.</p>
@@ -459,7 +459,7 @@ table to the <strong>genus level</strong>.</p></li>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="1536"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="1536"></p>
 <p>By default, <code><a href="../reference/collapse_table.html">collapse_table()</a></code> returns the <strong>raw
 counts</strong> summed at the selected taxonomic level. However,
 microbial community data are often easier to interpret when expressed as
@@ -482,7 +482,7 @@ within each group. This can be done using the
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0.2</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="1536"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="1536"></p>
 </div>
 <div class="section level4">
 <h4 id="customizing-group-colors">Customizing group colors<a class="anchor" aria-label="anchor" href="#customizing-group-colors"></a>
@@ -494,7 +494,7 @@ within each group. This can be done using the
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span>,   </span>
 <span>                  group_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#1B9E77"</span>, <span class="st">"#D95F02"</span>, <span class="st">"#7570B3"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="1536"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="1536"></p>
 </div>
 <div class="section level4">
 <h4 id="alternative-plotting-method">Alternative plotting method<a class="anchor" aria-label="anchor" href="#alternative-plotting-method"></a>
@@ -507,7 +507,7 @@ it can also generate the diagram using
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  method <span class="op">=</span> <span class="st">"ggvenndiagram"</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 </div>
@@ -551,7 +551,7 @@ samples.</p>
 <span>              ordination <span class="op">=</span> <span class="st">"PCA"</span>,</span>
 <span>              group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>              shape_col <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_div_plot.html">beta_div_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,                </span>
 <span>              metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,                </span>
@@ -597,7 +597,7 @@ samples.</p>
 <span><span class="co">## *** Best solution repeated 1 times</span></span></code></pre>
 <pre><code><span><span class="co">## Coordinate system already present.</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="statistical-tests-for-beta-diversity">Statistical tests for beta diversity<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
@@ -619,7 +619,7 @@ permutations used to estimate statistical significance.</p>
 <span>                method <span class="op">=</span> <span class="st">"euclidean"</span>, </span>
 <span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
 <span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>, </span>
 <span>                metadata<span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -627,7 +627,7 @@ permutations used to estimate statistical significance.</p>
 <span>                method <span class="op">=</span> <span class="st">"euclidean"</span>, </span>
 <span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
 <span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="beta-diversity-partitioning">Beta diversity partitioning<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
@@ -648,7 +648,7 @@ samples are visualized according to metadata variables.</p>
 <span>  group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>  shape_col <span class="op">=</span> <span class="st">"Treatment"</span>, </span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="" width="1728"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="" width="1728"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_plot.html">beta_partition_plot</a></span><span class="op">(</span></span>
 <span>  table <span class="op">=</span> <span class="va">table_fung</span>,</span>
@@ -657,7 +657,7 @@ samples are visualized according to metadata variables.</p>
 <span>  group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>  shape_col <span class="op">=</span> <span class="st">"Treatment"</span>, </span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="" width="1728"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="" width="1728"></p>
 </div>
 <div class="section level3">
 <h3 id="pairwise-beta-diversity-visualization">Pairwise beta diversity visualization<a class="anchor" aria-label="anchor" href="#pairwise-beta-diversity-visualization"></a>
@@ -680,7 +680,7 @@ containing the beta diversity values used to generate the plot.</p>
 <span>                       title_axis_x <span class="op">=</span> <span class="st">"Samples"</span>,</span>
 <span>                       partition <span class="op">=</span> <span class="st">"shared"</span>, family <span class="op">=</span> <span class="st">"jaccard"</span>, </span>
 <span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_diversity_boxplot.html">beta_diversity_boxplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>                       metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -690,7 +690,7 @@ containing the beta diversity values used to generate the plot.</p>
 <span>                       partition <span class="op">=</span> <span class="st">"shared"</span>, </span>
 <span>                       family <span class="op">=</span> <span class="st">"jaccard"</span>, </span>
 <span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -746,7 +746,7 @@ plot</strong>.</p>
 <span>                   metadata <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
 <span>                   col_cond <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>                   type <span class="op">=</span> <span class="st">"volcano"</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="" width="1152"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="" width="1152"></p>
 </div>
 <div class="section level3">
 <h3 id="example-fungal-data">Example: Fungal data<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
@@ -767,7 +767,7 @@ plot</strong>.</p>
 <span>                   metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
 <span>                   col_cond <span class="op">=</span> <span class="st">"Type_of_soil"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## |------------(25%)----------(50%)----------(75%)----------|</span></span></code></pre>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="" width="1152"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="" width="1152"></p>
 </div>
 <div class="section level3">
 <h3 id="identifying-important-taxa">Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
@@ -784,7 +784,7 @@ identify the taxa that best predict the soil compartment:</p>
 <span><span class="co">##   - 'Proteobacteria' changed to 'Pseudomonadota'</span></span>
 <span><span class="co">##   - 'Actinobacteriota' changed to 'Actinomycetota'</span></span>
 <span><span class="co">## Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/</span></span></code></pre>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-32-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-32-1.png" class="r-plt" alt="" width="700"></p>
 <p>Alternatively, taxa with the strongest <strong>log-ratio differences
 between two conditions</strong> can be visualized using:</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
@@ -794,7 +794,7 @@ between two conditions</strong> can be visualized using:</p>
 <span>           top_n <span class="op">=</span> <span class="fl">20</span>, </span>
 <span>           condition_A <span class="op">=</span> <span class="st">"Rhizosphere"</span>, </span>
 <span>           condition_B <span class="op">=</span> <span class="st">"Bulk soil"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -843,7 +843,7 @@ level.</p>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>, </span>
 <span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,  </span>
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-35-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-35-1.png" class="r-plt" alt="" width="700"></p>
 <p>This function produces a <strong>correlation heatmap</strong> showing
 how environmental variables relate to taxonomic abundances.</p>
 </div>
@@ -859,7 +859,7 @@ tiles:</p>
 <span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,  </span>
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>                    geom <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Metabarcoding_files/figure-html/unnamed-chunk-36-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-36-1.png" class="r-plt" alt="" width="700"></p>
 <div class="section level4">
 <h4 id="constrained-ordination-cca-rda">Constrained ordination (CCA / RDA)<a class="anchor" aria-label="anchor" href="#constrained-ordination-cca-rda"></a>
 </h4>
