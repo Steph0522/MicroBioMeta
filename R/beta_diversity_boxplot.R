@@ -135,6 +135,7 @@ beta_diversity_boxplot <- function(
         axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "serif"),
         axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
         #axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+        axis.ticks.x = ggplot2::element_blank(),
         axis.text.x = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "serif"),
         strip.text = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold"),
