@@ -17,13 +17,20 @@
 #'
 #' @return A `ggplot2` object.
 #' @export
-#' @examples      beta_div_plot(table = table_taxa,
-#'                               metadata = metadata1,
-#'                               distance = "aitchison",
-#'                               ordination = "NMDS",
-#'                               group_col  = "SITIO",
-#'                               top_n = 5,
-#'                               arrows = 100)
+#' @examples      
+#' beta_div_plot(table = table_bac,
+#'               metadata = metadata_bacteria,
+#'               distance = "compositional",
+#'               ordination = "PCA",
+#'               group_col  = "Type_of_soil",
+#'               shape_col = "Treatment")
+#'               
+#' beta_div_plot(table = table_fung,                
+#'               metadata = metadata_fungi,                
+#'               group_col = "Type_of_soil",               
+#'               shape_col = "Treatment",
+#'               distance = "aitchison", 
+#'               ordination = "NMDS")
 #' 
 
 beta_div_plot <- function(table, metadata, 

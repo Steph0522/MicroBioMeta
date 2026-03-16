@@ -41,21 +41,30 @@
 #' @return A ggplot2 object.
 #' @export
 #'
-#' @examples color<- c("pink","white","purple")
-#    corr_env_abund_plot(table = table, 
-#     env_table = env_data,
-#     metadata=metadata,
-#     cond_vect= c("pH","OM", "NO3","NH4"),
-#     method = "pearson", 
-#     geom = "tile", 
-#     hc.order = FALSE, 
-#     col_palette = color,
-#     invert_axes = TRUE,
-#     show_labels = FALSE,
-#     level = "phylum",
-#     taxonomy_db = "unite",
-#     pval_threshold= 0.05)
-#
+#' @examples 
+#' 
+#' env_table_bac <- metadata_bacteria %>% 
+#'                 dplyr::select(SAMPLEID, pH:Arbus_per) %>% 
+#'                 remove_rownames() %>% 
+#'                 column_to_rownames(var = "SAMPLEID")
+#'                 
+#' corr_env_abund_plot(table = table_bac, 
+#'                     env_table = env_table_bac, 
+#'                     metadata = metadata_bacteria, 
+#'                     level = "phylum",  
+#'                     save_table = FALSE)
+#'
+#' corr_env_abund_plot(table = table_bac, 
+#'                     env_table = env_table_bac, 
+#'                     metadata = metadata_bacteria, 
+#'                     level = "phylum",  
+#'                     save_table = FALSE,
+#'                     geom="circle")                     
+#'  
+#'  
+#'  
+#'  
+
 corr_env_abund_plot <- function(table,
                                 env_table,
                                 metadata,

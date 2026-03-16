@@ -16,20 +16,22 @@
 #' @export
 #'
 #' @examples
-#' # Example using a data frame
-#' beta_test_table(table = table,
-#'                 metadata = metadata,
-#'                 formula_str = "metodo*edad",
-#'                 method = "euclidean",
+#' beta_test_table(table = table_bac, 
+#'                 metadata= metadata_bacteria,
+#'                 formula_str = "Type_of_soil*Treatment",
+#'                 method = "euclidean", 
 #'                 test = "permanova",
-#'                 permutations = 999,
-#'                 strata_var = "Individuo")
+#'                 permutations = 999)
+#' 
+#' beta_test_table(table = table_fung, 
+#'                 metadata= metadata_fungi,
+#'                 formula_str = "Type_of_soil*Treatment",
+#'                 method = "euclidean", 
+#'                 test = "permanova",
+#'                 permutations = 999)
 #'
-#' # Example using a matrix
-#' beta_test_table(table = matriz,
-#'                 metadata = metadata,
-#'                 formula_str = "Origen",
-#'                 test = "betadisper")
+#'
+#'
 beta_test_table <- function(table,
                             metadata,
                             formula_str,

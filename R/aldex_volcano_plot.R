@@ -17,18 +17,31 @@
 #' @export
 #'
 #' @examples
-#' aldex_volcano_plot(table = table,
-#'                     metadata = metadata,
-#'                     col_inf = "blue",
-#'                     col_sup = "red",
-#'                     col_cond = "metodo",
-#'                     type = "effect",
-#'                     threshold_lower = -1,
-#'                     threshold_upper = 1,
-#'                     cond = "kit",
-#'                     show_labels = TRUE)
+#' ##Filter metadata to retain only two conditions 
 #' 
+#' metadata_bacteria_compar <-  metadata_bacteria %>% 
+#' filter(Type_of_soil == "Roots" | Type_of_soil =="Rhizosphere")
 #' 
+#' table_bacteria_compar <- table_bacteria[match(metadata_bacteria_compar$SAMPLEID, colnames(table_bacteria))]
+#' 
+#' table_bac_compar <- merge_feature_taxonomy(table_bacteria_compar, 
+#'                                             taxonomy_bacteria)
+#' 
+#' aldex_volcano_plot(table = table_bac_compar, 
+#'                    metadata = metadata_bacteria_compar,
+#'                    col_cond = "Type_of_soil",
+#'                    type = "volcano" )
+#' 
+#' metadata_fungi_compar <-  metadata_fungi %>% 
+#' filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Rhizosphere")
+#'
+#' table_fungi_compar <- table_fung[match(metadata_fungi_compar$SAMPLEID, colnames(table_fung))]
+#'
+#' table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
+#' aldex_heatmap_plot(table = table_fung_compar, 
+#'                   metadata = metadata_fungi_compar,
+#'                   col_cond = "Type_of_soil")
+
 aldex_volcano_plot <- function(table,
                                metadata,
                                col_cond,

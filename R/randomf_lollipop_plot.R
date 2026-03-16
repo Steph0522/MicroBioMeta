@@ -11,17 +11,16 @@
 #' @return A lollipop plot showing top important features from random forest analysis.
 #' @export
 #'
-#' @examples  randomf_lollipop_plot(table= table_taxa3,
-#'                                   metadata= metadata %>% drop_na(),
-#'                                   variable_to_predict = "SITIO",
-#'                                   col_palette = c("red", "blue", "green"),
-#'                                   top_n = 20,
-#'                                   size = 6)
-#'
-#' randomf_lollipop_plot(table = otu_table, 
-#'                      metadata = sample_metadata,
-#'                      variable_to_predict = "season",
-#'                      legend_figure = "Top important features (Random Forest)")
+#' @examples  
+#' randomf_lollipop_plot(table = table_bac, 
+#'                       metadata = metadata_bacteria, top_n = 10, 
+#'                       variable_to_predict = "Type_of_soil")                      
+#'                      
+#'                      
+#'                      
+#'                      
+#'                      
+#'                      
 randomf_lollipop_plot <- function(table,
                                   metadata,
                                   top_n = 15,

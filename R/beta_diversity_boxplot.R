@@ -20,14 +20,25 @@
 #' @export
 #' 
 #' @examples
-#' beta_diversity_boxplot(table = table,
-#'                        metadata = metadata,
-#'                        comparison_condition1 = c("fenol_vs_kit"),  
-#'                        condition1_col = "metodo",
-#'                        condition2_col = "edad",
+#' beta_diversity_boxplot(table = table_bac,
+#'                        metadata = metadata_bacteria,
+#'                        condition1_col = "Type_of_soil",
+#'                        condition2_col = "Treatment",
 #'                        title_axis_x = "Samples",
-#'                        partition = "shared", family = "sorensen")
+#'                        partition = "shared", family = "jaccard", 
+#'                        save_table = FALSE)
 #' 
+#' 
+#' beta_diversity_boxplot(table = table_fung,
+#'                        metadata = metadata_fungi,
+#'                        condition1_col = "Type_of_soil",
+#'                        condition2_col = "Treatment",
+#'                        title_axis_x = "Samples",
+#'                        partition = "shared", 
+#'                        family = "jaccard", 
+#'                        save_table = FALSE)
+#'                        
+#'                        
 beta_diversity_boxplot <- function(
     table, metadata,
     comparison_condition1 = NULL,
@@ -123,7 +134,8 @@ beta_diversity_boxplot <- function(
       ggplot2::theme(
         axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "serif"),
         axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
-        axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+        #axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
+        axis.text.x = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "serif"),
         strip.text = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold"),
         legend.position = "right",
