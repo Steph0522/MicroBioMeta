@@ -32,30 +32,21 @@
 #' @export
 #' @examples
 #' 
-#'alpha_diversity_plot(table = table %>% remove_rownames(),
-#'                     metadata = metadata,
-#'                     type = "barplot",
-#'                     fill_col = "metodo",
-#'                     #custom_palette = c("red", "blue"),
-#'                     x_col = "metodo",
-#'                     facet_orientation = "horizontal",
-#'                     #   facet_by = "edad",
-#'                     facet_by2 = "estructura",
-#'                     free_y = T,
-#'                     legend_position = "top",
-#'                     stat = "t.test")
-#'
-#'
-#' library(vegan)
-#' data(dune)
-#' data(dune.env)
-#' alpha_hill_plot(
-#'     table = t(dune),
-#'     metadata = dune.env %>% tibble::rownames_to_column("SampleID"),
-#'     x_col = "Management",
-#'     fill_col = "Management",
-#'     facet_by = "Use",
-#'     facet_orientation = "vertical" )
+#' alpha_diversity_plot(table = table_bac, 
+#'                     metadata = metadata_bacteria,
+#'                     x_col = "Treatment",
+#'                     fill_col = "Treatment",
+#'                     facet_by = "Type_of_soil",
+#'                     facet_orientation = "horizontal",stat = "anova",
+#'                     save_table = FALSE)
+#'                     
+#' alpha_diversity_plot(table = table_fung, 
+#'                     metadata = metadata_fungi,
+#'                     x_col = "Treatment",
+#'                     fill_col = "Treatment",
+#'                     facet_by = "Type_of_soil",
+#'                     facet_orientation = "horizontal",stat = "anova",
+#'                     save_table = FALSE)
 #'     
 #'     
 alpha_diversity_plot <- function(
@@ -302,6 +293,8 @@ alpha_diversity_plot <- function(
       })
     
     p <- p + p_vals_layers
+  }
+  
     # Añadir etiquetas tipo A, B, C... a los paneles
     gb <- ggplot2::ggplot_build(p)
     lay <- gb$layout$layout
@@ -317,7 +310,7 @@ alpha_diversity_plot <- function(
       size= 6,
       inherit.aes = FALSE
     )
-  }
+  
   
   return(p)
 }

@@ -11,15 +11,12 @@
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples
-#' library(vegan)
-#' data(dune)
-#' data(dune.env)
-#' alpha_hill_corplot(
-#'     table = t(dune),
-#'     metadata = dune.env %>% tibble::rownames_to_column("SampleID"),
-#'     facet_orientation = "horizontal"
-#' )
-
+#' alpha_hill_corrplot(table = table_bac)
+#'
+#' alpha_hill_corrplot(table = table_fung)
+#'
+#'
+#'
 alpha_hill_corrplot <- function(table,
                                 facet_orientation = "horizontal",
                                 plot_title = "default") {

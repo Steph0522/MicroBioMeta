@@ -30,29 +30,25 @@
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
-#' @examples alpha_hill_plot(table = table_taxa,
-#'                            metadata = metadata,
-#'                            type = "boxplot",
-#'                            fill_col = "SITIO",
-#'                            x_col = "SITIO",
-#'                            facet_orientation = "horizontal",
-#                             facet_by = "edad",
-#                             facet_by2 = "estructura",
-#'                            free_y = T,
-#'                            legend_position = "top",
-#'                            stat = "kruskal.test")
-#' 
-#' library(vegan)
-#' data(dune)
-#' data(dune.env)
-#' alpha_hill_plot(
-#'     table = t(dune),
-#'     metadata = dune.env %>% tibble::rownames_to_column("SampleID"),
-#'     x_col = "Management",
-#'     fill_col = "Management",
-#'     facet_by = "Use",
-#'     facet_orientation = "vertical"
-#' )
+#' @examples 
+#' alpha_hill_plot(table = table_bac, 
+#'                 metadata = metadata_bacteria,
+#'                 x_col = "Treatment",
+#'                 fill_col = "Treatment",
+#'                 facet_by = "Type_of_soil",
+#'                 facet_orientation = "vertical",
+#'                 save_table = FALSE)
+#'
+#' alpha_hill_plot(table = table_fung, 
+#'                metadata = metadata_fungi,
+#'                x_col = "Treatment",
+#'                fill_col = "Treatment",
+#'                facet_by = "Type_of_soil",
+#'                facet_orientation = "horizontal",
+#'                save_table = FALSE)
+#'
+#'
+#'
 alpha_hill_plot <- function(
     table,
     metadata,
@@ -274,6 +270,8 @@ alpha_hill_plot <- function(
       })
     
     p <- p + p_vals_layers
+    }
+  
     # Añadir etiquetas tipo A, B, C... a los paneles
     gb <- ggplot2::ggplot_build(p)
     lay <- gb$layout$layout
@@ -289,7 +287,7 @@ alpha_hill_plot <- function(
       size= 6,
       inherit.aes = FALSE
     )
-  }
+  
   
   return(p)
 }

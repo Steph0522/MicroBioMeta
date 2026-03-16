@@ -20,20 +20,24 @@
 #' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
 #'
-#' @examples abundance_heatmap_plot(table = table_taxonomy, 
-#'                        metadata = metadata.gestacion.recto,
-#'                        condition1 = "poblacion",
-#'                        condition2 = "temporada",
-#'                        condition3 = "sexo",
-#'                        top_n = 50,
-#'                        cluster = TRUE,
+#' @examples
+#' abundance_heatmap_plot(table = table_bac,
+#'                        metadata = metadata_bacteria,
+#'                        top_n = 30,
 #'                        show_column_names = FALSE,
-#'                        name_legend_condition1 = "Altitude",
-#'                        name_legend_condition2 = "Season",
-#'                        name_legend_condition3 = "Sex",
-#'                        colors_condition1 = c("#676778","#D9D9C2"),
-#'                        colors_condition2 = c("#0E6251", "#1B5E20"),
-#'                        colors_condition3 = c("#5D3277","#AF6502"))
+#'                        condition1 = "Type_of_soil", 
+#'                        condition2 = "Treatment")
+#'                      
+#' abundance_heatmap_plot(table = table_fung,
+#'                        metadata = metadata_fungi,
+#'                        top_n = 30,
+#'                        show_column_names = FALSE,
+#'                        condition1 = "Type_of_soil",
+#'                        condition2 = "Treatment")
+#' 
+#' 
+#' 
+
 
 abundance_heatmap_plot <- function(table,
                                    metadata,
