@@ -27,19 +27,15 @@
 #' @examples
 #' \dontrun{
 #' cca_rda_biplot(
-#'   table                = table,
-#'   env_data             = env_data,
-#'   env_vars             = c("pH", "Nitrogen", "Calcium"),
-#'   metadata             = metadata,
-#'   group_col            = "metodo",
+#'   table                = table_bac,
+#'   env_data             = env_table_bac,
+#'   metadata             = metadata_bacteria,
+#'   env_vars             = c("pH", "TN", "WHC", "EC", "Clay"),
 #'   analysis             = "RDA",
 #'   show_all_env_vectors = TRUE,
-#'   legend_title         = "Method",
-#'   group_colors         = c("red", "blue"),
-#'   title                = "CCA/RDA Biplot"
+#'   group_col            = "Type_of_soil"
 #' )
 #' }
-
 cca_rda_biplot <- function(table,
                        env_data,
                        env_vars,
@@ -67,6 +63,7 @@ cca_rda_biplot <- function(table,
   
   
   # 2. Process metadata and handle hash IDs
+    rownames(metadata) <- metadata$SampleID
   if (!is.null(metadata)) {
     metadata <- as.data.frame(metadata)
     
@@ -106,6 +103,8 @@ cca_rda_biplot <- function(table,
 
   # 4. Transform species data
   spp_hell <- vegan::decostand(spp_table, method = method)
+  # Align environmental data with species table
+  env_data <- env_data[rownames(spp_table), , drop = FALSE]
   
   # 2. Scale env data
   if (scale_env) {
@@ -114,6 +113,15 @@ cca_rda_biplot <- function(table,
     env_scaled <- env_data[, env_vars]
   }
   
+  
+  # Align environmental data with species table
+  if (!all(rownames(spp_table) %in% rownames(env_data))) {
+    stop("Some samples in the species table are missing in env_data")
+  }
+  
+  env_data <- env_data[rownames(spp_table), , drop = FALSE]
+  
+ 
   # 3. Verificar correspondencia de filas
   stopifnot(identical(rownames(spp_table), rownames(env_data)))
   

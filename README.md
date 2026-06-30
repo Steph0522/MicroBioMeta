@@ -33,15 +33,9 @@ install.packages("devtools")
 library(devtools)
 install_github("Steph0522/MicroBioMeta")
 library(MicroBioMeta)
-
-or with BiocManager:
-
-``` r
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-}
-BiocManager::install("Steph0522/MicroBioMeta")
 ```
+
+
 
 ## :green_book: Examples
 
