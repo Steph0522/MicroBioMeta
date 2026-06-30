@@ -12,15 +12,12 @@
 #' @export
 #'
 #' @examples
-#' library(vegan)
-#' data(dune)
-#' data(dune.env)
-#' # Example usage (note: taxonomy not provided in this dataset)
-#' alpha_hill_corplot(
-#'     table = t(dune),
-#'     metadata = dune.env %>% tibble::rownames_to_column("SampleID"),
-#'     facet_orientation = "horizontal"
+#' \dontrun{
+#' merged <- merge_feature_taxonomy(
+#'   table    = feature_table,
+#'   taxonomy = taxonomy_df
 #' )
+#' }
 
 merge_feature_taxonomy <- function(table, taxonomy) {
   # Ensure both inputs are data frames

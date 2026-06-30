@@ -24,7 +24,11 @@
 #' @param show_labels Logical. If TRUE, displays correlation values on
 #'   the plot.
 #' @param col_palette Character vector defining the color palette for correlation
-#'   values. If NULL, a blue–white–red palette is used.
+#'   values. If NULL, the palette is chosen via \code{diverging_palette}.
+#' @param diverging_palette Character. Name of a built-in colorblind-friendly
+#'   diverging palette to use when \code{col_palette} is NULL. One of
+#'   \code{"BuOr"} (blue-orange, default), \code{"BuVm"} (blue-vermillion),
+#'   \code{"BuPk"} (blue-pink), \code{"GnPk"} (green-pink).
 #' @param invert_axes Logical. If TRUE, swaps x and y axes in the plot.
 #' @param taxonomy_db Character. Taxonomic database used for annotation and
 #'   parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").
@@ -41,34 +45,39 @@
 #' @return A ggplot2 object.
 #' @export
 #'
-#' @examples color<- c("pink","white","purple")
-#    corr_env_abund_plot(table = table, 
-#     env_table = env_data,
-#     metadata=metadata,
-#     cond_vect= c("pH","OM", "NO3","NH4"),
-#     method = "pearson", 
-#     geom = "tile", 
-#     hc.order = FALSE, 
-#     col_palette = color,
-#     invert_axes = TRUE,
-#     show_labels = FALSE,
-#     level = "phylum",
-#     taxonomy_db = "unite",
-#     pval_threshold= 0.05)
-#
+#' @examples
+#' \dontrun{
+#' corr_env_abund_plot(
+#'   table          = table,
+#'   env_table      = env_data,
+#'   metadata       = metadata,
+#'   cond_vect      = c("pH", "OM", "NO3", "NH4"),
+#'   method         = "pearson",
+#'   geom           = "tile",
+#'   hc.order       = FALSE,
+#'   col_palette    = c("pink", "white", "purple"),
+#'   invert_axes    = TRUE,
+#'   show_labels    = FALSE,
+#'   level          = "phylum",
+#'   taxonomy_db    = "unite",
+#'   pval_threshold = 0.05
+#' )
+#' }
+
 corr_env_abund_plot <- function(table,
                                 env_table,
-                                metadata,
-                                cond_vect= NULL,
+                                metadata = NULL,
+                                cond_vect = NULL,
                                 method = "spearman",
                                 hc.order = TRUE,
                                 geom = c("tile", "circle"),
                                 show_labels = TRUE,
                                 col_palette = NULL,
+                                diverging_palette = "BuOr",
                                 invert_axes = TRUE,
                                 taxonomy_db = "silva",
                                 level = "genus",
-                                pval_threshold= NULL,
+                                pval_threshold = NULL,
                                 save_table = TRUE,
                                 table_filename = "corr.txt") {
   geom <- match.arg(geom)
@@ -94,17 +103,25 @@ corr_env_abund_plot <- function(table,
     dplyr::filter(taxonomy != "d__Eukaryota")
   
   
-  #muestras entre table, env_table y metadata
-  common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata[[1]]))
-  table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
-  env_table <- env_table[common_samples, , drop = FALSE]
-  metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
-  rownames(metadata) <- metadata[[1]]
-  
-  # --- Ordenar columnas y empatar con metadata ---
-  table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
-  ordered_samples <- intersect(metadata[, 1], colnames(table)[-1])
-  table <- table[, c("taxonomy", ordered_samples)]
+  # Align samples across table, env_table, and (optionally) metadata
+  if (!is.null(metadata)) {
+    metadata <- as.data.frame(metadata)
+    common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata[[1]]))
+    table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
+    env_table <- env_table[common_samples, , drop = FALSE]
+    metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
+    rownames(metadata) <- metadata[[1]]
+    table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
+    ordered_samples <- intersect(metadata[, 1], colnames(table)[-1])
+    table <- table[, c("taxonomy", ordered_samples)]
+  } else {
+    common_samples <- intersect(colnames(table), rownames(env_table))
+    table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
+    env_table <- env_table[common_samples, , drop = FALSE]
+    table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
+    ordered_samples <- common_samples
+    table <- table[, c("taxonomy", ordered_samples)]
+  }
   
   # --- Asegurar identificadores únicos ---
   if (!is.null(rownames(table))) {
@@ -140,10 +157,10 @@ corr_env_abund_plot <- function(table,
   
   # --- Colapsar correctamente taxones repetidos ---
   highres <- highres %>%
-    group_by(taxonomy) %>%
-    summarise(
+    dplyr::group_by(taxonomy) %>%
+    dplyr::summarise(
       OTU_ID = paste(unique(OTU_ID), collapse = ";"),
-      across(where(is.numeric), sum, na.rm = TRUE),
+      dplyr::across(dplyr::where(is.numeric), sum, na.rm = TRUE),
       .groups = "drop"
     )
   
@@ -302,26 +319,32 @@ corr_env_abund_plot <- function(table,
   
   # 1️⃣ Convertir nombres de fila en columna OTU_ID
   table <- table %>%
-    rownames_to_column(var = "OTU_ID")
-  
+    tibble::rownames_to_column(var = "OTU_ID")
+
   # 2️⃣ Crear una nueva tabla llamada taxon con OTU_ID y taxonomy
   taxon <- table %>%
-    select(OTU_ID, taxonomy)
-  
+    dplyr::select(OTU_ID, taxonomy)
+
   # 3️⃣ Eliminar la columna taxonomy de table
   table <- table %>%
-    select(-taxonomy)
-  
+    dplyr::select(-taxonomy)
+
   # 4️⃣ Convertir OTU_ID nuevamente en nombres de fila
   table <- table %>%
-    column_to_rownames(var = "OTU_ID")
+    tibble::column_to_rownames(var = "OTU_ID")
   
   
   
   # Paleta por defecto
   if (is.null(col_palette)) {
-    col_palette <-
-      grDevices::colorRampPalette(c("blue", "white", "red"))(200)
+    preset <- .mbm_div_palettes[[diverging_palette]]
+    if (is.null(preset)) {
+      warning("Unknown diverging_palette '", diverging_palette,
+              "'. Using 'BuOr'. Valid options: ",
+              paste(names(.mbm_div_palettes), collapse = ", "))
+      preset <- .mbm_div_palettes[["BuOr"]]
+    }
+    col_palette <- grDevices::colorRampPalette(preset)(200)
   }
   # --- Filas comunes
   common_samples <- base::intersect(colnames(table), rownames(env_table))
@@ -446,17 +469,18 @@ corr_env_abund_plot <- function(table,
   }
   
   # Colores y tema
-  p <- p + ggplot2::scale_fill_gradientn(colours = col_palette,
-                                         limits = c(-1, 1),
-                                         name = "Correlation") +
-    ggplot2::theme_minimal(base_size = 12) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(
-        angle = 45,
-        vjust = 1,
-        hjust = 1
-      ),
-      axis.text.y = ggplot2::element_text(size = 10)
+  p <- p +
+    ggplot2::scale_fill_gradientn(colours = col_palette,
+                                  limits = c(-1, 1),
+                                  name = "Correlation") +
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        axis.text.x = ggplot2::element_text(angle = 45, vjust = 1,
+                                            hjust = 1, size = 12,
+                                            color = "black"),
+        panel.grid.major = ggplot2::element_blank()
+      )
     ) +
     ggplot2::coord_fixed()
   

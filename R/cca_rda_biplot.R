@@ -18,25 +18,28 @@
 #' @param analysis Either `"CCA"` or `"RDA"` (default is `"CCA"`).
 #' @param seed Random seed for reproducibility (default is `126`).
 #' @param scale_arrows Numeric value to scale environmental vectors in the plot.
-#' @param title Optional plot title.
+#' @param title Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
+#'   \code{NULL} shows no title; any other string is used as-is.
 #'
 #' @return A `ggplot` object displaying the biplot with sample scores and environmental vectors.
 #' @export
 #' 
 #' @examples
-#'cca_rda_biplot(table = table,
-#'               env_data = env_data,
-#'               env_vars = c("pH", "Nitrogen", "Calcium"),
-#'               metadata = metadata ,
-#'               group_col = "metodo",
-#'               analysis = "RDA",
-#'               show_all_env_vectors = TRUE,
-#'               legend_title = "Método",
-#'               group_colors = c("red", "blue"),
-#'               title = "title")
-#'
-#'
-#'
+#' \dontrun{
+#' cca_rda_biplot(
+#'   table                = table,
+#'   env_data             = env_data,
+#'   env_vars             = c("pH", "Nitrogen", "Calcium"),
+#'   metadata             = metadata,
+#'   group_col            = "metodo",
+#'   analysis             = "RDA",
+#'   show_all_env_vectors = TRUE,
+#'   legend_title         = "Method",
+#'   group_colors         = c("red", "blue"),
+#'   title                = "CCA/RDA Biplot"
+#' )
+#' }
+
 cca_rda_biplot <- function(table,
                        env_data,
                        env_vars,
@@ -51,11 +54,7 @@ cca_rda_biplot <- function(table,
                        analysis = "CCA",
                        seed = 126,
                        scale_arrows = 1,
-                       title = NULL) {
-  require(vegan)
-  require(ggplot2)
-  require(dplyr)
-  
+                       title = "auto") {
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
@@ -138,7 +137,7 @@ cca_rda_biplot <- function(table,
     sig_vars <- names(which(fit$vectors$pvals < pval_threshold))
     if (length(sig_vars) == 0) {
       warning("No hay variables ambientales significativas (p <", pval_threshold, ")")
-      return(ggplot() + theme_void() + ggtitle("Sin variables significativas"))
+      return(ggplot2::ggplot() + ggplot2::theme_void() + ggplot2::ggtitle("Sin variables significativas"))
     }
     vars_to_plot <- sig_vars
   }
@@ -160,8 +159,7 @@ cca_rda_biplot <- function(table,
     site_scores <- merge(site_scores, metadata[, c("SampleID", group_col)], by = "SampleID", all.x = TRUE)
     colnames(site_scores)[colnames(site_scores) == group_col] <- "Group"
     
-    default_colors <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3",
-                        "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3")
+    default_colors <- .mbm_colors
     groups_present <- unique(site_scores$Group)
     
     if (is.null(group_colors)) {
@@ -172,28 +170,28 @@ cca_rda_biplot <- function(table,
     
     legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
     
-    plot <- ggplot(site_scores, aes_string(x = axis_names[1], y = axis_names[2], fill = "Group")) +
-      geom_point(size = 4, shape=21 ) +
-      scale_fill_manual(name = legend_name, values = group_colors)
+    plot <- ggplot2::ggplot(site_scores, ggplot2::aes_string(x = axis_names[1], y = axis_names[2], fill = "Group")) +
+      ggplot2::geom_point(size = 4, shape=21 ) +
+      ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
   } else {
-    plot <- ggplot(site_scores, aes_string(x = axis_names[1], y = axis_names[2])) +
-      geom_point(size = 4, shape=21)
+    plot <- ggplot2::ggplot(site_scores, ggplot2::aes_string(x = axis_names[1], y = axis_names[2])) +
+      ggplot2::geom_point(size = 4, shape=21)
   }
-  
+
   # 9. Añadir vectores ambientales
   plot <- plot +
-    geom_segment(
+    ggplot2::geom_segment(
       data = vectors_scores,
-      aes_string(x = 0, y = 0,
+      ggplot2::aes_string(x = 0, y = 0,
                  xend = paste0(axis_names[1], " * scale_arrows"),
                  yend = paste0(axis_names[2], " * scale_arrows")),
-      arrow = arrow(length = unit(0.2, "cm")),
+      arrow = ggplot2::arrow(length = grid::unit(0.2, "cm")),
       color = "black",
       inherit.aes = FALSE
     ) +
-    geom_text(
+    ggplot2::geom_text(
       data = vectors_scores,
-      aes_string(
+      ggplot2::aes_string(
         x = paste0(axis_names[1], " * scale_arrows"),
         y = paste0(axis_names[2], " * scale_arrows"),
         label = "Variable"
@@ -205,50 +203,36 @@ cca_rda_biplot <- function(table,
       vjust = -0.5,
       inherit.aes = FALSE
     ) +
-    coord_fixed(ratio = 1) +
-    theme_minimal() +
-    theme(
-      aspect.ratio = 1,
-      axis.text = element_text(size = 18),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      panel.border = element_rect(fill = NA, colour = "black", linewidth = 0.5)
-    ) #+
-    #geom_hline(yintercept = 0, color = "black") +
-    #geom_vline(xintercept = 0, color = "black")
-  
-  # 10. Escalar límites del gráfico
+    ggplot2::coord_fixed(ratio = 1)
+
+  # 10. Escalar límites del gráfico + tema unificado (una sola llamada)
   max_range <- max(abs(c(site_scores[[axis_names[1]]],
                          vectors_scores[[axis_names[1]]] * scale_arrows,
                          site_scores[[axis_names[2]]],
                          vectors_scores[[axis_names[2]]] * scale_arrows)))
   buffer <- 1.1
   plot <- plot +
-    scale_x_continuous(limits = c(-max_range, max_range) * buffer) +
-    scale_y_continuous(limits = c(-max_range, max_range) * buffer)+
-    theme_classic() +
-    theme(axis.text.x = element_text(color = "black", size = 12, family = "serif"),
-          axis.text.y = element_text(color = "black", size = 12, family = "serif"),
-          axis.title.x = element_text(color = "black", size = 14, family = "serif"),
-          axis.title.y = element_text(color = "black", size = 14, family = "serif"),
-          legend.text = element_text(color = "black", size = 12, family = "serif"),
-          legend.title = element_text(color = "black", size = 14, family = "serif", face = "bold"),
-          plot.title = element_text(color = "black", size = 16, family = "serif", face = "bold"),
-          legend.position = "right",
-          legend.box = "vertical",
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank())+
-    geom_vline(xintercept = 0, linetype = 2, color="#6a737d") +   #lines-cross
-    geom_hline(yintercept = 0, linetype = 2, color="#6a737d") +
-    
-    guides(
-      fill=guide_legend(title=legend_title))+#ylab("CAP2")+xlab("CAP1")+
-    theme(axis.text = element_text(color = "black", size = 12, family = "serif"))
-  
+    ggplot2::scale_x_continuous(limits = c(-max_range, max_range) * buffer) +
+    ggplot2::scale_y_continuous(limits = c(-max_range, max_range) * buffer) +
+    ggplot2::geom_vline(xintercept = 0, linetype = 2, color = "grey50") +
+    ggplot2::geom_hline(yintercept = 0, linetype = 2, color = "grey50") +
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        aspect.ratio     = 1,
+        legend.box       = "vertical",
+        panel.grid.major = ggplot2::element_blank(),
+        panel.border     = ggplot2::element_rect(fill = NA, colour = "black",
+                                                  linewidth = 0.5)
+      )
+    ) +
+    ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title))
+
   # 11. Título del gráfico
-  if (!is.null(title)) {
-    plot <- plot + ggtitle(title)
-  }
+  auto_title <- paste(toupper(analysis), "Biplot")
+  plot <- plot + ggplot2::labs(
+    title = if (identical(title, "auto")) auto_title else title
+  )
   
   return(plot)
 }

@@ -2,12 +2,12 @@ library(tidyverse)
 
 getwd()
 
-otu = read.delim("otutable_with_taxonomy.txt",
+otu = read.delim("tests/data/otutable_with_taxonomy.txt",
                  skip = 1,
                  row.names = 1)
 
 table = otu 
-metadata = read.delim("meta.txt", sep = "") %>% rename(SAMPLEID = "sample.id")
+metadata = read.delim("tests/data/meta.txt", sep = "") %>% rename(SAMPLEID = "sample.id")
 metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPLEID ==
                                                                             "NA")
 devtools::load_all()

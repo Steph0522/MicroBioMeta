@@ -72,7 +72,11 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{axis_y_title}{Title for the y-axis.}
 
-\item{free_y}{Logical. Wether if scales in y are free or not.}
+\item{free_y}{Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{TRUE}.}
+
+\item{table_filename}{Character. File path/name for the saved table. Default \code{"hill.txt"}.}
 }
 \value{
 A ggplot object showing alpha diversity with Hill numbers.
@@ -83,25 +87,15 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
-alpha_hill_plot(table = table_taxa,
-                           metadata = metadata,
-                           type = "boxplot",
-                           fill_col = "SITIO",
-                           x_col = "SITIO",
-                           facet_orientation = "horizontal",
-                           free_y = T,
-                           legend_position = "top",
-                           stat = "kruskal.test")
-
-library(vegan)
-data(dune)
-data(dune.env)
+\dontrun{
 alpha_hill_plot(
-    table = t(dune),
-    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
-    x_col = "Management",
-    fill_col = "Management",
-    facet_by = "Use",
-    facet_orientation = "vertical"
+  table           = table,
+  metadata        = metadata,
+  type            = "boxplot",
+  x_col           = "SITIO",
+  fill_col        = "SITIO",
+  legend_position = "top",
+  stat            = "kruskal.test"
 )
+}
 }

@@ -4,37 +4,42 @@
 #' @param metadata Data frame containing metadata for the samples.
 #' @param col_cond Name of the column in `metadata` that contains the experimental conditions.
 #' @param type Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.
-#' @param col_inf Color for points with effect size/difference lower than threshold (default for "effect" plot).
-#' @param col_sup Color for points with effect size/difference higher than threshold (default for "effect" plot).
+#' @param col_inf Color for points lower than threshold. Default `'#0072B2'` (Okabe-Ito blue).
+#' @param col_sup Color for points higher than threshold. Default `'#E69F00'` (Okabe-Ito orange).
 #' @param threshold_lower Lower threshold for effect size/difference (x-axis).
 #' @param threshold_upper Upper threshold for effect size/difference (x-axis).
 #' @param cond Name of the condition that appears first in `table` (used in plot labels).
 #' @param cutoff.pval p-value cutoff for significance (default = 0.05).
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
+#' @param save_table Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{TRUE}.
+#' @param table_filename Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.
 #'
 #' @return A `ggplot` object with the selected plot.
 #' @export
 #'
 #' @examples
-#' aldex_volcano_plot(table = table,
-#'                     metadata = metadata,
-#'                     col_inf = "blue",
-#'                     col_sup = "red",
-#'                     col_cond = "metodo",
-#'                     type = "effect",
-#'                     threshold_lower = -1,
-#'                     threshold_upper = 1,
-#'                     cond = "kit",
-#'                     show_labels = TRUE)
-#' 
-#' 
+#' \dontrun{
+#' aldex_volcano_plot(
+#'   table           = table,
+#'   metadata        = metadata,
+#'   col_cond        = "metodo",
+#'   type            = "effect",
+#'   col_inf         = "#0072B2",
+#'   col_sup         = "#E69F00",
+#'   threshold_lower = -1,
+#'   threshold_upper = 1,
+#'   cond            = "kit",
+#'   show_labels     = TRUE
+#' )
+#' }
+
 aldex_volcano_plot <- function(table,
                                metadata,
                                col_cond,
                                type = "volcano",
-                               col_inf = "blue",
-                               col_sup = "red",
+                               col_inf = "#0072B2",
+                               col_sup = "#E69F00",
                                threshold_lower = -1.5,
                                threshold_upper = 1.5,
                                cond = NULL,
@@ -47,12 +52,6 @@ aldex_volcano_plot <- function(table,
   # Verificar que type tiene un valor válido
   if (!type %in% c("effect", "volcano")) {
     stop("type must be either 'effect' or 'volcano'")
-  }
-  
-  # Verificar paquetes requeridos
-  # Cargar ggtext explícitamente
-  if (!require(ggtext, quietly = TRUE)) {
-    stop("Package 'ggtext' required for formatted text. Please install it.")
   }
   
   if (!requireNamespace("ALDEx2", quietly = TRUE)) {
@@ -172,12 +171,7 @@ aldex_volcano_plot <- function(table,
         y = expression("-Log"[10]~"p-value"),
         color = NULL
       ) +
-      ggplot2::theme_test() +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size =12, color = "black", family = "Times New Roman"),
-        axis.title = ggplot2::element_text(size = 12, color= "black", family = "Times New Roman"),
-        legend.position = "none"
-      ) +
+      .mbm_theme(legend_position = "none") +
       ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x))
     
     # Añadir etiquetas de taxones significativos
@@ -187,30 +181,36 @@ aldex_volcano_plot <- function(table,
           data = top_taxa,
           ggplot2::aes(label = taxa),
           color = "black",
-          fontfamily = "Times New Roman",
+          family = "serif",
           size = 3,
           vjust = -0.5,
           fontface = "italic"
         )
     }
-    
-    # Añadir etiquetas de condición con formato richtext
+
+    # Condition labels (plain annotate, no ggtext required)
     if (show_labels) {
       p <- p +
         ggplot2::annotate(
-          "richtext",
+          "text",
           x = threshold_lower,
           y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("<b style='color:", col_inf, "; font-family:Times New Roman; font-size:14pt;'>Lower in ", cond, "</b>"),
+          label = paste0("Lower in ", cond),
+          color = col_inf,
+          family = "serif",
+          fontface = "bold",
           size = 5,
           hjust = 1,
           vjust = 1
         ) +
         ggplot2::annotate(
-          "richtext",
+          "text",
           x = threshold_upper,
           y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("<b style='color:", col_sup, "; font-family:Times New Roman; font-size:14pt;'>Higher in ", cond, "</b>"),
+          label = paste0("Higher in ", cond),
+          color = col_sup,
+          family = "serif",
+          fontface = "bold",
           size = 5,
           hjust = 0,
           vjust = 1
@@ -267,12 +267,7 @@ aldex_volcano_plot <- function(table,
         y = expression("-Log"[10]~"p-value"),
         color = NULL
       ) +
-      ggplot2::theme_test() +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
-        axis.title = ggplot2::element_text(size = 12, color = "black", family = "Times New Roman"),
-        legend.position = "none"
-      )
+      .mbm_theme(legend_position = "none")
     
     # Añadir etiquetas de taxones
     if (nrow(top_taxa) > 0) {
@@ -281,35 +276,39 @@ aldex_volcano_plot <- function(table,
           data = top_taxa,
           ggplot2::aes(label = taxa),
           color = "black",
+          family = "serif",
           size = 3,
           vjust = -0.5,
-          fontfamily = "Times New Roman",
           fontface = "italic"
         )
     }
-    
-    # Añadir etiquetas de condición con formato richtext
+
+    # Condition labels
     p <- p +
       ggplot2::annotate(
-        "richtext",
+        "text",
         x = min(plot_data$diff.btw) + 2,
         y = max(plot_data$log_pvalue) * 0.95,
-        label = paste0("<b style='color:", col_inf, "'>Lower in ", cond, "</b>"),
+        label = paste0("Lower in ", cond),
         color = col_inf,
+        family = "serif",
+        fontface = "bold",
         size = 5,
         hjust = 1,
         vjust = 1
       ) +
       ggplot2::annotate(
-        "richtext",
+        "text",
         x = max(plot_data$diff.btw) - 2,
         y = max(plot_data$log_pvalue) * 0.95,
-        label = paste0("<b style='color:", col_sup, "'>Higher in ", cond, "</b>"),
+        label = paste0("Higher in ", cond),
         color = col_sup,
+        family = "serif",
+        fontface = "bold",
         size = 5,
         hjust = 0,
         vjust = 1
-      ) 
+      )
   }
   
   return(p)

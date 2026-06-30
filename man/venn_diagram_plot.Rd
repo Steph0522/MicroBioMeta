@@ -41,13 +41,14 @@ based on the user's preference. It includes additional customization options lik
 minimum prevalence filtering and custom group color scales (manual).
 }
 \examples{
-   venn_diagram_plot(table= table_taxa,
-                                metadata=metadata,
-                                merge_by = "ID.CAM",
-                                min_prevalence = 0,
-                                denom = "all",
-                                group_colors = c("blue", "yellow"),
-                                method = "ggvenn")
-                                
-
+\dontrun{
+venn_diagram_plot(
+  table          = table,
+  metadata       = metadata,
+  merge_by       = "ID.CAM",
+  min_prevalence = 0,
+  group_colors   = c("blue", "yellow"),
+  method         = "ggvenn"
+)
+}
 }

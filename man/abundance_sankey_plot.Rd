@@ -23,15 +23,20 @@ abundance_sankey_plot(
 
 \item{taxonomy_db}{Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").}
 }
+\value{
+Invisibly returns the Sankey diagram object and saves an HTML file.
+}
 \description{
 Generate a Sankey diagram from an OTU table with taxonomic information
 }
 \examples{
-abundance_sankey_plot(table= table_taxa,
-                                output_file <- file.path(getwd(), "sankey_scel_gg2.html"),
-                                maxn = 10,
-                                taxRanks = c("P", "C", "G", "S"),
-                                taxonomy_db = "silva")
- 
- 
+\dontrun{
+abundance_sankey_plot(
+  table        = table_taxa,
+  output_file  = file.path(getwd(), "sankey_output.html"),
+  maxn         = 10,
+  taxRanks     = c("P", "C", "G", "S"),
+  taxonomy_db  = "silva"
+)
+}
 }

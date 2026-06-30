@@ -14,45 +14,35 @@
 #' @param facet_by Optional. A metadata column to facet (e.g., Treatment, Site).
 #' @param facet_by2 Optional. A metadata column to double facet (e.g., Treatment, Site).
 #' @param facet_orientation Whether `facet_by` appears in columns ("horizontal", default) or rows ("vertical").
-#' @param fill_palette Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".
-#' @param custom_palette A vector of custom colors. Overrides `fill_palette` if provided.
+#' @param palette Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".
+#' @param group_colors A vector of custom colors. Overrides `palette` if provided.
 #' @param n_cols Number of columns in facet wrap (optional).
 #' @param n_rows Number of rows in facet wrap (optional).
 #' @param strip_color Background color of facet strips. Default: "grey".
 #' @param show_legend Logical. Show legend? Default: TRUE.
 #' @param legend_title Title for the legend.
 #' @param legend_position Position of the legend: "bottom", "top", "right", or "left". Default is "bottom".
-#' @param figure_title Title for the entire plot.
-#' @param axis_x_title Title for the x-axis.
-#' @param axis_y_title Title for the y-axis.
-#' @param free_y Logical. Wether if scales in y are free or not.
-
+#' @param title Title for the entire plot.
+#' @param x_axis_title Title for the x-axis.
+#' @param y_axis_title Title for the y-axis.
+#' @param free_y Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.
+#' @param save_table Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{TRUE}.
+#' @param table_filename Character. File path/name for the saved table. Default \code{"hill.txt"}.
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
-#' @examples alpha_hill_plot(table = table_taxa,
-#'                            metadata = metadata,
-#'                            type = "boxplot",
-#'                            fill_col = "SITIO",
-#'                            x_col = "SITIO",
-#'                            facet_orientation = "horizontal",
-#                             facet_by = "edad",
-#                             facet_by2 = "estructura",
-#'                            free_y = T,
-#'                            legend_position = "top",
-#'                            stat = "kruskal.test")
-#' 
-#' library(vegan)
-#' data(dune)
-#' data(dune.env)
+#' @examples
+#' \dontrun{
 #' alpha_hill_plot(
-#'     table = t(dune),
-#'     metadata = dune.env %>% tibble::rownames_to_column("SampleID"),
-#'     x_col = "Management",
-#'     fill_col = "Management",
-#'     facet_by = "Use",
-#'     facet_orientation = "vertical"
+#'   table           = table,
+#'   metadata        = metadata,
+#'   type            = "boxplot",
+#'   x_col           = "SITIO",
+#'   fill_col        = "SITIO",
+#'   legend_position = "top",
+#'   stat            = "kruskal.test"
 #' )
+#' }
 alpha_hill_plot <- function(
     table,
     metadata,
@@ -63,17 +53,17 @@ alpha_hill_plot <- function(
     facet_by = NULL,
     facet_by2 = NULL,  # Nuevo parámetro
     facet_orientation = "horizontal",
-    fill_palette = "colorb",
-    custom_palette = NULL,
+    palette = "colorb",
+    group_colors = NULL,
     n_cols = NULL,
     n_rows = NULL,
     strip_color = "grey",
     show_legend = TRUE,
-    figure_title = NULL,
+    title = NULL,
     legend_title = NULL,
     legend_position = "bottom",
-    axis_x_title = NULL,
-    axis_y_title = "Effective number of features",
+    x_axis_title = NULL,
+    y_axis_title = "Effective number of features",
     free_y = FALSE,
     save_table = TRUE,
     table_filename = "hill.txt") {
@@ -116,16 +106,11 @@ alpha_hill_plot <- function(
     values_to = "value"
   )
   
-  fill_scale <- if (!is.null(custom_palette)) {
-    ggplot2::scale_fill_manual(values = custom_palette)
+  fill_scale <- if (!is.null(group_colors)) {
+    ggplot2::scale_fill_manual(values = group_colors)
   } else {
-    switch(fill_palette,
-           "colorb" = ggplot2::scale_fill_manual(values = c(
-             "#F3C300", "#875692", "#F38400", "#A1CAF1", "#BE0032",
-             "#C2B280", "#848482", "#008856", "#E68FAC", "#0067A5",
-             "#F99379", "#604E97", "#F6A600", "#B3446C", "#DCD300",
-             "#882D17", "#8DB600", "#654522", "#E25822", "#2B3D26"
-           )),
+    switch(palette,
+           "colorb" = ggplot2::scale_fill_manual(values = .mbm_colors),
            "grey" = ggplot2::scale_fill_grey(start = 0.9, end = 0.3),
            "viridis" = ggplot2::scale_fill_viridis_d(option = "plasma"),
            "brewer" = ggplot2::scale_fill_brewer(palette = "Set2"),
@@ -228,30 +213,24 @@ alpha_hill_plot <- function(
     fill_scale +
     facet_config +
     ggplot2::labs(
-      title = figure_title,
-      x = axis_x_title,
-      y = axis_y_title,
+      title = title,
+      x = x_axis_title,
+      y = y_axis_title,
       fill = legend_title
     ) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      panel.grid = ggplot2::element_blank(),
-      panel.spacing = grid::unit(1, "lines"),
-      strip.text = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold"),
-      strip.background = ggplot2::element_rect(fill = strip_color),
-      axis.title.x = ggplot2::element_text(size = 14, color = "black", family = "serif"),
-      axis.title.y = ggplot2::element_text(size = 14, color = "black", family = "serif"),
-      axis.text.x = ggplot2::element_text(size = 12, colour = "black", family = "serif"),
-      axis.text.y = ggplot2::element_text(size = 12, color = "black", family = "serif"),
-      legend.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold"),
-      legend.text = ggplot2::element_text(size = 12, color = "black", family = "serif"),
-      legend.position = if (show_legend) legend_position else "none"
+    .mbm_theme(
+      legend_position = if (show_legend) legend_position else "none",
+      extra = ggplot2::theme(
+        panel.grid     = ggplot2::element_blank(),
+        panel.spacing  = grid::unit(1, "lines"),
+        strip.background = ggplot2::element_rect(fill = strip_color, color = "black")
+      )
     ) + aspect_ratio_theme 
   
   if (!is.null(stat)) {
     split_vars <- if (!is.null(facet_by)) c("q", facet_by) else "q"
     p_vals_layers <- results_largo %>%
-      dplyr::group_split(across(all_of(split_vars))) %>%
+      dplyr::group_split(dplyr::across(dplyr::all_of(split_vars))) %>%
       purrr::map(~ {
         y_val <- max(.x$value, na.rm = TRUE) * 0.98
         

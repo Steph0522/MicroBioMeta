@@ -7,13 +7,14 @@
 corr_env_abund_plot(
   table,
   env_table,
-  metadata,
+  metadata = NULL,
   cond_vect = NULL,
   method = "spearman",
   hc.order = TRUE,
   geom = c("tile", "circle"),
   show_labels = TRUE,
   col_palette = NULL,
+  diverging_palette = "BuOr",
   invert_axes = TRUE,
   taxonomy_db = "silva",
   level = "genus",
@@ -48,7 +49,12 @@ reorder taxa and environmental variables in the plot.}
 the plot.}
 
 \item{col_palette}{Character vector defining the color palette for correlation
-values. If NULL, a blue–white–red palette is used.}
+values. If NULL, the palette is chosen via \code{diverging_palette}.}
+
+\item{diverging_palette}{Character. Name of a built-in colorblind-friendly
+diverging palette to use when \code{col_palette} is NULL. One of
+\code{"BuOr"} (blue-orange, default), \code{"BuVm"} (blue-vermillion),
+\code{"BuPk"} (blue-pink), \code{"GnPk"} (green-pink).}
 
 \item{invert_axes}{Logical. If TRUE, swaps x and y axes in the plot.}
 
@@ -78,5 +84,21 @@ abundances and environmental variables, and visualizes the results as either a h
 (tile) or a bubble plot (circle).
 }
 \examples{
-color<- c("pink","white","purple")
+\dontrun{
+corr_env_abund_plot(
+  table          = table,
+  env_table      = env_data,
+  metadata       = metadata,
+  cond_vect      = c("pH", "OM", "NO3", "NH4"),
+  method         = "pearson",
+  geom           = "tile",
+  hc.order       = FALSE,
+  col_palette    = c("pink", "white", "purple"),
+  invert_axes    = TRUE,
+  show_labels    = FALSE,
+  level          = "phylum",
+  taxonomy_db    = "unite",
+  pval_threshold = 0.05
+)
+}
 }

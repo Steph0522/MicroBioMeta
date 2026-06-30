@@ -15,6 +15,8 @@ alpha_hill_corrplot(
 The first column must contain the OTUID, ASV, or species name.}
 
 \item{facet_orientation}{Whether \code{facet_by} appears in columns ("horizontal", default) or rows ("vertical").}
+
+\item{plot_title}{Character. Title for the plot. Default \code{"default"}.}
 }
 \value{
 A ggplot object showing alpha diversity with Hill numbers.
@@ -25,12 +27,10 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
-library(vegan)
-data(dune)
-data(dune.env)
-alpha_hill_corplot(
-    table = t(dune),
-    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
-    facet_orientation = "horizontal"
+\dontrun{
+alpha_hill_corrplot(
+  table             = table,
+  facet_orientation = "horizontal"
 )
+}
 }

@@ -39,6 +39,10 @@ beta_diversity_boxplot(
 \item{partition}{Type of beta diversity to compute: "shared", "turnover", or "nestedness".}
 
 \item{family}{Family for turnover/nestedness calculation: "sorensen" or "jaccard".}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the beta diversity table to disk. Default \code{TRUE}.}
+
+\item{table_filename}{Character. File path/name for the saved table. Default \code{"betadiv_table.txt"}.}
 }
 \value{
 A ggplot2 figure object.
@@ -50,12 +54,16 @@ needs to specify the metadata column(s) to be used for comparisons; the function
 constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
 }
 \examples{
-beta_diversity_boxplot(table = table,
-                       metadata = metadata,
-                       comparison_condition1 = c("fenol_vs_kit"),  
-                       condition1_col = "metodo",
-                       condition2_col = "edad",
-                       title_axis_x = "Samples",
-                       partition = "shared", family = "sorensen")
-
+\dontrun{
+beta_diversity_boxplot(
+  table                = table,
+  metadata             = metadata,
+  comparison_condition1 = c("fenol_vs_kit"),
+  condition1_col       = "metodo",
+  condition2_col       = "edad",
+  title_axis_x         = "Samples",
+  partition            = "shared",
+  family               = "sorensen"
+)
+}
 }

@@ -2,41 +2,66 @@
 % Please edit documentation in R/ancomb_plot.R
 \name{ancombc_plot}
 \alias{ancombc_plot}
-\title{barplot ancombc}
+\title{ANCOMBC2 differential abundance bar/heatmap plot}
 \usage{
 ancombc_plot(
   table,
   metadata,
   col_cond,
   prv_cut = 0.1,
+  p_adj_method = "holm",
   formula = NULL,
-  rand_formula = NULL
+  rand_formula = NULL,
+  ref_level = NULL,
+  diverging_palette = "BuOr"
 )
 }
 \arguments{
-\item{table, }{Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.}
+\item{table}{Data frame with taxa as rows and samples as columns. The last
+column must contain taxonomy strings (named "taxonomy", "Taxonomy",
+"taxon", "taxa", "Taxa", or "Taxon").}
 
-\item{formula, }{Formula of the model}
+\item{metadata}{Data frame with samples as rows. The first column must
+contain sample IDs that match the column names of \code{table}.}
 
-\item{conditions, }{Vector that defines the categories or classes to compare.}
+\item{col_cond}{Character. Name of the column in \code{metadata} that
+defines the grouping variable.}
 
-\item{effect, }{Effect size (default: >= 0.8)}
+\item{prv_cut}{Numeric. Prevalence cut-off passed to \code{ancombc2}
+(default \code{0.1}). Lower values retain more taxa.}
 
-\item{pvalue_BH, }{Value p-ajusted (optional)}
+\item{p_adj_method}{Character. Multiple-testing correction method passed to
+\code{ancombc2} (default \code{"holm"}). Use \code{"BH"} for a less
+strict correction when sample sizes are small.}
+
+\item{formula}{Character. Right-hand side of the fixed-effects formula
+passed to \code{ancombc2} (e.g. \code{"group + age"}). If \code{NULL}
+(default) \code{col_cond} is used alone.}
+
+\item{rand_formula}{Character. Random-effects formula passed to
+\code{ancombc2} for mixed models (e.g. \code{"~ 1 | subject_id"}).
+Default \code{NULL}.}
+
+\item{ref_level}{Character. Reference level for \code{col_cond}. If
+\code{NULL} (default) the first factor level is used as reference.
+Use this to change which group appears as the baseline in comparisons
+(e.g. \code{ref_level = "P2"} to compare all other groups against P2).}
 }
 \value{
-A plot with the deferentially abundant taxonomic groups between two categories or groups of samples.
+A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
+(\eqn{\geq}3 groups).
 }
 \description{
-This function generates a heatmap to visualize alpha diversity Hill numbers (q = 0, 1, 2)
-for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-It supports palette customization, faceting, and statistical comparison.
+Runs ANCOMBC2 on a counts table and metadata, then visualizes differentially
+abundant taxa. For two-group comparisons a bar plot of log-fold changes is
+returned; for three or more groups a heatmap is returned.
 }
 \examples{
-ancomb_plot(table = table,
-                     conditions = conditions,
-                     effect = 0.8,
-                     formula = formula, 
-                     pvalue_BH = NULL)
-
+\dontrun{
+ancombc_plot(
+  table    = feature_table,
+  metadata = sample_metadata,
+  col_cond = "Treatment"
+)
+}
 }

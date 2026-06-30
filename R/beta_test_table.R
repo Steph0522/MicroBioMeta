@@ -3,7 +3,7 @@
 #' This function create a table with the results of permanova or betadisper
 #' 
 #' 
-#' @param matriz Distance matrix or data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.
+#' @param table Distance matrix or data frame with taxonomy, where the columns are the samples and rows are ASVs or taxa.
 #' @param metadata Data frame of characteristics or important information of the samples
 #' @param formula_str Model formula
 #' @param method Method for calculate pairwise distances of a matrix
@@ -16,20 +16,26 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Example using a data frame
-#' beta_test_table(table = table,
-#'                 metadata = metadata,
-#'                 formula_str = "metodo*edad",
-#'                 method = "euclidean",
-#'                 test = "permanova",
-#'                 permutations = 999,
-#'                 strata_var = "Individuo")
+#' beta_test_table(
+#'   table       = table,
+#'   metadata    = metadata,
+#'   formula_str = "metodo*edad",
+#'   method      = "euclidean",
+#'   test        = "permanova",
+#'   permutations = 999,
+#'   strata_var  = "Individuo"
+#' )
 #'
-#' # Example using a matrix
-#' beta_test_table(table = matriz,
-#'                 metadata = metadata,
-#'                 formula_str = "Origen",
-#'                 test = "betadisper")
+#' # Example using a distance matrix
+#' beta_test_table(
+#'   table       = dist_matrix,
+#'   metadata    = metadata,
+#'   formula_str = "Origen",
+#'   test        = "betadisper"
+#' )
+#' }
 beta_test_table <- function(table,
                             metadata,
                             formula_str,
@@ -41,15 +47,15 @@ beta_test_table <- function(table,
   
   test <- match.arg(test)
   
-  # --- Aceptar también data.frame como matriz ---
+  # --- Aceptar tambien data.frame como matriz ---
   if (is.data.frame(table)) {
-    # Si la última columna parece taxonomía, eliminarla
+    # Si la ultima columna parece taxonomia, eliminarla
     tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
     if (length(tax_cols) > 0) {
       table <- table[, -tax_cols[1], drop = FALSE]
     }
     
-    # Convertir solo columnas numéricas
+    # Convertir solo columnas numericas
     num_cols <- sapply(table, is.numeric)
     if (!all(num_cols)) {
     }
@@ -58,7 +64,7 @@ beta_test_table <- function(table,
     stop("'table' must be a matrix or dataframe")
   }
   
-  # --- Detectar orientación ---
+  # --- Detectar orientacion ---
   if (ncol(table) == nrow(metadata)) {
     table <- t(table)
   } else if (nrow(table) != nrow(metadata)) {
@@ -77,7 +83,7 @@ beta_test_table <- function(table,
   strata <- NULL
   if (!is.null(strata_var)) {
     if (!strata_var %in% colnames(metadata)) {
-      stop(paste("La variable strata", strata_var, "no está en metadata"))
+      stop(paste("La variable strata", strata_var, "no esta en metadata"))
     }
     strata <- metadata[[strata_var]]
   }
@@ -107,7 +113,7 @@ beta_test_table <- function(table,
     rownames(tabla) <- NULL
   }
   
-  # --- Formato numérico ---
+  # --- Formato numerico ---
   tabla <- tabla %>%
     dplyr::mutate(across(where(is.numeric), ~ round(., decimales))) %>%
     dplyr::mutate(across(everything(), as.character)) %>%
@@ -134,7 +140,7 @@ beta_test_table <- function(table,
                              )
   )
   
-  # --- Líneas bajo encabezado ---
+  # --- Lineas bajo encabezado ---
   tab <- tab %>%
     ggpubr::tab_add_hline(at.row = 1, row.side = "top", linewidth = 4) %>%
     ggpubr::tab_add_hline(at.row = 2, row.side = "top", linewidth = 4)

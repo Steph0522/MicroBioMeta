@@ -35,6 +35,8 @@ beta_div_plot(
 
 \item{legend_title}{Optional legend title.}
 
+\item{arrows_size}{Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.}
+
 \item{top_n}{Number of top contributing taxa to display as arrows in PCA.}
 }
 \value{
@@ -46,12 +48,14 @@ This function computes beta diversity using several distance metrics and ordinat
 of color and shape aesthetics. It also supports compositional transformation via ALDEx2.
 }
 \examples{
-     beta_div_plot(table = table_taxa,
-                              metadata = metadata1,
-                              distance = "aitchison",
-                              ordination = "NMDS",
-                              group_col  = "SITIO",
-                              top_n = 5,
-                              arrows = 100)
-
+\dontrun{
+beta_div_plot(
+  table      = table_taxa,
+  metadata   = metadata,
+  distance   = "aitchison",
+  ordination = "NMDS",
+  group_col  = "SITIO",
+  top_n      = 5
+)
+}
 }

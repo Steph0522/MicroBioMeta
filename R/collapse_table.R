@@ -22,13 +22,15 @@
 #' @return a table collapsed by taxonomic level
 #' @export
 #' @examples
+#' \dontrun{
 #' collapse_table(
-#'   table = table,
-#'   metadata = metadata,
-#'   level = "genus",
-#'   rel_abun = FALSE,
+#'   table      = table,
+#'   metadata   = metadata,
+#'   level      = "genus",
+#'   rel_abun   = FALSE,
 #'   export_txt = FALSE
 #' )
+#' }
 
 collapse_table <- function(table,
                           metadata,
@@ -99,7 +101,7 @@ collapse_table <- function(table,
   # --- Eliminar columna depth ---
   table_final <-
     table_final[, c("OTU_ID", "taxonomy", ordered_samples)]
-  table_final <- column_to_rownames(table_final, "OTU_ID")
+  table_final <- tibble::column_to_rownames(table_final, "OTU_ID")
   
   # --- Convertir a abundancia relativa ---
   if (rel_abun) {
@@ -112,14 +114,14 @@ collapse_table <- function(table,
   # --- Formato largo ---
   table_long <- table_final %>%
     tidyr::pivot_longer(
-      cols = all_of(ordered_samples),
+      cols = dplyr::all_of(ordered_samples),
       names_to = "SAMPLEID",
       values_to = ifelse(rel_abun, "RelativeAbundance", "Counts")
     )
   
   # --- Exportar a TXT si se solicita ---
   if (export_txt) {
-    write.table(
+    utils::write.table(
       table_final,
       file = file_name,
       sep = "\t",

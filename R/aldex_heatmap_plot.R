@@ -1,94 +1,118 @@
-#' Heatmap ALDEx
+#' ALDEx2 differential abundance heatmap
 #'
-#' This function generates a heatmap to visualize alpha diversity Hill numbers (q = 0, 1, 2)
-#' for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-#' It supports palette customization, faceting, and statistical comparison.
+#' Runs ALDEx2 on a counts table and metadata and returns a ComplexHeatmap
+#' showing differentially abundant taxa, their effect size, p-value, and
+#' difference between groups.
 #'
-#' @param table, Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.
-#' @param conditions, Vector that defines the categories or classes to compare.
-#' @param effect, Effect size (default: >= 0.8)
-#' @param pvalue_BH, Value p-ajusted (optional)
+#' @param table Data frame with taxa as rows and samples as columns. Must
+#'   contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
+#'   "taxon", "taxa", "Taxa", or "Taxon").
+#' @param metadata Data frame with one row per sample. Must contain the column
+#'   specified in \code{col_cond}.
+#' @param col_cond Character. Name of the column in \code{metadata} that
+#'   defines the two groups to compare. Exactly two unique values are required.
+#' @param effect_threshold Numeric. Minimum absolute effect size to retain
+#'   (default \code{0.8}).
+#' @param pvalue_BH Numeric or NULL. Maximum BH-adjusted p-value to retain.
+#'   If NULL (default) only \code{effect_threshold} is applied.
+#' @param cluster_rows Logical. Cluster heatmap rows (default \code{FALSE}).
+#' @param cluster_columns Logical. Cluster heatmap columns (default \code{FALSE}).
+#' @param diverging_palette Character. Name of a built-in colorblind-friendly
+#'   diverging palette for the main heatmap body. One of \code{"BuOr"}
+#'   (blue-orange, default), \code{"BuVm"}, \code{"BuPk"}, \code{"GnPk"}.
+#'   The color range is computed automatically from the data.
+#' @param effect_colors Color function for effect size annotation.
+#' @param pvalue_colors Named list of colors for p-value annotation.
+#' @param col_higher Character. Color for bars where taxa are higher in the
+#'   first condition (default \code{"#E69F00"}, Okabe-Ito orange).
+#' @param col_lower Character. Color for bars where taxa are lower in the
+#'   first condition (default \code{"#0072B2"}, Okabe-Ito blue).
 #'
-#' @return A plot with the deferentially abundant taxonomic groups between two categories or groups of samples.
+#' @return A \code{ComplexHeatmap} object (returned invisibly; drawn as a
+#'   side effect).
 #' @export
 #'
-#' @examples aldex_plot(table = table,
-#'                      conditions = conditions,
-#'                      effect = 0.8,
-#'                      pvalue_BH = NULL)
+#' @examples
+#' \dontrun{
+#' aldex_heatmap_plot(
+#'   table            = feature_table,
+#'   metadata         = sample_metadata,
+#'   col_cond         = "Sample_type",
+#'   effect_threshold = 2
+#' )
+#' }
 #'
 
 aldex_heatmap_plot <- function(table,
                                metadata,
                                col_cond,
-                               effect_threshold = 0.8,
-                               pvalue_BH = NULL,
-                               cluster_rows = FALSE,
-                               cluster_columns = FALSE,
-                               heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("#cbdbcd", "#759c8a", "#00544d")),
-                               effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("lightsalmon4", "white", "lightseagreen")),
-                               pvalue_colors = list('p-value' = c("<0.001" = '#C70039', "<0.01" = '#FF5733', "<0.05" = "#FFC300", ">0.05" = "#F9E79F")),
-                               treatment_colors = c("Higher" = "#808000", "Lower" = "#1B5E20")) {
-  
-  #check complexheatmap package
-  
+                               effect_threshold  = 0.8,
+                               pvalue_BH         = NULL,
+                               cluster_rows      = FALSE,
+                               cluster_columns   = FALSE,
+                               diverging_palette = "BuOr",
+                               effect_colors = circlize::colorRamp2(
+                                 c(-1.5, 0, 1.5),
+                                 c("#0072B2", "white", "#E69F00")
+                               ),
+                               pvalue_colors = list(
+                                 "p-value" = c(
+                                   "<0.001" = "#0072B2",
+                                   "<0.01"  = "#56B4E9",
+                                   "<0.05"  = "#E69F00",
+                                   ">0.05"  = "grey85"
+                                 )
+                               ),
+                               col_higher = "#E69F00",   # Okabe-Ito orange
+                               col_lower  = "#0072B2") { # Okabe-Ito blue
+
+  # Check ComplexHeatmap
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
-    message("El paquete 'ComplexHeatmap' no está instalado. Instalando desde Bioconductor...")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) {
-      install.packages("BiocManager")
-    }
+    message("Package 'ComplexHeatmap' not installed. Installing from Bioconductor...")
+    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
     BiocManager::install("ComplexHeatmap")
   }
-  library(ComplexHeatmap)
-  
-  # Verifica que la columna de condición exista en metadata
-  if (!col_cond %in% colnames(metadata)) {
+
+  # Verify condition column
+  if (!col_cond %in% colnames(metadata))
     stop(paste("Column", col_cond, "not found in metadata."))
-  }
-  
-  # Extrae condiciones
-  conditions <- metadata[[col_cond]]
+
+  conditions       <- metadata[[col_cond]]
   unique_conditions <- unique(conditions)
-  if (length(unique_conditions) != 2) {
+  if (length(unique_conditions) != 2)
     stop("Exactly two conditions are required for the analysis.")
-  }
-  
-  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
-  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
-  
-  names(table)[ncol(table)] <- "taxonomy"
-  
-  # Prepara tabla de conteos
-  table <- table %>% rownames_to_column(var = "OTUID")
+
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table),
+                  ignore.case = TRUE)
+  if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  names(table)[tax_col] <- "taxonomy"
+
+  # Prepare count table
+  table        <- table %>% tibble::rownames_to_column(var = "OTUID")
   table_counts <- table %>%
     dplyr::select(-taxonomy) %>%
     tibble::column_to_rownames("OTUID")
-  
-  # Validar correspondencia condiciones vs muestras
-  if (length(conditions) != ncol(table_counts)) {
+
+  if (length(conditions) != ncol(table_counts))
     stop("Number of conditions does not match number of samples.")
-  }
-  
-  # Corre ALDEx2
+
+  # Run ALDEx2
   aldex_results <- ALDEx2::aldex(
-    reads = table_counts,
-    conditions = conditions,
-    mc.samples = 128,
-    effect = TRUE,
-    test = "t",
-    verbose = TRUE,
-    denom = "all",
+    reads                  = table_counts,
+    conditions             = conditions,
+    mc.samples             = 128,
+    effect                 = TRUE,
+    test                   = "t",
+    verbose                = TRUE,
+    denom                  = "all",
     include.sample.summary = FALSE
   )
-  
-  # Verifica que existan las columnas necesarias
-  if (!all(c("effect", "wi.eBH") %in% colnames(aldex_results))) {
+
+  if (!all(c("effect", "wi.eBH") %in% colnames(aldex_results)))
     stop("Columns 'effect' or 'wi.eBH' missing in ALDEx2 results.")
-  }
-  
-  # Filtra resultados según thresholds
+
+  # Filter by thresholds
   aldex_filtered <- aldex_results
-  
   if (effect_threshold > 0 && !is.null(pvalue_BH)) {
     aldex_filtered <- aldex_results %>%
       dplyr::filter(abs(effect) >= effect_threshold, wi.eBH <= pvalue_BH)
@@ -99,139 +123,148 @@ aldex_heatmap_plot <- function(table,
     aldex_filtered <- aldex_results %>%
       dplyr::filter(wi.eBH <= pvalue_BH)
   }
-  
-  # Prepare data for heatmap
+
+  # Prepare plot data
   aldex_plot <- aldex_filtered %>%
     tibble::rownames_to_column("OTUID") %>%
     dplyr::left_join(table %>% dplyr::select(OTUID, taxonomy), by = "OTUID") %>%
     dplyr::mutate(
       seccion = dplyr::case_when(
-        diff.btw < 0 ~ paste("Lower in", unique_conditions[2]),
+        diff.btw < 0 ~ paste("Lower in",  unique_conditions[2]),
         diff.btw > 0 ~ paste("Higher in", unique_conditions[1]),
-        TRUE ~ "No Change"
+        TRUE         ~ "No Change"
       ),
       taxonomy = dplyr::case_when(
-        grepl("g__[^;]*", taxonomy) &
-          !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
-        grepl("f__[^;]*", taxonomy) &
-          !grepl("f__uncultured|f__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)
-          ),
-        grepl("o__[^;]*", taxonomy) &
-          !grepl("o__uncultured|o__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)
-          ),
-        grepl("c__[^;]*", taxonomy) &
-          !grepl("c__uncultured|c__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)
-          ),
-        grepl("p__[^;]*", taxonomy) &
-          !grepl("p__uncultured|p__$", taxonomy) ~ paste0(
-            "other ",
-            stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)
-          ),
+        grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~
+          sub(".*g__([^;]*).*", "\\1", taxonomy),
+        grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~
+          paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
+        grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~
+          paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
+        grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~
+          paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
+        grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~
+          paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
         TRUE ~ "Unclassified"
       ),
       taxonomy = stringr::str_trim(taxonomy),
       taxonomy = make.unique(taxonomy),
-      p.value = dplyr::case_when(
+      p.value  = dplyr::case_when(
         wi.eBH <= 0.001 ~ "<0.001",
-        wi.eBH <= 0.01 ~ "<0.01",
-        wi.eBH <  0.05 ~ "<0.05",
-        TRUE ~ ">0.05"
+        wi.eBH <= 0.01  ~ "<0.01",
+        wi.eBH <  0.05  ~ "<0.05",
+        TRUE            ~ ">0.05"
       )
     ) %>%
     dplyr::arrange(diff.btw)
-  
+
   rab_cols <- paste0("rab.win.", unique_conditions)
   heat_data <- aldex_plot %>%
-    dplyr::select(taxonomy, all_of(rab_cols)) %>%
-    dplyr::rename_with(~ unique_conditions, all_of(rab_cols)) %>%
+    dplyr::select(taxonomy, dplyr::all_of(rab_cols)) %>%
+    dplyr::rename_with(~ unique_conditions, dplyr::all_of(rab_cols)) %>%
     tibble::column_to_rownames(var = "taxonomy") %>%
     as.matrix()
-  
-  treatment_colors_full <- setNames(
-    treatment_colors,
-    c(
-      paste("Higher in", unique_conditions[1]),
-      paste("Lower in", unique_conditions[2])
-    )
-  )
-  
-  barpl <- ComplexHeatmap::rowAnnotation(
-    "difference \nbetween groups" = ComplexHeatmap::anno_barplot(
-      aldex_plot$diff.btw,
-      which = "row",
-      gp = grid::gpar(fill = treatment_colors_full[aldex_plot$seccion]),
-      width = unit(4, "cm")
-    ),
-    show_annotation_name = TRUE,
-    annotation_name_gp = grid::gpar(fontsize = 12, fontfamily= "serif"),
-    annotation_name_rot = 0
-  )
-  
-  annP <- ComplexHeatmap::rowAnnotation(
-    "p-value" = aldex_plot$p.value,
-    simple_anno_size = unit(0.45, "cm"),
-    annotation_name_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "serif"),
-    annotation_legend_param = list(
-      title_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "serif"),
-      labels_gp = grid::gpar(fontsize = 12, fontfamily= "serif"),
-      direction = "vertical"
-    ),
-    col = pvalue_colors,
-    show_legend = TRUE,
-    gp = grid::gpar(col = "white"),
-    show_annotation_name = TRUE
-  )
-  
-  
 
+  # Compute diverging heatmap colors from actual data range
+  pal_colors <- .mbm_div_palettes[[diverging_palette]]
+  if (is.null(pal_colors)) {
+    warning("Unknown diverging_palette '", diverging_palette,
+            "'. Using 'BuOr'. Valid options: ",
+            paste(names(.mbm_div_palettes), collapse = ", "))
+    pal_colors <- .mbm_div_palettes[["BuOr"]]
+  }
+  data_max <- max(abs(heat_data), na.rm = TRUE)
+  heatmap_colors <- circlize::colorRamp2(
+    c(-data_max, 0, data_max),
+    pal_colors
+  )
+
+  # Barplot fill: direct assignment avoids fragile name-lookup
+  bar_fills <- ifelse(aldex_plot$diff.btw > 0, col_higher, col_lower)
+
+  # Shared gpar helpers (consistent font/color across all annotations)
+  gp_title  <- grid::gpar(fontsize = 12, fontface = "bold",
+                           fontfamily = "serif", col = "black")
+  gp_labels <- grid::gpar(fontsize = 11, fontfamily = "serif", col = "black")
+  gp_border <- grid::gpar(col = "black")
+
+  # --- Left annotation: Effect size ---
   left_annotation <- ComplexHeatmap::rowAnnotation(
     "Effect size" = aldex_plot$effect,
-    col = list("Effect size" = effect_colors),
-    simple_anno_size = unit(0.45, "cm"),
-    annotation_name_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "serif"),
+    col           = list("Effect size" = effect_colors),
+    simple_anno_size    = grid::unit(0.5, "cm"),
+    annotation_name_gp  = gp_title,
     annotation_legend_param = list(
-      title_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "serif"),
-      labels_gp = grid::gpar(fontsize = 12, fontfamily= "serif"),
+      title_gp  = gp_title,
+      labels_gp = gp_labels,
       direction = "vertical"
     ),
-    show_legend = TRUE,
-    gp = grid::gpar(col = "white"),
+    show_legend          = TRUE,
+    gp                   = gp_border,
     show_annotation_name = TRUE
   )
-  
-  
-  
+
+  # --- Right annotation 1: p-value tiles ---
+  annP <- ComplexHeatmap::rowAnnotation(
+    "p-value"        = aldex_plot$p.value,
+    simple_anno_size = grid::unit(0.5, "cm"),
+    annotation_name_gp = gp_title,
+    annotation_legend_param = list(
+      title_gp  = gp_title,
+      labels_gp = gp_labels,
+      direction = "vertical"
+    ),
+    col          = pvalue_colors,
+    show_legend  = TRUE,
+    gp           = gp_border,
+    show_annotation_name = TRUE
+  )
+
+  # --- Right annotation 2: difference barplot ---
+  barpl <- ComplexHeatmap::rowAnnotation(
+    "difference\nbetween groups" = ComplexHeatmap::anno_barplot(
+      aldex_plot$diff.btw,
+      which = "row",
+      gp    = grid::gpar(fill = bar_fills, col = "black"),
+      width = grid::unit(4, "cm")
+    ),
+    show_annotation_name = TRUE,
+    annotation_name_gp   = gp_title,
+    annotation_name_rot  = 0
+  )
+
+  # --- Main heatmap ---
   heatmap <- ComplexHeatmap::Heatmap(
     heat_data,
-    cluster_rows = cluster_rows,
-    cluster_columns = cluster_columns,
-    width = grid::unit(ncol(heat_data) * 7, "mm"),
-    height = grid::unit(nrow(heat_data) * 6, "mm"),
+    cluster_rows     = cluster_rows,
+    cluster_columns  = cluster_columns,
+    width            = grid::unit(ncol(heat_data) * 7, "mm"),
+    height           = grid::unit(nrow(heat_data) * 6, "mm"),
     column_names_rot = 90,
-    rect_gp = grid::gpar(col = "white", lwd = 2),
-    left_annotation = left_annotation,
-    right_annotation = barpl,
-    name = "Median clr value",
+    rect_gp          = grid::gpar(col = "black", lwd = 1),
+    left_annotation  = left_annotation,
+    name             = "Median\nclr value",
     heatmap_legend_param = list(
-      direction = "vertical",
-      labels_gp = grid::gpar(fontsize = 12, fontfamily= "serif"),
-      title_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "serif"),
-      legend_height = unit(2, "cm")
+      direction     = "vertical",
+      labels_gp     = gp_labels,
+      title_gp      = gp_title,
+      legend_height = grid::unit(2.5, "cm")
     ),
-    column_names_gp = grid::gpar(fontsize = 12, fontface = "bold", fontfamily= "serif"),
-    col = heatmap_colors,
-    row_names_gp = grid::gpar(fontsize = 12, fontface = "italic", fontfamily= "serif"),
+    column_names_gp  = gp_title,
+    col              = heatmap_colors,
+    row_names_gp     = grid::gpar(fontsize = 11, fontface = "italic",
+                                  fontfamily = "serif", col = "black"),
     show_heatmap_legend = TRUE
   )
-  
-  ComplexHeatmap::draw(heatmap,
-                       heatmap_legend_side = "right",
-                       annotation_legend_side = "right")
-  return(invisible(heatmap))
+
+  # Draw: main heatmap + p-value annotation + barplot side by side
+  ht_list <- heatmap + annP + barpl
+
+  ComplexHeatmap::draw(
+    ht_list,
+    heatmap_legend_side    = "right",
+    annotation_legend_side = "right",
+    merge_legend           = FALSE
+  )
+  return(invisible(ht_list))
 }

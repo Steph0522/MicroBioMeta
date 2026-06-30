@@ -14,7 +14,7 @@ ratio_plot(
   top_n = 30,
   level = "genus",
   x_axis_title = "Taxon",
-  fill_palette = c("#1f77b4", "#ff7f0e")
+  fill_palette = NULL
 )
 }
 \arguments{
@@ -57,19 +57,15 @@ plot, where bubble size represents mean relative abundance and color indicates
 the dominant condition.
 }
 \examples{
-ratio_plot(table,
-            metadata,
-            condition_col = "metodo",
-            condition_A = "kit", 
-            condition_B = "fenol")
-
-
-ratio_plot(table = table,
-           metadata = metadata,
-           condition_col = "Treatment",
-           condition_A = "Control",
-           condition_B = "Compost",
-  level = "genus",
-  top_n = 20
+\dontrun{
+ratio_plot(
+  table         = table,
+  metadata      = metadata,
+  condition_col = "metodo",
+  condition_A   = "kit",
+  condition_B   = "fenol",
+  level         = "genus",
+  top_n         = 20
 )
+}
 }

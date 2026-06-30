@@ -1,12 +1,13 @@
 library(tidyverse)
 getwd()
 
-otu = read.delim("otutable_with_taxonomy.txt",
+devtools::load_all()
+otu = read.delim("tests/data/otutable_with_taxonomy.txt",
                  skip = 1,
                  row.names = 1) %>%
   dplyr::select(-taxonomy)
 
-taxonomy = read.delim("taxonomy.tsv", row.names = 1) %>%
+taxonomy = read.delim("tests/data/taxonomy_juan.tsv", row.names = 1) %>%
   dplyr::select(-Confidence)
 
 devtools::load_all()
@@ -15,7 +16,7 @@ table = merge_feature_taxonomy(otu, taxonomy)
 
 
 library(tidyverse)
-metadata = read.delim("meta.txt", sep = "") %>% rename(SAMPLEID = "sample.id")
+metadata = read.delim("tests/data/meta.txt", sep = "") %>% rename(SAMPLEID = "sample.id")
 metadata = metadata[match(colnames(otu), metadata$SAMPLEID), ] %>% filter(!SAMPLEID ==
                                                                             "NA")
 metadata2 = metadata %>% 
@@ -40,9 +41,9 @@ abundance_barplot(
   x_col = "metodo",
   label = "Genus",
   facet_col = "edad",
+  top_n = 10,
   width_equal = TRUE,
   # group_var = "SAMPLEID",
-  top_n_groups = 10,
   add_remained  = TRUE
 )
 
@@ -52,10 +53,10 @@ abundance_heatmap_plot(
   condition1 = "metodo",
   condition2 = "edad",
   condition3 = "estructura.metodo",
-  top_n = 20,
+  top_n = 10,
   cluster = TRUE,
-  colors_condition1 = c("red", "blue"),
-  colors_condition2 = c("green", "orange"),
+#  colors_condition1 = c("red", "blue"),
+ # colors_condition2 = c("green", "orange"),
   show_column_names = FALSE
 )
 
@@ -79,8 +80,8 @@ aldex_heatmap_plot(
 aldex_volcano_plot(
   table = table,
   metadata = metadata,
-  col_inf = "blue",
-  col_sup = "red",
+#  col_inf = "blue",
+ # col_sup = "red",
   col_cond = "metodo",
   type = "effect",
   threshold_lower = -1,
@@ -96,7 +97,7 @@ alpha_hill_corrplot(table = table, facet_orientation = "horizontal")
 alpha_hill_plot(
   table = table,
   metadata = metadata,
-  type = "barplot",
+  type = "boxplot",
   fill_col = "metodo",
   x_col = "metodo",
   facet_orientation = "horizontal",
@@ -107,10 +108,26 @@ alpha_hill_plot(
   stat = "t.test")
 
 
+ancombc_plot(table = table, 
+             metadata = metadata,
+             col_cond = "metodo", 
+             p_adj_method = "BH", 
+             prv_cut = 0.08)
+
+ancombc_plot(
+  table        = table,
+  metadata     = metadata,
+  col_cond     = "metodo",
+  formula      = "metodo",
+  rand_formula = "(1 | Individuo)",   # sin ~ al inicio
+  p_adj_method = "BH",
+  prv_cut      = 0.10
+)
+
 alpha_diversity_plot(
   table = table %>% remove_rownames(),
   metadata = metadata,
-  type = "barplot",
+  type = "boxplot",
   fill_col = "metodo",
   #custom_palette = c("red", "blue"),
   x_col = "metodo",
@@ -128,7 +145,7 @@ beta_div_plot(
   distance = "compositional",
   ordination = "PCA",
   group_col  = "metodo",
-  n_taxa = 5,
+  top_n = 5,
  #shape_col =  "edad",
  arrows = 100
 )
@@ -181,10 +198,9 @@ cca_rda_biplot(
   analysis = "RDA",
   show_all_env_vectors = TRUE,
   legend_title = "Método",
-  group_colors = c("red", "blue"),
+  #group_colors = c("red", "blue"),
   env_vars = c("pH", "Nitrogen", "Calcium"),
-  title = "tittle"
-  
+
   
 )
 
@@ -192,7 +208,7 @@ randomf_lollipop_plot(
   table,
   metadata,
   variable_to_predict = "metodo",
-  col_palette = c("red", "blue", "green"),
+#  col_palette = c("red", "blue", "green"),
   top_n = 20,
   size = 6
 )
@@ -218,13 +234,15 @@ venn_diagram_plot(
   merge_by = "metodo",
   min_prevalence = 0,
   #  denom = "all",
-  group_colors = c("blue", "yellow"),
-  method = "ggvenn"
+# group_colors = c("blue", "yellow"),
+  method = "ggvenndiagram"
 )
 
 
 beta_partition_plot(table, metadata,
-                    group_col="metodo", colors = c("gray", "blue"), point_size = 4)
+                    group_col="metodo", 
+                  #  colors = c("gray", "blue"),
+                    point_size = 4)
 
 
 
@@ -234,7 +252,7 @@ beta_diversity_boxplot(
   metadata = metadata,
   comparison_condition1 = c("fenol_vs_kit"),  
   condition1_col = "metodo",
- condition2_col = "edad",
+ #condition2_col = "edad",
   #color_facets_x = color_facets_x,
   #color_axis_x = color_axis_x,
   title_axis_x = "Samples",

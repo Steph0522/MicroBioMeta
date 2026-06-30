@@ -34,45 +34,29 @@ beta_plot(
 
 \item{condition2.y}{Condition 2 of axis-y}
 
-\item{color_facets_x}{Color vector for facet}
+\item{color_facets_x}{Color vector for facet strips.}
 
-\item{color_axis_x}{Color and conditions vector for axis-x}
-
-\item{title_axis_x}{Axis-x title}
-
-\item{partition}{Component of beta diversity, e.g. "turnover", "nestedness" or "shared"}
-
-\item{family}{Family for turnover o nestednes, e.g. "sorensen" or "jaccard".}
+\item{color_axis_x}{Named color vector for x-axis groups.}
 }
 \value{
-A plot with the values of beta diversity.
+A ggplot2 figure with beta diversity partitions across conditions.
 }
 \description{
 Box plot of beta diversity
 }
 \examples{
-   res <- beta_plot_flexible(
-                       table = table,
-                       metadata = metadata,
-                       comparison_condition1 = c("Boca_vs_L.amniotico","Boca_vs_Membrana","Boca_vs_Yema","Boca_vs_Tracto.embrionario",
-                                                 "Cloaca_vs_L.amniotico","Cloaca_vs_Membrana","Cloaca_vs_Yema","Cloaca_vs_Tracto.embrionario",
-                                                 "Ileon_vs_L.amniotico","Ileon_vs_Membrana","Ileon_vs_Yema","Ileon_vs_Tracto.embrionario",
-                                                 "Dorso_vs_L.amniotico", "Dorso_vs_Membrana", "Dorso_vs_Yema", "Dorso_vs_Tracto.embrionario"),
-                       comparison_condition2 = c("3_vs_3", "7_vs_7", "16_vs_16", "8_vs_8", "12_vs_12"),
-                       condition1.x = "Seccion.x",
-                       condition1.y = "Seccion.y",
-                       condition2.x = "ID.identificador.x",
-                       condition2.y = "ID.identificador.y",
-                       color_facets_x = c("#5D478B", "#8B668B", "#CDB5CD"),
-                       color_axis_x = c("L.amniotico"="#2F4F4F", "Tracto.embrionario"="#698B69", "Membrana"="#458B74", "Yema"="#B4EEB4"),
-                       partition = "turnover",
-                       family = "jaccard",
-                       title_axis_x = "Maternal samples"
-                             )
-
-                  # Show plot
-                    res$plot
-
-
-#FUNCION RECAMBIO
+\dontrun{
+beta_plot(
+  table                = table,
+  metadata             = metadata,
+  comparison_condition1 = c("Boca_vs_L.amniotico", "Cloaca_vs_L.amniotico"),
+  comparison_condition2 = c("3_vs_3", "7_vs_7"),
+  condition1.x         = "Seccion.x",
+  condition1.y         = "Seccion.y",
+  condition2.x         = "ID.x",
+  condition2.y         = "ID.y",
+  color_facets_x       = c("#5D478B", "#8B668B"),
+  color_axis_x         = c("L.amniotico" = "#2F4F4F", "Tracto.embrionario" = "#698B69")
+)
+}
 }

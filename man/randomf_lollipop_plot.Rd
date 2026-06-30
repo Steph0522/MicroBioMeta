@@ -36,15 +36,14 @@ A lollipop plot showing top important features from random forest analysis.
 Generate a Lollipop plot from random forest results
 }
 \examples{
- randomf_lollipop_plot(table= table_taxa3,
-                                  metadata= metadata \%>\% drop_na(),
-                                  variable_to_predict = "SITIO",
-                                  col_palette = c("red", "blue", "green"),
-                                  top_n = 20,
-                                  size = 6)
-
-randomf_lollipop_plot(table = otu_table, 
-                     metadata = sample_metadata,
-                     variable_to_predict = "season",
-                     legend_figure = "Top important features (Random Forest)")
+\dontrun{
+randomf_lollipop_plot(
+  table               = table,
+  metadata            = metadata,
+  variable_to_predict = "SITIO",
+  col_palette         = c("red", "blue", "green"),
+  top_n               = 20,
+  size                = 6
+)
+}
 }

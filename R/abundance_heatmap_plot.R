@@ -20,20 +20,25 @@
 #' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
 #'
-#' @examples abundance_heatmap_plot(table = table_taxonomy, 
-#'                        metadata = metadata.gestacion.recto,
-#'                        condition1 = "poblacion",
-#'                        condition2 = "temporada",
-#'                        condition3 = "sexo",
-#'                        top_n = 50,
-#'                        cluster = TRUE,
-#'                        show_column_names = FALSE,
-#'                        name_legend_condition1 = "Altitude",
-#'                        name_legend_condition2 = "Season",
-#'                        name_legend_condition3 = "Sex",
-#'                        colors_condition1 = c("#676778","#D9D9C2"),
-#'                        colors_condition2 = c("#0E6251", "#1B5E20"),
-#'                        colors_condition3 = c("#5D3277","#AF6502"))
+#' @examples
+#' \dontrun{
+#' abundance_heatmap_plot(
+#'   table                  = table,
+#'   metadata               = metadata,
+#'   condition1             = "poblacion",
+#'   condition2             = "temporada",
+#'   condition3             = "sexo",
+#'   top_n                  = 50,
+#'   cluster                = TRUE,
+#'   show_column_names      = FALSE,
+#'   name_legend_condition1 = "Altitude",
+#'   name_legend_condition2 = "Season",
+#'   name_legend_condition3 = "Sex",
+#'   colors_condition1      = c("#676778", "#D9D9C2"),
+#'   colors_condition2      = c("#0E6251", "#1B5E20"),
+#'   colors_condition3      = c("#5D3277", "#AF6502")
+#' )
+#' }
 
 abundance_heatmap_plot <- function(table,
                                    metadata,
@@ -73,14 +78,14 @@ abundance_heatmap_plot <- function(table,
   
   # Editing table
   table_abundance <- phy.ra.complete %>%
-    mutate(abun = rowMeans(.)) %>% 
-    tibble::rownames_to_column(var="OTUID") %>% 
+    dplyr::mutate(abun = rowMeans(.)) %>%
+    tibble::rownames_to_column(var="OTUID") %>%
     dplyr::arrange(-abun) %>%  # Esto ordena por abundancia descendente
     dplyr::slice(1:top_n) %>%
     dplyr::left_join(table_tax, by = "OTUID")  %>%
-    mutate(taxonomy2 = taxonomy) %>%
-    tidyr::separate(taxonomy2, into = c("dominio","phylum","clase","orden","familia","genero","especie"), 
-                    sep = ";", fill = "right", extra = "merge") %>% 
+    dplyr::mutate(taxonomy2 = taxonomy) %>%
+    tidyr::separate(taxonomy2, into = c("dominio","phylum","clase","orden","familia","genero","especie"),
+                    sep = ";", fill = "right", extra = "merge") %>%
     dplyr::mutate(taxonomy = dplyr::case_when(
       grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
       grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
@@ -88,11 +93,11 @@ abundance_heatmap_plot <- function(table,
       grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
       grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
       TRUE ~ "Unclassified")) %>% 
-    mutate(asv=paste0("ASV", dplyr::row_number())) %>%
+    dplyr::mutate(asv=paste0("ASV", dplyr::row_number())) %>%
     tidyr::unite("taxa", asv, taxonomy, remove = F) %>%
-    mutate(across(everything(), ~ trimws(.))) %>%
-    mutate(phylum = sub("^p__", "", phylum)) %>%
-    dplyr::mutate(phylum = case_when(phylum == "Proteobacteria" ~ "Pseudomonadata",
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
+    dplyr::mutate(phylum = sub("^p__", "", phylum)) %>%
+    dplyr::mutate(phylum = dplyr::case_when(phylum == "Proteobacteria" ~ "Pseudomonadata",
                                      phylum=="Firmicutes" ~ "Bacillota",  
                                      phylum == "Actinobacteriota" ~ "Actinomycetota",
                                      phylum == "Bacteroidetes" ~ "Bacteroidota",
@@ -118,8 +123,8 @@ abundance_heatmap_plot <- function(table,
     dplyr::select(all_of(ordered_taxa)) %>%   
     t() %>%
     as.data.frame() %>%
-    dplyr::mutate(across(everything(), ~ as.numeric(.))) %>%  
-    dplyr::mutate(across(everything(), ~ case_when(
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ as.numeric(.))) %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ dplyr::case_when(
       . <= 0.001 ~ 0,
       . >  0.001 & .  <= 0.005 ~ 1,
       . >  0.005 & .  <= 0.01 ~ 2,
@@ -194,10 +199,10 @@ abundance_heatmap_plot <- function(table,
     unique_vals <- sort(unique(annotation_columns[[condition1]]))
     
     if (is.null(colors_condition1)) {
-      colors_condition1 <- viridis::viridis(length(unique_vals))
+      # Okabe-Ito starting at index 1: orange, sky-blue, green, yellow...
+      colors_condition1 <- rep_len(.mbm_colors, length(unique_vals))
     } else if (length(colors_condition1) < length(unique_vals)) {
-      colors_condition1 <- c(colors_condition1, 
-                             viridis::viridis(length(unique_vals) - length(colors_condition1)))
+      colors_condition1 <- rep_len(colors_condition1, length(unique_vals))
     }
     
     color_mapping <- setNames(colors_condition1[1:length(unique_vals)], unique_vals)
@@ -224,10 +229,11 @@ abundance_heatmap_plot <- function(table,
     unique_vals <- sort(unique(annotation_columns[[condition2]]))
     
     if (is.null(colors_condition2)) {
-      colors_condition2 <- viridis::inferno(length(unique_vals))
+      # Okabe-Ito shifted by 2: green, yellow, blue, vermillion...
+      mbm_shift2 <- c(.mbm_colors[3:8], .mbm_colors[1:2])
+      colors_condition2 <- rep_len(mbm_shift2, length(unique_vals))
     } else if (length(colors_condition2) < length(unique_vals)) {
-      colors_condition2 <- c(colors_condition2, 
-                             viridis::inferno(length(unique_vals) - length(colors_condition2)))
+      colors_condition2 <- rep_len(colors_condition2, length(unique_vals))
     }
     
     color_mapping <- setNames(colors_condition2[1:length(unique_vals)], unique_vals)
@@ -255,10 +261,11 @@ abundance_heatmap_plot <- function(table,
     unique_vals <- sort(unique(annotation_columns[[condition3]]))
     
     if (is.null(colors_condition3)) {
-      colors_condition3 <- viridis::plasma(length(unique_vals))
+      # Okabe-Ito shifted by 4: blue, vermillion, pink, black...
+      mbm_shift3 <- c(.mbm_colors[5:8], .mbm_colors[1:4])
+      colors_condition3 <- rep_len(mbm_shift3, length(unique_vals))
     } else if (length(colors_condition3) < length(unique_vals)) {
-      colors_condition3 <- c(colors_condition3, 
-                             viridis::plasma(length(unique_vals) - length(colors_condition3)))
+      colors_condition3 <- rep_len(colors_condition3, length(unique_vals))
     }
     
     color_mapping <- setNames(colors_condition3[1:length(unique_vals)], unique_vals)

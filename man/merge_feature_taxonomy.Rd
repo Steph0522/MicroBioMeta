@@ -21,13 +21,10 @@ it will be renamed to 'taxonomy'.
 This function joins a feature table (counts per sample) with the corresponding taxonomy data.
 }
 \examples{
-library(vegan)
-data(dune)
-data(dune.env)
-# Example usage (note: taxonomy not provided in this dataset)
-alpha_hill_corplot(
-    table = t(dune),
-    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
-    facet_orientation = "horizontal"
+\dontrun{
+merged <- merge_feature_taxonomy(
+  table    = feature_table,
+  taxonomy = taxonomy_df
 )
+}
 }

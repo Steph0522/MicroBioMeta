@@ -6,13 +6,20 @@
 #' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
 #' @param taxonomy_db Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").
 #'
-#'@examples abundance_sankey_plot(table= table_taxa,
-#'                                 output_file <- file.path(getwd(), "sankey_scel_gg2.html"),
-#'                                 maxn = 10,
-#'                                 taxRanks = c("P", "C", "G", "S"),
-#'                                 taxonomy_db = "silva")
-#'  
-#'  
+#' @return Invisibly returns the Sankey diagram object and saves an HTML file.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' abundance_sankey_plot(
+#'   table        = table_taxa,
+#'   output_file  = file.path(getwd(), "sankey_output.html"),
+#'   maxn         = 10,
+#'   taxRanks     = c("P", "C", "G", "S"),
+#'   taxonomy_db  = "silva"
+#' )
+#' }
+
 
 abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                                   taxRanks = c("D","K","P","C","O","F","G","S"),

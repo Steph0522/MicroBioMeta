@@ -9,17 +9,24 @@
 #' @param group_col Column in metadata to use as color grouping.
 #' @param shape_col Optional column in metadata for point shapes.
 #' @param legend_title Optional custom legend title.
-#' @param colors Optional named vector of colors for groups.
+#' @param group_colors Optional named vector of colors for groups.
+#' @param point_size Numeric. Size of points in ordination plots. Default \code{3}.
+#' @param save_table Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{TRUE}.
+#' @param table_filename Character. Base name for the saved table file. Default \code{"SAMPLE1"}.
 #'
 #' @return A combined cowplot panel of beta diversity partition plots.
 #' @export
-#' 
+#'
 #' @examples
-#' beta_partition_plot(table=table,
-#'                     metadata= metadata,
-#'                     group_col="metodo", 
-#'                     point_size = 4,
-#'                     colors = c("gray", "blue"))
+#' \dontrun{
+#' beta_partition_plot(
+#'   table      = table,
+#'   metadata   = metadata,
+#'   group_col  = "metodo",
+#'   point_size = 4,
+#'   group_colors = c("gray", "blue")
+#' )
+#' }
 
 
 beta_partition_plot <- function(table, metadata, 
@@ -28,7 +35,7 @@ beta_partition_plot <- function(table, metadata,
                                 shape_col = NULL, 
                                 legend_title = NULL,
                                 point_size = 3,
-                                colors = NULL,
+                                group_colors = NULL,
                                 save_table = TRUE,
                                 table_filename = "SAMPLE1") {   
   suppressWarnings({
@@ -162,36 +169,32 @@ beta_partition_plot <- function(table, metadata,
         show.legend = FALSE
       )
     
-    color_scale <- if(!is.null(colors)) {
-      ggplot2::scale_color_manual(values = colors)
+    color_scale <- if(!is.null(group_colors)) {
+      ggplot2::scale_color_manual(values = group_colors)
     } else {
-      ggplot2::scale_color_viridis_d(option = "turbo")
+      ggplot2::scale_color_manual(values = .mbm_colors)
     }
     
     a <- z +
-      ggplot2::geom_label(data = y$df_mean.ord, ggplot2::aes(x = x, y = y, label = Group)) +
-      ggplot2::theme_linedraw() +
+      ggplot2::geom_label(data = y$df_mean.ord, ggplot2::aes(x = x, y = y, label = Group),
+                          fill = "white", color = "black", family = "serif",
+                          fontface = "bold", size = 3.5) +
       ggplot2::geom_vline(xintercept = 0, linetype = 2) +
       ggplot2::geom_hline(yintercept = 0, linetype = 2) +
       color_scale +
       ggplot2::labs(color = if(!is.null(legend_title)) legend_title else group_col) +
-      ggplot2::theme(
-        axis.text = ggplot2::element_text(size = 12, color = "black", family = "serif"),
-        axis.title = ggplot2::element_text(size = 14, color = "black", family = "serif"),
-        legend.text = ggplot2::element_text(size = 12, color = "black", family = "serif"),
-        legend.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold"),
-        legend.position = "right",
-        legend.box = "vertical",
-        panel.grid.major = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank(),
-        plot.margin = grid::unit(c(0, 0, 0, 0), "cm"),
-        aspect.ratio = 3/10
-      ) +
-      ggplot2::theme(
-        panel.border = ggplot2::element_blank(),
-        axis.line = ggplot2::element_line(),
-        axis.line.y.right = ggplot2::element_blank(),
-        axis.line.x.top = ggplot2::element_blank()
+      .mbm_theme(
+        legend_position = "right",
+        extra = ggplot2::theme(
+          legend.box        = "vertical",
+          panel.grid.major  = ggplot2::element_blank(),
+          plot.margin       = grid::unit(c(0, 0, 0, 0), "cm"),
+          aspect.ratio      = 3/10,
+          panel.border      = ggplot2::element_blank(),
+          axis.line         = ggplot2::element_line(),
+          axis.line.y.right = ggplot2::element_blank(),
+          axis.line.x.top   = ggplot2::element_blank()
+        )
       )
     
     
@@ -210,11 +213,11 @@ beta_partition_plot <- function(table, metadata,
   
   leg <- cowplot::get_legend(plot_jac)
   panel <- cowplot::plot_grid(
-    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = element_text(size = 12, color = "black", family = "serif", face = "bold")) +
+    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(index, " dissimilarity (mean = ", mean_jac, ")")),
-     plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = element_text(size = 12, color = "black", family = "serif", face = "bold")) +
+     plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
-    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = element_text(size = 12, color = "black", family = "serif", face = "bold")) +
+    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")")),
     ncol = 3, align = "hv", labels = c("A", "B", "C"), label_fontfamily = "serif"
     )

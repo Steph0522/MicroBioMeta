@@ -10,32 +10,39 @@
 #' @param comparison_condition1 Optional vector of comparison labels for the first condition.
 #' @param condition1_col Column name in metadata for the first condition.
 #' @param condition2_col Optional column name in metadata for the second condition (used as facet).
-#' @param color_facets_x Optional vector of colors for facet strips. Defaults to RColorBrewer "Set2".
-#' @param color_axis_x Optional named vector of colors for x-axis groups. Defaults to RColorBrewer "Set2".
-#' @param title_axis_x Title for the x-axis.
+#' @param facet_colors Optional vector of colors for facet strips. Defaults to RColorBrewer "Set2".
+#' @param group_colors Optional named vector of colors for x-axis groups. Defaults to RColorBrewer "Set2".
+#' @param x_axis_title Title for the x-axis.
 #' @param partition Type of beta diversity to compute: "shared", "turnover", or "nestedness".
 #' @param family Family for turnover/nestedness calculation: "sorensen" or "jaccard".
+#' @param save_table Logical. If \code{TRUE}, saves the beta diversity table to disk. Default \code{TRUE}.
+#' @param table_filename Character. File path/name for the saved table. Default \code{"betadiv_table.txt"}.
 #'
 #' @return A ggplot2 figure object.
 #' @export
 #' 
 #' @examples
-#' beta_diversity_boxplot(table = table,
-#'                        metadata = metadata,
-#'                        comparison_condition1 = c("fenol_vs_kit"),  
-#'                        condition1_col = "metodo",
-#'                        condition2_col = "edad",
-#'                        title_axis_x = "Samples",
-#'                        partition = "shared", family = "sorensen")
-#' 
+#' \dontrun{
+#' beta_diversity_boxplot(
+#'   table                = table,
+#'   metadata             = metadata,
+#'   comparison_condition1 = c("fenol_vs_kit"),
+#'   condition1_col       = "metodo",
+#'   condition2_col       = "edad",
+#'   x_axis_title         = "Samples",
+#'   partition            = "shared",
+#'   family               = "sorensen"
+#' )
+#' }
+
 beta_diversity_boxplot <- function(
     table, metadata,
     comparison_condition1 = NULL,
     condition1_col,
     condition2_col = NULL,
-    color_facets_x = NULL,
-    color_axis_x = NULL,
-    title_axis_x = "Condition",
+    facet_colors = NULL,
+    group_colors = NULL,
+    x_axis_title = "Condition",
     partition = c("shared","turnover","nestedness"),
     family = c("sorensen","jaccard"),
     save_table = TRUE,
@@ -102,12 +109,12 @@ beta_diversity_boxplot <- function(
   }
   # --- Default palettes if missing ---
   n_groups <- length(unique(beta_df$condition1_group))
-  if(is.null(color_axis_x)) color_axis_x <- RColorBrewer::brewer.pal(max(3,n_groups),"Paired")[1:n_groups]
-  if(!is.null(names(color_axis_x)==FALSE)) names(color_axis_x) <- unique(beta_df$condition1_group)
-  
+  if(is.null(group_colors)) group_colors <- rep_len(.mbm_colors, n_groups)
+  if(!is.null(names(group_colors)==FALSE)) names(group_colors) <- unique(beta_df$condition1_group)
+
   if(!is.null(condition2_col)) {
     n_facets <- length(unique(beta_df[[paste0(condition2_col,".x")]]))
-    if(is.null(color_facets_x)) color_facets_x <- RColorBrewer::brewer.pal(max(3,n_facets),"Set1")[1:n_facets]
+    if(is.null(facet_colors)) facet_colors <- rep("grey85", n_facets)
   }
   
 
@@ -117,31 +124,22 @@ beta_diversity_boxplot <- function(
       beta_df, x="condition1_group", y="value", fill="condition1_group"
     ) +
       ggplot2::ylab(paste0("Beta diversity (",partition,")")) +
-      ggplot2::scale_fill_manual(values=color_axis_x) +
+      ggplot2::scale_fill_manual(values=group_colors) +
       ggplot2::labs(fill = "Comparison")+
-      ggplot2::theme_test() + 
-      ggplot2::theme(
-        axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "serif"),
-        axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
-        axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
-        axis.text.y = ggplot2::element_text(color = "black", size = 12, family = "serif"),
-        strip.text = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold"),
-        legend.position = "right",
-        legend.title = ggplot2::element_text(color = "black", size = 14, family = "serif", face = "bold"),
-        legend.text = ggplot2::element_text(color = "black", size = 12, family = "serif")) + 
+      .mbm_theme(legend_position = "right") +
       ggh4x::facet_grid2(
         stats::as.formula(paste(". ~", paste0(condition2_col,".x"))),
         scales="free_x",
-        strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill=color_facets_x))
+        strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill=facet_colors))
       ) +
-      ggplot2::xlab(title_axis_x)
+      ggplot2::xlab(x_axis_title)
   } else {
     figura <- ggpubr::ggboxplot(
       beta_df, x="condition1_group", y="value", fill="condition1_group"
     ) +
       ggplot2::ylab(paste0("Beta diversity (",partition,")")) +
-      ggplot2::scale_fill_manual(values=color_axis_x) +
-      ggplot2::xlab(title_axis_x)
+      ggplot2::scale_fill_manual(values=group_colors) +
+      ggplot2::xlab(x_axis_title)
   }
   
   return(figura)

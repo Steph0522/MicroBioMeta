@@ -73,7 +73,13 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{axis_y_title}{Title for the y-axis.}
 
-\item{free_y}{Logical. Wether if scales in y are free or not.}
+\item{free_y}{Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.}
+
+\item{rarefy_depth}{Integer. If provided, rarefies samples to this depth before diversity estimation. Default \code{NULL}.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{TRUE}.}
+
+\item{table_filename}{Character. File path/name for the saved table. Default \code{"diversity.txt"}.}
 }
 \value{
 A ggplot object showing alpha diversity with Hill numbers.
@@ -84,31 +90,17 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
-
-alpha_diversity_plot(table = table \%>\% remove_rownames(),
-                    metadata = metadata,
-                    type = "barplot",
-                    fill_col = "metodo",
-                    #custom_palette = c("red", "blue"),
-                    x_col = "metodo",
-                    facet_orientation = "horizontal",
-                    #   facet_by = "edad",
-                    facet_by2 = "estructura",
-                    free_y = T,
-                    legend_position = "top",
-                    stat = "t.test")
-
-
-library(vegan)
-data(dune)
-data(dune.env)
-alpha_hill_plot(
-    table = t(dune),
-    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
-    x_col = "Management",
-    fill_col = "Management",
-    facet_by = "Use",
-    facet_orientation = "vertical" )
-    
-    
+\dontrun{
+alpha_diversity_plot(
+  table           = table,
+  metadata        = metadata,
+  type            = "barplot",
+  x_col           = "metodo",
+  fill_col        = "metodo",
+  facet_by2       = "estructura",
+  free_y          = TRUE,
+  legend_position = "top",
+  stat            = "t.test"
+)
+}
 }

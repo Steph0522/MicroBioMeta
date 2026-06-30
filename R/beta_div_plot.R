@@ -14,27 +14,35 @@
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
+#' @param arrows_size Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.
+#' @param title Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
+#'   \code{NULL} shows no title; any other string is used as-is.
 #'
 #' @return A `ggplot2` object.
 #' @export
-#' @examples      beta_div_plot(table = table_taxa,
-#'                               metadata = metadata1,
-#'                               distance = "aitchison",
-#'                               ordination = "NMDS",
-#'                               group_col  = "SITIO",
-#'                               top_n = 5,
-#'                               arrows = 100)
-#' 
+#' @examples
+#' \dontrun{
+#' beta_div_plot(
+#'   table      = table_taxa,
+#'   metadata   = metadata,
+#'   distance   = "aitchison",
+#'   ordination = "NMDS",
+#'   group_col  = "SITIO",
+#'   top_n      = 5
+#' )
+#' }
 
-beta_div_plot <- function(table, metadata, 
+
+beta_div_plot <- function(table, metadata,
                           distance = "compositional",
-                          ordination = "PCA", 
+                          ordination = "PCA",
                           group_col = NULL,
                           group_colors = NULL,
                           shape_col = NULL,
                           legend_title = NULL,
                           arrows_size = 10,
-                          top_n = 5) {
+                          top_n = 5,
+                          title = "auto") {
   
   requireNamespace("vegan")
   requireNamespace("ggplot2")
@@ -121,14 +129,13 @@ beta_div_plot <- function(table, metadata,
   ord_df$SampleID <- rownames(ord_df)
   colnames(metadata)[1] <- "SampleID"
   merged <- dplyr::inner_join(ord_df, metadata, by = "SampleID")
-  if (nrow(merged) == 0) stop("Ninguna muestra en común entre tabla y metadata.")
+  if (nrow(merged) == 0) stop("Ninguna muestra en comun entre tabla y metadata.")
   
   x_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[1], " (", expl_var[1], "%)") else names(ord_df)[1]
   y_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[2], " (", expl_var[2], "%)") else names(ord_df)[2]
   
   if (is.null(group_colors)) {
-    group_colors <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3",
-                      "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3")
+    group_colors <- .mbm_colors
   }
   legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
   fill_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
@@ -161,23 +168,20 @@ beta_div_plot <- function(table, metadata,
   p <- p +
     ggplot2::geom_vline(xintercept = 0, linetype = 2) +
     ggplot2::geom_hline(yintercept = 0, linetype = 2) +
-    ggplot2::theme_classic() +
     fill_scale +
-    ggplot2::labs(x = x_lab, y = y_lab) +
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(color = "black", size = 12, family = "serif"),
-      axis.text.y = ggplot2::element_text(color = "black", size = 12,  family = "serif"),
-      axis.title.x = ggplot2::element_text(color = "black", size = 14, family = "serif"),
-      axis.title.y = ggplot2::element_text(color = "black", size = 14, family = "serif"),
-      legend.text = ggplot2::element_text(color = "black", size = 12, family = "serif"),
-      legend.title = ggplot2::element_text(color = "black", size = 14, family = "serif", face = "bold"),
-      plot.title = ggplot2::element_text(color = "black", size = 16, family = "serif", face = "bold"),
-      legend.position = "right",
-      legend.box = "vertical",
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank()
+    ggplot2::labs(
+      x     = x_lab,
+      y     = y_lab,
+      title = if (identical(title, "auto")) paste(ordination, "-", distance)
+              else title   # NULL → no title; custom string → that text
     ) +
-    ggplot2::ggtitle(paste(ordination, "-", distance))
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        legend.box        = "vertical",
+        panel.grid.major  = ggplot2::element_blank()
+      )
+    )
   
   if (ordination == "PCA") {
     rot_df <- as.data.frame(ord_res$rotation)
@@ -193,12 +197,12 @@ beta_div_plot <- function(table, metadata,
     ###
     extract_clean_label <- function(taxon_string, taxonomy_db = "silva") {
       
-      # --- 1) Manejo de NA o vacío ---
+      # --- 1) Manejo de NA o vacio ---
       if (is.na(taxon_string) || taxon_string == "" || taxon_string == "Other") {
         return("Other")
       }
       
-      # --- 2) Separar por niveles taxonómicos ---
+      # --- 2) Separar por niveles taxonomicos ---
       levels <- unlist(strsplit(taxon_string, ";"))
       levels <- trimws(levels)
       
@@ -213,7 +217,7 @@ beta_div_plot <- function(table, metadata,
       
       cleaner <- clean_by_db[[taxonomy_db]]
       
-      # Si no existe el limpiador, usar limpieza genérica
+      # Si no existe el limpiador, usar limpieza generica
       if (is.null(cleaner)) {
         cleaner <- function(x) sub(".*__", "", x)
       }
@@ -223,7 +227,7 @@ beta_div_plot <- function(table, metadata,
       levels_clean <- trimws(levels_clean)
       
       
-      # --- 5) Selección del nivel más específico válido ---
+      # --- 5) Seleccion del nivel mas especifico valido ---
       invalid_literals <- c("", " ", "NA", "na", "unclassified", "Unassigned",
                             "uncultured", "uncultured_soil", "__")
       
@@ -233,11 +237,11 @@ beta_div_plot <- function(table, metadata,
         
         lvl <- levels_clean[i]
         
-        # ESTA ES LA LÍNEA CORREGIDA
+        # ESTA ES LA LiNEA CORREGIDA
         if (!(lvl %in% invalid_literals) && 
             !any(grepl(invalid_regex, lvl, ignore.case = TRUE))) {
           
-          # ▸ Regla especial: Kraken2 species → concatenar "Genus species"
+          # > Regla especial: Kraken2 species -> concatenar "Genus species"
           if (taxonomy_db == "Kraken2" && grepl("s__", levels[i])) {
             
             genus_full <- stringr::str_extract(taxon_string, "g__[^;]*")
@@ -271,24 +275,24 @@ beta_div_plot <- function(table, metadata,
     
     p <- p +
       ggplot2::geom_segment(data = rot_df,
-                            aes(x = 0, y = 0, xend = PC1, yend = PC2),
-                            arrow = ggplot2::arrow(length = unit(0.7, "cm")),
+                            ggplot2::aes(x = 0, y = 0, xend = PC1, yend = PC2),
+                            arrow = ggplot2::arrow(length = grid::unit(0.7, "cm")),
                             color = "gray30",
                             inherit.aes = FALSE) +
       ggrepel::geom_label_repel(data = rot_df,
-                                aes(x = PC1, y = PC2, label = label),
+                                ggplot2::aes(x = PC1, y = PC2, label = label),
                                 fill = "white", color = "black",
                                 fontface = "italic", size = 4, family= "serif",
                                 inherit.aes = FALSE)
   }
   
-  # --- Centrar ejes simétricamente ---
+  # --- Centrar ejes simetricamente ---
   x_limits <- range(merged[[names(ord_df)[1]]], na.rm = TRUE)
   y_limits <- range(merged[[names(ord_df)[2]]], na.rm = TRUE)
   max_range <- max(abs(x_limits), abs(y_limits))
   p <- p + ggplot2::coord_cartesian(xlim = c(-max_range, max_range),
                                     ylim = c(-max_range, max_range)) +
-    ggplot2::coord_fixed()  # Mantiene proporción 1:1
+    ggplot2::coord_fixed()  # Mantiene proporcion 1:1
   
   return(p)
 }

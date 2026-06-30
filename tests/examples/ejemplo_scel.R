@@ -5,11 +5,11 @@ library(qiime2R)
 library(tidyverse)
 devtools::load_all()
 
-table <- read_qza("test_data/run_f250_r230_feature-table.qza")$data %>% as.data.frame()
-depth <- read.delim("test_data/depth.csv", sep = ";") 
+table <- read_qza("tests/data/run_f250_r230_feature-table.qza")$data %>% as.data.frame()
+depth <- read.delim("tests/data/depth.csv", sep = ";") 
 depth <- depth[match(colnames(table), depth$Sample.ID),]
 
-metadata <- read.csv("test_data/Metadata.csv", sep = ";") %>% 
+metadata <- read.csv("tests/data/Metadata.csv", sep = ";") %>% 
   dplyr::rename(SAMPLEID = "INDEX") %>%
   mutate_all(as.character) %>% 
   dplyr::select(SAMPLEID, everything())
@@ -23,16 +23,16 @@ metadata_depth <- metadata %>%
 
 
 
-taxonomy_gg2<- read_qza("test_data/run_f250_r230_taxa_gg2_scel.qza")$data %>%column_to_rownames(var = "Feature.ID") %>% dplyr::select(-Confidence)
-taxonomy_silva<- read_qza("test_data/run_f250_r230_taxa_silva.qza")$data %>%column_to_rownames(var = "Feature.ID") %>%dplyr::select(-Confidence)
-taxonomy_gg2_weighted<- read_qza("test_data/taxonomy_gg2_weighted.qza")$data %>%column_to_rownames(var = "Feature.ID") %>% dplyr::select(-Confidence)
-taxonomy_silva_weighted<- read_qza("test_data/taxonomy_silva_weighted.qza")$data %>%column_to_rownames(var = "Feature.ID") %>% dplyr::select(-Confidence)
+taxonomy_gg2<- read_qza("tests/data/run_f250_r230_taxa_gg2_scel.qza")$data %>%column_to_rownames(var = "Feature.ID") %>% dplyr::select(-Confidence)
+taxonomy_silva<- read_qza("tests/data/run_f250_r230_taxa_silva.qza")$data %>%column_to_rownames(var = "Feature.ID") %>%dplyr::select(-Confidence)
+taxonomy_gg2_weighted<- read_qza("tests/data/taxonomy_gg2_weighted.qza")$data %>%column_to_rownames(var = "Feature.ID") %>% dplyr::select(-Confidence)
+taxonomy_silva_weighted<- read_qza("tests/data/taxonomy_silva_weighted.qza")$data %>%column_to_rownames(var = "Feature.ID") %>% dplyr::select(-Confidence)
 
 
-parse_taxa_gg2 <- qiime2R::parse_taxonomy(read_qza("test_data/run_f250_r230_taxa_gg2_scel.qza")$data)
-parse_taxa_gg2_weighted <- qiime2R::parse_taxonomy(read_qza("test_data/taxonomy_gg2_weighted.qza")$data)
-parse_taxa_silva <- qiime2R::parse_taxonomy(read_qza("test_data/run_f250_r230_taxa_silva.qza")$data)
-parse_taxa_silva_weighted <- qiime2R::parse_taxonomy(read_qza("test_data/taxonomy_silva_weighted.qza")$data)
+parse_taxa_gg2 <- qiime2R::parse_taxonomy(read_qza("tests/data/run_f250_r230_taxa_gg2_scel.qza")$data)
+parse_taxa_gg2_weighted <- qiime2R::parse_taxonomy(read_qza("tests/data/taxonomy_gg2_weighted.qza")$data)
+parse_taxa_silva <- qiime2R::parse_taxonomy(read_qza("tests/data/run_f250_r230_taxa_silva.qza")$data)
+parse_taxa_silva_weighted <- qiime2R::parse_taxonomy(read_qza("tests/data/taxonomy_silva_weighted.qza")$data)
 
 
 
@@ -230,4 +230,8 @@ abundance_sankey_plot(
 metadata %>%  group_by(SITIO, ID.CAM) %>% count()
 devtools::load_all()
 
-MicroBioMeta::beta_
+
+
+
+ancombc_plot(table = table_taxa, metadata = metadata,
+             col_cond = "SITIO", p_adj_method = "BH", prv_cut = 0.08)

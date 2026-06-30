@@ -2,7 +2,7 @@
 % Please edit documentation in R/aldex_heatmap_plot.R
 \name{aldex_heatmap_plot}
 \alias{aldex_heatmap_plot}
-\title{Heatmap ALDEx}
+\title{ALDEx2 differential abundance heatmap}
 \usage{
 aldex_heatmap_plot(
   table,
@@ -12,35 +12,67 @@ aldex_heatmap_plot(
   pvalue_BH = NULL,
   cluster_rows = FALSE,
   cluster_columns = FALSE,
-  heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("#cbdbcd", "#759c8a", "#00544d")),
-  effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("lightsalmon4", "white",
-    "lightseagreen")),
-  pvalue_colors = list(`p-value` = c(`<0.001` = "#C70039", `<0.01` = "#FF5733", `<0.05` =
-    "#FFC300", `>0.05` = "#F9E79F")),
-  treatment_colors = c(Higher = "#808000", Lower = "#1B5E20")
+  diverging_palette = "BuOr",
+  effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("#0072B2", "white", "#E69F00")),
+  pvalue_colors = list(`p-value` = c(`<0.001` = "#0072B2", `<0.01` = "#56B4E9", `<0.05` =
+    "#E69F00", `>0.05` = "grey85")),
+  col_higher = "#E69F00",
+  col_lower = "#0072B2"
 )
 }
 \arguments{
-\item{table, }{Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.}
+\item{table}{Data frame with taxa as rows and samples as columns. Must
+contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
+"taxon", "taxa", "Taxa", or "Taxon").}
 
-\item{pvalue_BH, }{Value p-ajusted (optional)}
+\item{metadata}{Data frame with one row per sample. Must contain the column
+specified in \code{col_cond}.}
 
-\item{conditions, }{Vector that defines the categories or classes to compare.}
+\item{col_cond}{Character. Name of the column in \code{metadata} that
+defines the two groups to compare. Exactly two unique values are required.}
 
-\item{effect, }{Effect size (default: >= 0.8)}
+\item{effect_threshold}{Numeric. Minimum absolute effect size to retain
+(default \code{0.8}).}
+
+\item{pvalue_BH}{Numeric or NULL. Maximum BH-adjusted p-value to retain.
+If NULL (default) only \code{effect_threshold} is applied.}
+
+\item{cluster_rows}{Logical. Cluster heatmap rows (default \code{FALSE}).}
+
+\item{cluster_columns}{Logical. Cluster heatmap columns (default \code{FALSE}).}
+
+\item{diverging_palette}{Character. Name of a built-in colorblind-friendly
+diverging palette for the main heatmap body. One of \code{"BuOr"}
+(blue-orange, default), \code{"BuVm"}, \code{"BuPk"}, \code{"GnPk"}.
+The color range is computed automatically from the data.}
+
+\item{effect_colors}{Color function for effect size annotation.}
+
+\item{pvalue_colors}{Named list of colors for p-value annotation.}
+
+\item{col_higher}{Character. Color for bars where taxa are higher in the
+first condition (default \code{"#E69F00"}, Okabe-Ito orange).}
+
+\item{col_lower}{Character. Color for bars where taxa are lower in the
+first condition (default \code{"#0072B2"}, Okabe-Ito blue).}
 }
 \value{
-A plot with the deferentially abundant taxonomic groups between two categories or groups of samples.
+A \code{ComplexHeatmap} object (returned invisibly; drawn as a
+side effect).
 }
 \description{
-This function generates a heatmap to visualize alpha diversity Hill numbers (q = 0, 1, 2)
-for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-It supports palette customization, faceting, and statistical comparison.
+Runs ALDEx2 on a counts table and metadata and returns a ComplexHeatmap
+showing differentially abundant taxa, their effect size, p-value, and
+difference between groups.
 }
 \examples{
-aldex_plot(table = table,
-                     conditions = conditions,
-                     effect = 0.8,
-                     pvalue_BH = NULL)
+\dontrun{
+aldex_heatmap_plot(
+  table            = feature_table,
+  metadata         = sample_metadata,
+  col_cond         = "Sample_type",
+  effect_threshold = 2
+)
+}
 
 }

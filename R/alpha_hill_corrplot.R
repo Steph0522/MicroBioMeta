@@ -7,18 +7,17 @@
 #' @param table A data frame or matrix with samples as columns and taxa as rows.
 #'              The first column must contain the OTUID, ASV, or species name.
 #' @param facet_orientation Whether `facet_by` appears in columns ("horizontal", default) or rows ("vertical").
+#' @param plot_title Character. Title for the plot. Default \code{"default"}.
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples
-#' library(vegan)
-#' data(dune)
-#' data(dune.env)
-#' alpha_hill_corplot(
-#'     table = t(dune),
-#'     metadata = dune.env %>% tibble::rownames_to_column("SampleID"),
-#'     facet_orientation = "horizontal"
+#' \dontrun{
+#' alpha_hill_corrplot(
+#'   table             = table,
+#'   facet_orientation = "horizontal"
 #' )
+#' }
 
 alpha_hill_corrplot <- function(table,
                                 facet_orientation = "horizontal",
@@ -37,15 +36,13 @@ alpha_hill_corrplot <- function(table,
   )
   
   # --- Tema base común ---
-  base_theme <- ggplot2::theme_test() +
-    ggplot2::theme(
-      legend.title = ggplot2::element_blank(), 
-      legend.position = "none", 
-      axis.title.x = ggplot2::element_text(color = "black", family = "serif", size = 12),
-      axis.title.y = ggplot2::element_text(color = "black", family = "serif", size = 12),
-      axis.text.y = ggplot2::element_text(colour = "black", family = "serif", size = 8),
-      axis.text.x = ggplot2::element_text(colour = "black", family = "serif", size = 4)
+  base_theme <- .mbm_theme(
+    legend_position = "none",
+    extra = ggplot2::theme(
+      legend.title = ggplot2::element_blank(),
+      axis.text.x  = ggplot2::element_text(size = 8, color = "black")
     )
+  )
   
   # --- Relación de aspecto ---
   aspect_ratio_theme <- if (facet_orientation == "horizontal") NULL else 0.5
@@ -55,7 +52,7 @@ alpha_hill_corrplot <- function(table,
     q_data, x = "Frequency", y = "q0",
     xlab = "Sequencing depth (number of reads)",
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
-    add.params = list(color = "#B03A2E", fill = "#566573"),
+    add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
       method = "pearson",
       label.x = 3,
@@ -75,7 +72,7 @@ alpha_hill_corrplot <- function(table,
     q_data, x = "Frequency", y = "q1",
     xlab = "Sequencing depth (number of reads)",
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
-    add.params = list(color = "#B03A2E", fill = "#566573"),
+    add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
       method = "pearson",
       label.x = 3,
@@ -95,7 +92,7 @@ alpha_hill_corrplot <- function(table,
     q_data, x = "Frequency", y = "q2",
     xlab = "Sequencing depth (number of reads)",
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
-    add.params = list(color = "#B03A2E", fill = "#566573"),
+    add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
       method = "pearson",
       label.x = 3,

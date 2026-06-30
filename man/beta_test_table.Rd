@@ -16,6 +16,8 @@ beta_test_table(
 )
 }
 \arguments{
+\item{table}{Distance matrix or data frame with taxonomy, where the columns are the samples and rows are ASVs or taxa.}
+
 \item{metadata}{Data frame of characteristics or important information of the samples}
 
 \item{formula_str}{Model formula}
@@ -29,8 +31,6 @@ beta_test_table(
 \item{strata_var}{Group or variable within which permutations are restricted}
 
 \item{decimales}{Number of decimales required}
-
-\item{matriz}{Distance matrix or data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.}
 }
 \value{
 A table with the results of R2, F and p value
@@ -39,18 +39,24 @@ A table with the results of R2, F and p value
 This function create a table with the results of permanova or betadisper
 }
 \examples{
+\dontrun{
 # Example using a data frame
-beta_test_table(table = table,
-                metadata = metadata,
-                formula_str = "metodo*edad",
-                method = "euclidean",
-                test = "permanova",
-                permutations = 999,
-                strata_var = "Individuo")
+beta_test_table(
+  table       = table,
+  metadata    = metadata,
+  formula_str = "metodo*edad",
+  method      = "euclidean",
+  test        = "permanova",
+  permutations = 999,
+  strata_var  = "Individuo"
+)
 
-# Example using a matrix
-beta_test_table(table = matriz,
-                metadata = metadata,
-                formula_str = "Origen",
-                test = "betadisper")
+# Example using a distance matrix
+beta_test_table(
+  table       = dist_matrix,
+  metadata    = metadata,
+  formula_str = "Origen",
+  test        = "betadisper"
+)
+}
 }

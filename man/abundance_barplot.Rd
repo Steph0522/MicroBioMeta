@@ -33,6 +33,8 @@ abundance_barplot(
 
 \item{facet_col}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment group). Default is \code{NULL}.}
 
+\item{width_equal}{Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.}
+
 \item{label}{Character. Legend title for the taxa groups. Default is \code{"taxonomy"}.}
 
 \item{top_n}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
@@ -40,6 +42,10 @@ abundance_barplot(
 \item{x_axis_title}{Character. The tittle that should be in the x-axis (deault = "Samples")}
 
 \item{add_remained}{Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{TRUE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.}
 }
 \value{
 A \code{ggplot2} object showing a stacked barplot of relative abundances.
@@ -58,15 +64,17 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 }
 }
 \examples{
-abundance_barplot( table = table_taxa,
-                             metadata = metadata,
-                             taxonomy_db = "silva",
-                             level = "genus",
-                             x_col = "MUESTRA",
-                             label = "Genus",
-                             facet_col = "SITIO",
-                             width_equal = FALSE,
-                             group_var = "SAMPLEID",
-                             top_n = 30,
-                             add_remained  = TRUE)
+\dontrun{
+abundance_barplot(
+  table      = table_taxa,
+  metadata   = metadata,
+  taxonomy_db = "silva",
+  level      = "genus",
+  x_col      = "MUESTRA",
+  label      = "Genus",
+  facet_col  = "SITIO",
+  top_n      = 30,
+  add_remained = TRUE
+)
+}
 }

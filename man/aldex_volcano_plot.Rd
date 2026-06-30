@@ -9,8 +9,8 @@ aldex_volcano_plot(
   metadata,
   col_cond,
   type = "volcano",
-  col_inf = "blue",
-  col_sup = "red",
+  col_inf = "#0072B2",
+  col_sup = "#E69F00",
   threshold_lower = -1.5,
   threshold_upper = 1.5,
   cond = NULL,
@@ -45,6 +45,10 @@ aldex_volcano_plot(
 \item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).}
 
 \item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{TRUE}.}
+
+\item{table_filename}{Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.}
 }
 \value{
 A \code{ggplot} object with the selected plot.
@@ -53,16 +57,18 @@ A \code{ggplot} object with the selected plot.
 This function generates either an effect size plot or a volcano plot based on ALDEx2 results.
 }
 \examples{
-aldex_volcano_plot(table = table,
-                    metadata = metadata,
-                    col_inf = "blue",
-                    col_sup = "red",
-                    col_cond = "metodo",
-                    type = "effect",
-                    threshold_lower = -1,
-                    threshold_upper = 1,
-                    cond = "kit",
-                    show_labels = TRUE)
-
-
+\dontrun{
+aldex_volcano_plot(
+  table           = table,
+  metadata        = metadata,
+  col_cond        = "metodo",
+  type            = "effect",
+  col_inf         = "blue",
+  col_sup         = "red",
+  threshold_lower = -1,
+  threshold_upper = 1,
+  cond            = "kit",
+  show_labels     = TRUE
+)
+}
 }

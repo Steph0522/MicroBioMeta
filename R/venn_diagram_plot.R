@@ -14,16 +14,21 @@
 #' @param group_colors Optional vector of colors for the groups. If NULL, a default `distiller` scale with `Set3` palette will be used.
 
 #' @return A ggplot object or other plot depending on the method.
+#' @importFrom ggvenn ggvenn
+#' @importFrom ggVennDiagram ggVennDiagram
 #' @export
-#' @examples    venn_diagram_plot(table= table_taxa,
-#'                                 metadata=metadata,
-#'                                 merge_by = "ID.CAM",
-#'                                 min_prevalence = 0,
-#'                                 denom = "all",
-#'                                 group_colors = c("blue", "yellow"),
-#'                                 method = "ggvenn")
-#'                                 
-#' 
+#' @examples
+#' \dontrun{
+#' venn_diagram_plot(
+#'   table          = table,
+#'   metadata       = metadata,
+#'   merge_by       = "ID.CAM",
+#'   min_prevalence = 0,
+#'   group_colors   = c("blue", "yellow"),
+#'   method         = "ggvenn"
+#' )
+#' }
+
 venn_diagram_plot <- function(table, metadata, merge_by = NULL,
                               selected_samples = NULL, min_prevalence = 0,
                               title = NULL, method = "ggvenn",
@@ -51,10 +56,10 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
   metadata_split <- metadata_split[sapply(metadata_split, length) > 0]
   num_groups <- length(metadata_split)
   
-  # Default palette - Distiller Set3
+  # Default palette - Okabe-Ito (colorblind-friendly)
   use_manual <- !is.null(group_colors)
   if (!use_manual) {
-    group_colors <- scales::hue_pal()(num_groups)
+    group_colors <- rep_len(.mbm_colors, num_groups)
   } else {
     group_colors <- rep(group_colors, length.out = num_groups)
   }
@@ -74,48 +79,46 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
   names(lista) <- names(metadata_split)
   
   # Selección del método
-  if (method == "ggvenndiagram") {
-    if (!requireNamespace("ggVennDiagram", quietly = TRUE)) stop("Install ggVennDiagram package.")
-    
-    if (use_manual) {
-      venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0,
-                                                set_color = group_colors,
-                                                edge_size = 1) +
-        ggplot2::scale_fill_gradient(low = "white", high = "#5A5A5A", na.value = NA)
-    } else {
-      venn_plot <- ggVennDiagram::ggVennDiagram(lista, label_alpha = 0,
-                                                edge_size = 1) +
-        ggplot2::scale_fill_gradientn(colours = c(
-          "#F3C300", "#875692", "#F38400", "#A1CAF1", "#BE0032",
-          "#C2B280", "#848482", "#008856", "#E68FAC", "#0067A5",
-          "#F99379", "#604E97", "#F6A600", "#B3446C", "#DCD300",
-          "#882D17", "#8DB600", "#654522", "#E25822"
-        ))
-    }
-    
-  } else if (method == "ggvenn") {
-    if (!requireNamespace("ggvenn", quietly = TRUE)) stop("Install 'ggvenn' package.")
-    
-    if (use_manual) {
-      venn_plot <- ggvenn::ggvenn(lista, fill_color = group_colors)
-    } else {
-      venn_plot <- ggvenn::ggvenn(lista) + 
-        ggplot2::scale_fill_manual(values = c(
-          "#F3C300", "#875692", "#F38400", "#A1CAF1", "#BE0032",
-          "#C2B280", "#848482", "#008856", "#E68FAC", "#0067A5",
-          "#F99379", "#604E97", "#F6A600", "#B3446C", "#DCD300",
-          "#882D17", "#8DB600", "#654522", "#E25822"
-        ))
-    }
-    
+  if (tolower(method) == "ggvenndiagram") {
+    venn_plot <- ggVennDiagram::ggVennDiagram(
+      lista,
+      label_alpha = 0,
+      set_color   = group_colors,
+      edge_size   = 1
+    ) +
+      ggplot2::scale_fill_gradient(low = "white", high = "grey60",
+                                   na.value = NA, name = "Count")
+
+  } else if (tolower(method) == "ggvenn") {
+    venn_plot <- ggvenn::ggvenn(lista,
+                                fill_color   = group_colors,
+                                fill_alpha   = 0.5,
+                                stroke_color = "grey30",
+                                set_name_size = 5,
+                                text_size     = 4)
   } else {
-    stop("Method must be 'ggvenn' or 'ggvenndiagram'.")
+    stop("Method must be 'ggvenn' or 'ggVennDiagram'.")
   }
-  
-  venn_plot <- venn_plot + 
-               ggtitle(title) + 
-               theme(legend.position = "right",
-                     legend.text = ggplot2::element_text(size = 28, family = "Times New Roman"))
+
+  # Base theme for Venn (theme_void keeps circles clean)
+  venn_plot <- venn_plot +
+    ggplot2::theme_void(base_family = "serif") +
+    ggplot2::theme(
+      legend.position = "right",
+      legend.text     = ggplot2::element_text(size = 12, color = "black"),
+      legend.title    = ggplot2::element_text(size = 12, face = "bold",
+                                              color = "black")
+    )
+
+  # Add title only when provided
+  if (!is.null(title)) {
+    venn_plot <- venn_plot +
+      ggplot2::labs(title = title) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(hjust = 0.5, face = "bold",
+                                           size = 14, color = "black")
+      )
+  }
   return(venn_plot)
 }
 

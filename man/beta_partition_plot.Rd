@@ -30,7 +30,13 @@ beta_partition_plot(
 
 \item{legend_title}{Optional custom legend title.}
 
+\item{point_size}{Numeric. Size of points in ordination plots. Default \code{3}.}
+
 \item{colors}{Optional named vector of colors for groups.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{TRUE}.}
+
+\item{table_filename}{Character. Base name for the saved table file. Default \code{"SAMPLE1"}.}
 }
 \value{
 A combined cowplot panel of beta diversity partition plots.
@@ -40,9 +46,13 @@ This function computes beta diversity partition (Jaccard or Sorensen)
 using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
 }
 \examples{
-beta_partition_plot(table=table,
-                    metadata= metadata,
-                    group_col="metodo", 
-                    point_size = 4,
-                    colors = c("gray", "blue"))
+\dontrun{
+beta_partition_plot(
+  table      = table,
+  metadata   = metadata,
+  group_col  = "metodo",
+  point_size = 4,
+  colors     = c("gray", "blue")
+)
+}
 }

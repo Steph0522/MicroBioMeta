@@ -8,10 +8,13 @@
 #' @param level Character. Taxonomic level to collapse: `"genus"` (default) or `"phylum"`.
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
 #' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
-#' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
+#' @param legend_title Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
-#' @param x_axis_title Character. The tittle that should be in the x-axis (deault = "Samples")
+#' @param x_axis_title Character. The title for the x-axis (default = "Samples")
 #' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
+#' @param width_equal Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.
+#' @param save_table Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{TRUE}.
+#' @param table_filename Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
@@ -24,17 +27,20 @@
 #'
 #' @export
 #'
-#' @examples abundance_barplot( table = table_taxa,
-#'                              metadata = metadata,
-#'                              taxonomy_db = "silva",
-#'                              level = "genus",
-#'                              x_col = "MUESTRA",
-#'                              label = "Genus",
-#'                              facet_col = "SITIO",
-#'                              width_equal = FALSE,
-#'                              group_var = "SAMPLEID",
-#'                              top_n = 30,
-#'                              add_remained  = TRUE)
+#' @examples
+#' \dontrun{
+#' abundance_barplot(
+#'   table      = table_taxa,
+#'   metadata   = metadata,
+#'   taxonomy_db = "silva",
+#'   level      = "genus",
+#'   x_col      = "MUESTRA",
+#'   legend_title = "Genus",
+#'   facet_col  = "SITIO",
+#'   top_n      = 30,
+#'   add_remained = TRUE
+#' )
+#' }
 
 
 
@@ -45,7 +51,7 @@ abundance_barplot <- function(table,
                               x_col,
                               facet_col = NULL,
                               width_equal = FALSE,
-                              label = "taxonomy",
+                              legend_title = "taxonomy",
                               top_n = 15,
                               x_axis_title = "Samples",
                               add_remained = FALSE,
@@ -393,7 +399,7 @@ abundance_barplot <- function(table,
                                     fill = taxonomy)) +
     ggplot2::geom_bar(stat = "identity", position = "stack", width = 0.5, color = "#000000") +
     ggplot2::scale_fill_manual(
-      name = label,
+      name = legend_title,
       values = cbPalette,
       labels = function(taxa) {
         if (level %in% c("genus", "species")) {

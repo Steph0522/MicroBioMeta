@@ -1,18 +1,58 @@
 Package: MicroBioMeta
-Title: MicroBioMeta: Intuitive Microbiome Data Analysis for Beginners with Minimal Coding
+Title: Intuitive Microbiome Data Analysis and Visualization for Beginners with Minimal Coding
 Version: 0.99.0
 Date: 2025-04-25
-Authors@R: 
-    person("Stephanie", "Hereira", , "first.last@example.com", role = c("aut", "cre"))
-Description: The goal of MicroBioMeta is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way.
+Authors@R: c(
+    person("Stephanie", "Hereira Pacheco", , "sehereirap@uatx.mx", role = c("aut", "cre"),
+           comment = c(ORCID = "https://orcid.org/0000-0003-1433-8187")),
+    person("Nina", "Montoya Ciriaco", , "aninck298@hotmail.com", role = "aut",
+           comment = c(ORCID = "https://orcid.org/0009-0000-3555-0692")),
+    person("Karla", "Zarco González", , "estephania_zarcogg@cinvestav.mx", role = "aut",
+           comment = c(ORCID = "https://orcid.org/0009-0003-3407-9036")))
+Description: The goal of MicroBioMeta is to support beginners in microbiome
+    data analysis, whether working with metagenomic or metabarcoding datasets.
+    It enables users with limited experience in R to explore, visualize, and
+    analyze results with minimal coding and customization. This helps save time
+    on scripting, while still producing statistically robust results and
+    publication-ready figures in an intuitive and accessible way.
 License: Artistic-2.0
 URL: https://github.com/Steph0522/MicroBioMeta
-BugReports: https://support.bioconductor.org/tag/MicroBioMeta
-biocViews: Software
+BugReports: https://github.com/Steph0522/MicroBioMeta/issues
+biocViews: Software, Microbiome, Metagenomics, Visualization,
+    DifferentialAbundance, MultipleComparison
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
-Suggests: 
+Imports:
+    dplyr,
+    tidyr,
+    tibble,
+    ggplot2,
+    stringr,
+    ggpubr,
+    ggrepel,
+    cowplot,
+    ggh4x,
+    scales,
+    RColorBrewer,
+    reshape2,
+    vegan,
+    hillR,
+    betapart,
+    qiime2R,
+    phyloseq,
+    ALDEx2,
+    rlang,
+    purrr,
+    tidyselect,
+    utils,
+    stats,
+    grDevices,
+    grid,
+    randomForest,
+    ggvenn,
+    ggVennDiagram,
+    sf
+Suggests:
     BiocStyle,
     knitr,
     RefManageR,
@@ -21,6 +61,12 @@ Suggests:
     testthat,
     viridis,
     magick,
-    ComplexHeatmap
+    ComplexHeatmap,
+    ANCOMBC,
+    sankeyD3,
+    ggordiplots,
+    circlize,
+    BiocManager
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

@@ -44,11 +44,13 @@ unchanged. Optionally converts counts to relative abundance and exports the
 collapsed table to a tab-delimited file.
 }
 \examples{
+\dontrun{
 collapse_table(
-  table = table,
-  metadata = metadata,
-  level = "genus",
-  rel_abun = FALSE,
+  table      = table,
+  metadata   = metadata,
+  level      = "genus",
+  rel_abun   = FALSE,
   export_txt = FALSE
 )
+}
 }
