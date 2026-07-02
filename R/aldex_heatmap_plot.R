@@ -17,16 +17,31 @@
 #'   If NULL (default) only \code{effect_threshold} is applied.
 #' @param cluster_rows Logical. Cluster heatmap rows (default \code{FALSE}).
 #' @param cluster_columns Logical. Cluster heatmap columns (default \code{FALSE}).
-#' @param diverging_palette Character. Name of a built-in colorblind-friendly
-#'   diverging palette for the main heatmap body. One of \code{"BuOr"}
-#'   (blue-orange, default), \code{"BuVm"}, \code{"BuPk"}, \code{"GnPk"}.
-#'   The color range is computed automatically from the data.
-#' @param effect_colors Color function for effect size annotation.
-#' @param pvalue_colors Named list of colors for p-value annotation.
-#' @param col_higher Character. Color for bars where taxa are higher in the
-#'   first condition (default \code{"#E69F00"}, Okabe-Ito orange).
-#' @param col_lower Character. Color for bars where taxa are lower in the
-#'   first condition (default \code{"#0072B2"}, Okabe-Ito blue).
+#' @param heatmap_colors Controls the color scale of the main heatmap body (CLR values).
+#'   Three options: \code{NULL} (default, same as \code{"viridis"}) uses a sequential
+#'   colorblind-friendly viridis scale (the same family used in
+#'   \code{abundance_heatmap_plot}), with range computed automatically from the data;
+#'   a preset name string — \code{"viridis"} or one of the diverging presets
+#'   \code{"BuOr"} (blue-orange), \code{"BuVm"} (blue-vermillion), \code{"BuPk"}
+#'   (blue-pink), \code{"GnPk"} (green-pink); or a \code{circlize::colorRamp2}
+#'   function for full manual control.
+#' @param effect_colors Color function for the effect size annotation strip
+#'   (default: green-white-pink colorblind-friendly scale, distinct from the
+#'   heatmap body and p-value defaults).
+#' @param pvalue_colors Named list of colors for the p-value annotation strip
+#'   (default: black/vermillion/yellow/grey categorical scale, distinct from
+#'   the heatmap body and effect size defaults).
+#' @param group_colors Optional character vector of colors for the difference
+#'   barplot annotation, one color per condition in the order they appear in
+#'   \code{metadata[[col_cond]]}. If \code{NULL} (default) a sky blue/yellow
+#'   colorblind-friendly palette is used (distinct from the other annotations'
+#'   defaults), cycling through the rest of the Okabe-Ito palette as needed
+#'   for more than two groups.
+#' @param save_table Logical. If \code{TRUE}, saves the underlying ALDEx2
+#'   results table (filtered taxa, effect size, diff.btw, p-value category)
+#'   to disk. Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.
 #'
 #' @return A \code{ComplexHeatmap} object (returned invisibly; drawn as a
 #'   side effect).
@@ -50,21 +65,22 @@ aldex_heatmap_plot <- function(table,
                                pvalue_BH         = NULL,
                                cluster_rows      = FALSE,
                                cluster_columns   = FALSE,
-                               diverging_palette = "BuOr",
+                               heatmap_colors    = NULL,
                                effect_colors = circlize::colorRamp2(
                                  c(-1.5, 0, 1.5),
-                                 c("#0072B2", "white", "#E69F00")
+                                 c("#009E73", "white", "#CC79A7")
                                ),
                                pvalue_colors = list(
                                  "p-value" = c(
-                                   "<0.001" = "#0072B2",
-                                   "<0.01"  = "#56B4E9",
-                                   "<0.05"  = "#E69F00",
+                                   "<0.001" = "#000000",
+                                   "<0.01"  = "#D55E00",
+                                   "<0.05"  = "#F0E442",
                                    ">0.05"  = "grey85"
                                  )
                                ),
-                               col_higher = "#E69F00",   # Okabe-Ito orange
-                               col_lower  = "#0072B2") { # Okabe-Ito blue
+                               group_colors = NULL,
+                               save_table = FALSE,
+                               table_filename = "aldex_pval_effect.txt") {
 
   # Check ComplexHeatmap
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
@@ -158,6 +174,12 @@ aldex_heatmap_plot <- function(table,
     ) %>%
     dplyr::arrange(diff.btw)
 
+  if (save_table) {
+    utils::write.table(aldex_plot, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   rab_cols <- paste0("rab.win.", unique_conditions)
   heat_data <- aldex_plot %>%
     dplyr::select(taxonomy, dplyr::all_of(rab_cols)) %>%
@@ -165,22 +187,48 @@ aldex_heatmap_plot <- function(table,
     tibble::column_to_rownames(var = "taxonomy") %>%
     as.matrix()
 
-  # Compute diverging heatmap colors from actual data range
-  pal_colors <- .mbm_div_palettes[[diverging_palette]]
-  if (is.null(pal_colors)) {
-    warning("Unknown diverging_palette '", diverging_palette,
-            "'. Using 'BuOr'. Valid options: ",
-            paste(names(.mbm_div_palettes), collapse = ", "))
-    pal_colors <- .mbm_div_palettes[["BuOr"]]
-  }
+  # Resolve heatmap body colors
   data_max <- max(abs(heat_data), na.rm = TRUE)
-  heatmap_colors <- circlize::colorRamp2(
-    c(-data_max, 0, data_max),
-    pal_colors
-  )
+  heatmap_colors_fn <- if (is.null(heatmap_colors) ||
+                          (is.character(heatmap_colors) && length(heatmap_colors) == 1 &&
+                           tolower(heatmap_colors) == "viridis")) {
+    # Default: sequential viridis scale (same family as abundance_heatmap_plot)
+    circlize::colorRamp2(
+      seq(-data_max, data_max, length.out = 13),
+      viridis::viridis(13, option = "C", direction = -1)
+    )
+  } else if (is.character(heatmap_colors) && length(heatmap_colors) == 1) {
+    # Diverging preset name string
+    pal <- .mbm_div_palettes[[heatmap_colors]]
+    if (is.null(pal)) {
+      warning("Unknown heatmap_colors preset '", heatmap_colors,
+              "'. Using 'viridis'. Valid options: 'viridis', ",
+              paste(names(.mbm_div_palettes), collapse = ", "))
+      pal <- NULL
+    }
+    if (is.null(pal)) {
+      circlize::colorRamp2(
+        seq(-data_max, data_max, length.out = 13),
+        viridis::viridis(13, option = "C", direction = -1)
+      )
+    } else {
+      circlize::colorRamp2(c(-data_max, 0, data_max), pal)
+    }
+  } else {
+    heatmap_colors   # assume already a colorRamp2 function
+  }
 
-  # Barplot fill: direct assignment avoids fragile name-lookup
-  bar_fills <- ifelse(aldex_plot$diff.btw > 0, col_higher, col_lower)
+  # Resolve group colors for barplot: default starts at sky blue/yellow
+  # (distinct from the blue/orange heatmap and green/pink effect size
+  # defaults), then cycles through the rest of Okabe-Ito for N conditions
+  if (is.null(group_colors)) {
+    group_default <- .mbm_colors[c(2, 4, 3, 7, 6, 8, 5, 1)]
+    group_colors  <- rep_len(group_default, length(unique_conditions))
+  } else {
+    group_colors <- rep_len(group_colors, length(unique_conditions))
+  }
+  # Map: diff.btw > 0 → condition 1 color; diff.btw < 0 → condition 2 color
+  bar_fills <- ifelse(aldex_plot$diff.btw > 0, group_colors[1], group_colors[2])
 
   # Shared gpar helpers (consistent font/color across all annotations)
   gp_title  <- grid::gpar(fontsize = 12, fontface = "bold",
@@ -251,7 +299,7 @@ aldex_heatmap_plot <- function(table,
       legend_height = grid::unit(2.5, "cm")
     ),
     column_names_gp  = gp_title,
-    col              = heatmap_colors,
+    col              = heatmap_colors_fn,
     row_names_gp     = grid::gpar(fontsize = 11, fontface = "italic",
                                   fontfamily = "serif", col = "black"),
     show_heatmap_legend = TRUE

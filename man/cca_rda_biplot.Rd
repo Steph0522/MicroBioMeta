@@ -19,7 +19,7 @@ cca_rda_biplot(
   analysis = "CCA",
   seed = 126,
   scale_arrows = 1,
-  title = NULL
+  title = "auto"
 )
 }
 \arguments{
@@ -51,7 +51,8 @@ cca_rda_biplot(
 
 \item{scale_arrows}{Numeric value to scale environmental vectors in the plot.}
 
-\item{title}{Optional plot title.}
+\item{title}{Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
+\code{NULL} shows no title; any other string is used as-is.}
 }
 \value{
 A \code{ggplot} object displaying the biplot with sample scores and environmental vectors.
@@ -64,16 +65,13 @@ sample scores and environmental vectors.
 \examples{
 \dontrun{
 cca_rda_biplot(
-  table                = table,
-  env_data             = env_data,
-  env_vars             = c("pH", "Nitrogen", "Calcium"),
-  metadata             = metadata,
-  group_col            = "metodo",
+  table                = table_bac,
+  env_data             = env_table_bac,
+  metadata             = metadata_bacteria,
+  env_vars             = c("pH", "TN", "WHC", "EC", "Clay"),
   analysis             = "RDA",
   show_all_env_vectors = TRUE,
-  legend_title         = "Method",
-  group_colors         = c("red", "blue"),
-  title                = "CCA/RDA Biplot"
+  group_col            = "Type_of_soil"
 )
 }
 }

@@ -12,12 +12,11 @@ aldex_heatmap_plot(
   pvalue_BH = NULL,
   cluster_rows = FALSE,
   cluster_columns = FALSE,
-  diverging_palette = "BuOr",
-  effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("#0072B2", "white", "#E69F00")),
-  pvalue_colors = list(`p-value` = c(`<0.001` = "#0072B2", `<0.01` = "#56B4E9", `<0.05` =
-    "#E69F00", `>0.05` = "grey85")),
-  col_higher = "#E69F00",
-  col_lower = "#0072B2"
+  heatmap_colors = NULL,
+  effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("#009E73", "white", "#CC79A7")),
+  pvalue_colors = list(`p-value` = c(`<0.001` = "#000000", `<0.01` = "#D55E00", `<0.05` =
+    "#F0E442", `>0.05` = "grey85")),
+  group_colors = NULL
 )
 }
 \arguments{
@@ -41,20 +40,27 @@ If NULL (default) only \code{effect_threshold} is applied.}
 
 \item{cluster_columns}{Logical. Cluster heatmap columns (default \code{FALSE}).}
 
-\item{diverging_palette}{Character. Name of a built-in colorblind-friendly
-diverging palette for the main heatmap body. One of \code{"BuOr"}
-(blue-orange, default), \code{"BuVm"}, \code{"BuPk"}, \code{"GnPk"}.
-The color range is computed automatically from the data.}
+\item{heatmap_colors}{Controls the color scale of the main heatmap body (CLR values).
+Three options: \code{NULL} (default) uses the \code{"BuOr"} colorblind-friendly
+diverging preset with range computed automatically from data; a preset name string
+— one of \code{"BuOr"} (blue-orange), \code{"BuVm"} (blue-vermillion),
+\code{"BuPk"} (blue-pink), \code{"GnPk"} (green-pink); or a
+\code{circlize::colorRamp2} function for full manual control.}
 
-\item{effect_colors}{Color function for effect size annotation.}
+\item{effect_colors}{Color function for the effect size annotation strip
+(default: green-white-pink colorblind-friendly scale, distinct from the
+heatmap body and p-value defaults).}
 
-\item{pvalue_colors}{Named list of colors for p-value annotation.}
+\item{pvalue_colors}{Named list of colors for the p-value annotation strip
+(default: black/vermillion/yellow/grey categorical scale, distinct from
+the heatmap body and effect size defaults).}
 
-\item{col_higher}{Character. Color for bars where taxa are higher in the
-first condition (default \code{"#E69F00"}, Okabe-Ito orange).}
-
-\item{col_lower}{Character. Color for bars where taxa are lower in the
-first condition (default \code{"#0072B2"}, Okabe-Ito blue).}
+\item{group_colors}{Optional character vector of colors for the difference
+barplot annotation, one color per condition in the order they appear in
+\code{metadata[[col_cond]]}. If \code{NULL} (default) a sky blue/yellow
+colorblind-friendly palette is used (distinct from the other annotations'
+defaults), cycling through the rest of the Okabe-Ito palette as needed
+for more than two groups.}
 }
 \value{
 A \code{ComplexHeatmap} object (returned invisibly; drawn as a

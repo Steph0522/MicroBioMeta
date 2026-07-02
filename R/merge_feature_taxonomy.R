@@ -6,6 +6,10 @@
 #'              Row names must contain OTUIDs, ASVs, or species names.
 #' @param taxonomy A data frame or matrix with taxonomy information.
 #'                 Row names must match the identifiers in the table.
+#' @param save_table Logical. If \code{TRUE}, saves the merged table to disk.
+#'   Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"merged_feature_taxonomy.txt"}.
 #'
 #' @return A data frame with counts and taxonomy merged. If only one column in the taxonomy is present,
 #'         it will be renamed to 'taxonomy'.
@@ -19,7 +23,9 @@
 #' )
 #' }
 
-merge_feature_taxonomy <- function(table, taxonomy) {
+merge_feature_taxonomy <- function(table, taxonomy,
+                                   save_table = FALSE,
+                                   table_filename = "merged_feature_taxonomy.txt") {
   # Ensure both inputs are data frames
   table <- as.data.frame(table)
   taxonomy <- as.data.frame(taxonomy)
@@ -60,6 +66,12 @@ merge_feature_taxonomy <- function(table, taxonomy) {
   # Set OTUID as rownames again
   rownames(joined) <- joined$OTUID
   joined$OTUID <- NULL
-  
+
+  if (save_table) {
+    utils::write.table(joined, file = table_filename, sep = "\t",
+                       quote = FALSE, col.names = NA)
+    message(paste("Table saved as:", table_filename))
+  }
+
   return(joined)
 }

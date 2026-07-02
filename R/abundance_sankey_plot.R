@@ -5,6 +5,11 @@
 #' @param maxn Maximum number of taxa per level to include in the diagram (default: 25).
 #' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
 #' @param taxonomy_db Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").
+#' @param save_table Logical. If \code{TRUE}, saves a combined table of the
+#'   Sankey nodes and links to disk, distinguished by a \code{table_type}
+#'   column (\code{"node"} or \code{"link"}). Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.
 #'
 #' @return Invisibly returns the Sankey diagram object and saves an HTML file.
 #' @export
@@ -23,7 +28,9 @@
 
 abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                                   taxRanks = c("D","K","P","C","O","F","G","S"),
-                                  taxonomy_db = "gg") {
+                                  taxonomy_db = "gg",
+                                  save_table = FALSE,
+                                  table_filename = "sankey_nodes_links.txt") {
   
   # Función interna para abundancia relativa
   relabunda <- function(x) as.data.frame(t(t(x) / colSums(x))) * 100
@@ -161,7 +168,18 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   
   nodes$name <- sub("^._","",nodes$name)
   links$type <- sub(" .*","",nodes[links$source + 1,"name"])
-  
+
+  if (save_table) {
+    nodes_out <- nodes
+    nodes_out$table_type <- "node"
+    links_out <- links
+    links_out$table_type <- "link"
+    combined_table <- dplyr::bind_rows(nodes_out, links_out)
+    utils::write.table(combined_table, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   sankey <- sankeyD3::sankeyNetwork(
     Links = links,
     Nodes = nodes,

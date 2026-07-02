@@ -23,6 +23,10 @@
 #' @param x_axis_title Character. Label for the x-axis (taxon names).
 #' @param group_colors Character vector of colors used to represent the dominant
 #'   condition.
+#' @param save_table Logical. If \code{TRUE}, saves the underlying ratio table
+#'   to disk. Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"ratios_bubble_table.txt"}.
 #'
 #' @return A ggplot2 object showing abundance ratios between the two
 #'   conditions.
@@ -51,7 +55,9 @@ ratio_plot <- function(table,
                                  top_n = 30,
                                  level = "genus",
                                  x_axis_title = "Taxon",
-                                 group_colors = NULL) {
+                                 group_colors = NULL,
+                                 save_table = FALSE,
+                                 table_filename = "ratios_bubble_table.txt") {
   # Filtrar metadatos a las condiciones deseadas
   metadata_sub <- metadata %>%
     dplyr::filter(.data[[condition_col]] %in% c(condition_A, condition_B)) %>%
@@ -194,6 +200,12 @@ ratio_plot <- function(table,
   top_taxa <- summary_data %>%
     dplyr::slice_max(order_by = MeanAbund, n = top_n) %>%
     dplyr::arrange(desc(Ratio))
+
+  if (save_table) {
+    utils::write.table(top_taxa, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
 
   # Bubble plot
   ggplot2::ggplot(top_taxa,

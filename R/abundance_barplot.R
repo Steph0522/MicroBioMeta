@@ -8,7 +8,7 @@
 #' @param level Character. Taxonomic level to collapse: `"genus"` (default) or `"phylum"`.
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
 #' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
-#' @param legend_title Character. Legend title for the taxa groups. Default is `"taxonomy"`.
+#' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The title for the x-axis (default = "Samples")
 #' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
@@ -35,7 +35,7 @@
 #'   taxonomy_db = "silva",
 #'   level      = "genus",
 #'   x_col      = "MUESTRA",
-#'   legend_title = "Genus",
+#'   label = "Genus",
 #'   facet_col  = "SITIO",
 #'   top_n      = 30,
 #'   add_remained = TRUE
@@ -51,7 +51,7 @@ abundance_barplot <- function(table,
                               x_col,
                               facet_col = NULL,
                               width_equal = FALSE,
-                              legend_title = "taxonomy",
+                              label = "taxonomy",
                               top_n = 15,
                               x_axis_title = "Samples",
                               add_remained = FALSE,
@@ -399,7 +399,7 @@ abundance_barplot <- function(table,
                                     fill = taxonomy)) +
     ggplot2::geom_bar(stat = "identity", position = "stack", width = 0.5, color = "#000000") +
     ggplot2::scale_fill_manual(
-      name = legend_title,
+      name = label,
       values = cbPalette,
       labels = function(taxa) {
         if (level %in% c("genus", "species")) {

@@ -10,8 +10,8 @@ randomf_lollipop_plot(
   top_n = 15,
   size = 8,
   variable_to_predict,
-  col_palette = NULL,
-  legend_figure = NULL
+  group_colors = NULL,
+  title = NULL
 )
 }
 \arguments{
@@ -25,9 +25,9 @@ randomf_lollipop_plot(
 
 \item{variable_to_predict}{Variable to predict from the metadata.}
 
-\item{col_palette}{Custom color palette (optional).}
+\item{group_colors}{Custom color palette (optional).}
 
-\item{legend_figure}{Main title for the figure.}
+\item{title}{Main title for the figure.}
 }
 \value{
 A lollipop plot showing top important features from random forest analysis.
@@ -41,7 +41,7 @@ randomf_lollipop_plot(
   table               = table,
   metadata            = metadata,
   variable_to_predict = "SITIO",
-  col_palette         = c("red", "blue", "green"),
+  group_colors        = c("red", "blue", "green"),
   top_n               = 20,
   size                = 6
 )

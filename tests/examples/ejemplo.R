@@ -74,8 +74,12 @@ aldex_heatmap_plot(
   metadata = metadata,
   col_cond = "metodo",
   heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
-  treatment_colors = c("Higher" = "green", "Lower" = "yellow")
+ # treatment_colors = c("Higher" = "green", "Lower" = "yellow")
 )
+aldex_heatmap_plot(table, metadata, col_cond = "metodo")
+                 #  heatmap_colors = circlize::colorRamp2(
+                  #   c(-3, 0, 3), c("blue", "white", "red")),
+                  # group_colors = c("green", "yellow"))
 
 aldex_volcano_plot(
   table = table,

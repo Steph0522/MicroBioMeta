@@ -10,6 +10,10 @@
 #' @param condition2.y Condition 2 of axis-y
 #' @param color_facets_x Color vector for facet strips.
 #' @param color_axis_x Named color vector for x-axis groups.
+#' @param save_table Logical. If \code{TRUE}, saves the underlying turnover
+#'   table to disk. Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.
 #'
 #' @return A ggplot2 figure with beta diversity partitions across conditions.
 #' @export
@@ -39,9 +43,11 @@ beta_plot <- function(table,
                       condition2.x,
                       condition2.y,
                       color_facets_x,
-                      color_axis_x) {
-  
-  
+                      color_axis_x,
+                      save_table = FALSE,
+                      table_filename = "betadiv_turnover.txt") {
+
+
   # Paso 1: Filtrar y transponer tabla OTU
   otu_filter <- table %>%
     dplyr::filter(rowSums(dplyr::across(dplyr::where(is.numeric))) != 0)
@@ -92,7 +98,13 @@ beta_plot <- function(table,
   if (nrow(beta_final) == 0) stop("Error: Despues de filtrar comparaciones, la tabla quedo vacia.")
   
   message(" Paso 4: Beta_final lista - filas: ", nrow(beta_final))
-  
+
+  if (save_table) {
+    utils::write.table(beta_final, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   # Paso 5: Crear grafico
   figura <- beta_final %>%
     ggpubr::ggboxplot(x = condition1.y, y = "Recambio", fill = condition1.y) +
@@ -129,7 +141,9 @@ shared_plot <- function(table,
                         condition2.x,
                         condition2.y,
                         color_facets_x,
-                        color_axis_x) 
+                        color_axis_x,
+                        save_table = FALSE,
+                        table_filename = "betadiv_shared.txt")
 {
   
   #Obtener base de datos sin singletons por muestra
@@ -168,9 +182,14 @@ shared_plot <- function(table,
   # Toma la columna 'sum' de la ultima columna
   asv_emb <- asv_emb[, c("site2", "sum")]
   beta.shared.final2 <- dplyr::left_join(beta.shared.final, asv_emb, by="site2")
-  beta.shared.final2$overlap<- (beta.shared.final2$value / beta.shared.final2$sum)*100   
-  
-  
+  beta.shared.final2$overlap<- (beta.shared.final2$value / beta.shared.final2$sum)*100
+
+  if (save_table) {
+    utils::write.table(beta.shared.final2, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   #Boxplot
   
   beta.shared<-beta.shared.final2 %>% 
@@ -211,7 +230,9 @@ beta_plot_flexible <- function(table,
                                color_axis_x,
                                title_axis_x,
                                partition = c("shared", "turnover", "nestedness"),
-                               family = c("sorensen", "jaccard")) {
+                               family = c("sorensen", "jaccard"),
+                               save_table = FALSE,
+                               table_filename = "betadiv_partition.txt") {
   
   # Validar argumentos
   partition <- match.arg(partition)
@@ -262,7 +283,13 @@ beta_plot_flexible <- function(table,
     dplyr::filter(compar_condition2 %in% comparison_condition2)
   
   message(" Filtrado: ", nrow(beta_final), " filas finales.")
-  
+
+  if (save_table) {
+    utils::write.table(beta_final, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   # Crear plot
   figura <- beta_final %>%
     ggpubr::ggboxplot(x = condition1.y, y = "value", fill = condition1.y, facet.by = condition1.x) +

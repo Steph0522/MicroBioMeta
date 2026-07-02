@@ -8,6 +8,10 @@
 #'              The first column must contain the OTUID, ASV, or species name.
 #' @param facet_orientation Whether `facet_by` appears in columns ("horizontal", default) or rows ("vertical").
 #' @param plot_title Character. Title for the plot. Default \code{"default"}.
+#' @param save_table Logical. If \code{TRUE}, saves the Hill numbers table to
+#'   disk. Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"hill.txt"}.
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
@@ -21,20 +25,29 @@
 
 alpha_hill_corrplot <- function(table,
                                 facet_orientation = "horizontal",
-                                plot_title = "default") {
-  
+                                plot_title = "default",
+                                save_table = FALSE,
+                                table_filename = "hill.txt") {
+
   # --- Preparación de datos ---
   table <- table[, !colnames(table) %in% "taxonomy"]
   table <- data.frame(t(table))
-  
+
   # --- Calcular Hill numbers ---
   q_data <- data.frame(
+    SampleID = rownames(table),
     Frequency = rowSums(table),
     q0 = hillR::hill_taxa(comm = table, q = 0),
     q1 = hillR::hill_taxa(comm = table, q = 1),
     q2 = hillR::hill_taxa(comm = table, q = 2)
   )
-  
+
+  if (save_table) {
+    utils::write.table(q_data, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   # --- Tema base común ---
   base_theme <- .mbm_theme(
     legend_position = "none",

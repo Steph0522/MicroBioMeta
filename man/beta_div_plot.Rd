@@ -14,7 +14,8 @@ beta_div_plot(
   shape_col = NULL,
   legend_title = NULL,
   arrows_size = 10,
-  top_n = 5
+  top_n = 5,
+  title = "auto"
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ beta_div_plot(
 \item{arrows_size}{Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.}
 
 \item{top_n}{Number of top contributing taxa to display as arrows in PCA.}
+
+\item{title}{Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
+\code{NULL} shows no title; any other string is used as-is.}
 }
 \value{
 A \code{ggplot2} object.

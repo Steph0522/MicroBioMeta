@@ -11,6 +11,10 @@
 #' @param permutations Number of permutations required
 #' @param strata_var Group or variable within which permutations are restricted
 #' @param decimales Number of decimales required
+#' @param save_table Logical. If \code{TRUE}, saves the results table to disk.
+#'   Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.
 #'
 #' @return A table with the results of R2, F and p value 
 #' @export
@@ -43,7 +47,9 @@ beta_test_table <- function(table,
                             test = c("permanova", "betadisper"),
                             permutations = 999,
                             strata_var = NULL,
-                            decimales = 3) {
+                            decimales = 3,
+                            save_table = FALSE,
+                            table_filename = "beta_test_results.txt") {
   
   test <- match.arg(test)
   
@@ -118,7 +124,13 @@ beta_test_table <- function(table,
     dplyr::mutate(across(where(is.numeric), ~ round(., decimales))) %>%
     dplyr::mutate(across(everything(), as.character)) %>%
     dplyr::mutate(across(everything(), ~ ifelse(is.na(.), "-", .)))
-  
+
+  if (save_table) {
+    utils::write.table(tabla, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   # --- Crear tabla visual ---
   tab <- ggpubr::ggtexttable(tabla,
                              rows = NULL,

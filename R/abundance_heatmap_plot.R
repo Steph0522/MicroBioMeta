@@ -16,6 +16,10 @@
 #' @param top_n Number of features to plot.
 #' @param cluster Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)
 #' @param show_column_names Logical indicating whether to show column names (TRUE) or not (FALSE)
+#' @param save_table Logical. If \code{TRUE}, saves the underlying abundance
+#'   table to disk. Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"abundance_heatmap_table.txt"}.
 #'
 #' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
@@ -53,7 +57,9 @@ abundance_heatmap_plot <- function(table,
                                    name_legend_condition3 = NULL,
                                    top_n,
                                    cluster = TRUE,
-                                   show_column_names = TRUE) {
+                                   show_column_names = TRUE,
+                                   save_table = FALSE,
+                                   table_filename = "abundance_heatmap_table.txt") {
   
   #Check for taxonomy column
   
@@ -106,8 +112,14 @@ abundance_heatmap_plot <- function(table,
           "\nReference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/")
   
   
+  if (save_table) {
+    utils::write.table(table_abundance, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   ordered_taxa <- table_abundance$taxa
-  
+
   # Join table with metadata
   heat <- table_abundance %>% 
     tibble::column_to_rownames(var = "taxa") %>%

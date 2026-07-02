@@ -30,9 +30,9 @@ aldex_volcano_plot(
 
 \item{type}{Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.}
 
-\item{col_inf}{Color for points with effect size/difference lower than threshold (default for "effect" plot).}
+\item{col_inf}{Color for points lower than threshold. Default \code{'#0072B2'} (Okabe-Ito blue).}
 
-\item{col_sup}{Color for points with effect size/difference higher than threshold (default for "effect" plot).}
+\item{col_sup}{Color for points higher than threshold. Default \code{'#E69F00'} (Okabe-Ito orange).}
 
 \item{threshold_lower}{Lower threshold for effect size/difference (x-axis).}
 
@@ -63,8 +63,8 @@ aldex_volcano_plot(
   metadata        = metadata,
   col_cond        = "metodo",
   type            = "effect",
-  col_inf         = "blue",
-  col_sup         = "red",
+  col_inf         = "#0072B2",
+  col_sup         = "#E69F00",
   threshold_lower = -1,
   threshold_upper = 1,
   cond            = "kit",

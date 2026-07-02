@@ -20,6 +20,11 @@
 #' @param scale_arrows Numeric value to scale environmental vectors in the plot.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
 #'   \code{NULL} shows no title; any other string is used as-is.
+#' @param save_table Logical. If \code{TRUE}, saves a combined table of sample
+#'   scores and environmental vector loadings to disk, distinguished by a
+#'   \code{type} column (\code{"site"} or \code{"vector"}). Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"cca_rda_scores.txt"}.
 #'
 #' @return A `ggplot` object displaying the biplot with sample scores and environmental vectors.
 #' @export
@@ -50,7 +55,9 @@ cca_rda_biplot <- function(table,
                        analysis = "CCA",
                        seed = 126,
                        scale_arrows = 1,
-                       title = "auto") {
+                       title = "auto",
+                       save_table = FALSE,
+                       table_filename = "cca_rda_scores.txt") {
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
@@ -153,11 +160,24 @@ cca_rda_biplot <- function(table,
   vectors_scores <- vegan::scores(fit, display = "vectors")[vars_to_plot, , drop = FALSE] %>%
     as.data.frame()
   vectors_scores$Variable <- rownames(vectors_scores)
-  
+
   # 7. Coordenadas de sitios
   site_scores <- vegan::scores(ord_result, display = "sites") %>% as.data.frame()
   colnames(site_scores)[1:2] <- axis_names
   site_scores$SampleID <- rownames(site_scores)
+
+  if (save_table) {
+    site_out <- site_scores
+    colnames(site_out)[colnames(site_out) %in% axis_names] <- c("Axis1", "Axis2")
+    site_out$type <- "site"
+    vec_out <- vectors_scores
+    colnames(vec_out)[colnames(vec_out) %in% axis_names] <- c("Axis1", "Axis2")
+    vec_out$type <- "vector"
+    combined_table <- dplyr::bind_rows(site_out, vec_out)
+    utils::write.table(combined_table, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
   
   # 8. Agregar metadata
   if (!is.null(metadata) && !is.null(group_col) && group_col %in% colnames(metadata)) {

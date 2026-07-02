@@ -14,17 +14,17 @@ alpha_diversity_plot(
   facet_by = NULL,
   facet_by2 = NULL,
   facet_orientation = "horizontal",
-  fill_palette = "colorb",
-  custom_palette = NULL,
+  palette = "colorb",
+  group_colors = NULL,
   n_cols = NULL,
   n_rows = NULL,
   strip_color = "grey",
   show_legend = TRUE,
-  figure_title = NULL,
+  title = NULL,
   legend_title = NULL,
   legend_position = "bottom",
-  axis_x_title = NULL,
-  axis_y_title = "Diversity measure",
+  x_axis_title = NULL,
+  y_axis_title = "Diversity measure",
   free_y = FALSE,
   rarefy_depth = NULL,
   save_table = TRUE,
@@ -51,9 +51,9 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{facet_orientation}{Whether \code{facet_by} appears in columns ("horizontal", default) or rows ("vertical").}
 
-\item{fill_palette}{Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".}
+\item{palette}{Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".}
 
-\item{custom_palette}{A vector of custom colors. Overrides \code{fill_palette} if provided.}
+\item{group_colors}{A vector of custom colors. Overrides \code{palette} if provided.}
 
 \item{n_cols}{Number of columns in facet wrap (optional).}
 
@@ -63,15 +63,15 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{show_legend}{Logical. Show legend? Default: TRUE.}
 
-\item{figure_title}{Title for the entire plot.}
+\item{title}{Title for the entire plot.}
 
 \item{legend_title}{Title for the legend.}
 
 \item{legend_position}{Position of the legend: "bottom", "top", "right", or "left". Default is "bottom".}
 
-\item{axis_x_title}{Title for the x-axis.}
+\item{x_axis_title}{Title for the x-axis.}
 
-\item{axis_y_title}{Title for the y-axis.}
+\item{y_axis_title}{Title for the y-axis.}
 
 \item{free_y}{Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.}
 

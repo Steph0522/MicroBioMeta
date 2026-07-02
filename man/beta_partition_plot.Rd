@@ -12,7 +12,7 @@ beta_partition_plot(
   shape_col = NULL,
   legend_title = NULL,
   point_size = 3,
-  colors = NULL,
+  group_colors = NULL,
   save_table = TRUE,
   table_filename = "SAMPLE1"
 )
@@ -32,7 +32,7 @@ beta_partition_plot(
 
 \item{point_size}{Numeric. Size of points in ordination plots. Default \code{3}.}
 
-\item{colors}{Optional named vector of colors for groups.}
+\item{group_colors}{Optional named vector of colors for groups.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{TRUE}.}
 
@@ -52,7 +52,7 @@ beta_partition_plot(
   metadata   = metadata,
   group_col  = "metodo",
   point_size = 4,
-  colors     = c("gray", "blue")
+  group_colors = c("gray", "blue")
 )
 }
 }

@@ -17,6 +17,12 @@
 #' @param arrows_size Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
 #'   \code{NULL} shows no title; any other string is used as-is.
+#' @param save_table Logical. If \code{TRUE}, saves a combined table of sample
+#'   ordination scores and (when \code{ordination = "PCA"}) taxon loadings to
+#'   disk, distinguished by a \code{type} column (\code{"site"} or
+#'   \code{"loading"}). Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.
 #'
 #' @return A `ggplot2` object.
 #' @export
@@ -42,7 +48,9 @@ beta_div_plot <- function(table, metadata,
                           legend_title = NULL,
                           arrows_size = 10,
                           top_n = 5,
-                          title = "auto") {
+                          title = "auto",
+                          save_table = FALSE,
+                          table_filename = "ordination_scores.txt") {
   
   requireNamespace("vegan")
   requireNamespace("ggplot2")
@@ -183,6 +191,7 @@ beta_div_plot <- function(table, metadata,
       )
     )
   
+  rot_df_out <- NULL
   if (ordination == "PCA") {
     rot_df <- as.data.frame(ord_res$rotation)
     rot_df$Feature.ID <- rownames(rot_df)
@@ -271,8 +280,9 @@ beta_div_plot <- function(table, metadata,
     
     rot_df$label <- sapply(rot_df$Taxon, extract_clean_label)
     rot_df$label <- gsub(" ", "\n", rot_df$label)
-    ###  
-    
+    ###
+    rot_df_out <- rot_df
+
     p <- p +
       ggplot2::geom_segment(data = rot_df,
                             ggplot2::aes(x = 0, y = 0, xend = PC1, yend = PC2),
@@ -293,6 +303,23 @@ beta_div_plot <- function(table, metadata,
   p <- p + ggplot2::coord_cartesian(xlim = c(-max_range, max_range),
                                     ylim = c(-max_range, max_range)) +
     ggplot2::coord_fixed()  # Mantiene proporcion 1:1
-  
+
+  if (save_table) {
+    site_out <- merged
+    colnames(site_out)[colnames(site_out) %in% names(ord_df)[1:2]] <- c("Axis1", "Axis2")
+    site_out$type <- "site"
+    if (!is.null(rot_df_out)) {
+      loading_out <- rot_df_out
+      colnames(loading_out)[colnames(loading_out) %in% c("PC1", "PC2")] <- c("Axis1", "Axis2")
+      loading_out$type <- "loading"
+      combined_table <- dplyr::bind_rows(site_out, loading_out)
+    } else {
+      combined_table <- site_out
+    }
+    utils::write.table(combined_table, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   return(p)
 }

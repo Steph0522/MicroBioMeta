@@ -14,7 +14,7 @@ ratio_plot(
   top_n = 30,
   level = "genus",
   x_axis_title = "Taxon",
-  fill_palette = NULL
+  group_colors = NULL
 )
 }
 \arguments{
@@ -42,7 +42,7 @@ experimental condition.}
 
 \item{x_axis_title}{Character. Label for the x-axis (taxon names).}
 
-\item{fill_palette}{Character vector of colors used to represent the dominant
+\item{group_colors}{Character vector of colors used to represent the dominant
 condition.}
 }
 \value{

@@ -39,7 +39,7 @@ abundance_barplot(
 
 \item{top_n}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
 
-\item{x_axis_title}{Character. The tittle that should be in the x-axis (deault = "Samples")}
+\item{x_axis_title}{Character. The title for the x-axis (default = "Samples")}
 
 \item{add_remained}{Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.}
 
@@ -71,7 +71,7 @@ abundance_barplot(
   taxonomy_db = "silva",
   level      = "genus",
   x_col      = "MUESTRA",
-  label      = "Genus",
+  label = "Genus",
   facet_col  = "SITIO",
   top_n      = 30,
   add_remained = TRUE

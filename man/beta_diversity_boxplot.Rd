@@ -10,9 +10,9 @@ beta_diversity_boxplot(
   comparison_condition1 = NULL,
   condition1_col,
   condition2_col = NULL,
-  color_facets_x = NULL,
-  color_axis_x = NULL,
-  title_axis_x = "Condition",
+  facet_colors = NULL,
+  group_colors = NULL,
+  x_axis_title = "Condition",
   partition = c("shared", "turnover", "nestedness"),
   family = c("sorensen", "jaccard"),
   save_table = TRUE,
@@ -30,11 +30,11 @@ beta_diversity_boxplot(
 
 \item{condition2_col}{Optional column name in metadata for the second condition (used as facet).}
 
-\item{color_facets_x}{Optional vector of colors for facet strips. Defaults to RColorBrewer "Set2".}
+\item{facet_colors}{Optional vector of colors for facet strips. Defaults to RColorBrewer "Set2".}
 
-\item{color_axis_x}{Optional named vector of colors for x-axis groups. Defaults to RColorBrewer "Set2".}
+\item{group_colors}{Optional named vector of colors for x-axis groups. Defaults to RColorBrewer "Set2".}
 
-\item{title_axis_x}{Title for the x-axis.}
+\item{x_axis_title}{Title for the x-axis.}
 
 \item{partition}{Type of beta diversity to compute: "shared", "turnover", or "nestedness".}
 
@@ -61,7 +61,7 @@ beta_diversity_boxplot(
   comparison_condition1 = c("fenol_vs_kit"),
   condition1_col       = "metodo",
   condition2_col       = "edad",
-  title_axis_x         = "Samples",
+  x_axis_title         = "Samples",
   partition            = "shared",
   family               = "sorensen"
 )

@@ -7,7 +7,11 @@
 #' @param group_colors Custom color palette (optional).
 #' @param title Main title for the figure.
 #' @param size the size of the point of the lollipop.
-#' 
+#' @param save_table Logical. If \code{TRUE}, saves the feature-importance
+#'   table to disk. Default \code{FALSE}.
+#' @param table_filename Character. File path/name for the saved table (used
+#'   when \code{save_table = TRUE}). Default \code{"randomforest_importance.txt"}.
+#'
 #' @return A lollipop plot showing top important features from random forest analysis.
 #' @importFrom randomForest randomForest importance
 #' @export
@@ -29,7 +33,9 @@ randomf_lollipop_plot <- function(table,
                                   size =8,
                                   variable_to_predict,
                                   group_colors = NULL,
-                                  title = NULL) {
+                                  title = NULL,
+                                  save_table = FALSE,
+                                  table_filename = "randomforest_importance.txt") {
 
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
@@ -157,7 +163,13 @@ randomf_lollipop_plot <- function(table,
   
   # Convert importance values to numeric
   top_asvs.modified$MeanDecreaseGini <- as.numeric(top_asvs.modified$MeanDecreaseGini)
-  
+
+  if (save_table) {
+    utils::write.table(top_asvs.modified, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message(paste("Table saved as:", table_filename))
+  }
+
   # Create lollipop plot
   lollipop <- ggplot2::ggplot(
     top_asvs.modified,
