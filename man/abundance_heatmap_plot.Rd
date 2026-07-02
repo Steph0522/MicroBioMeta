@@ -18,7 +18,9 @@ abundance_heatmap_plot(
   name_legend_condition3 = NULL,
   top_n,
   cluster = TRUE,
-  show_column_names = TRUE
+  show_column_names = TRUE,
+  save_table = FALSE,
+  table_filename = "abundance_heatmap_table.txt"
 )
 }
 \arguments{
@@ -49,6 +51,12 @@ abundance_heatmap_plot(
 \item{cluster}{Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)}
 
 \item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the underlying abundance
+table to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"abundance_heatmap_table.txt"}.}
 }
 \value{
 A plot with the fifty (XX) taxonomic groups most abundant.

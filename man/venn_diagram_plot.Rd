@@ -12,7 +12,9 @@ venn_diagram_plot(
   min_prevalence = 0,
   title = NULL,
   method = "ggvenn",
-  group_colors = NULL
+  group_colors = NULL,
+  save_table = FALSE,
+  table_filename = "venn_taxa_sets.txt"
 )
 }
 \arguments{
@@ -31,6 +33,12 @@ venn_diagram_plot(
 \item{method}{Character string: \code{ggVennDiagram} (default) or \code{ggvenn}, specifying the package to use for Venn diagram generation.}
 
 \item{group_colors}{Optional vector of colors for the groups. If NULL, a default \code{distiller} scale with \code{Set3} palette will be used.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves a long-format table of taxa
+membership per group to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"venn_taxa_sets.txt"}.}
 }
 \value{
 A ggplot object or other plot depending on the method.

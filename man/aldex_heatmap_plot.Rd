@@ -16,7 +16,9 @@ aldex_heatmap_plot(
   effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("#009E73", "white", "#CC79A7")),
   pvalue_colors = list(`p-value` = c(`<0.001` = "#000000", `<0.01` = "#D55E00", `<0.05` =
     "#F0E442", `>0.05` = "grey85")),
-  group_colors = NULL
+  group_colors = NULL,
+  save_table = FALSE,
+  table_filename = "aldex_pval_effect.txt"
 )
 }
 \arguments{
@@ -41,11 +43,13 @@ If NULL (default) only \code{effect_threshold} is applied.}
 \item{cluster_columns}{Logical. Cluster heatmap columns (default \code{FALSE}).}
 
 \item{heatmap_colors}{Controls the color scale of the main heatmap body (CLR values).
-Three options: \code{NULL} (default) uses the \code{"BuOr"} colorblind-friendly
-diverging preset with range computed automatically from data; a preset name string
-— one of \code{"BuOr"} (blue-orange), \code{"BuVm"} (blue-vermillion),
-\code{"BuPk"} (blue-pink), \code{"GnPk"} (green-pink); or a
-\code{circlize::colorRamp2} function for full manual control.}
+Three options: \code{NULL} (default, same as \code{"viridis"}) uses a sequential
+colorblind-friendly viridis scale (the same family used in
+\code{abundance_heatmap_plot}), with range computed automatically from the data;
+a preset name string — \code{"viridis"} or one of the diverging presets
+\code{"BuOr"} (blue-orange), \code{"BuVm"} (blue-vermillion), \code{"BuPk"}
+(blue-pink), \code{"GnPk"} (green-pink); or a \code{circlize::colorRamp2}
+function for full manual control.}
 
 \item{effect_colors}{Color function for the effect size annotation strip
 (default: green-white-pink colorblind-friendly scale, distinct from the
@@ -61,6 +65,13 @@ barplot annotation, one color per condition in the order they appear in
 colorblind-friendly palette is used (distinct from the other annotations'
 defaults), cycling through the rest of the Okabe-Ito palette as needed
 for more than two groups.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the underlying ALDEx2
+results table (filtered taxa, effect size, diff.btw, p-value category)
+to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
 }
 \value{
 A \code{ComplexHeatmap} object (returned invisibly; drawn as a

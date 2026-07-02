@@ -13,7 +13,9 @@ ancombc_plot(
   formula = NULL,
   rand_formula = NULL,
   ref_level = NULL,
-  diverging_palette = "BuOr"
+  diverging_palette = "BuOr",
+  save_table = FALSE,
+  table_filename = "ancombc_results.txt"
 )
 }
 \arguments{
@@ -46,6 +48,12 @@ Default \code{NULL}.}
 \code{NULL} (default) the first factor level is used as reference.
 Use this to change which group appears as the baseline in comparisons
 (e.g. \code{ref_level = "P2"} to compare all other groups against P2).}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the full ANCOMBC2 results
+table to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"ancombc_results.txt"}.}
 }
 \value{
 A \code{ggplot2} object: a bar plot (2 groups) or a heatmap

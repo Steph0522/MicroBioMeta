@@ -14,7 +14,9 @@ beta_plot(
   condition2.x,
   condition2.y,
   color_facets_x,
-  color_axis_x
+  color_axis_x,
+  save_table = FALSE,
+  table_filename = "betadiv_turnover.txt"
 )
 }
 \arguments{
@@ -37,6 +39,12 @@ beta_plot(
 \item{color_facets_x}{Color vector for facet strips.}
 
 \item{color_axis_x}{Named color vector for x-axis groups.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the underlying turnover
+table to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.}
 }
 \value{
 A ggplot2 figure with beta diversity partitions across conditions.

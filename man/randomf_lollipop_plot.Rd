@@ -11,7 +11,9 @@ randomf_lollipop_plot(
   size = 8,
   variable_to_predict,
   group_colors = NULL,
-  title = NULL
+  title = NULL,
+  save_table = FALSE,
+  table_filename = "randomforest_importance.txt"
 )
 }
 \arguments{
@@ -28,6 +30,12 @@ randomf_lollipop_plot(
 \item{group_colors}{Custom color palette (optional).}
 
 \item{title}{Main title for the figure.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the feature-importance
+table to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"randomforest_importance.txt"}.}
 }
 \value{
 A lollipop plot showing top important features from random forest analysis.

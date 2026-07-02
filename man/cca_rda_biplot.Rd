@@ -19,7 +19,9 @@ cca_rda_biplot(
   analysis = "CCA",
   seed = 126,
   scale_arrows = 1,
-  title = "auto"
+  title = "auto",
+  save_table = FALSE,
+  table_filename = "cca_rda_scores.txt"
 )
 }
 \arguments{
@@ -53,6 +55,13 @@ cca_rda_biplot(
 
 \item{title}{Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
 \code{NULL} shows no title; any other string is used as-is.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves a combined table of sample
+scores and environmental vector loadings to disk, distinguished by a
+\code{type} column (\code{"site"} or \code{"vector"}). Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"cca_rda_scores.txt"}.}
 }
 \value{
 A \code{ggplot} object displaying the biplot with sample scores and environmental vectors.

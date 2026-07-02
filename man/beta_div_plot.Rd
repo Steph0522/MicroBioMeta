@@ -15,7 +15,9 @@ beta_div_plot(
   legend_title = NULL,
   arrows_size = 10,
   top_n = 5,
-  title = "auto"
+  title = "auto",
+  save_table = FALSE,
+  table_filename = "ordination_scores.txt"
 )
 }
 \arguments{
@@ -42,6 +44,14 @@ beta_div_plot(
 
 \item{title}{Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
 \code{NULL} shows no title; any other string is used as-is.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves a combined table of sample
+ordination scores and (when \code{ordination = "PCA"}) taxon loadings to
+disk, distinguished by a \code{type} column (\code{"site"} or
+\code{"loading"}). Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.}
 }
 \value{
 A \code{ggplot2} object.

@@ -9,7 +9,9 @@ abundance_sankey_plot(
   output_file = "sankey.html",
   maxn = 25,
   taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
-  taxonomy_db = "gg"
+  taxonomy_db = "gg",
+  save_table = FALSE,
+  table_filename = "sankey_nodes_links.txt"
 )
 }
 \arguments{
@@ -22,6 +24,13 @@ abundance_sankey_plot(
 \item{taxRanks}{Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).}
 
 \item{taxonomy_db}{Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").}
+
+\item{save_table}{Logical. If \code{TRUE}, saves a combined table of the
+Sankey nodes and links to disk, distinguished by a \code{table_type}
+column (\code{"node"} or \code{"link"}). Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.}
 }
 \value{
 Invisibly returns the Sankey diagram object and saves an HTML file.

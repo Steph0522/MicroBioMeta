@@ -14,7 +14,9 @@ ratio_plot(
   top_n = 30,
   level = "genus",
   x_axis_title = "Taxon",
-  group_colors = NULL
+  group_colors = NULL,
+  save_table = FALSE,
+  table_filename = "ratios_bubble_table.txt"
 )
 }
 \arguments{
@@ -44,6 +46,12 @@ experimental condition.}
 
 \item{group_colors}{Character vector of colors used to represent the dominant
 condition.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the underlying ratio table
+to disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"ratios_bubble_table.txt"}.}
 }
 \value{
 A ggplot2 object showing abundance ratios between the two

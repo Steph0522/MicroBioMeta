@@ -12,7 +12,9 @@ beta_test_table(
   test = c("permanova", "betadisper"),
   permutations = 999,
   strata_var = NULL,
-  decimales = 3
+  decimales = 3,
+  save_table = FALSE,
+  table_filename = "beta_test_results.txt"
 )
 }
 \arguments{
@@ -31,6 +33,12 @@ beta_test_table(
 \item{strata_var}{Group or variable within which permutations are restricted}
 
 \item{decimales}{Number of decimales required}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the results table to disk.
+Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
 }
 \value{
 A table with the results of R2, F and p value

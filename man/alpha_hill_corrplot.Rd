@@ -7,7 +7,9 @@
 alpha_hill_corrplot(
   table,
   facet_orientation = "horizontal",
-  plot_title = "default"
+  plot_title = "default",
+  save_table = FALSE,
+  table_filename = "hill.txt"
 )
 }
 \arguments{
@@ -17,6 +19,12 @@ The first column must contain the OTUID, ASV, or species name.}
 \item{facet_orientation}{Whether \code{facet_by} appears in columns ("horizontal", default) or rows ("vertical").}
 
 \item{plot_title}{Character. Title for the plot. Default \code{"default"}.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the Hill numbers table to
+disk. Default \code{FALSE}.}
+
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"hill.txt"}.}
 }
 \value{
 A ggplot object showing alpha diversity with Hill numbers.
