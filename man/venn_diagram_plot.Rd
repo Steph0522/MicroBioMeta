@@ -41,13 +41,30 @@ based on the user's preference. It includes additional customization options lik
 minimum prevalence filtering and custom group color scales (manual).
 }
 \examples{
-   venn_diagram_plot(table= table_taxa,
-                                metadata=metadata,
-                                merge_by = "ID.CAM",
-                                min_prevalence = 0,
-                                denom = "all",
-                                group_colors = c("blue", "yellow"),
-                                method = "ggvenn")
+   
+venn_diagram_plot(table = table_bac,   
+                  metadata = metadata_bacteria,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0 )
+                  
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0 )
+
+##Filtering taxa by prevalence 
+
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0.2 )
+                  
+##Customizing colors 
+venn_diagram_plot(table = table_fung,   
+                  metadata = metadata_fungi,   
+                  merge_by = "Type_of_soil",   
+                  min_prevalence = 0,   
+                  group_colors = c("#1B9E77", "#D95F02", "#7570B3") )  
                                 
 
 }

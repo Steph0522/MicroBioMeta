@@ -78,5 +78,26 @@ abundances and environmental variables, and visualizes the results as either a h
 (tile) or a bubble plot (circle).
 }
 \examples{
-color<- c("pink","white","purple")
+
+env_table_bac <- metadata_bacteria \%>\% 
+                dplyr::select(SAMPLEID, pH:Arbus_per) \%>\% 
+                remove_rownames() \%>\% 
+                column_to_rownames(var = "SAMPLEID")
+                
+corr_env_abund_plot(table = table_bac, 
+                    env_table = env_table_bac, 
+                    metadata = metadata_bacteria, 
+                    level = "phylum",  
+                    save_table = FALSE)
+
+corr_env_abund_plot(table = table_bac, 
+                    env_table = env_table_bac, 
+                    metadata = metadata_bacteria, 
+                    level = "phylum",  
+                    save_table = FALSE,
+                    geom="circle")                     
+ 
+ 
+ 
+ 
 }

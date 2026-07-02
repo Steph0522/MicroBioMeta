@@ -25,12 +25,10 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
-library(vegan)
-data(dune)
-data(dune.env)
-alpha_hill_corplot(
-    table = t(dune),
-    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
-    facet_orientation = "horizontal"
-)
+alpha_hill_corrplot(table = table_bac)
+
+alpha_hill_corrplot(table = table_fung)
+
+
+
 }

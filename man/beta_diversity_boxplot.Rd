@@ -50,12 +50,23 @@ needs to specify the metadata column(s) to be used for comparisons; the function
 constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
 }
 \examples{
-beta_diversity_boxplot(table = table,
-                       metadata = metadata,
-                       comparison_condition1 = c("fenol_vs_kit"),  
-                       condition1_col = "metodo",
-                       condition2_col = "edad",
+beta_diversity_boxplot(table = table_bac,
+                       metadata = metadata_bacteria,
+                       condition1_col = "Type_of_soil",
+                       condition2_col = "Treatment",
                        title_axis_x = "Samples",
-                       partition = "shared", family = "sorensen")
+                       partition = "shared", family = "jaccard", 
+                       save_table = FALSE)
 
+
+beta_diversity_boxplot(table = table_fung,
+                       metadata = metadata_fungi,
+                       condition1_col = "Type_of_soil",
+                       condition2_col = "Treatment",
+                       title_axis_x = "Samples",
+                       partition = "shared", 
+                       family = "jaccard", 
+                       save_table = FALSE)
+                       
+                       
 }

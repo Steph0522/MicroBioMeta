@@ -62,16 +62,13 @@ and selected environmental variables, returning a biplot with ggplot2 that visua
 sample scores and environmental vectors.
 }
 \examples{
-cca_rda_biplot(table = table,
-              env_data = env_data,
-              env_vars = c("pH", "Nitrogen", "Calcium"),
-              metadata = metadata ,
-              group_col = "metodo",
-              analysis = "RDA",
-              show_all_env_vectors = TRUE,
-              legend_title = "Método",
-              group_colors = c("red", "blue"),
-              title = "title")
+cca_rda_biplot(table = table_bac, 
+               env_data = env_table_bac, 
+               metadata = metadata_bacteria, 
+               env_vars = c("pH","TN","WHC", "EC", "Clay"),
+               analysis = "RDA",
+               show_all_env_vectors = TRUE,
+               group_col = "Type_of_soil")
 
 
 

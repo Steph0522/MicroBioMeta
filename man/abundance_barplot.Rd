@@ -58,15 +58,24 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 }
 }
 \examples{
-abundance_barplot( table = table_taxa,
-                             metadata = metadata,
-                             taxonomy_db = "silva",
-                             level = "genus",
-                             x_col = "MUESTRA",
-                             label = "Genus",
-                             facet_col = "SITIO",
-                             width_equal = FALSE,
-                             group_var = "SAMPLEID",
-                             top_n = 30,
-                             add_remained  = TRUE)
+abundance_barplot(table = table_bac,
+                  metadata = metadata_bacteria,
+                  taxonomy_db = "silva",
+                  level = "phylum", 
+                  top_n = 15,
+                  x_col = "Type_of_soil", 
+                  facet_col = "Treatment", 
+                  add_remained = TRUE,
+                  label =   "Phylum",
+                  save_table = FALSE)+
+                  theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+
+abundance_barplot(table = table_fung,
+                 metadata = metadata_fungi,
+                 x_col = "Treatment", 
+                 facet_col = "Type_of_soil", 
+                 add_remained = TRUE,  
+                 label =   "Genera",
+                 save_table = FALSE)+
+                 theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
 }

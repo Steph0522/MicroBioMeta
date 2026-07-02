@@ -40,9 +40,18 @@ This function computes beta diversity partition (Jaccard or Sorensen)
 using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
 }
 \examples{
-beta_partition_plot(table=table,
-                    metadata= metadata,
-                    group_col="metodo", 
-                    point_size = 4,
-                    colors = c("gray", "blue"))
+beta_partition_plot(table = table_bac,
+                    metadata = metadata_bacteria,
+                    index = "jaccard",
+                    group_col = "Type_of_soil",
+                    shape_col = "Treatment", 
+                    save_table = FALSE)
+                    
+                    
+beta_partition_plot(table = table_fung,
+                    metadata = metadata_fungi,
+                    index = "jaccard",
+                    group_col = "Type_of_soil",
+                    shape_col = "Treatment", 
+                    save_table = FALSE)
 }

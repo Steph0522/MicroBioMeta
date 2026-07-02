@@ -83,25 +83,22 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
-alpha_hill_plot(table = table_taxa,
-                           metadata = metadata,
-                           type = "boxplot",
-                           fill_col = "SITIO",
-                           x_col = "SITIO",
-                           facet_orientation = "horizontal",
-                           free_y = T,
-                           legend_position = "top",
-                           stat = "kruskal.test")
+alpha_hill_plot(table = table_bac, 
+                metadata = metadata_bacteria,
+                x_col = "Treatment",
+                fill_col = "Treatment",
+                facet_by = "Type_of_soil",
+                facet_orientation = "vertical",
+                save_table = FALSE)
 
-library(vegan)
-data(dune)
-data(dune.env)
-alpha_hill_plot(
-    table = t(dune),
-    metadata = dune.env \%>\% tibble::rownames_to_column("SampleID"),
-    x_col = "Management",
-    fill_col = "Management",
-    facet_by = "Use",
-    facet_orientation = "vertical"
-)
+alpha_hill_plot(table = table_fung, 
+               metadata = metadata_fungi,
+               x_col = "Treatment",
+               fill_col = "Treatment",
+               facet_by = "Type_of_soil",
+               facet_orientation = "horizontal",
+               save_table = FALSE)
+
+
+
 }
