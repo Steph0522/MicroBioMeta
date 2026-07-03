@@ -115,9 +115,9 @@ cca_rda_biplot <- function(table,
   
   # 2. Scale env data
   if (scale_env) {
-    env_scaled <- scale(env_data[, env_vars], scale = TRUE, center = FALSE) %>% as.data.frame()
+    env_scaled <- scale(env_data[, env_vars, drop = FALSE], scale = TRUE, center = FALSE) %>% as.data.frame()
   } else {
-    env_scaled <- env_data[, env_vars]
+    env_scaled <- env_data[, env_vars, drop = FALSE]
   }
   
   
@@ -198,11 +198,11 @@ cca_rda_biplot <- function(table,
     
     legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
     
-    plot <- ggplot2::ggplot(site_scores, ggplot2::aes_string(x = axis_names[1], y = axis_names[2], fill = "Group")) +
+    plot <- ggplot2::ggplot(site_scores, ggplot2::aes(x = .data[[axis_names[1]]], y = .data[[axis_names[2]]], fill = Group)) +
       ggplot2::geom_point(size = 4, shape=21 ) +
       ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
   } else {
-    plot <- ggplot2::ggplot(site_scores, ggplot2::aes_string(x = axis_names[1], y = axis_names[2])) +
+    plot <- ggplot2::ggplot(site_scores, ggplot2::aes(x = .data[[axis_names[1]]], y = .data[[axis_names[2]]])) +
       ggplot2::geom_point(size = 4, shape=21)
   }
 
@@ -210,19 +210,19 @@ cca_rda_biplot <- function(table,
   plot <- plot +
     ggplot2::geom_segment(
       data = vectors_scores,
-      ggplot2::aes_string(x = 0, y = 0,
-                 xend = paste0(axis_names[1], " * scale_arrows"),
-                 yend = paste0(axis_names[2], " * scale_arrows")),
+      ggplot2::aes(x = 0, y = 0,
+                 xend = .data[[axis_names[1]]] * scale_arrows,
+                 yend = .data[[axis_names[2]]] * scale_arrows),
       arrow = ggplot2::arrow(length = grid::unit(0.2, "cm")),
       color = "black",
       inherit.aes = FALSE
     ) +
     ggplot2::geom_text(
       data = vectors_scores,
-      ggplot2::aes_string(
-        x = paste0(axis_names[1], " * scale_arrows"),
-        y = paste0(axis_names[2], " * scale_arrows"),
-        label = "Variable"
+      ggplot2::aes(
+        x = .data[[axis_names[1]]] * scale_arrows,
+        y = .data[[axis_names[2]]] * scale_arrows,
+        label = Variable
       ),
       color = "black",
       size = 5,

@@ -37,7 +37,16 @@ beta_partition_plot <- function(table, metadata,
                                 point_size = 3,
                                 group_colors = NULL,
                                 save_table = TRUE,
-                                table_filename = "SAMPLE1") {   
+                                table_filename = "SAMPLE1") {
+
+  if (!requireNamespace("ggordiplots", quietly = TRUE)) {
+    stop(
+      "Package 'ggordiplots' is required but not installed.\n",
+      "Install it with: remotes::install_github(\"jfq3/ggordiplots\")",
+      call. = FALSE
+    )
+  }
+
   suppressWarnings({
 
     # --- Aceptar también data.frame como matriz ---
@@ -155,10 +164,10 @@ beta_partition_plot <- function(table, metadata,
       ggplot2::geom_point(
         data = y$df_ord %>% tibble::rownames_to_column(var = "SampleID") %>% 
           dplyr::inner_join(env, by = "SampleID"),
-        ggplot2::aes_string(
-          x = "x", y = "y", 
-          color = group_col, 
-          shape = if(!is.null(shape_col)) shape_col else NULL
+        ggplot2::aes(
+          x = x, y = y,
+          color = .data[[group_col]],
+          shape = if (!is.null(shape_col)) .data[[shape_col]] else NULL
         ),
         size = point_size
       ) +

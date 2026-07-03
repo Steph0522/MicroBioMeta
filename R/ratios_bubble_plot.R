@@ -72,7 +72,7 @@ ratio_plot <- function(table,
   # Colapsar por taxonomía si hay duplicados
   abundance_raw <- abundance_raw %>%
     dplyr::group_by(taxonomy) %>%
-    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), sum, na.rm = TRUE), .groups = "drop")
+    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), \(x) sum(x, na.rm = TRUE)), .groups = "drop")
   
   # Corregir taxonomía según base y nivel
   abundance_raw <- abundance_raw %>%
@@ -159,7 +159,7 @@ ratio_plot <- function(table,
       )
     ) %>%
     dplyr::group_by(taxonomy) %>%
-    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), sum, na.rm = TRUE), .groups = "drop")
+    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), \(x) sum(x, na.rm = TRUE)), .groups = "drop")
   
   # Calcular abundancias relativas por muestra
   abundance_rel <- abundance_raw %>%

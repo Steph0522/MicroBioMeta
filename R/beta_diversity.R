@@ -52,10 +52,10 @@ beta_plot <- function(table,
   otu_filter <- table %>%
     dplyr::filter(rowSums(dplyr::across(dplyr::where(is.numeric))) != 0)
   
-  if (nrow(otu_filter) == 0) stop("Error: La tabla OTU quedo vacia despues de filtrar filas con suma=0.")
-  
+  if (nrow(otu_filter) == 0) stop("Error: OTU table is empty after filtering rows with sum=0.")
+
   otu_filter_t <- as.data.frame(t(otu_filter))
-  message(" Paso 1: OTU filtrada y transpuesta - dimension: ", paste(dim(otu_filter_t), collapse = " x "))
+  message("Step 1: OTU table filtered and transposed - dimension: ", paste(dim(otu_filter_t), collapse = " x "))
   
   # Paso 2: Calcular diversidad beta (Hill numbers)
   beta_q_list <- list()
@@ -64,7 +64,7 @@ beta_plot <- function(table,
       hillR::hill_taxa_parti_pairwise(comm = otu_filter_t, q = q) %>%
         dplyr::mutate(Recambio = TD_beta - 1, q = q)
     }, error = function(e) {
-      warning(paste("WARNING: Error calculando hill_taxa_parti_pairwise con q =", q, ":", e$message))
+      warning(paste("WARNING: Error computing hill_taxa_parti_pairwise with q =", q, ":", e$message))
       NULL
     })
     if (!is.null(beta_res)) beta_q_list[[as.character(q)]] <- beta_res
@@ -72,18 +72,18 @@ beta_plot <- function(table,
   
   beta_total <- dplyr::bind_rows(beta_q_list)
   
-  if (nrow(beta_total) == 0) stop("Error: No se pudieron calcular las particiones beta (tabla vacia).")
-  
-  message(" Paso 2: Beta_total calculada - filas: ", nrow(beta_total))
+  if (nrow(beta_total) == 0) stop("Error: Could not compute beta partitions (empty table).")
+
+  message("Step 2: beta_total computed - rows: ", nrow(beta_total))
   
   # Paso 3: Unir con metadata
   beta_formato <- beta_total %>%
     dplyr::inner_join(metadata, by = c("site1" = "OTUID")) %>%
     dplyr::inner_join(metadata, by = c("site2" = "OTUID"))
   
-  if (nrow(beta_formato) == 0) stop("Error: No se pudo unir beta_total con metadata (tabla vacia).")
-  
-  message(" Paso 3: Beta_formato unido con metadata - filas: ", nrow(beta_formato))
+  if (nrow(beta_formato) == 0) stop("Error: Could not join beta_total with metadata (empty table).")
+
+  message("Step 3: beta_formato joined with metadata - rows: ", nrow(beta_formato))
   
   # Paso 4: Crear comparaciones y filtrar
   beta_final <- beta_formato %>%
@@ -95,9 +95,9 @@ beta_plot <- function(table,
       q == 0 ~ "q=0", q == 1 ~ "q=1", q == 2 ~ "q=2", TRUE ~ as.character(q)
     ))
   
-  if (nrow(beta_final) == 0) stop("Error: Despues de filtrar comparaciones, la tabla quedo vacia.")
-  
-  message(" Paso 4: Beta_final lista - filas: ", nrow(beta_final))
+  if (nrow(beta_final) == 0) stop("Error: After filtering comparisons, the table is empty.")
+
+  message("Step 4: beta_final ready - rows: ", nrow(beta_final))
 
   if (save_table) {
     utils::write.table(beta_final, file = table_filename, sep = "\t",
@@ -238,7 +238,7 @@ beta_plot_flexible <- function(table,
   partition <- match.arg(partition)
   family <- match.arg(family)
   
-  message(" Filtrando tabla (quitar singletons)...")
+  message("Filtering table (removing singletons)...")
   # Quitar singletons por muestra
   asv_table <- table
   asv_table[asv_table > 0] <- 1
@@ -247,7 +247,7 @@ beta_plot_flexible <- function(table,
     t() %>%
     as.data.frame()
   
-  message(" Calculando particion de beta diversity: ", partition, " (family = ", family, ")")
+  message("Computing beta diversity partition: ", partition, " (family = ", family, ")")
   
   if (partition == "shared") {
     # Betapart.core da matriz shared
@@ -270,7 +270,7 @@ beta_plot_flexible <- function(table,
     tidyr::drop_na() %>%
     dplyr::filter(!value == 0)
   
-  message(" Uniendo con metadata...")
+  message("Joining with metadata...")
   beta_format <- beta_df %>%
     dplyr::inner_join(metadata, by = c("site1" = "OTUID")) %>%
     dplyr::inner_join(metadata, by = c("site2" = "OTUID"))
@@ -282,7 +282,7 @@ beta_plot_flexible <- function(table,
     dplyr::filter(compar_condition1 %in% comparison_condition1) %>%
     dplyr::filter(compar_condition2 %in% comparison_condition2)
   
-  message(" Filtrado: ", nrow(beta_final), " filas finales.")
+  message("Filtered: ", nrow(beta_final), " final rows.")
 
   if (save_table) {
     utils::write.table(beta_final, file = table_filename, sep = "\t",

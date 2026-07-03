@@ -57,12 +57,21 @@ ancombc_plot <- function(table,
                          table_filename    = "ancombc_results.txt") {
 
   # --- 0. package checks ---------------------------------------------------
-  for (pkg in c("ANCOMBC", "phyloseq", "qiime2R")) {
+  # ANCOMBC and phyloseq are on Bioconductor and can be auto-installed.
+  for (pkg in c("ANCOMBC", "phyloseq")) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       if (!requireNamespace("BiocManager", quietly = TRUE))
         install.packages("BiocManager")
       BiocManager::install(pkg)
     }
+  }
+  # qiime2R lives on GitHub only; it cannot be auto-installed via BiocManager.
+  if (!requireNamespace("qiime2R", quietly = TRUE)) {
+    stop(
+      "Package 'qiime2R' is required but not installed.\n",
+      "Install it with: remotes::install_github(\"jbisanz/qiime2R\")",
+      call. = FALSE
+    )
   }
 
   # --- 1. validate inputs --------------------------------------------------

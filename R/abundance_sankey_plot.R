@@ -31,7 +31,15 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                                   taxonomy_db = "gg",
                                   save_table = FALSE,
                                   table_filename = "sankey_nodes_links.txt") {
-  
+
+  if (!requireNamespace("sankeyD3", quietly = TRUE)) {
+    stop(
+      "Package 'sankeyD3' is required but not installed.\n",
+      "Install it with: remotes::install_github(\"fbreitwieser/sankeyD3\")",
+      call. = FALSE
+    )
+  }
+
   # Función interna para abundancia relativa
   relabunda <- function(x) as.data.frame(t(t(x) / colSums(x))) * 100
   

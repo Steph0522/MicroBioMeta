@@ -32,13 +32,11 @@ Imports:
     ggrepel,
     cowplot,
     ggh4x,
-    scales,
     RColorBrewer,
     reshape2,
     vegan,
     hillR,
     betapart,
-    qiime2R,
     phyloseq,
     ALDEx2,
     rlang,
@@ -51,7 +49,12 @@ Imports:
     randomForest,
     ggvenn,
     ggVennDiagram,
-    sf
+    viridis,
+    ComplexHeatmap,
+    ANCOMBC,
+    circlize,
+    geosphere,
+    tools
 Suggests:
     BiocStyle,
     knitr,
@@ -59,14 +62,15 @@ Suggests:
     rmarkdown,
     sessioninfo,
     testthat,
-    viridis,
     magick,
-    ComplexHeatmap,
-    ANCOMBC,
+    BiocManager,
+    qiime2R,
     sankeyD3,
-    ggordiplots,
-    circlize,
-    BiocManager
+    ggordiplots
+Remotes:
+    jbisanz/qiime2R,
+    fbreitwieser/sankeyD3,
+    jfq3/ggordiplots
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0

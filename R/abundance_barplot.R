@@ -148,7 +148,7 @@ abundance_barplot <- function(table,
   
   table <- table %>%
     dplyr::group_by(taxonomy) %>%
-    dplyr::summarise(dplyr::across(where(is.numeric), sum, na.rm = TRUE))
+    dplyr::summarise(dplyr::across(where(is.numeric), \(x) sum(x, na.rm = TRUE)))
   
   # Calculate relative abundance
   table[,-1] <- sweep(table[,-1], 2, colSums(table[,-1], na.rm = TRUE), FUN = "/") * 100

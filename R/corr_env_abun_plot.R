@@ -160,7 +160,7 @@ corr_env_abund_plot <- function(table,
     dplyr::group_by(taxonomy) %>%
     dplyr::summarise(
       OTU_ID = paste(unique(OTU_ID), collapse = ";"),
-      dplyr::across(dplyr::where(is.numeric), sum, na.rm = TRUE),
+      dplyr::across(dplyr::where(is.numeric), \(x) sum(x, na.rm = TRUE)),
       .groups = "drop"
     )
   

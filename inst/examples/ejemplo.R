@@ -73,7 +73,7 @@ aldex_heatmap_plot(
   table = table,
   metadata = metadata,
   col_cond = "metodo",
-  #heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
+  heatmap_colors = circlize::colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
  # treatment_colors = c("Higher" = "green", "Lower" = "yellow")
 )
 aldex_heatmap_plot(table, metadata, col_cond = "metodo")

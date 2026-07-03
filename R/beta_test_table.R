@@ -89,7 +89,7 @@ beta_test_table <- function(table,
   strata <- NULL
   if (!is.null(strata_var)) {
     if (!strata_var %in% colnames(metadata)) {
-      stop(paste("La variable strata", strata_var, "no esta en metadata"))
+      stop(paste("Strata variable", strata_var, "is not in metadata"))
     }
     strata <- metadata[[strata_var]]
   }

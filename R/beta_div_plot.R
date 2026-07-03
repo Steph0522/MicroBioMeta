@@ -88,7 +88,7 @@ beta_div_plot <- function(table, metadata,
   
   common_samples <- intersect(sample_ids, metadata_ids)
   if (length(common_samples) == 0) stop("No matching samples between table and metadata.")
-  otu_table <- otu_table[, common_samples]
+  otu_table <- otu_table[, common_samples, drop = FALSE]
   metadata <- metadata[metadata_ids %in% common_samples, ]
   
   if (distance == "compositional") {
@@ -137,7 +137,7 @@ beta_div_plot <- function(table, metadata,
   ord_df$SampleID <- rownames(ord_df)
   colnames(metadata)[1] <- "SampleID"
   merged <- dplyr::inner_join(ord_df, metadata, by = "SampleID")
-  if (nrow(merged) == 0) stop("Ninguna muestra en comun entre tabla y metadata.")
+  if (nrow(merged) == 0) stop("No common samples between table and metadata.")
   
   x_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[1], " (", expl_var[1], "%)") else names(ord_df)[1]
   y_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[2], " (", expl_var[2], "%)") else names(ord_df)[2]
@@ -149,25 +149,25 @@ beta_div_plot <- function(table, metadata,
   fill_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
   
   if (is.null(shape_col)) {
-    p <- ggplot2::ggplot(merged, ggplot2::aes_string(
-      x = names(ord_df)[1],
-      y = names(ord_df)[2],
-      fill = group_col
+    p <- ggplot2::ggplot(merged, ggplot2::aes(
+      x = .data[[names(ord_df)[1]]],
+      y = .data[[names(ord_df)[2]]],
+      fill = .data[[group_col]]
     )) +
       ggplot2::geom_point(size = 4, shape = 21)
-    
+
     color_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
     p <- p+color_scale
-    
+
   } else {
-    p <- ggplot2::ggplot(merged, ggplot2::aes_string(
-      x = names(ord_df)[1],
-      y = names(ord_df)[2],
-      color = group_col,
-      shape = shape_col
+    p <- ggplot2::ggplot(merged, ggplot2::aes(
+      x = .data[[names(ord_df)[1]]],
+      y = .data[[names(ord_df)[2]]],
+      color = .data[[group_col]],
+      shape = .data[[shape_col]]
     )) +
       ggplot2::geom_point(size = 4)
-    
+
     color_scale <- ggplot2::scale_color_manual(name = legend_name, values = group_colors)
     p <- p+color_scale
     

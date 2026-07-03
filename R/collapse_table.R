@@ -90,7 +90,7 @@ collapse_table <- function(table,
     dplyr::summarise(
       OTU_ID = dplyr::first(OTU_ID),
       # conservar uno de los IDs originales
-      dplyr::across(where(is.numeric), sum, na.rm = TRUE),
+      dplyr::across(where(is.numeric), \(x) sum(x, na.rm = TRUE)),
       .groups = "drop"
     )
   
@@ -105,9 +105,9 @@ collapse_table <- function(table,
   
   # --- Convertir a abundancia relativa ---
   if (rel_abun) {
-    table_final[, ordered_samples] <- sweep(table_final[, ordered_samples],
+    table_final[, ordered_samples] <- sweep(table_final[, ordered_samples, drop = FALSE],
                                             2,
-                                            colSums(table_final[, ordered_samples], na.rm = TRUE),
+                                            colSums(table_final[, ordered_samples, drop = FALSE], na.rm = TRUE),
                                             FUN = "/") * 100
   }
   
