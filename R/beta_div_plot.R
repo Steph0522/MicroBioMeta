@@ -9,8 +9,18 @@
 #' @param distance Distance method: one of "euclidean", "bray", "jaccard", "sorensen",
 #'  "compositional" (default), "aitchison", or "robust.aitchison".
 #' @param ordination Ordination method: one of "PCA" (default), "PCoA", or "NMDS".
-#' @param group_col Column in `metadata` to fill color points.
-#' @param group_colors Optional named vector of colors.
+#' @param group_col Column in `metadata` to fill/color points. Its type
+#'   decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
+#'   get a continuous scale; character/factor columns (e.g. \code{"estado2"})
+#'   get a discrete qualitative scale.
+#' @param group_colors Optional colors overriding the default palette. For a
+#'   discrete \code{group_col}, a vector of qualitative colors (one per
+#'   level). For a continuous \code{group_col}, 2+ colors used as gradient
+#'   stops (passed to \code{scale_*_gradientn}).
+#' @param continuous_palette Character. Default continuous scale used when
+#'   \code{group_col} is numeric and \code{group_colors} is not supplied.
+#'   One of \code{"gradient"} (default; colorblind-friendly blue-to-orange)
+#'   or \code{"viridis"}.
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
@@ -44,6 +54,7 @@ beta_div_plot <- function(table, metadata,
                           ordination = "PCA",
                           group_col = NULL,
                           group_colors = NULL,
+                          continuous_palette = "gradient",
                           shape_col = NULL,
                           legend_title = NULL,
                           arrows_size = 10,
@@ -142,22 +153,44 @@ beta_div_plot <- function(table, metadata,
   x_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[1], " (", expl_var[1], "%)") else names(ord_df)[1]
   y_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[2], " (", expl_var[2], "%)") else names(ord_df)[2]
   
-  if (is.null(group_colors)) {
-    group_colors <- .mbm_colors
+  is_continuous <- !is.null(group_col) && is.numeric(merged[[group_col]])
+  legend_name   <- ifelse(is.null(legend_title), group_col, legend_title)
+
+  # Discrete group_col -> qualitative manual scale (as before).
+  # Continuous group_col (e.g. "dist_km") -> gradient scale instead.
+  .group_scale <- function(aesthetic) {
+    if (is_continuous) {
+      if (!is.null(group_colors)) {
+        if (aesthetic == "fill") {
+          ggplot2::scale_fill_gradientn(name = legend_name, colours = group_colors)
+        } else {
+          ggplot2::scale_color_gradientn(name = legend_name, colours = group_colors)
+        }
+      } else if (continuous_palette == "viridis") {
+        if (aesthetic == "fill") ggplot2::scale_fill_viridis_c(name = legend_name)
+        else ggplot2::scale_color_viridis_c(name = legend_name)
+      } else {
+        if (aesthetic == "fill") {
+          ggplot2::scale_fill_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
+        } else {
+          ggplot2::scale_color_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
+        }
+      }
+    } else {
+      colors <- if (!is.null(group_colors)) group_colors else .mbm_colors
+      if (aesthetic == "fill") ggplot2::scale_fill_manual(name = legend_name, values = colors)
+      else ggplot2::scale_color_manual(name = legend_name, values = colors)
+    }
   }
-  legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
-  fill_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
-  
+
   if (is.null(shape_col)) {
     p <- ggplot2::ggplot(merged, ggplot2::aes(
       x = .data[[names(ord_df)[1]]],
       y = .data[[names(ord_df)[2]]],
       fill = .data[[group_col]]
     )) +
-      ggplot2::geom_point(size = 4, shape = 21)
-
-    color_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
-    p <- p+color_scale
+      ggplot2::geom_point(size = 4, shape = 21) +
+      .group_scale("fill")
 
   } else {
     p <- ggplot2::ggplot(merged, ggplot2::aes(
@@ -166,17 +199,13 @@ beta_div_plot <- function(table, metadata,
       color = .data[[group_col]],
       shape = .data[[shape_col]]
     )) +
-      ggplot2::geom_point(size = 4)
-
-    color_scale <- ggplot2::scale_color_manual(name = legend_name, values = group_colors)
-    p <- p+color_scale
-    
+      ggplot2::geom_point(size = 4) +
+      .group_scale("color")
   }
-  
+
   p <- p +
     ggplot2::geom_vline(xintercept = 0, linetype = 2) +
     ggplot2::geom_hline(yintercept = 0, linetype = 2) +
-    fill_scale +
     ggplot2::labs(
       x     = x_lab,
       y     = y_lab,
