@@ -162,8 +162,7 @@ alpha_hill_gradient_plot <- function(
     }
 
     data.frame(rho = rho, pval = pval, r2 = r2, slope = slope,
-               label = label, x_pos = -Inf, y_pos = Inf,
-               stringsAsFactors = FALSE)
+               label = label, stringsAsFactors = FALSE)
   }
 
   stats_df <- hills_long %>%
@@ -171,23 +170,48 @@ alpha_hill_gradient_plot <- function(
     dplyr::group_modify(~ .compute_stats(.x)) %>%
     dplyr::ungroup()
 
-  # ---- 6. Color scale ----
-  default_colors <- c(
-    "#F3C300", "#875692", "#F38400", "#A1CAF1", "#BE0032",
-    "#C2B280", "#848482", "#008856", "#E68FAC", "#0067A5",
-    "#F99379", "#604E97", "#F6A600", "#B3446C", "#DCD300",
-    "#882D17", "#8DB600", "#654522", "#E25822", "#2B3D26"
-  )
+  # ---- 5b. Position annotations: right if alone; alternate left/right
+  #          (group 1 left, group 2 right, ...) when there is more than one ----
+  line_gap <- if (show_lm_stats) 5.5 else 2.7
 
+  if (!is.null(group_col)) {
+    group_levels <- levels(factor(hills_long[[group_col]]))
+    n_groups     <- length(group_levels)
+
+    stats_df <- stats_df %>%
+      dplyr::mutate(
+        .grp_idx = match(.data[[group_col]], group_levels),
+        side     = if (n_groups == 1) "right" else
+          ifelse(.grp_idx %% 2 == 1, "left", "right")
+      ) %>%
+      dplyr::arrange(q, side, .grp_idx) %>%
+      dplyr::group_by(q, side) %>%
+      dplyr::mutate(slot = dplyr::row_number()) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(
+        x_pos    = ifelse(side == "left", -Inf, Inf),
+        hjust    = ifelse(side == "left", -0.05, 1.05),
+        vjust    = 1.1 + (slot - 1) * line_gap,
+        y_pos    = Inf,
+        .grp_idx = NULL,
+        side     = NULL,
+        slot     = NULL
+      )
+  } else {
+    stats_df <- stats_df %>%
+      dplyr::mutate(x_pos = Inf, hjust = 1.05, vjust = 1.1, y_pos = Inf)
+  }
+
+  # ---- 6. Color scale ----
   color_scale <- if (!is.null(custom_palette)) {
     ggplot2::scale_color_manual(values = custom_palette)
   } else {
     switch(fill_palette,
-      "colorb"  = ggplot2::scale_color_manual(values = default_colors),
+      "colorb"  = ggplot2::scale_color_manual(values = .mbm_colors),
       "grey"    = ggplot2::scale_color_grey(start = 0.7, end = 0.2),
       "viridis" = ggplot2::scale_color_viridis_d(option = "plasma"),
       "brewer"  = ggplot2::scale_color_brewer(palette = "Set2"),
-      ggplot2::scale_color_manual(values = default_colors)
+      ggplot2::scale_color_manual(values = .mbm_colors)
     )
   }
 
@@ -205,12 +229,15 @@ alpha_hill_gradient_plot <- function(
   # Annotation mapping (color per group if requested)
   aes_ann <- if (!is.null(group_col)) {
     ggplot2::aes(x = x_pos, y = y_pos, label = label,
+                 hjust = hjust, vjust = vjust,
                  color = .data[[group_col]])
   } else {
-    ggplot2::aes(x = x_pos, y = y_pos, label = label)
+    ggplot2::aes(x = x_pos, y = y_pos, label = label,
+                 hjust = hjust, vjust = vjust)
   }
 
   facet_ncol <- if (facet_orientation == "horizontal") 3L else 1L
+  q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
 
   p <- ggplot2::ggplot(hills_long, aes_pts) +
     ggplot2::geom_point(size = point_size, alpha = point_alpha) +
@@ -223,8 +250,6 @@ alpha_hill_gradient_plot <- function(
     ggplot2::geom_text(
       data        = stats_df,
       mapping     = aes_ann,
-      hjust       = -0.05,
-      vjust       = 1.1,
       size        = annotation_size,
       family      = "serif",
       inherit.aes = FALSE,
@@ -232,8 +257,9 @@ alpha_hill_gradient_plot <- function(
     ) +
     ggplot2::facet_wrap(
       ~q,
-      ncol   = facet_ncol,
-      scales = if (free_y) "free_y" else "fixed"
+      ncol     = facet_ncol,
+      scales   = if (free_y) "free_y" else "fixed",
+      labeller = q_labeller
     ) +
     color_scale +
     ggplot2::labs(

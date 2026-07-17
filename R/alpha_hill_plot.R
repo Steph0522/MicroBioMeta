@@ -119,7 +119,8 @@ alpha_hill_plot <- function(
   }
   
   facet_scales <- if (free_y) "free_y" else "fixed"  # Esto ahora se usa correctamente
-  
+  q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
+
   facet_config <- if (!is.null(facet_by) && !is.null(facet_by2)) {
     formula_facet <- if (facet_orientation == "horizontal") {
       stats::as.formula(paste(facet_by2, "~",  "q +", facet_by))
@@ -129,7 +130,8 @@ alpha_hill_plot <- function(
     ggh4x::facet_nested(
       formula_facet,
       nest_line = ggplot2::element_line(colour = "black"),
-      scales = facet_scales
+      scales = facet_scales,
+      labeller = ggplot2::labeller(q = q_labeller)
     )
   } else if (!is.null(facet_by)) {
     formula_facet <- if (facet_orientation == "horizontal") {
@@ -137,17 +139,19 @@ alpha_hill_plot <- function(
     } else {
       stats::as.formula(paste("q ~", facet_by))
     }
-    
+
     if (free_y) {
       ggh4x::facet_grid2(
         formula_facet,
         scales = "free_y",
-        independent = "y"
+        independent = "y",
+        labeller = ggplot2::labeller(q = q_labeller)
       )
     } else {
       ggh4x::facet_grid2(
         formula_facet,
-        scales = "fixed"
+        scales = "fixed",
+        labeller = ggplot2::labeller(q = q_labeller)
       )
     }
   } else {
@@ -163,7 +167,8 @@ alpha_hill_plot <- function(
       } else {
         NULL
       },
-      scales = if (free_y) "free_y" else "fixed"
+      scales = if (free_y) "free_y" else "fixed",
+      labeller = q_labeller
     )
   }
   
