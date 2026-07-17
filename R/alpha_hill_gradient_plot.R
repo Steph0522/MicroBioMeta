@@ -239,14 +239,29 @@ alpha_hill_gradient_plot <- function(
   facet_ncol <- if (facet_orientation == "horizontal") 3L else 1L
   q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
 
-  p <- ggplot2::ggplot(hills_long, aes_pts) +
-    ggplot2::geom_point(size = point_size, alpha = point_alpha) +
+  # When ungrouped, match alpha_hill_corrplot's fixed reg.line/CI colors;
+  # when grouped, let each group keep its own palette color.
+  smooth_layer <- if (is.null(group_col)) {
+    ggplot2::geom_smooth(
+      method    = "lm",
+      formula   = y ~ x,
+      se        = TRUE,
+      linewidth = line_width,
+      color     = "#D55E00",
+      fill      = "#56B4E9"
+    )
+  } else {
     ggplot2::geom_smooth(
       method    = "lm",
       formula   = y ~ x,
       se        = TRUE,
       linewidth = line_width
-    ) +
+    )
+  }
+
+  p <- ggplot2::ggplot(hills_long, aes_pts) +
+    ggplot2::geom_point(size = point_size, alpha = point_alpha) +
+    smooth_layer +
     ggplot2::geom_text(
       data        = stats_df,
       mapping     = aes_ann,
