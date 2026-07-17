@@ -41,9 +41,9 @@
 # Renders q0/q1/q2 facet strips as bold italic "q=0", "q=1", "q=2" (plotmath).
 # Use with `ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)`.
 .mbm_q_labels <- c(
-  q0 = "bolditalic(q==0)",
-  q1 = "bolditalic(q==1)",
-  q2 = "bolditalic(q==2)"
+  q0 = 'bolditalic("q=0")',
+  q1 = 'bolditalic("q=1")',
+  q2 = 'bolditalic("q=2")'
 )
 
 # ── Colorblind-friendly palette (Okabe-Ito, 8 colors) ─────────────────────────

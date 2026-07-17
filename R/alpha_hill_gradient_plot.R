@@ -134,7 +134,7 @@ alpha_hill_gradient_plot <- function(
 
   # ---- 5. Compute per-group stats ----
   group_vars <- if (!is.null(group_col)) c("q", group_col) else "q"
-  rho_sym    <- paste0(tools::toTitleCase(method), " r")
+  rho_sym    <- if (method == "spearman") "rho" else "r"
 
   # Helper that receives one sub-data frame and returns a 1-row stats data frame
   .compute_stats <- function(df) {
