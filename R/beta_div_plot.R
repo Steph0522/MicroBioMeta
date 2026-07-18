@@ -13,14 +13,22 @@
 #'   decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
 #'   get a continuous scale; character/factor columns (e.g. \code{"estado2"})
 #'   get a discrete qualitative scale.
-#' @param group_colors Optional colors overriding the default palette. For a
-#'   discrete \code{group_col}, a vector of qualitative colors (one per
-#'   level). For a continuous \code{group_col}, 2+ colors used as gradient
-#'   stops (passed to \code{scale_*_gradientn}).
-#' @param continuous_palette Character. Default continuous scale used when
-#'   \code{group_col} is numeric and \code{group_colors} is not supplied.
-#'   One of \code{"gradient"} (default; colorblind-friendly blue-to-orange)
-#'   or \code{"viridis"}.
+#' @param palette Either a palette \strong{name} or a \strong{vector of fixed
+#'   colors}; which scale it produces depends on whether \code{group_col} is
+#'   discrete or continuous.
+#'   \itemize{
+#'     \item Named, discrete \code{group_col}: one of \code{"colorb"}
+#'       (default; qualitative colorblind-friendly palette), \code{"grey"},
+#'       \code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
+#'     \item Named, continuous \code{group_col}: \code{"viridis"} (default;
+#'       \code{option = "cividis"}, matching the urban-distance map figure)
+#'       or \code{"gradient"} (colorblind-friendly blue-to-orange two-color
+#'       gradient).
+#'     \item Vector of colors, discrete \code{group_col}: used as-is, one
+#'       color per level (\code{scale_*_manual}).
+#'     \item Vector of colors, continuous \code{group_col}: used as gradient
+#'       stops (\code{scale_*_gradientn}).
+#'   }
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
@@ -53,8 +61,7 @@ beta_div_plot <- function(table, metadata,
                           distance = "compositional",
                           ordination = "PCA",
                           group_col = NULL,
-                          group_colors = NULL,
-                          continuous_palette = "gradient",
+                          palette = "colorb",
                           shape_col = NULL,
                           legend_title = NULL,
                           arrows_size = 10,
@@ -156,30 +163,42 @@ beta_div_plot <- function(table, metadata,
   is_continuous <- !is.null(group_col) && is.numeric(merged[[group_col]])
   legend_name   <- ifelse(is.null(legend_title), group_col, legend_title)
 
-  # Discrete group_col -> qualitative manual scale (as before).
-  # Continuous group_col (e.g. "dist_km") -> gradient scale instead.
+  # `palette` can be a palette *name* (single string) or a *vector of fixed
+  # colors*; either way, is_continuous decides whether it becomes a
+  # gradient/gradientn scale or a discrete manual/qualitative one.
+  is_named_palette <- is.character(palette) && length(palette) == 1
+
   .group_scale <- function(aesthetic) {
+    fill <- aesthetic == "fill"
     if (is_continuous) {
-      if (!is.null(group_colors)) {
-        if (aesthetic == "fill") {
-          ggplot2::scale_fill_gradientn(name = legend_name, colours = group_colors)
-        } else {
-          ggplot2::scale_color_gradientn(name = legend_name, colours = group_colors)
-        }
-      } else if (continuous_palette == "viridis") {
-        if (aesthetic == "fill") ggplot2::scale_fill_viridis_c(name = legend_name)
-        else ggplot2::scale_color_viridis_c(name = legend_name)
+      if (!is_named_palette) {
+        if (fill) ggplot2::scale_fill_gradientn(name = legend_name, colours = palette)
+        else ggplot2::scale_color_gradientn(name = legend_name, colours = palette)
+      } else if (palette == "gradient") {
+        if (fill) ggplot2::scale_fill_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
+        else ggplot2::scale_color_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
       } else {
-        if (aesthetic == "fill") {
-          ggplot2::scale_fill_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
-        } else {
-          ggplot2::scale_color_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
-        }
+        # "viridis" (default) or any other name -> viridis cividis
+        if (fill) ggplot2::scale_fill_viridis_c(name = legend_name, option = "cividis")
+        else ggplot2::scale_color_viridis_c(name = legend_name, option = "cividis")
       }
     } else {
-      colors <- if (!is.null(group_colors)) group_colors else .mbm_colors
-      if (aesthetic == "fill") ggplot2::scale_fill_manual(name = legend_name, values = colors)
-      else ggplot2::scale_color_manual(name = legend_name, values = colors)
+      if (!is_named_palette) {
+        if (fill) ggplot2::scale_fill_manual(name = legend_name, values = palette)
+        else ggplot2::scale_color_manual(name = legend_name, values = palette)
+      } else {
+        switch(palette,
+          "grey"    = if (fill) ggplot2::scale_fill_grey(name = legend_name, start = 0.9, end = 0.3)
+                      else ggplot2::scale_color_grey(name = legend_name, start = 0.9, end = 0.3),
+          "viridis" = if (fill) ggplot2::scale_fill_viridis_d(name = legend_name)
+                      else ggplot2::scale_color_viridis_d(name = legend_name),
+          "brewer"  = if (fill) ggplot2::scale_fill_brewer(name = legend_name, palette = "Set2")
+                      else ggplot2::scale_color_brewer(name = legend_name, palette = "Set2"),
+          # "colorb" (default) or any other name -> package qualitative palette
+          if (fill) ggplot2::scale_fill_manual(name = legend_name, values = .mbm_colors)
+          else ggplot2::scale_color_manual(name = legend_name, values = .mbm_colors)
+        )
+      }
     }
   }
 
