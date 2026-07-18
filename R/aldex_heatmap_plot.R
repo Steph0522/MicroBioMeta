@@ -93,7 +93,7 @@ aldex_heatmap_plot <- function(table,
   if (!col_cond %in% colnames(metadata))
     stop(paste("Column", col_cond, "not found in metadata."))
 
-  conditions       <- metadata[[col_cond]]
+  conditions       <- as.character(metadata[[col_cond]])
   unique_conditions <- unique(conditions)
   if (length(unique_conditions) != 2)
     stop("Exactly two conditions are required for the analysis.")

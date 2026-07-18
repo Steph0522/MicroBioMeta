@@ -49,20 +49,20 @@
 #'
 #' @examples
 #' # All samples, no grouping
-#' alpha_hill_gradient_plot(
+#' alpha_decay_plot(
 #'   table    = table_taxa2,
 #'   metadata = metas2,
 #'   cont_var = "dist_km"
 #' )
 #'
 #' # Separate regression lines by state
-#' alpha_hill_gradient_plot(
+#' alpha_decay_plot(
 #'   table     = table_taxa2,
 #'   metadata  = metas2,
 #'   cont_var  = "dist_km",
 #'   group_col = "estado2"
 #' )
-alpha_hill_gradient_plot <- function(
+alpha_decay_plot <- function(
     table,
     metadata,
     cont_var,
