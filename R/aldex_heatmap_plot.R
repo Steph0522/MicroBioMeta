@@ -140,6 +140,14 @@ aldex_heatmap_plot <- function(table,
       dplyr::filter(wi.eBH <= pvalue_BH)
   }
 
+  if (nrow(aldex_filtered) == 0)
+    stop(paste0(
+      "No taxa passed the filtering thresholds ",
+      "(effect_threshold = ", effect_threshold,
+      if (!is.null(pvalue_BH)) paste0(", pvalue_BH = ", pvalue_BH) else "",
+      ").\nTry lowering effect_threshold and/or raising pvalue_BH."
+    ))
+
   # Prepare plot data
   aldex_plot <- aldex_filtered %>%
     tibble::rownames_to_column("OTUID") %>%
