@@ -38,7 +38,7 @@
 #' @param show_lm_stats Logical. If \code{TRUE} (default), adds R² to the
 #'   annotation label in addition to the Mantel r, p-value, and slope.
 #' @param point_color Character. Color of scatter points. Default
-#'   \code{"#566573"}.
+#'   \code{"black"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}.
 #' @param line_color Character. Color of the regression line. Default
 #'   \code{"#D55E00"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}'s
 #'   ungrouped color scheme. The confidence-interval ribbon uses that same
@@ -97,7 +97,7 @@ beta_decay_plot <- function(
     method          = "spearman",
     permutations    = 999,
     show_lm_stats   = TRUE,
-    point_color     = "#566573",
+    point_color     = "black",
     line_color      = "#D55E00",
     point_size      = 1,
     point_alpha     = 0.5,
