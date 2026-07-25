@@ -188,6 +188,11 @@ abundance_barplot <- function(table,
     dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%
     dplyr::summarise(MeanAbundance = mean(RelativeAbundance, na.rm = TRUE), .groups = "drop")
   
+  avg_by_group <- avg_by_group %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%
+    dplyr::summarise(MeanAbundance = sum(MeanAbundance, na.rm = TRUE),
+                     .groups = "drop")
+  
   overall_means <- avg_by_group %>%
     dplyr::group_by(taxonomy) %>%
     dplyr::summarise(MeanAbundance = mean(MeanAbundance, na.rm = TRUE))
