@@ -61,7 +61,7 @@ abundance_barplot <- function(table,
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
-  names(table)[ncol(table)] <- "taxonomy"
+  names(table)[tax_col] <- "taxonomy"
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
