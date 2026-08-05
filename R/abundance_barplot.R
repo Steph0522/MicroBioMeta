@@ -61,7 +61,7 @@ abundance_barplot <- function(table,
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
-  names(table)[ncol(table)] <- "taxonomy"
+  names(table)[tax_col] <- "taxonomy"
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
@@ -187,6 +187,7 @@ abundance_barplot <- function(table,
   avg_by_group <- table_long %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%
     dplyr::summarise(MeanAbundance = mean(RelativeAbundance, na.rm = TRUE), .groups = "drop")
+  
   
   overall_means <- avg_by_group %>%
     dplyr::group_by(taxonomy) %>%
@@ -360,6 +361,11 @@ abundance_barplot <- function(table,
         )
       )
   }
+  
+  avg_by_group <- avg_by_group %>%     
+    dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%
+    dplyr::summarise(MeanAbundance = sum(MeanAbundance, na.rm = TRUE),
+                     .groups = "drop")
   
   if (!is.null(facet_col)) {
     facet_levels <- unique(avg_by_group[[facet_col]])

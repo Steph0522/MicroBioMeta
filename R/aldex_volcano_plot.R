@@ -90,7 +90,7 @@ aldex_volcano_plot <- function(table,
     table <- table[, -last_col, drop = FALSE]
   }
   
-  conditions <- metadata[[col_cond]]
+  conditions <- as.character(metadata[[col_cond]])
   groups <- unique(conditions)
   if (is.null(cond)) cond <- groups[1]
   other_cond <- setdiff(groups, cond)[1]

@@ -93,7 +93,7 @@ aldex_heatmap_plot <- function(table,
   if (!col_cond %in% colnames(metadata))
     stop(paste("Column", col_cond, "not found in metadata."))
 
-  conditions       <- metadata[[col_cond]]
+  conditions       <- as.character(metadata[[col_cond]])
   unique_conditions <- unique(conditions)
   if (length(unique_conditions) != 2)
     stop("Exactly two conditions are required for the analysis.")
@@ -139,6 +139,14 @@ aldex_heatmap_plot <- function(table,
     aldex_filtered <- aldex_results %>%
       dplyr::filter(wi.eBH <= pvalue_BH)
   }
+
+  if (nrow(aldex_filtered) == 0)
+    stop(paste0(
+      "No taxa passed the filtering thresholds ",
+      "(effect_threshold = ", effect_threshold,
+      if (!is.null(pvalue_BH)) paste0(", pvalue_BH = ", pvalue_BH) else "",
+      ").\nTry lowering effect_threshold and/or raising pvalue_BH."
+    ))
 
   # Prepare plot data
   aldex_plot <- aldex_filtered %>%

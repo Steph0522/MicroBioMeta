@@ -360,6 +360,15 @@ corr_env_abund_plot <- function(table,
   }
   
   
+  # Descartar columnas no numericas (p.ej. IDs o variables categoricas
+  # mezcladas en env_table); stats::cor() requiere que env sea todo numerico.
+  is_num <- vapply(env, is.numeric, logical(1))
+  if (!all(is_num)) {
+    warning("Dropping non-numeric columns from `env_table`: ",
+            paste(names(env)[!is_num], collapse = ", "))
+    env <- env[, is_num, drop = FALSE]
+  }
+
   # Filtrar variables constantes
   env <- env[, apply(env, 2, sd, na.rm = TRUE) > 0, drop = FALSE]
   abund <- sweep(counts, 2, colSums(counts, na.rm = TRUE), FUN = "/") * 100

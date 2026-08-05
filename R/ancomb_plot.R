@@ -2,7 +2,9 @@
 #'
 #' Runs ANCOMBC2 on a counts table and metadata, then visualizes differentially
 #' abundant taxa. For two-group comparisons a bar plot of log-fold changes is
-#' returned; for three or more groups a heatmap is returned.
+#' returned; for three or more groups a heatmap is returned; for a continuous
+#' \code{col_cond} (e.g. \code{"dist_km"}) a bar plot of the effect size per
+#' unit increase is returned instead, colored by the direction of the effect.
 #'
 #' @param table Data frame with taxa as rows and samples as columns. The last
 #'   column must contain taxonomy strings (named "taxonomy", "Taxonomy",
@@ -10,7 +12,15 @@
 #' @param metadata Data frame with samples as rows. The first column must
 #'   contain sample IDs that match the column names of \code{table}.
 #' @param col_cond Character. Name of the column in \code{metadata} that
-#'   defines the grouping variable.
+#'   defines the grouping variable. If this column is numeric (a continuous
+#'   variable), it's treated as a covariate instead of a group: ANCOMBC2's
+#'   \code{group}/structural-zero machinery (which requires discrete groups)
+#'   is disabled, and the resulting plot shows the effect size per unit
+#'   increase rather than a group-vs-group comparison.
+#' @param tax_level Character or \code{NULL}. Taxonomic level to agglomerate
+#'   to before running \code{ancombc2} (e.g. \code{"Genus"}, \code{"Family"}).
+#'   Default \code{"Genus"}. Pass \code{NULL} to skip agglomeration and run
+#'   ANCOMBC2 directly on the ASV/OTU-level table (rows of \code{table}, as-is).
 #' @param prv_cut Numeric. Prevalence cut-off passed to \code{ancombc2}
 #'   (default \code{0.1}). Lower values retain more taxa.
 #' @param p_adj_method Character. Multiple-testing correction method passed to
@@ -26,6 +36,13 @@
 #'   \code{NULL} (default) the first factor level is used as reference.
 #'   Use this to change which group appears as the baseline in comparisons
 #'   (e.g. \code{ref_level = "P2"} to compare all other groups against P2).
+#' @param bar_colors Character vector of (at least) 2 colors used for the
+#'   bar plot (2-group or continuous \code{col_cond}). First color is the
+#'   "positive" direction (the non-reference group / increases with the
+#'   variable); second color is the "negative" direction (the reference
+#'   group / decreases with the variable). Default \code{c("#56B4E9",
+#'   "#E69F00")} (colorblind-friendly blue/yellow). Ignored for the
+#'   3+-group heatmap, which uses \code{diverging_palette} instead.
 #' @param save_table Logical. If \code{TRUE}, saves the full ANCOMBC2 results
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -47,14 +64,19 @@
 ancombc_plot <- function(table,
                          metadata,
                          col_cond,
+                         tax_level         = "Genus",
                          prv_cut           = 0.1,
                          p_adj_method      = "holm",
                          formula           = NULL,
                          rand_formula      = NULL,
                          ref_level         = NULL,
                          diverging_palette = "BuOr",
+                         bar_colors        = c("#56B4E9", "#E69F00"),
                          save_table        = FALSE,
                          table_filename    = "ancombc_results.txt") {
+
+  if (length(bar_colors) < 2)
+    stop("`bar_colors` must have at least 2 colors.")
 
   # --- 0. package checks ---------------------------------------------------
   # ANCOMBC and phyloseq are on Bioconductor and can be auto-installed.
@@ -119,10 +141,20 @@ ancombc_plot <- function(table,
   # --- 3. run ANCOMBC2 -------------------------------------------------------
   fix_formula <- if (is.null(formula)) col_cond else formula
 
+  # `group` (and the struc_zero/neg_lb machinery tied to it) only make sense
+  # for a categorical grouping variable. If col_cond is numeric (e.g. a
+  # continuous gradient like "dist_km"), treat it as a plain covariate:
+  # no group, no structural-zero detection.
+  is_continuous_cond <- is.numeric(meta_df[[col_cond]])
+  if (is_continuous_cond) {
+    message("`col_cond` ('", col_cond, "') is numeric; treating it as a ",
+            "continuous covariate (group/struc_zero disabled).")
+  }
+
   ancombc_res <- ANCOMBC::ancombc2(
     data          = dat,
     assay_name    = "counts",
-    tax_level     = "Genus",
+    tax_level     = tax_level,
     fix_formula   = fix_formula,
     rand_formula  = rand_formula,
     p_adj_method  = p_adj_method,
@@ -130,9 +162,9 @@ ancombc_plot <- function(table,
     prv_cut       = prv_cut,
     lib_cut       = 1000,
     s0_perc       = 0.05,
-    group         = col_cond,
-    struc_zero    = TRUE,
-    neg_lb        = TRUE
+    group         = if (is_continuous_cond) NULL else col_cond,
+    struc_zero    = !is_continuous_cond,
+    neg_lb        = !is_continuous_cond
   )
 
   res_prim <- ancombc_res$res
@@ -182,8 +214,11 @@ ancombc_plot <- function(table,
 
     if (nrow(df) == 0) return(NULL)
 
-    bar_colors <- c("#0072B2", "#D55E00")   # Okabe-Ito blue / vermillion
-    names(bar_colors) <- c(cmp_group, ref_group)
+    fill_colors <- stats::setNames(bar_colors[1:2], c(cmp_group, ref_group))
+    legend_labs <- stats::setNames(
+      paste0("Higher in ", c(cmp_group, ref_group)),
+      c(cmp_group, ref_group)
+    )
 
     df %>%
       ggplot2::ggplot(ggplot2::aes(
@@ -198,12 +233,63 @@ ancombc_plot <- function(table,
         width = 0.3, color = "black", linewidth = 0.4, orientation = "y"
       ) +
       ggplot2::geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
-      ggplot2::scale_fill_manual(values = bar_colors, name = NULL) +
+      ggplot2::scale_fill_manual(values = fill_colors, name = NULL, labels = legend_labs) +
       ggplot2::labs(
-        x        = "Log2 fold change",
-        y        = NULL,
-        title    = "Significantly different abundant",
-        subtitle = paste0(ref_group, "  |  ", cmp_group)
+        x     = paste0("Log fold change (", cmp_group, " vs ", ref_group, ")"),
+        y     = NULL,
+        title = paste0("Differential taxa by ", term)
+      ) +
+      .mbm_theme(
+        legend_position = "bottom",
+        extra = ggplot2::theme(
+          axis.text.y        = ggplot2::element_text(size = 10, face = "italic",
+                                                     color = "black"),
+          panel.grid.major.y = ggplot2::element_blank()
+        )
+      )
+  }
+
+  # Continuous covariate (e.g. "dist_km"): there is no second group to
+  # compare against, so bars are colored by the sign of the effect instead.
+  .make_continuous_barplot <- function(res, lfc_col, diff_col, se_col, term) {
+    df <- res %>%
+      dplyr::select(taxon, dplyr::all_of(c(lfc_col, diff_col, se_col))) %>%
+      dplyr::filter(.data[[diff_col]] %in% TRUE) %>%
+      dplyr::arrange(.data[[lfc_col]]) %>%
+      dplyr::mutate(
+        taxon  = factor(taxon, levels = taxon),
+        direct = factor(
+          ifelse(.data[[lfc_col]] > 0, "Increases", "Decreases"),
+          levels = c("Increases", "Decreases")
+        )
+      )
+
+    if (nrow(df) == 0) return(NULL)
+
+    fill_colors <- c(Increases = bar_colors[1], Decreases = bar_colors[2])
+    legend_labs <- c(
+      Increases = paste0("Increases with ", term),
+      Decreases = paste0("Decreases with ", term)
+    )
+
+    df %>%
+      ggplot2::ggplot(ggplot2::aes(
+        x = .data[[lfc_col]], y = taxon, fill = direct
+      )) +
+      ggplot2::geom_col(width = 0.7, color = "black", linewidth = 0.3) +
+      ggplot2::geom_errorbar(
+        ggplot2::aes(
+          xmin = .data[[lfc_col]] - .data[[se_col]],
+          xmax = .data[[lfc_col]] + .data[[se_col]]
+        ),
+        width = 0.3, color = "black", linewidth = 0.4, orientation = "y"
+      ) +
+      ggplot2::geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
+      ggplot2::scale_fill_manual(values = fill_colors, name = NULL, labels = legend_labs) +
+      ggplot2::labs(
+        x     = paste0("Log fold change (", term, ")"),
+        y     = NULL,
+        title = paste0("Differential taxa by ", term)
       ) +
       .mbm_theme(
         legend_position = "bottom",
@@ -274,10 +360,14 @@ ancombc_plot <- function(table,
     diff_t <- grep(paste0("^diff_", term), names(res_prim), value = TRUE)
     se_t   <- grep(paste0("^se_",   term), names(res_prim), value = TRUE)
 
-    if (length(lfc_t) == 0) next   # continuous covariate -> skip
+    if (length(lfc_t) == 0) next   # term not found in results (e.g. naming mismatch) -> skip
 
     if (length(lfc_t) == 1) {
-      p <- .make_barplot(res_prim, lfc_t, diff_t, se_t, term, meta_df)
+      p <- if (is.numeric(meta_df[[term]])) {
+        .make_continuous_barplot(res_prim, lfc_t, diff_t, se_t, term)
+      } else {
+        .make_barplot(res_prim, lfc_t, diff_t, se_t, term, meta_df)
+      }
     } else {
       p <- .make_heatmap(res_prim, lfc_t, diff_t, term)
     }

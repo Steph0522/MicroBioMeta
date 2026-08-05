@@ -9,8 +9,26 @@
 #' @param distance Distance method: one of "euclidean", "bray", "jaccard", "sorensen",
 #'  "compositional" (default), "aitchison", or "robust.aitchison".
 #' @param ordination Ordination method: one of "PCA" (default), "PCoA", or "NMDS".
-#' @param group_col Column in `metadata` to fill color points.
-#' @param group_colors Optional named vector of colors.
+#' @param group_col Column in `metadata` to fill/color points. Its type
+#'   decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
+#'   get a continuous scale; character/factor columns (e.g. \code{"estado2"})
+#'   get a discrete qualitative scale.
+#' @param palette Either a palette \strong{name} or a \strong{vector of fixed
+#'   colors}; which scale it produces depends on whether \code{group_col} is
+#'   discrete or continuous.
+#'   \itemize{
+#'     \item Named, discrete \code{group_col}: one of \code{"colorb"}
+#'       (default; qualitative colorblind-friendly palette), \code{"grey"},
+#'       \code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
+#'     \item Named, continuous \code{group_col}: \code{"viridis"} (default;
+#'       \code{option = "cividis"}, matching the urban-distance map figure)
+#'       or \code{"gradient"} (colorblind-friendly blue-to-orange two-color
+#'       gradient).
+#'     \item Vector of colors, discrete \code{group_col}: used as-is, one
+#'       color per level (\code{scale_*_manual}).
+#'     \item Vector of colors, continuous \code{group_col}: used as gradient
+#'       stops (\code{scale_*_gradientn}).
+#'   }
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
@@ -43,7 +61,7 @@ beta_div_plot <- function(table, metadata,
                           distance = "compositional",
                           ordination = "PCA",
                           group_col = NULL,
-                          group_colors = NULL,
+                          palette = "colorb",
                           shape_col = NULL,
                           legend_title = NULL,
                           arrows_size = 10,
@@ -142,22 +160,56 @@ beta_div_plot <- function(table, metadata,
   x_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[1], " (", expl_var[1], "%)") else names(ord_df)[1]
   y_lab <- if (!is.null(expl_var)) paste0(names(ord_df)[2], " (", expl_var[2], "%)") else names(ord_df)[2]
   
-  if (is.null(group_colors)) {
-    group_colors <- .mbm_colors
+  is_continuous <- !is.null(group_col) && is.numeric(merged[[group_col]])
+  legend_name   <- ifelse(is.null(legend_title), group_col, legend_title)
+
+  # `palette` can be a palette *name* (single string) or a *vector of fixed
+  # colors*; either way, is_continuous decides whether it becomes a
+  # gradient/gradientn scale or a discrete manual/qualitative one.
+  is_named_palette <- is.character(palette) && length(palette) == 1
+
+  .group_scale <- function(aesthetic) {
+    fill <- aesthetic == "fill"
+    if (is_continuous) {
+      if (!is_named_palette) {
+        if (fill) ggplot2::scale_fill_gradientn(name = legend_name, colours = palette)
+        else ggplot2::scale_color_gradientn(name = legend_name, colours = palette)
+      } else if (palette == "gradient") {
+        if (fill) ggplot2::scale_fill_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
+        else ggplot2::scale_color_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
+      } else {
+        # "viridis" (default) or any other name -> viridis cividis
+        if (fill) ggplot2::scale_fill_viridis_c(name = legend_name, option = "cividis")
+        else ggplot2::scale_color_viridis_c(name = legend_name, option = "cividis")
+      }
+    } else {
+      if (!is_named_palette) {
+        if (fill) ggplot2::scale_fill_manual(name = legend_name, values = palette)
+        else ggplot2::scale_color_manual(name = legend_name, values = palette)
+      } else {
+        switch(palette,
+          "grey"    = if (fill) ggplot2::scale_fill_grey(name = legend_name, start = 0.9, end = 0.3)
+                      else ggplot2::scale_color_grey(name = legend_name, start = 0.9, end = 0.3),
+          "viridis" = if (fill) ggplot2::scale_fill_viridis_d(name = legend_name)
+                      else ggplot2::scale_color_viridis_d(name = legend_name),
+          "brewer"  = if (fill) ggplot2::scale_fill_brewer(name = legend_name, palette = "Set2")
+                      else ggplot2::scale_color_brewer(name = legend_name, palette = "Set2"),
+          # "colorb" (default) or any other name -> package qualitative palette
+          if (fill) ggplot2::scale_fill_manual(name = legend_name, values = .mbm_colors)
+          else ggplot2::scale_color_manual(name = legend_name, values = .mbm_colors)
+        )
+      }
+    }
   }
-  legend_name <- ifelse(is.null(legend_title), group_col, legend_title)
-  fill_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
-  
+
   if (is.null(shape_col)) {
     p <- ggplot2::ggplot(merged, ggplot2::aes(
       x = .data[[names(ord_df)[1]]],
       y = .data[[names(ord_df)[2]]],
       fill = .data[[group_col]]
     )) +
-      ggplot2::geom_point(size = 4, shape = 21)
-
-    color_scale <- ggplot2::scale_fill_manual(name = legend_name, values = group_colors)
-    p <- p+color_scale
+      ggplot2::geom_point(size = 4, shape = 21) +
+      .group_scale("fill")
 
   } else {
     p <- ggplot2::ggplot(merged, ggplot2::aes(
@@ -166,17 +218,13 @@ beta_div_plot <- function(table, metadata,
       color = .data[[group_col]],
       shape = .data[[shape_col]]
     )) +
-      ggplot2::geom_point(size = 4)
-
-    color_scale <- ggplot2::scale_color_manual(name = legend_name, values = group_colors)
-    p <- p+color_scale
-    
+      ggplot2::geom_point(size = 4) +
+      .group_scale("color")
   }
-  
+
   p <- p +
     ggplot2::geom_vline(xintercept = 0, linetype = 2) +
     ggplot2::geom_hline(yintercept = 0, linetype = 2) +
-    fill_scale +
     ggplot2::labs(
       x     = x_lab,
       y     = y_lab,
