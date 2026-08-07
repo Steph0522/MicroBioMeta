@@ -222,7 +222,11 @@ shared_plot <- function(table,
                    legend.text = ggplot2::element_text(size = 12, color = "black"),
                    legend.title = ggplot2::element_blank())+
     ggplot2::xlab(ggplot2::element_blank())+
-    ggpubr::stat_compare_means(label="p.format", label.x = 2, size=3.5, family = "serif")
+    ggpubr::stat_compare_means(
+      mapping = ggplot2::aes(
+        label = scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p))
+      ),
+      label.x = 2, size = 3.5, family = "serif")
   
   
   

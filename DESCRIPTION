@@ -32,6 +32,7 @@ Imports:
     ggrepel,
     cowplot,
     ggh4x,
+    scales,
     RColorBrewer,
     reshape2,
     vegan,

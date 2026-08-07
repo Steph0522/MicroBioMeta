@@ -3,9 +3,11 @@
 # across every function that prints a p-value directly on a figure (Mantel
 # test annotations, correlation annotations, etc.). Uses scientific notation
 # automatically for very small values (e.g. 1.23e-05) via format = "g".
-# Not used for ggpubr::stat_compare_means(label = "p.format"), which formats
-# internally and isn't safely overridable (see NEWS/commit history for the
-# ggplot2 4.0 / ggpubr create_p_label() incompatibility this package hit).
+# For group-comparison p-values drawn by ggpubr::stat_compare_means(), the
+# equivalent formatting is applied inline via
+# `aes(label = scales::label_pvalue(accuracy = 0.001)(..p..))`, which formats
+# the raw ..p.. stat directly instead of ggpubr's own 2-significant-digit
+# p.format label.
 .mbm_format_pval <- function(p, digits = 3) {
   formatC(p, digits = digits, format = "g")
 }

@@ -293,7 +293,9 @@ alpha_diversity_plot <- function(
         ggpubr::stat_compare_means(
           data = .x,
           method = stat,
-          label = "p.format",
+          mapping = ggplot2::aes(
+            label = scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p))
+          ),
           size = 3.5,
           family= "serif",
           hide.ns = TRUE,
