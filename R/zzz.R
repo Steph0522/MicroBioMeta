@@ -1,10 +1,11 @@
 # ── Shared p-value formatter ───────────────────────────────────────────────────
-# Formats a p-value to `digits` significant figures (default 3), consistent
-# across every function that prints a p-value directly on a figure (Mantel
-# test annotations, correlation annotations, etc.). Uses scientific notation
-# automatically for very small values (e.g. 1.23e-05) via format = "g".
-.mbm_format_pval <- function(p, digits = 3) {
-  formatC(p, digits = digits, format = "g")
+# Formats a p-value to 3 decimal places, rendering values below `accuracy` as
+# "<0.001". Matches the formatting used for group-comparison p-values drawn by
+# ggpubr::stat_compare_means() (which apply scales::label_pvalue() inline in
+# their aes(label = ...) mapping), so every p-value in the package reads the
+# same way.
+.mbm_format_pval <- function(p, accuracy = 0.001) {
+  scales::label_pvalue(accuracy = accuracy)(p)
 }
 
 # ── Shared theme ──────────────────────────────────────────────────────────────

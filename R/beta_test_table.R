@@ -209,8 +209,12 @@ beta_test_table <- function(table,
   # --- Resaltar p-valores ---
   col_p <- grep("Pr", names(tabla), ignore.case = TRUE)
   if (length(col_p) > 0) {
-    p_values <- suppressWarnings(as.numeric(tabla[[col_p]]))
-    filas_signif <- which(!is.na(p_values) & p_values < 0.05)
+    p_text <- tabla[[col_p]]
+    # Values formatted as "<0.001" are significant by definition but would
+    # become NA under as.numeric(), so flag them separately.
+    is_below_threshold <- startsWith(p_text, "<")
+    p_values <- suppressWarnings(as.numeric(p_text))
+    filas_signif <- which(is_below_threshold | (!is.na(p_values) & p_values < 0.05))
     if (length(filas_signif) > 0) {
       for (fila in filas_signif) {
         tab <- ggpubr::table_cell_font(tab, row = fila + 1, column = col_p, face = "bold")
