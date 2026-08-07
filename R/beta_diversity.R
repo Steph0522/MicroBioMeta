@@ -124,16 +124,17 @@ beta_plot <- function(table,
     ggh4x::facet_grid2(stats::as.formula(paste("orden ~", condition1.x)), 
                        scales = "free_x", 
                        strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +  
+    ggplot2::theme_bw(base_family = "serif") +
     ggplot2::theme(axis.text.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 8),
-                   axis.title.y = ggplot2::element_text(size = 12, face = "bold", 
+                   axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                   axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
                                                         margin = ggplot2::margin(t = 0, r = 0.5, b = 0, l = 0, "cm")),
-                   strip.text.x = ggplot2::element_text(size = 7, face = "bold", color = "white"),
-                   strip.text.y = ggplot2::element_text(face = "italic"),
-                   legend.text = ggplot2::element_text(size = 5),
+                   strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
+                   strip.text.y = ggplot2::element_text(size = 12, face = "italic"),
+                   legend.text = ggplot2::element_text(size = 12, color = "black"),
                    legend.title = ggplot2::element_blank(),
-                   panel.border = ggplot2::element_rect(color = "black", fill=NA, size=0.5)) + # <<--- anade esto
+                   panel.border = ggplot2::element_rect(color = "black", fill=NA, size=0.5)) +
     ggplot2::xlab("Section")
   
   # Devuelve plot
@@ -212,14 +213,16 @@ shared_plot <- function(table,
     ggh4x::facet_grid2(stats::as.formula(paste(". ~", condition1.x)), 
                        scales = "free_x", 
                        strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +  
+    ggplot2::theme_bw(base_family = "serif") +
     ggplot2::theme(axis.text.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 10),
-                   axis.title.y = ggplot2::element_text(size = 12, face = "bold", margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
-                   strip.text.x = ggplot2::element_text(size = 10, face = "bold", color = "white"),
+                   axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                   axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black", margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
+                   strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
+                   legend.text = ggplot2::element_text(size = 12, color = "black"),
                    legend.title = ggplot2::element_blank())+
     ggplot2::xlab(ggplot2::element_blank())+
-    ggpubr::stat_compare_means(label="p.format", label.x = 2, size=2.8)
+    ggpubr::stat_compare_means(label="p.format", label.x = 2, size=3.5, family = "serif")
   
   
   
@@ -315,13 +318,14 @@ beta_plot_flexible <- function(table,
       stats::as.formula(paste(". ~", condition1.x)),
       scales = "free_x",
       strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +
+    ggplot2::theme_bw(base_family = "serif") +
     ggplot2::theme(axis.text.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 8),
-                   axis.title.y = ggplot2::element_text(size = 12, face = "bold",
+                   axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                   axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
                                                margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
-                   strip.text.x = ggplot2::element_text(size = 7, face = "bold", color = "white"),
-                   legend.text = ggplot2::element_text(size = 5),
+                   strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
+                   legend.text = ggplot2::element_text(size = 12, color = "black"),
                    legend.title = ggplot2::element_blank(),
                    panel.border = ggplot2::element_rect(color = "black", fill=NA, size=0.5)) +
     ggplot2::xlab(title_axis_x)

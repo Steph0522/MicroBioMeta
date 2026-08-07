@@ -359,7 +359,7 @@ beta_decay_plot <- function(
         size = 12, color = "black", family = "serif"
       ),
       plot.title       = ggplot2::element_text(
-        size = 16, color = "black", family = "serif", face = "bold"
+        size = 14, color = "black", family = "serif", face = "bold"
       ),
       legend.title     = ggplot2::element_text(
         size = 14, color = "black", family = "serif", face = "bold"

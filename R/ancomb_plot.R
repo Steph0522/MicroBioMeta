@@ -255,7 +255,7 @@ ancombc_plot <- function(table,
       .mbm_theme(
         legend_position = "bottom",
         extra = ggplot2::theme(
-          axis.text.y        = ggplot2::element_text(size = 10, face = "italic",
+          axis.text.y        = ggplot2::element_text(size = 12, face = "italic",
                                                      color = "black"),
           panel.grid.major.y = ggplot2::element_blank()
         )
@@ -307,7 +307,7 @@ ancombc_plot <- function(table,
       .mbm_theme(
         legend_position = "bottom",
         extra = ggplot2::theme(
-          axis.text.y        = ggplot2::element_text(size = 10, face = "italic",
+          axis.text.y        = ggplot2::element_text(size = 12, face = "italic",
                                                      color = "black"),
           panel.grid.major.y = ggplot2::element_blank()
         )
@@ -357,10 +357,10 @@ ancombc_plot <- function(table,
       .mbm_theme(
         legend_position = "right",
         extra = ggplot2::theme(
-          axis.text.y = ggplot2::element_text(size = 10, face = "italic",
+          axis.text.y = ggplot2::element_text(size = 12, face = "italic",
                                               color = "black"),
           axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,
-                                              size = 10, color = "black")
+                                              size = 12, color = "black")
         )
       )
   }

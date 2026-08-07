@@ -248,11 +248,11 @@ beta_partition_plot <- function(table, metadata,
   } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
   panel_fontface <- if (panel_label_bold) "bold" else "plain"
   panel <- cowplot::plot_grid(
-    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
+    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(index, " dissimilarity (mean = ", mean_jac, ")")),
-     plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
+     plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
-    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
+    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 14, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")")),
     ncol = 3, align = "hv", labels = resolved_labels, label_fontfamily = "serif",
     label_fontface = panel_fontface

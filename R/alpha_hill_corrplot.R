@@ -73,8 +73,7 @@ alpha_hill_corrplot <- function(table,
   base_theme <- .mbm_theme(
     legend_position = "none",
     extra = ggplot2::theme(
-      legend.title = ggplot2::element_blank(),
-      axis.text.x  = ggplot2::element_text(size = 8, color = "black")
+      legend.title = ggplot2::element_blank()
     )
   )
   

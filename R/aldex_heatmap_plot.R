@@ -260,7 +260,9 @@ aldex_heatmap_plot <- function(table,
   # Shared gpar helpers (consistent font/color across all annotations)
   gp_title  <- grid::gpar(fontsize = 12, fontface = "bold",
                            fontfamily = "serif", col = "black")
-  gp_labels <- grid::gpar(fontsize = 11, fontfamily = "serif", col = "black")
+  gp_legend_title <- grid::gpar(fontsize = 14, fontface = "bold",
+                                fontfamily = "serif", col = "black")
+  gp_labels <- grid::gpar(fontsize = 12, fontfamily = "serif", col = "black")
   gp_border <- grid::gpar(col = "black")
 
   # --- Left annotation: Effect size ---
@@ -270,7 +272,7 @@ aldex_heatmap_plot <- function(table,
     simple_anno_size    = grid::unit(0.5, "cm"),
     annotation_name_gp  = gp_title,
     annotation_legend_param = list(
-      title_gp  = gp_title,
+      title_gp  = gp_legend_title,
       labels_gp = gp_labels,
       direction = "vertical"
     ),
@@ -285,7 +287,7 @@ aldex_heatmap_plot <- function(table,
     simple_anno_size = grid::unit(0.5, "cm"),
     annotation_name_gp = gp_title,
     annotation_legend_param = list(
-      title_gp  = gp_title,
+      title_gp  = gp_legend_title,
       labels_gp = gp_labels,
       direction = "vertical"
     ),
@@ -322,12 +324,12 @@ aldex_heatmap_plot <- function(table,
     heatmap_legend_param = list(
       direction     = "vertical",
       labels_gp     = gp_labels,
-      title_gp      = gp_title,
+      title_gp      = gp_legend_title,
       legend_height = grid::unit(2.5, "cm")
     ),
     column_names_gp  = gp_title,
     col              = heatmap_colors_fn,
-    row_names_gp     = grid::gpar(fontsize = 11, fontface = "italic",
+    row_names_gp     = grid::gpar(fontsize = 12, fontface = "italic",
                                   fontfamily = "serif", col = "black"),
     show_heatmap_legend = TRUE
   )

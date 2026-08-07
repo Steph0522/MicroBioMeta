@@ -141,7 +141,7 @@ venn_diagram_plot <- function(table, metadata, merge_by = NULL,
     ggplot2::theme(
       legend.position = "right",
       legend.text     = ggplot2::element_text(size = 12, color = "black"),
-      legend.title    = ggplot2::element_text(size = 12, face = "bold",
+      legend.title    = ggplot2::element_text(size = 14, face = "bold",
                                               color = "black")
     )
 
