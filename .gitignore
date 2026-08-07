@@ -12,3 +12,4 @@ dev/
 /Meta/
 /*.txt
 /vignettes/*.txt
+/tests/data/
