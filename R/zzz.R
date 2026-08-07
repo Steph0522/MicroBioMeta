@@ -1,3 +1,15 @@
+# ── Shared p-value formatter ───────────────────────────────────────────────────
+# Formats a p-value to `digits` significant figures (default 3), consistent
+# across every function that prints a p-value directly on a figure (Mantel
+# test annotations, correlation annotations, etc.). Uses scientific notation
+# automatically for very small values (e.g. 1.23e-05) via format = "g".
+# Not used for ggpubr::stat_compare_means(label = "p.format"), which formats
+# internally and isn't safely overridable (see NEWS/commit history for the
+# ggplot2 4.0 / ggpubr create_p_label() incompatibility this package hit).
+.mbm_format_pval <- function(p, digits = 3) {
+  formatC(p, digits = digits, format = "g")
+}
+
 # ── Shared theme ──────────────────────────────────────────────────────────────
 # Internal helper: unified ggplot2 theme for all MicroBioMeta plots.
 # legend_position: passed through from each function's parameter.

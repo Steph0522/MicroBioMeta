@@ -163,8 +163,14 @@ beta_test_table <- function(table,
   }
   
   # --- Formato numerico ---
+  # The p-value column uses significant-figure formatting (consistent with
+  # every other figure in the package) instead of the fixed `decimales`
+  # rounding applied to the other numeric columns, since fixed decimals can
+  # round small p-values (e.g. 0.0004) down to "0".
+  col_p_name <- grep("Pr", names(tabla), ignore.case = TRUE, value = TRUE)
   tabla <- tabla %>%
-    dplyr::mutate(across(where(is.numeric), ~ round(., decimales))) %>%
+    dplyr::mutate(across(where(is.numeric) & !dplyr::any_of(col_p_name), ~ round(., decimales))) %>%
+    dplyr::mutate(across(dplyr::any_of(col_p_name), ~ .mbm_format_pval(.))) %>%
     dplyr::mutate(across(everything(), as.character)) %>%
     dplyr::mutate(across(everything(), ~ ifelse(is.na(.), "-", .)))
 
