@@ -224,9 +224,7 @@ shared_plot <- function(table,
     ggplot2::xlab(ggplot2::element_blank())+
     ggpubr::stat_compare_means(
       mapping = ggplot2::aes(
-        label = scales::label_pvalue(
-          accuracy = 0.001, prefix = c("p < ", "p = ", "p > ")
-        )(ggplot2::after_stat(p))
+        label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
       ),
       label.x = 2, size = 3.5, family = "serif")
   
