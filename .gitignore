@@ -13,3 +13,4 @@ dev/
 /*.txt
 /vignettes/*.txt
 /tests/data/
+/inst/extdata/table_with_taxonomy.tsv
