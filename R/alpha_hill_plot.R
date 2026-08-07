@@ -273,11 +273,9 @@ alpha_hill_plot <- function(
           data = .x,
           method = stat,
           mapping = ggplot2::aes(
-            label = ifelse(
-              ggplot2::after_stat(p) < 0.001,
-              "p < 0.001",
-              paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-            )
+            label = scales::label_pvalue(
+              accuracy = 0.001, prefix = c("p < ", "p = ", "p > ")
+            )(ggplot2::after_stat(p))
           ),
           size = 3.5,
           family= "serif",
