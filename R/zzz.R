@@ -7,22 +7,6 @@
   formatC(p, digits = digits, format = "g")
 }
 
-# ── Shared "p = x" / "p < x" label builder ─────────────────────────────────────
-# Builds the p-value label drawn on group-comparison plots by
-# ggpubr::stat_compare_means(). Values below `accuracy` render as "p < 0.001"
-# (with a less-than sign, no equals), everything else as "p = 0.401".
-# Formats the raw ..p.. stat directly rather than using ggpubr's own
-# `label = "p.format"`, which rounds to 2 significant digits and, in some
-# ggpubr versions, breaks under ggplot2 >= 4.0 inside create_p_label().
-.mbm_pval_label <- function(p, accuracy = 0.001) {
-  formatted <- scales::label_pvalue(accuracy = accuracy)(p)
-  ifelse(
-    startsWith(formatted, "<"),
-    paste0("p ", formatted),
-    paste0("p = ", formatted)
-  )
-}
-
 # ── Shared theme ──────────────────────────────────────────────────────────────
 # Internal helper: unified ggplot2 theme for all MicroBioMeta plots.
 # legend_position: passed through from each function's parameter.
