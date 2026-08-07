@@ -6,6 +6,7 @@
 \usage{
 alpha_hill_corrplot(
   table,
+  method = method,
   facet_orientation = "horizontal",
   title = "default",
   panel_label_case = "upper",
@@ -18,6 +19,11 @@ alpha_hill_corrplot(
 \arguments{
 \item{table}{A data frame or matrix with samples as columns and taxa as rows.
 The first column must contain the OTUID, ASV, or species name.}
+
+\item{method}{Character. Correlation method passed to
+\code{ggpubr::stat_cor}. One of \code{"spearman"} (default, rank-based
+and robust to non-linear/non-normal relationships), \code{"pearson"}, or
+\code{"kendall"}.}
 
 \item{facet_orientation}{Whether the three q0/q1/q2 panels are arranged in
 a row ("horizontal", default) or a column ("vertical").}
@@ -52,7 +58,7 @@ A ggplot object showing alpha diversity with Hill numbers.
 \description{
 Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
 sequencing depth (total reads) as a scatter plot with a fitted regression
-line and Pearson correlation coefficient, combining the three plots (q0,
+line and correlation coefficient, combining the three plots (q0,
 q1, q2) into a single figure via \code{cowplot}.
 }
 \examples{
@@ -63,6 +69,12 @@ table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE
 alpha_hill_corrplot(
   table             = table,
   facet_orientation = "horizontal"
+)
+
+## Using Pearson correlation instead of the default Spearman
+alpha_hill_corrplot(
+  table  = table,
+  method = "pearson"
 )
 }
 }

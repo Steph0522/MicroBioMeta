@@ -2,11 +2,15 @@
 #'
 #' Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
 #' sequencing depth (total reads) as a scatter plot with a fitted regression
-#' line and Pearson correlation coefficient, combining the three plots (q0,
+#' line and correlation coefficient, combining the three plots (q0,
 #' q1, q2) into a single figure via \code{cowplot}.
 #'
 #' @param table A data frame or matrix with samples as columns and taxa as rows.
 #'              The first column must contain the OTUID, ASV, or species name.
+#' @param method Character. Correlation method passed to
+#'   \code{ggpubr::stat_cor}. One of \code{"spearman"} (default, rank-based
+#'   and robust to non-linear/non-normal relationships), \code{"pearson"}, or
+#'   \code{"kendall"}.
 #' @param facet_orientation Whether the three q0/q1/q2 panels are arranged in
 #'   a row ("horizontal", default) or a column ("vertical").
 #' @param title Character. Title for the combined figure. \code{"default"}
@@ -39,9 +43,16 @@
 #'   table             = table,
 #'   facet_orientation = "horizontal"
 #' )
+#'
+#' ## Using Pearson correlation instead of the default Spearman
+#' alpha_hill_corrplot(
+#'   table  = table,
+#'   method = "pearson"
+#' )
 #' }
 
 alpha_hill_corrplot <- function(table,
+                                method = method,
                                 facet_orientation = "horizontal",
                                 title = "default",
                                 panel_label_case = "upper",
@@ -87,7 +98,7 @@ alpha_hill_corrplot <- function(table,
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
     add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
-      method = "pearson",
+      method = method,
       label.x = 3,
       label.sep = "\n",
       p.accuracy = 0.001,
@@ -109,7 +120,7 @@ alpha_hill_corrplot <- function(table,
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
     add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
-      method = "pearson",
+      method = method,
       label.x = 3,
       label.sep = "\n",
       p.accuracy = 0.001,
@@ -131,7 +142,7 @@ alpha_hill_corrplot <- function(table,
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
     add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
-      method = "pearson",
+      method = method,
       label.x = 3,
       label.sep = "\n",
       p.accuracy = 0.001,
