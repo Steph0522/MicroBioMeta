@@ -24,15 +24,15 @@
 #'   from the linear model to the annotation label.
 #' @param facet_orientation Character. \code{"horizontal"} (default) places
 #'   q-panels in a single row; \code{"vertical"} stacks them in one column.
-#' @param fill_palette Character. Built-in palette name: \code{"colorb"}
+#' @param palette Character. Built-in palette name: \code{"colorb"}
 #'   (default), \code{"grey"}, \code{"viridis"}, or \code{"brewer"}.
-#' @param custom_palette A named or unnamed character vector of colors.
-#'   Overrides \code{fill_palette} when provided.
-#' @param x_title Character. X-axis label. Defaults to the value of
+#' @param group_colors A named or unnamed character vector of colors.
+#'   Overrides \code{palette} when provided.
+#' @param x_axis_title Character. X-axis label. Defaults to the value of
 #'   \code{cont_var}.
-#' @param y_title Character. Y-axis label.
+#' @param y_axis_title Character. Y-axis label.
 #'   Default: \code{"Effective number of features"}.
-#' @param figure_title Character or \code{NULL}. Overall plot title.
+#' @param title Character or \code{NULL}. Overall plot title.
 #' @param show_legend Logical. Show the color legend? Default \code{TRUE}.
 #' @param legend_position Character. Legend position: \code{"bottom"}
 #'   (default), \code{"top"}, \code{"right"}, or \code{"left"}.
@@ -48,20 +48,29 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' # All samples, no grouping
 #' alpha_decay_plot(
-#'   table    = table_taxa2,
-#'   metadata = metas2,
-#'   cont_var = "dist_km"
+#'   table    = table,
+#'   metadata = metadata,
+#'   cont_var = "pH"
 #' )
 #'
-#' # Separate regression lines by state
+#' # Separate regression lines by soil type
 #' alpha_decay_plot(
-#'   table     = table_taxa2,
-#'   metadata  = metas2,
-#'   cont_var  = "dist_km",
-#'   group_col = "estado2"
+#'   table     = table,
+#'   metadata  = metadata,
+#'   cont_var  = "pH",
+#'   group_col = "Type_of_soil"
 #' )
+#' }
 alpha_decay_plot <- function(
     table,
     metadata,
@@ -70,11 +79,11 @@ alpha_decay_plot <- function(
     method            = "spearman",
     show_lm_stats     = TRUE,
     facet_orientation = "horizontal",
-    fill_palette      = "colorb",
-    custom_palette    = NULL,
-    x_title           = NULL,
-    y_title           = "Effective number of features",
-    figure_title      = NULL,
+    palette           = "colorb",
+    group_colors      = NULL,
+    x_axis_title      = NULL,
+    y_axis_title      = "Effective number of features",
+    title             = NULL,
     show_legend       = TRUE,
     legend_position   = "bottom",
     free_y            = TRUE,
@@ -203,10 +212,10 @@ alpha_decay_plot <- function(
   }
 
   # ---- 6. Color scale ----
-  color_scale <- if (!is.null(custom_palette)) {
-    ggplot2::scale_color_manual(values = custom_palette)
+  color_scale <- if (!is.null(group_colors)) {
+    ggplot2::scale_color_manual(values = group_colors)
   } else {
-    switch(fill_palette,
+    switch(palette,
       "colorb"  = ggplot2::scale_color_manual(values = .mbm_colors),
       "grey"    = ggplot2::scale_color_grey(start = 0.7, end = 0.2),
       "viridis" = ggplot2::scale_color_viridis_d(option = "plasma"),
@@ -278,9 +287,9 @@ alpha_decay_plot <- function(
     ) +
     color_scale +
     ggplot2::labs(
-      title = figure_title,
-      x     = if (!is.null(x_title)) x_title else cont_var,
-      y     = y_title,
+      title = title,
+      x     = if (!is.null(x_axis_title)) x_axis_title else cont_var,
+      y     = y_axis_title,
       color = group_col
     ) +
     ggplot2::theme_bw() +

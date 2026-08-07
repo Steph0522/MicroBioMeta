@@ -36,6 +36,12 @@
 #'   \code{NULL} (default) the first factor level is used as reference.
 #'   Use this to change which group appears as the baseline in comparisons
 #'   (e.g. \code{ref_level = "P2"} to compare all other groups against P2).
+#' @param diverging_palette Character. Name of the colorblind-friendly
+#'   diverging palette used for the 3+-group heatmap's log-fold-change fill
+#'   scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
+#'   (blue-vermillion), \code{"BuPk"} (blue-pink), or \code{"GnPk"}
+#'   (green-pink). Ignored for the 2-group / continuous bar plot, which uses
+#'   \code{bar_colors} instead.
 #' @param bar_colors Character vector of (at least) 2 colors used for the
 #'   bar plot (2-group or continuous \code{col_cond}). First color is the
 #'   "positive" direction (the non-reference group / increases with the
@@ -54,10 +60,17 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' ancombc_plot(
-#'   table    = feature_table,
-#'   metadata = sample_metadata,
-#'   col_cond = "Treatment"
+#'   table    = table,
+#'   metadata = metadata,
+#'   col_cond = "Type_of_soil"
 #' )
 #' }
 

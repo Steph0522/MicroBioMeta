@@ -13,7 +13,7 @@
 #' @param x_axis_title Character. The title for the x-axis (default = "Samples")
 #' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
 #' @param width_equal Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.
-#' @param save_table Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{TRUE}.
+#' @param save_table Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
@@ -29,15 +29,22 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' abundance_barplot(
-#'   table      = table_taxa,
-#'   metadata   = metadata,
-#'   taxonomy_db = "silva",
-#'   level      = "genus",
-#'   x_col      = "MUESTRA",
-#'   label = "Genus",
-#'   facet_col  = "SITIO",
-#'   top_n      = 30,
+#'   table        = table,
+#'   metadata     = metadata,
+#'   taxonomy_db  = "silva",
+#'   level        = "genus",
+#'   x_col        = "Type_of_soil",
+#'   label        = "Genus",
+#'   facet_col    = "Treatment",
+#'   top_n        = 30,
 #'   add_remained = TRUE
 #' )
 #' }
@@ -55,12 +62,15 @@ abundance_barplot <- function(table,
                               top_n = 15,
                               x_axis_title = "Samples",
                               add_remained = FALSE,
-                              save_table = TRUE,
+                              save_table = FALSE,
                               table_filename = "relative_abundance.txt") {
-  
+
+  # Treat metadata's first column as the sample ID regardless of its original name
+  colnames(metadata)[1] <- "SAMPLEID"
+
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
-  
+
   names(table)[tax_col] <- "taxonomy"
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]

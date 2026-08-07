@@ -12,11 +12,11 @@ alpha_decay_plot(
   method = "spearman",
   show_lm_stats = TRUE,
   facet_orientation = "horizontal",
-  fill_palette = "colorb",
-  custom_palette = NULL,
-  x_title = NULL,
-  y_title = "Effective number of features",
-  figure_title = NULL,
+  palette = "colorb",
+  group_colors = NULL,
+  x_axis_title = NULL,
+  y_axis_title = "Effective number of features",
+  title = NULL,
   show_legend = TRUE,
   legend_position = "bottom",
   free_y = TRUE,
@@ -49,19 +49,19 @@ from the linear model to the annotation label.}
 \item{facet_orientation}{Character. \code{"horizontal"} (default) places
 q-panels in a single row; \code{"vertical"} stacks them in one column.}
 
-\item{fill_palette}{Character. Built-in palette name: \code{"colorb"}
+\item{palette}{Character. Built-in palette name: \code{"colorb"}
 (default), \code{"grey"}, \code{"viridis"}, or \code{"brewer"}.}
 
-\item{custom_palette}{A named or unnamed character vector of colors.
-Overrides \code{fill_palette} when provided.}
+\item{group_colors}{A named or unnamed character vector of colors.
+Overrides \code{palette} when provided.}
 
-\item{x_title}{Character. X-axis label. Defaults to the value of
+\item{x_axis_title}{Character. X-axis label. Defaults to the value of
 \code{cont_var}.}
 
-\item{y_title}{Character. Y-axis label.
+\item{y_axis_title}{Character. Y-axis label.
 Default: \code{"Effective number of features"}.}
 
-\item{figure_title}{Character or \code{NULL}. Overall plot title.}
+\item{title}{Character or \code{NULL}. Overall plot title.}
 
 \item{show_legend}{Logical. Show the color legend? Default \code{TRUE}.}
 
@@ -94,18 +94,27 @@ An optional grouping variable adds per-group coloring and separate
 regression lines.
 }
 \examples{
+\dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 # All samples, no grouping
 alpha_decay_plot(
-  table    = table_taxa2,
-  metadata = metas2,
-  cont_var = "dist_km"
+  table    = table,
+  metadata = metadata,
+  cont_var = "pH"
 )
 
-# Separate regression lines by state
+# Separate regression lines by soil type
 alpha_decay_plot(
-  table     = table_taxa2,
-  metadata  = metas2,
-  cont_var  = "dist_km",
-  group_col = "estado2"
+  table     = table,
+  metadata  = metadata,
+  cont_var  = "pH",
+  group_col = "Type_of_soil"
 )
+}
 }

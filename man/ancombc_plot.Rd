@@ -8,12 +8,14 @@ ancombc_plot(
   table,
   metadata,
   col_cond,
+  tax_level = "Genus",
   prv_cut = 0.1,
   p_adj_method = "holm",
   formula = NULL,
   rand_formula = NULL,
   ref_level = NULL,
   diverging_palette = "BuOr",
+  bar_colors = c("#56B4E9", "#E69F00"),
   save_table = FALSE,
   table_filename = "ancombc_results.txt"
 )
@@ -27,7 +29,16 @@ column must contain taxonomy strings (named "taxonomy", "Taxonomy",
 contain sample IDs that match the column names of \code{table}.}
 
 \item{col_cond}{Character. Name of the column in \code{metadata} that
-defines the grouping variable.}
+defines the grouping variable. If this column is numeric (a continuous
+variable), it's treated as a covariate instead of a group: ANCOMBC2's
+\code{group}/structural-zero machinery (which requires discrete groups)
+is disabled, and the resulting plot shows the effect size per unit
+increase rather than a group-vs-group comparison.}
+
+\item{tax_level}{Character or \code{NULL}. Taxonomic level to agglomerate
+to before running \code{ancombc2} (e.g. \code{"Genus"}, \code{"Family"}).
+Default \code{"Genus"}. Pass \code{NULL} to skip agglomeration and run
+ANCOMBC2 directly on the ASV/OTU-level table (rows of \code{table}, as-is).}
 
 \item{prv_cut}{Numeric. Prevalence cut-off passed to \code{ancombc2}
 (default \code{0.1}). Lower values retain more taxa.}
@@ -49,6 +60,21 @@ Default \code{NULL}.}
 Use this to change which group appears as the baseline in comparisons
 (e.g. \code{ref_level = "P2"} to compare all other groups against P2).}
 
+\item{diverging_palette}{Character. Name of the colorblind-friendly
+diverging palette used for the 3+-group heatmap's log-fold-change fill
+scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
+(blue-vermillion), \code{"BuPk"} (blue-pink), or \code{"GnPk"}
+(green-pink). Ignored for the 2-group / continuous bar plot, which uses
+\code{bar_colors} instead.}
+
+\item{bar_colors}{Character vector of (at least) 2 colors used for the
+bar plot (2-group or continuous \code{col_cond}). First color is the
+"positive" direction (the non-reference group / increases with the
+variable); second color is the "negative" direction (the reference
+group / decreases with the variable). Default \code{c("#56B4E9",
+"#E69F00")} (colorblind-friendly blue/yellow). Ignored for the
+3+-group heatmap, which uses \code{diverging_palette} instead.}
+
 \item{save_table}{Logical. If \code{TRUE}, saves the full ANCOMBC2 results
 table to disk. Default \code{FALSE}.}
 
@@ -62,14 +88,23 @@ A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
 \description{
 Runs ANCOMBC2 on a counts table and metadata, then visualizes differentially
 abundant taxa. For two-group comparisons a bar plot of log-fold changes is
-returned; for three or more groups a heatmap is returned.
+returned; for three or more groups a heatmap is returned; for a continuous
+\code{col_cond} (e.g. \code{"dist_km"}) a bar plot of the effect size per
+unit increase is returned instead, colored by the direction of the effect.
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 ancombc_plot(
-  table    = feature_table,
-  metadata = sample_metadata,
-  col_cond = "Treatment"
+  table    = table,
+  metadata = metadata,
+  col_cond = "Type_of_soil"
 )
 }
 }

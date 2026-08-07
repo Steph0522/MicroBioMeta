@@ -84,11 +84,21 @@ difference between groups.
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
+# aldex_heatmap_plot requires exactly two groups in col_cond
+metadata_2groups <- metadata[metadata$Type_of_soil \%in\% c("Rizosphere", "Roots"), ]
+
 aldex_heatmap_plot(
-  table            = feature_table,
-  metadata         = sample_metadata,
-  col_cond         = "Sample_type",
-  effect_threshold = 2
+  table            = table,
+  metadata         = metadata_2groups,
+  col_cond         = "Type_of_soil",
+  effect_threshold = 0.8
 )
 }
 

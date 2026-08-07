@@ -16,9 +16,12 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
 #' abundance_sankey_plot(
-#'   table        = table_taxa,
-#'   output_file  = file.path(getwd(), "sankey_output.html"),
+#'   table        = table,
+#'   output_file  = file.path(tempdir(), "sankey_output.html"),
 #'   maxn         = 10,
 #'   taxRanks     = c("P", "C", "G", "S"),
 #'   taxonomy_db  = "silva"

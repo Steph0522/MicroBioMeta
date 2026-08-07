@@ -26,21 +26,25 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' abundance_heatmap_plot(
 #'   table                  = table,
 #'   metadata               = metadata,
-#'   condition1             = "poblacion",
-#'   condition2             = "temporada",
-#'   condition3             = "sexo",
+#'   condition1             = "Type_of_soil",
+#'   condition2             = "Treatment",
+#'   condition3             = "Month",
 #'   top_n                  = 50,
 #'   cluster                = TRUE,
 #'   show_column_names      = FALSE,
-#'   name_legend_condition1 = "Altitude",
-#'   name_legend_condition2 = "Season",
-#'   name_legend_condition3 = "Sex",
-#'   colors_condition1      = c("#676778", "#D9D9C2"),
-#'   colors_condition2      = c("#0E6251", "#1B5E20"),
-#'   colors_condition3      = c("#5D3277", "#AF6502")
+#'   name_legend_condition1 = "Soil type",
+#'   name_legend_condition2 = "Treatment",
+#'   name_legend_condition3 = "Month"
 #' )
 #' }
 

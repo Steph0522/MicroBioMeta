@@ -66,12 +66,20 @@ the dominant condition.
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 ratio_plot(
   table         = table,
   metadata      = metadata,
-  condition_col = "metodo",
-  condition_A   = "kit",
-  condition_B   = "fenol",
+  condition_col = "Type_of_soil",
+  condition_A   = "Rizosphere",
+  condition_B   = "Roots",
+  taxonomy_db   = "silva",
   level         = "genus",
   top_n         = 20
 )

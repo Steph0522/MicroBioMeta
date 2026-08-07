@@ -45,11 +45,17 @@ Generate a Lollipop plot from random forest results
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 randomf_lollipop_plot(
   table               = table,
   metadata            = metadata,
-  variable_to_predict = "SITIO",
-  group_colors        = c("red", "blue", "green"),
+  variable_to_predict = "Type_of_soil",
   top_n               = 20,
   size                = 6
 )

@@ -17,6 +17,14 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' full_table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' # Split the combined table into a counts-only feature table and a
+#' # separate taxonomy data frame, as merge_feature_taxonomy expects them
+#' feature_table <- full_table[, setdiff(colnames(full_table), "taxonomy")]
+#' taxonomy_df <- full_table[, "taxonomy", drop = FALSE]
+#'
 #' merged <- merge_feature_taxonomy(
 #'   table    = feature_table,
 #'   taxonomy = taxonomy_df

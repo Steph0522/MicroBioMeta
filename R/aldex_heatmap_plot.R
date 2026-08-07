@@ -49,11 +49,21 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
+#' # aldex_heatmap_plot requires exactly two groups in col_cond
+#' metadata_2groups <- metadata[metadata$Type_of_soil %in% c("Rizosphere", "Roots"), ]
+#'
 #' aldex_heatmap_plot(
-#'   table            = feature_table,
-#'   metadata         = sample_metadata,
-#'   col_cond         = "Sample_type",
-#'   effect_threshold = 2
+#'   table            = table,
+#'   metadata         = metadata_2groups,
+#'   col_cond         = "Type_of_soil",
+#'   effect_threshold = 0.8
 #' )
 #' }
 #'
@@ -93,11 +103,6 @@ aldex_heatmap_plot <- function(table,
   if (!col_cond %in% colnames(metadata))
     stop(paste("Column", col_cond, "not found in metadata."))
 
-  conditions       <- as.character(metadata[[col_cond]])
-  unique_conditions <- unique(conditions)
-  if (length(unique_conditions) != 2)
-    stop("Exactly two conditions are required for the analysis.")
-
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table),
                   ignore.case = TRUE)
   if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
@@ -108,6 +113,20 @@ aldex_heatmap_plot <- function(table,
   table_counts <- table %>%
     dplyr::select(-taxonomy) %>%
     tibble::column_to_rownames("OTUID")
+
+  # Align samples between table and metadata (first column = sample ID,
+  # regardless of its original name), so callers don't have to pre-filter
+  # metadata to exactly match table's columns/order themselves.
+  common_samples <- intersect(colnames(table_counts), metadata[[1]])
+  if (length(common_samples) == 0)
+    stop("No matching samples found between 'table' and 'metadata'.")
+  table_counts <- table_counts[, common_samples, drop = FALSE]
+  metadata     <- metadata[match(common_samples, metadata[[1]]), , drop = FALSE]
+
+  conditions       <- as.character(metadata[[col_cond]])
+  unique_conditions <- unique(conditions)
+  if (length(unique_conditions) != 2)
+    stop("Exactly two conditions are required for the analysis.")
 
   if (length(conditions) != ncol(table_counts))
     stop("Number of conditions does not match number of samples.")

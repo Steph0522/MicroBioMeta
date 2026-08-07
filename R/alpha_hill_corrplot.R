@@ -1,13 +1,28 @@
 #' Alpha diversity correlation plot
 #'
-#' This function generates a boxplot or barplot to visualize alpha diversity Hill numbers (q = 0, 1, 2)
-#' for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-#' It supports palette customization, faceting, and statistical comparison.
+#' Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
+#' sequencing depth (total reads) as a scatter plot with a fitted regression
+#' line and Pearson correlation coefficient, combining the three plots (q0,
+#' q1, q2) into a single figure via \code{cowplot}.
 #'
 #' @param table A data frame or matrix with samples as columns and taxa as rows.
 #'              The first column must contain the OTUID, ASV, or species name.
-#' @param facet_orientation Whether `facet_by` appears in columns ("horizontal", default) or rows ("vertical").
-#' @param plot_title Character. Title for the plot. Default \code{"default"}.
+#' @param facet_orientation Whether the three q0/q1/q2 panels are arranged in
+#'   a row ("horizontal", default) or a column ("vertical").
+#' @param title Character. Title for the combined figure. \code{"default"}
+#'   (default) shows "Alpha diversity vs sequencing depth"; \code{"none"}
+#'   shows no title; any other string is used as-is.
+#' @param panel_label_case Character. Case of the auto-generated A/B/C panel
+#'   tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
+#'   ("a", "b", "c"). Ignored if \code{panel_labels} is supplied.
+#' @param panel_labels Optional character vector of 3 custom panel tags (one
+#'   per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+#'   \code{c("a.", "b.", "c.")}) — for journal styles that
+#'   \code{panel_label_case} alone can't produce. Overrides
+#'   \code{panel_label_case} when provided.
+#' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
+#'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
+#'   panel tags.
 #' @param save_table Logical. If \code{TRUE}, saves the Hill numbers table to
 #'   disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -17,6 +32,9 @@
 #' @export
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
 #' alpha_hill_corrplot(
 #'   table             = table,
 #'   facet_orientation = "horizontal"
@@ -25,7 +43,10 @@
 
 alpha_hill_corrplot <- function(table,
                                 facet_orientation = "horizontal",
-                                plot_title = "default",
+                                title = "default",
+                                panel_label_case = "upper",
+                                panel_labels = NULL,
+                                panel_label_bold = TRUE,
                                 save_table = FALSE,
                                 table_filename = "hill.txt") {
 
@@ -121,42 +142,47 @@ alpha_hill_corrplot <- function(table,
     ggplot2::theme(aspect.ratio = aspect_ratio_theme)
   
   # --- Componer grid de gráficos ---
+  resolved_labels <- if (!is.null(panel_labels)) {
+    panel_labels
+  } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
+  panel_fontface <- if (panel_label_bold) "bold" else "plain"
+
   grid_plot <- if (facet_orientation == "horizontal") {
     cowplot::plot_grid(
       q0_vs_depth, q1_vs_depth, q2_vs_depth,
-      labels = c("A", "B", "C"),
+      labels = resolved_labels,
       nrow = 1,
       label_fontfamily = "serif",
-      label_fontface = "bold",
+      label_fontface = panel_fontface,
       label_size = 16
     )
   } else {
     cowplot::plot_grid(
       q0_vs_depth, q1_vs_depth, q2_vs_depth,
-      labels = c("A", "B", "C"),
+      labels = resolved_labels,
       ncol = 1,
       label_fontfamily = "serif",
-      label_fontface = "bold",
+      label_fontface = panel_fontface,
       label_size = 16
     )
   }
   
   # --- Título del gráfico ---
-  if (is.character(plot_title)) {
-    if (tolower(plot_title) == "none") {
+  if (is.character(title)) {
+    if (tolower(title) == "none") {
       return(grid_plot)
-    } else if (tolower(plot_title) == "default") {
-      title <- cowplot::ggdraw() +
+    } else if (tolower(title) == "default") {
+      title_grob <- cowplot::ggdraw() +
         cowplot::draw_label("Alpha diversity vs sequencing depth",
                             fontface = "bold",
                             fontfamily = "serif")
     } else {
-      title <- cowplot::ggdraw() +
-        cowplot::draw_label(plot_title,
+      title_grob <- cowplot::ggdraw() +
+        cowplot::draw_label(title,
                             fontface = "bold",
                             fontfamily = "serif")
     }
-    cowplot::plot_grid(title, grid_plot, ncol = 1, rel_heights = c(0.1, 1))
+    cowplot::plot_grid(title_grob, grid_plot, ncol = 1, rel_heights = c(0.1, 1))
   } else {
     return(grid_plot)
   }

@@ -26,19 +26,38 @@
 #' @param x_axis_title Title for the x-axis.
 #' @param y_axis_title Title for the y-axis.
 #' @param free_y Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.
-#' @param save_table Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{TRUE}.
+#' @param panel_label_case Character. Case of the auto-generated panel tags
+#'   (A, B, C... added per panel when \code{stat} is used). One of
+#'   \code{"upper"} (default, "A", "B", "C") or \code{"lower"} ("a", "b", "c").
+#'   Ignored if \code{panel_labels} is supplied.
+#' @param panel_labels Optional character vector of custom panel tags, one per
+#'   panel, used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+#'   \code{c("a.", "b.", "c.")}) — for journal styles that
+#'   \code{panel_label_case} alone can't produce. Overrides
+#'   \code{panel_label_case} when provided.
+#' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
+#'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
+#'   panel tags.
+#' @param save_table Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"hill.txt"}.
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' alpha_hill_plot(
 #'   table           = table,
 #'   metadata        = metadata,
 #'   type            = "boxplot",
-#'   x_col           = "SITIO",
-#'   fill_col        = "SITIO",
+#'   x_col           = "Type_of_soil",
+#'   fill_col        = "Type_of_soil",
 #'   legend_position = "top",
 #'   stat            = "kruskal.test"
 #' )
@@ -65,15 +84,21 @@ alpha_hill_plot <- function(
     x_axis_title = NULL,
     y_axis_title = "Effective number of features",
     free_y = FALSE,
-    save_table = TRUE,
+    panel_label_case = "upper",
+    panel_labels = NULL,
+    panel_label_bold = TRUE,
+    save_table = FALSE,
     table_filename = "hill.txt") {
   
   sample_order <- metadata[[1]]
   common_samples <- intersect(colnames(table), sample_order)
   if (length(common_samples) == 0) stop("No matching sample names between table and metadata.")
-  
+
+  # Keep and align only the samples present in both table and metadata,
+  # in the same order, so the positional cbind below (results <-
+  # data.frame(q0, q1, q2, metadata)) lines up correctly.
   table <- table[, common_samples, drop = FALSE]
-  table <- table[, match(sample_order, colnames(table))]
+  metadata <- metadata[match(common_samples, metadata[[1]]), , drop = FALSE]
   table <- data.frame(t(table))
   
   results <- data.frame(
@@ -251,7 +276,6 @@ alpha_hill_plot <- function(
           size = 3.5,
           family= "serif",
           hide.ns = TRUE,
-          mapping = ggplot2::aes(label = ..p.format..),
           label.y = y_val,
           label.x = x_center
         )
@@ -259,16 +283,19 @@ alpha_hill_plot <- function(
     
     p <- p + p_vals_layers
     # Añadir etiquetas tipo A, B, C... a los paneles
+    panel_letters <- if (!is.null(panel_labels)) {
+      panel_labels
+    } else if (identical(panel_label_case, "lower")) letters else LETTERS
     gb <- ggplot2::ggplot_build(p)
     lay <- gb$layout$layout
-    tags <- cbind(lay, label = LETTERS[lay$PANEL], x = -Inf, y = Inf)
-    
+    tags <- cbind(lay, label = panel_letters[lay$PANEL], x = -Inf, y = Inf)
+
     p <- p + ggplot2::geom_text(
       data = tags,
       mapping = ggplot2::aes(x = x, y = y, label = label),
       hjust = -0.5,
       vjust = 1.5,
-      fontface = "bold",
+      fontface = if (panel_label_bold) "bold" else "plain",
       family= "serif",
       size= 6,
       inherit.aes = FALSE

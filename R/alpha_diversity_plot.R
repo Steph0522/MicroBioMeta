@@ -27,20 +27,39 @@
 #' @param y_axis_title Title for the y-axis.
 #' @param free_y Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.
 #' @param rarefy_depth Integer. If provided, rarefies samples to this depth before diversity estimation. Default \code{NULL}.
-#' @param save_table Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{TRUE}.
+#' @param panel_label_case Character. Case of the auto-generated panel tags
+#'   (A, B, C... added per panel when \code{stat} is used). One of
+#'   \code{"upper"} (default, "A", "B", "C") or \code{"lower"} ("a", "b", "c").
+#'   Ignored if \code{panel_labels} is supplied.
+#' @param panel_labels Optional character vector of custom panel tags, one per
+#'   panel, used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+#'   \code{c("a.", "b.", "c.")}) — for journal styles that
+#'   \code{panel_label_case} alone can't produce. Overrides
+#'   \code{panel_label_case} when provided.
+#' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
+#'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
+#'   panel tags.
+#' @param save_table Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"diversity.txt"}.
 #'
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SAMPLEID"
+#'
 #' alpha_diversity_plot(
 #'   table           = table,
 #'   metadata        = metadata,
 #'   type            = "barplot",
-#'   x_col           = "metodo",
-#'   fill_col        = "metodo",
-#'   facet_by2       = "estructura",
+#'   x_col           = "Type_of_soil",
+#'   fill_col        = "Type_of_soil",
+#'   facet_by2       = "Treatment",
 #'   free_y          = TRUE,
 #'   legend_position = "top",
 #'   stat            = "t.test"
@@ -68,26 +87,31 @@ alpha_diversity_plot <- function(
     legend_position = "bottom",
     x_axis_title = NULL,
     y_axis_title = "Diversity measure",
-    free_y = FALSE, 
+    free_y = FALSE,
     rarefy_depth=NULL,
-    save_table = TRUE,
+    panel_label_case = "upper",
+    panel_labels = NULL,
+    panel_label_bold = TRUE,
+    save_table = FALSE,
     table_filename = "diversity.txt") {
-  
-  
-  #considero que esta parte no debería ser necesaria, no sé si es buena idea remover asvs 
+
+  # Treat metadata's first column as the sample ID regardless of its original name
+  colnames(metadata)[1] <- "SAMPLEID"
+
+  #considero que esta parte no debería ser necesaria, no sé si es buena idea remover asvs
   #que no tengan una identificación taxonómica no quiere decir que no se tengan que considerar
   #table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   # Remove uninformative taxonomy strings
   #table <- table %>%
    # dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__")
   
-  # Reorder columns based on SAMPLEID order in metadata
-  ordered_samples <- metadata[,1]
+  # Keep only samples present in both table and metadata. Final row order
+  # doesn't matter here: per-sample diversity indices are computed
+  # independently, and results are joined back to metadata by SAMPLEID below.
   sample_order <- metadata[[1]]
   common_samples <- intersect(colnames(table), sample_order)
   if (length(common_samples) == 0) stop("No matching sample names between table and metadata.")
   table <- table[, common_samples, drop = FALSE]
-  table <- table[, match(sample_order, colnames(table))]
   table <- data.frame(t(table))
   
   if (!is.null(rarefy_depth) && rarefy_depth > 0) {
@@ -273,7 +297,6 @@ alpha_diversity_plot <- function(
           size = 3.5,
           family= "serif",
           hide.ns = TRUE,
-          mapping = ggplot2::aes(label = ..p.format..),
           label.y = y_val,
           label.x = x_center
         )
@@ -281,16 +304,19 @@ alpha_diversity_plot <- function(
     
     p <- p + p_vals_layers
     # Añadir etiquetas tipo A, B, C... a los paneles
+    panel_letters <- if (!is.null(panel_labels)) {
+      panel_labels
+    } else if (identical(panel_label_case, "lower")) letters else LETTERS
     gb <- ggplot2::ggplot_build(p)
     lay <- gb$layout$layout
-    tags <- cbind(lay, label = LETTERS[lay$PANEL], x = -Inf, y = Inf)
-    
+    tags <- cbind(lay, label = panel_letters[lay$PANEL], x = -Inf, y = Inf)
+
     p <- p + ggplot2::geom_text(
       data = tags,
       mapping = ggplot2::aes(x = x, y = y, label = label),
       hjust = -0.5,
       vjust = 1.5,
-      fontface = "bold",
+      fontface = if (panel_label_bold) "bold" else "plain",
       family= "serif",
       size= 6,
       inherit.aes = FALSE

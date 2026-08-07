@@ -13,12 +13,17 @@ beta_partition_plot(
   legend_title = NULL,
   point_size = 3,
   group_colors = NULL,
-  save_table = TRUE,
+  panel_label_case = "upper",
+  panel_labels = NULL,
+  panel_label_bold = TRUE,
+  save_table = FALSE,
   table_filename = "SAMPLE1"
 )
 }
 \arguments{
-\item{table}{Abundance matrix (samples in rows, species/features in columns).}
+\item{table}{Abundance matrix or data frame with taxa/features as rows and
+samples as columns (same orientation as the rest of the package). If a
+taxonomy column is present it is detected and removed automatically.}
 
 \item{metadata}{Data frame with sample metadata. First column must be SampleID.}
 
@@ -34,7 +39,21 @@ beta_partition_plot(
 
 \item{group_colors}{Optional named vector of colors for groups.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{TRUE}.}
+\item{panel_label_case}{Character. Case of the auto-generated A/B/C panel
+tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
+("a", "b", "c"). Ignored if \code{panel_labels} is supplied.}
+
+\item{panel_labels}{Optional character vector of 3 custom panel tags (one
+per jaccard/turnover/nestedness panel), used as-is (e.g.
+\code{c("(a)", "(b)", "(c)")} or \code{c("a.", "b.", "c.")}) — for
+journal styles that \code{panel_label_case} alone can't produce.
+Overrides \code{panel_label_case} when provided.}
+
+\item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
+bold. Set to \code{FALSE} for journals that require plain (non-bold)
+panel tags.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. Base name for the saved table file. Default \code{"SAMPLE1"}.}
 }
@@ -47,12 +66,18 @@ using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplo
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 beta_partition_plot(
   table      = table,
   metadata   = metadata,
-  group_col  = "metodo",
-  point_size = 4,
-  group_colors = c("gray", "blue")
+  group_col  = "Type_of_soil",
+  point_size = 4
 )
 }
 }

@@ -27,7 +27,10 @@ alpha_diversity_plot(
   y_axis_title = "Diversity measure",
   free_y = FALSE,
   rarefy_depth = NULL,
-  save_table = TRUE,
+  panel_label_case = "upper",
+  panel_labels = NULL,
+  panel_label_bold = TRUE,
+  save_table = FALSE,
   table_filename = "diversity.txt"
 )
 }
@@ -77,7 +80,22 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{rarefy_depth}{Integer. If provided, rarefies samples to this depth before diversity estimation. Default \code{NULL}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{TRUE}.}
+\item{panel_label_case}{Character. Case of the auto-generated panel tags
+(A, B, C... added per panel when \code{stat} is used). One of
+\code{"upper"} (default, "A", "B", "C") or \code{"lower"} ("a", "b", "c").
+Ignored if \code{panel_labels} is supplied.}
+
+\item{panel_labels}{Optional character vector of custom panel tags, one per
+panel, used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+\code{c("a.", "b.", "c.")}) — for journal styles that
+\code{panel_label_case} alone can't produce. Overrides
+\code{panel_label_case} when provided.}
+
+\item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
+bold. Set to \code{FALSE} for journals that require plain (non-bold)
+panel tags.}
+
+\item{save_table}{Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table. Default \code{"diversity.txt"}.}
 }
@@ -91,13 +109,20 @@ It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SAMPLEID"
+
 alpha_diversity_plot(
   table           = table,
   metadata        = metadata,
   type            = "barplot",
-  x_col           = "metodo",
-  fill_col        = "metodo",
-  facet_by2       = "estructura",
+  x_col           = "Type_of_soil",
+  fill_col        = "Type_of_soil",
+  facet_by2       = "Treatment",
   free_y          = TRUE,
   legend_position = "top",
   stat            = "t.test"

@@ -10,7 +10,7 @@ beta_div_plot(
   distance = "compositional",
   ordination = "PCA",
   group_col = NULL,
-  group_colors = NULL,
+  palette = "colorb",
   shape_col = NULL,
   legend_title = NULL,
   arrows_size = 10,
@@ -30,9 +30,27 @@ beta_div_plot(
 
 \item{ordination}{Ordination method: one of "PCA" (default), "PCoA", or "NMDS".}
 
-\item{group_col}{Column in \code{metadata} to fill color points.}
+\item{group_col}{Column in \code{metadata} to fill/color points. Its type
+decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
+get a continuous scale; character/factor columns (e.g. \code{"estado2"})
+get a discrete qualitative scale.}
 
-\item{group_colors}{Optional named vector of colors.}
+\item{palette}{Either a palette \strong{name} or a \strong{vector of fixed
+colors}; which scale it produces depends on whether \code{group_col} is
+discrete or continuous.
+\itemize{
+\item Named, discrete \code{group_col}: one of \code{"colorb"}
+(default; qualitative colorblind-friendly palette), \code{"grey"},
+\code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
+\item Named, continuous \code{group_col}: \code{"viridis"} (default;
+\code{option = "cividis"}, matching the urban-distance map figure)
+or \code{"gradient"} (colorblind-friendly blue-to-orange two-color
+gradient).
+\item Vector of colors, discrete \code{group_col}: used as-is, one
+color per level (\code{scale_*_manual}).
+\item Vector of colors, continuous \code{group_col}: used as gradient
+stops (\code{scale_*_gradientn}).
+}}
 
 \item{shape_col}{Optional column in \code{metadata} to shape points.}
 
@@ -63,12 +81,19 @@ of color and shape aesthetics. It also supports compositional transformation via
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 beta_div_plot(
-  table      = table_taxa,
+  table      = table,
   metadata   = metadata,
   distance   = "aitchison",
   ordination = "NMDS",
-  group_col  = "SITIO",
+  group_col  = "Type_of_soil",
   top_n      = 5
 )
 }

@@ -47,11 +47,22 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
+#' # env_table must have rownames matching the sample names in `table`
+#' env_data <- metadata
+#' rownames(env_data) <- env_data$SampleID
+#'
 #' corr_env_abund_plot(
 #'   table          = table,
 #'   env_table      = env_data,
 #'   metadata       = metadata,
-#'   cond_vect      = c("pH", "OM", "NO3", "NH4"),
+#'   cond_vect      = c("pH", "TN", "WHC", "EC", "Clay"),
 #'   method         = "pearson",
 #'   geom           = "tile",
 #'   hc.order       = FALSE,
@@ -59,7 +70,7 @@
 #'   invert_axes    = TRUE,
 #'   show_labels    = FALSE,
 #'   level          = "phylum",
-#'   taxonomy_db    = "unite",
+#'   taxonomy_db    = "silva",
 #'   pval_threshold = 0.05
 #' )
 #' }
@@ -78,7 +89,7 @@ corr_env_abund_plot <- function(table,
                                 taxonomy_db = "silva",
                                 level = "genus",
                                 pval_threshold = NULL,
-                                save_table = TRUE,
+                                save_table = FALSE,
                                 table_filename = "corr.txt") {
   geom <- match.arg(geom)
   rownames(table) <- NULL

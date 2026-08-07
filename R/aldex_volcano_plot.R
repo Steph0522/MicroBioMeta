@@ -12,7 +12,7 @@
 #' @param cutoff.pval p-value cutoff for significance (default = 0.05).
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
-#' @param save_table Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{TRUE}.
+#' @param save_table Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.
 #'
 #' @return A `ggplot` object with the selected plot.
@@ -20,16 +20,26 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
+#' # aldex_volcano_plot requires exactly two groups in col_cond
+#' metadata_2groups <- metadata[metadata$Type_of_soil %in% c("Rizosphere", "Roots"), ]
+#'
 #' aldex_volcano_plot(
 #'   table           = table,
-#'   metadata        = metadata,
-#'   col_cond        = "metodo",
+#'   metadata        = metadata_2groups,
+#'   col_cond        = "Type_of_soil",
 #'   type            = "effect",
 #'   col_inf         = "#0072B2",
 #'   col_sup         = "#E69F00",
 #'   threshold_lower = -1,
 #'   threshold_upper = 1,
-#'   cond            = "kit",
+#'   cond            = "Rizosphere",
 #'   show_labels     = TRUE
 #' )
 #' }
@@ -46,7 +56,7 @@ aldex_volcano_plot <- function(table,
                                cutoff.pval = 0.05,
                                show_labels = TRUE,
                                taxa = NULL,
-                               save_table = TRUE,
+                               save_table = FALSE,
                                table_filename = "aldex_pval_effect.txt") {
   
   # Verificar que type tiene un valor válido
@@ -89,7 +99,15 @@ aldex_volcano_plot <- function(table,
   #  Eliminar la última columna de table para el análisis
     table <- table[, -last_col, drop = FALSE]
   }
-  
+
+  # Align samples between table and metadata (first column = sample ID,
+  # regardless of its original name)
+  common_samples <- intersect(colnames(table), metadata[[1]])
+  if (length(common_samples) == 0)
+    stop("No matching samples found between 'table' and 'metadata'.")
+  table    <- table[, common_samples, drop = FALSE]
+  metadata <- metadata[match(common_samples, metadata[[1]]), , drop = FALSE]
+
   conditions <- as.character(metadata[[col_cond]])
   groups <- unique(conditions)
   if (is.null(cond)) cond <- groups[1]

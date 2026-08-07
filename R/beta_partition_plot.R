@@ -3,7 +3,9 @@
 #' This function computes beta diversity partition (Jaccard or Sorensen) 
 #' using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
 #'
-#' @param table Abundance matrix (samples in rows, species/features in columns).
+#' @param table Abundance matrix or data frame with taxa/features as rows and
+#'   samples as columns (same orientation as the rest of the package). If a
+#'   taxonomy column is present it is detected and removed automatically.
 #' @param metadata Data frame with sample metadata. First column must be SampleID.
 #' @param index Family of dissimilarity: "jaccard" (default) or "sorensen".
 #' @param group_col Column in metadata to use as color grouping.
@@ -11,7 +13,18 @@
 #' @param legend_title Optional custom legend title.
 #' @param group_colors Optional named vector of colors for groups.
 #' @param point_size Numeric. Size of points in ordination plots. Default \code{3}.
-#' @param save_table Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{TRUE}.
+#' @param panel_label_case Character. Case of the auto-generated A/B/C panel
+#'   tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
+#'   ("a", "b", "c"). Ignored if \code{panel_labels} is supplied.
+#' @param panel_labels Optional character vector of 3 custom panel tags (one
+#'   per jaccard/turnover/nestedness panel), used as-is (e.g.
+#'   \code{c("(a)", "(b)", "(c)")} or \code{c("a.", "b.", "c.")}) — for
+#'   journal styles that \code{panel_label_case} alone can't produce.
+#'   Overrides \code{panel_label_case} when provided.
+#' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
+#'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
+#'   panel tags.
+#' @param save_table Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. Base name for the saved table file. Default \code{"SAMPLE1"}.
 #'
 #' @return A combined cowplot panel of beta diversity partition plots.
@@ -19,12 +32,18 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' beta_partition_plot(
 #'   table      = table,
 #'   metadata   = metadata,
-#'   group_col  = "metodo",
-#'   point_size = 4,
-#'   group_colors = c("gray", "blue")
+#'   group_col  = "Type_of_soil",
+#'   point_size = 4
 #' )
 #' }
 
@@ -36,7 +55,10 @@ beta_partition_plot <- function(table, metadata,
                                 legend_title = NULL,
                                 point_size = 3,
                                 group_colors = NULL,
-                                save_table = TRUE,
+                                panel_label_case = "upper",
+                                panel_labels = NULL,
+                                panel_label_bold = TRUE,
+                                save_table = FALSE,
                                 table_filename = "SAMPLE1") {
 
   if (!requireNamespace("ggordiplots", quietly = TRUE)) {
@@ -221,6 +243,10 @@ beta_partition_plot <- function(table, metadata,
   plot_nes  <- function_plot_beta(jnes, env1)
   
   leg <- cowplot::get_legend(plot_jac)
+  resolved_labels <- if (!is.null(panel_labels)) {
+    panel_labels
+  } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
+  panel_fontface <- if (panel_label_bold) "bold" else "plain"
   panel <- cowplot::plot_grid(
     plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(index, " dissimilarity (mean = ", mean_jac, ")")),
@@ -228,7 +254,8 @@ beta_partition_plot <- function(table, metadata,
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
     plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(size = 12, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")")),
-    ncol = 3, align = "hv", labels = c("A", "B", "C"), label_fontfamily = "serif"
+    ncol = 3, align = "hv", labels = resolved_labels, label_fontfamily = "serif",
+    label_fontface = panel_fontface
     )
   
   combined_plot <- cowplot::plot_grid(leg, panel, ncol = 1, rel_heights = c(0.1,1))

@@ -48,18 +48,24 @@
 #'   Default \code{0.5}.
 #' @param annotation_size Numeric. Font size for the stats annotation.
 #'   Default \code{3.5}.
-#' @param x_title Character. X-axis label.
+#' @param x_axis_title Character. X-axis label.
 #'   Default \code{"Spatial distance (km)"}.
-#' @param y_title Character or \code{NULL}. Y-axis label. If \code{NULL}
+#' @param y_axis_title Character or \code{NULL}. Y-axis label. If \code{NULL}
 #'   (default), it is built automatically from the \code{distance} method,
 #'   e.g. \code{"Jaccard similarity (1 − dissimilarity)"}.
-#' @param figure_title Character or \code{NULL}. Plot title. Default
+#' @param title Character or \code{NULL}. Plot title. Default
 #'   \code{NULL} (no title).
 #'
 #' @return A \code{ggplot} object.
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' # NOTE: beta_decay_plot requires latitude/longitude columns in metadata.
+#' # The bundled example dataset (table_with_taxonomy.tsv / metadata_bacteria.txt)
+#' # does not include geographic coordinates, so this example uses placeholder
+#' # object names — substitute your own table/metadata with lat/lon columns.
+#'
 #' # Jaccard + Spearman Mantel (default)
 #' beta_decay_plot(
 #'   table    = table_taxa2r,
@@ -86,6 +92,7 @@
 #'   lon_col   = "lon",
 #'   group_col = "estado2"
 #' )
+#' }
 beta_decay_plot <- function(
     table,
     metadata,
@@ -102,9 +109,9 @@ beta_decay_plot <- function(
     point_size      = 1,
     point_alpha     = 0.5,
     annotation_size = 3.5,
-    x_title         = "Spatial distance (km)",
-    y_title         = NULL,
-    figure_title    = NULL
+    x_axis_title    = "Spatial distance (km)",
+    y_axis_title    = NULL,
+    title           = NULL
 ) {
 
   # ---- 0. Validate inputs ----
@@ -272,7 +279,7 @@ beta_decay_plot <- function(
     chao       = "Chao"
   )
   dist_name <- if (distance %in% names(dist_labels)) dist_labels[distance] else distance
-  y_lab     <- if (!is.null(y_title)) y_title else
+  y_lab     <- if (!is.null(y_axis_title)) y_axis_title else
     paste0(dist_name, " similarity (1 − dissimilarity)")
 
   # ---- 7. Build ggplot ----
@@ -332,8 +339,8 @@ beta_decay_plot <- function(
     ) +
     color_scale +
     ggplot2::labs(
-      title = figure_title,
-      x     = x_title,
+      title = title,
+      x     = x_axis_title,
       y     = y_lab
     ) +
     ggplot2::theme_bw() +

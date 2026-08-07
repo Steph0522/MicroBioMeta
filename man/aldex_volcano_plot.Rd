@@ -17,7 +17,7 @@ aldex_volcano_plot(
   cutoff.pval = 0.05,
   show_labels = TRUE,
   taxa = NULL,
-  save_table = TRUE,
+  save_table = FALSE,
   table_filename = "aldex_pval_effect.txt"
 )
 }
@@ -46,7 +46,7 @@ aldex_volcano_plot(
 
 \item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{TRUE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.}
 }
@@ -58,16 +58,26 @@ This function generates either an effect size plot or a volcano plot based on AL
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
+# aldex_volcano_plot requires exactly two groups in col_cond
+metadata_2groups <- metadata[metadata$Type_of_soil \%in\% c("Rizosphere", "Roots"), ]
+
 aldex_volcano_plot(
   table           = table,
-  metadata        = metadata,
-  col_cond        = "metodo",
+  metadata        = metadata_2groups,
+  col_cond        = "Type_of_soil",
   type            = "effect",
   col_inf         = "#0072B2",
   col_sup         = "#E69F00",
   threshold_lower = -1,
   threshold_upper = 1,
-  cond            = "kit",
+  cond            = "Rizosphere",
   show_labels     = TRUE
 )
 }

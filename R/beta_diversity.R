@@ -20,17 +20,26 @@
 #'
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "OTUID"
+#'
+#' # comparison_condition1/2 match "value.x_vs_value.y" pairs created by the
+#' # pairwise self-join (condition.x = site1's value, condition.y = site2's value)
 #' beta_plot(
-#'   table                = table,
-#'   metadata             = metadata,
-#'   comparison_condition1 = c("Boca_vs_L.amniotico", "Cloaca_vs_L.amniotico"),
-#'   comparison_condition2 = c("3_vs_3", "7_vs_7"),
-#'   condition1.x         = "Seccion.x",
-#'   condition1.y         = "Seccion.y",
-#'   condition2.x         = "ID.x",
-#'   condition2.y         = "ID.y",
-#'   color_facets_x       = c("#5D478B", "#8B668B"),
-#'   color_axis_x         = c("L.amniotico" = "#2F4F4F", "Tracto.embrionario" = "#698B69")
+#'   table                 = table,
+#'   metadata              = metadata,
+#'   comparison_condition1 = c("Rizosphere_vs_Roots", "Rizosphere_vs_Non-Rizospheric"),
+#'   comparison_condition2 = c("1_vs_1", "2_vs_2"),
+#'   condition1.x          = "Type_of_soil.x",
+#'   condition1.y          = "Type_of_soil.y",
+#'   condition2.x          = "Treatment.x",
+#'   condition2.y          = "Treatment.y",
+#'   color_facets_x        = c("#5D478B", "#8B668B"),
+#'   color_axis_x          = c("Roots" = "#2F4F4F", "Non-Rizospheric" = "#698B69")
 #' )
 #' }
 
@@ -47,6 +56,8 @@ beta_plot <- function(table,
                       save_table = FALSE,
                       table_filename = "betadiv_turnover.txt") {
 
+  # Treat metadata's first column as the sample ID regardless of its original name
+  colnames(metadata)[1] <- "OTUID"
 
   # Paso 1: Filtrar y transponer tabla OTU
   otu_filter <- table %>%
@@ -145,7 +156,9 @@ shared_plot <- function(table,
                         save_table = FALSE,
                         table_filename = "betadiv_shared.txt")
 {
-  
+  # Treat metadata's first column as the sample ID regardless of its original name
+  colnames(metadata)[1] <- "OTUID"
+
   #Obtener base de datos sin singletons por muestra
   asv_table <- table 
   asv_table[asv_table>0]=1 
@@ -233,7 +246,10 @@ beta_plot_flexible <- function(table,
                                family = c("sorensen", "jaccard"),
                                save_table = FALSE,
                                table_filename = "betadiv_partition.txt") {
-  
+
+  # Treat metadata's first column as the sample ID regardless of its original name
+  colnames(metadata)[1] <- "OTUID"
+
   # Validar argumentos
   partition <- match.arg(partition)
   family <- match.arg(family)

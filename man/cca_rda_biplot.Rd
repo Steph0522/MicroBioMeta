@@ -25,9 +25,13 @@ cca_rda_biplot(
 )
 }
 \arguments{
-\item{table}{A data frame or matrix of species abundances (samples as rows, species as columns).}
+\item{table}{A data frame of species abundances with taxa as rows and
+samples as columns, plus a final \code{taxonomy} column (same format as
+the rest of the package). Internally transposed to samples-as-rows for
+the ordination.}
 
-\item{env_data}{A data frame of environmental variables (rows must match \code{table}).}
+\item{env_data}{A data frame of environmental variables, with row names
+matching the sample names in \code{table}.}
 
 \item{env_vars}{A character vector with the names of environmental variables to include in the analysis.}
 
@@ -73,10 +77,21 @@ sample scores and environmental vectors.
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
+# env_data must have rownames matching the sample names in `table`
+env_data <- metadata
+rownames(env_data) <- env_data$SampleID
+
 cca_rda_biplot(
-  table                = table_bac,
-  env_data             = env_table_bac,
-  metadata             = metadata_bacteria,
+  table                = table,
+  env_data             = env_data,
+  metadata             = metadata,
   env_vars             = c("pH", "TN", "WHC", "EC", "Clay"),
   analysis             = "RDA",
   show_all_env_vectors = TRUE,

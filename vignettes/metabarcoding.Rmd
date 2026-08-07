@@ -574,9 +574,9 @@ ratio_plot(table = table_fung_compar,
 
 MicroBioMeta provides two functions to explore the relationship between **environmental variables** and **microbial community composition**:
 
--    `corr_env_abund_plot()` — computes correlations between taxonomic abundance and environmental variables.
+-   `corr_env_abund_plot()` — computes correlations between taxonomic abundance and environmental variables.
 
--    `cca_rda_biplot()` — performs constrained ordination using **Canonical Correspondence Analysis (CCA)** or **Redundancy Analysis (RDA)**.
+-   `cca_rda_biplot()` — performs constrained ordination using **Canonical Correspondence Analysis (CCA)** or **Redundancy Analysis (RDA)**.
 
 #### Preparing the environmental table
 
@@ -652,10 +652,10 @@ cca_rda_biplot(table = table_bac,
 
 This analysis produces a **biplot** where:
 
--    **Points** represent samples
+-   **Points** represent samples
 
 -   **Colors** indicate sample groups defined in the metadata.
 
--    **Arrows** represent environmental variables and their direction of influence on community structure.
+-   **Arrows** represent environmental variables and their direction of influence on community structure.
 
--    Environmental vectors pointing in similar directions indicate **positive associations**, while vectors pointing in opposite directions suggest **negative relationships**
+-   Environmental vectors pointing in similar directions indicate **positive associations**, while vectors pointing in opposite directions suggest **negative relationships**

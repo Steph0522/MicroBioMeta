@@ -24,7 +24,15 @@ beta_test_table(
 
 \item{formula_str}{Model formula}
 
-\item{method}{Method for calculate pairwise distances of a matrix}
+\item{method}{Method for calculating pairwise distances. Same convention
+as \code{beta_div_plot}'s \code{distance} argument: \code{"compositional"}
+runs ALDEx2's CLR transform (\code{ALDEx2::aldex.clr}) on the raw counts
+and then a Euclidean distance on the CLR values (requires \code{table} to
+be a raw abundance data frame with a taxonomy column, not a precomputed
+distance matrix); \code{"aitchison"}/\code{"robust.aitchison"} use
+vegan's built-in Aitchison distance (\code{vegan::vegdist} with a
+pseudocount); any other value (e.g. \code{"euclidean"}, \code{"bray"})
+is passed straight to \code{vegan::vegdist} on the raw values.}
 
 \item{test}{Permanova or betadisper}
 
@@ -48,23 +56,42 @@ This function create a table with the results of permanova or betadisper
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 # Example using a data frame
 beta_test_table(
   table       = table,
   metadata    = metadata,
-  formula_str = "metodo*edad",
-  method      = "euclidean",
+  formula_str = "Type_of_soil*Treatment",
+  method      = "bray",
   test        = "permanova",
   permutations = 999,
-  strata_var  = "Individuo"
+  strata_var  = "Plot"
 )
 
 # Example using a distance matrix
+dist_matrix <- vegan::vegdist(t(table[, setdiff(colnames(table), "taxonomy")]),
+                              method = "bray")
 beta_test_table(
   table       = dist_matrix,
   metadata    = metadata,
-  formula_str = "Origen",
+  formula_str = "Type_of_soil",
   test        = "betadisper"
+)
+
+# Compositional PERMANOVA (CLR via ALDEx2, then Euclidean)
+beta_test_table(
+  table       = table,
+  metadata    = metadata,
+  formula_str = "dist_km",
+  method      = "compositional",
+  test        = "permanova",
+  permutations = 999
 )
 }
 }

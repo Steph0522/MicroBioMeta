@@ -23,28 +23,35 @@
 #' @export
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SAMPLEID"
+#'
 #' venn_diagram_plot(
-#'   table          = table_bac,
-#'   metadata       = metadata_bacteria,
+#'   table          = table,
+#'   metadata       = metadata,
 #'   merge_by       = "Type_of_soil",
 #'   min_prevalence = 0
 #' )
 #'
 #' ## Filtering taxa by prevalence
 #' venn_diagram_plot(
-#'   table          = table_fung,
-#'   metadata       = metadata_fungi,
+#'   table          = table,
+#'   metadata       = metadata,
 #'   merge_by       = "Type_of_soil",
 #'   min_prevalence = 0.2
 #' )
 #'
 #' ## Custom colors
 #' venn_diagram_plot(
-#'   table          = table_fung,
-#'   metadata       = metadata_fungi,
+#'   table          = table,
+#'   metadata       = metadata,
 #'   merge_by       = "Type_of_soil",
 #'   min_prevalence = 0,
-#'   group_colors   = c("#1B9E77", "#D95F02", "#7570B3")
+#'   group_colors   = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02")
 #' )
 #' }
 venn_diagram_plot <- function(table, metadata, merge_by = NULL,

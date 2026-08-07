@@ -7,7 +7,10 @@
 alpha_hill_corrplot(
   table,
   facet_orientation = "horizontal",
-  plot_title = "default",
+  title = "default",
+  panel_label_case = "upper",
+  panel_labels = NULL,
+  panel_label_bold = TRUE,
   save_table = FALSE,
   table_filename = "hill.txt"
 )
@@ -16,9 +19,26 @@ alpha_hill_corrplot(
 \item{table}{A data frame or matrix with samples as columns and taxa as rows.
 The first column must contain the OTUID, ASV, or species name.}
 
-\item{facet_orientation}{Whether \code{facet_by} appears in columns ("horizontal", default) or rows ("vertical").}
+\item{facet_orientation}{Whether the three q0/q1/q2 panels are arranged in
+a row ("horizontal", default) or a column ("vertical").}
 
-\item{plot_title}{Character. Title for the plot. Default \code{"default"}.}
+\item{title}{Character. Title for the combined figure. \code{"default"}
+(default) shows "Alpha diversity vs sequencing depth"; \code{"none"}
+shows no title; any other string is used as-is.}
+
+\item{panel_label_case}{Character. Case of the auto-generated A/B/C panel
+tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
+("a", "b", "c"). Ignored if \code{panel_labels} is supplied.}
+
+\item{panel_labels}{Optional character vector of 3 custom panel tags (one
+per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+\code{c("a.", "b.", "c.")}) — for journal styles that
+\code{panel_label_case} alone can't produce. Overrides
+\code{panel_label_case} when provided.}
+
+\item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
+bold. Set to \code{FALSE} for journals that require plain (non-bold)
+panel tags.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the Hill numbers table to
 disk. Default \code{FALSE}.}
@@ -30,12 +50,16 @@ when \code{save_table = TRUE}). Default \code{"hill.txt"}.}
 A ggplot object showing alpha diversity with Hill numbers.
 }
 \description{
-This function generates a boxplot or barplot to visualize alpha diversity Hill numbers (q = 0, 1, 2)
-for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-It supports palette customization, faceting, and statistical comparison.
+Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
+sequencing depth (total reads) as a scatter plot with a fitted regression
+line and Pearson correlation coefficient, combining the three plots (q0,
+q1, q2) into a single figure via \code{cowplot}.
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
 alpha_hill_corrplot(
   table             = table,
   facet_orientation = "horizontal"

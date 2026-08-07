@@ -9,18 +9,20 @@ beta_decay_plot(
   metadata,
   lat_col,
   lon_col,
+  group_col = NULL,
+  palette = "colorb",
   distance = "jaccard",
   method = "spearman",
   permutations = 999,
   show_lm_stats = TRUE,
-  point_color = "#566573",
-  line_color = "#2166AC",
+  point_color = "black",
+  line_color = "#D55E00",
   point_size = 1,
   point_alpha = 0.5,
   annotation_size = 3.5,
-  x_title = "Spatial distance (km)",
-  y_title = NULL,
-  figure_title = NULL
+  x_axis_title = "Spatial distance (km)",
+  y_axis_title = NULL,
+  title = NULL
 )
 }
 \arguments{
@@ -37,6 +39,18 @@ latitude and longitude columns (see \code{lat_col} and \code{lon_col}).}
 \item{lon_col}{Character. Name of the longitude column in \code{metadata}
 (decimal degrees).}
 
+\item{group_col}{Character or \code{NULL}. Optional categorical column in
+\code{metadata} (e.g. \code{"estado2"}). When supplied, sample pairs from
+different groups are dropped, and a separate Mantel test, regression
+line, and annotation are computed \strong{within each group} (matching
+what you'd get running \code{beta_decay_plot} once per group), all drawn
+on the same plot colored by group. When \code{NULL} (default), a single
+global Mantel test is run on all samples, as before.}
+
+\item{palette}{Only used when \code{group_col} is supplied. Either a
+palette name (\code{"colorb"} default, \code{"grey"}, \code{"viridis"},
+\code{"brewer"}) or a vector of fixed colors, one per group level.}
+
 \item{distance}{Character. Dissimilarity metric passed to
 \code{vegan::vegdist}. Common options: \code{"jaccard"} (default),
 \code{"horn"} (Morisita-Horn / Hill q = 1 analogue), \code{"bray"}
@@ -52,10 +66,12 @@ Default \code{999}.}
 annotation label in addition to the Mantel r, p-value, and slope.}
 
 \item{point_color}{Character. Color of scatter points. Default
-\code{"#566573"}.}
+\code{"black"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}.}
 
 \item{line_color}{Character. Color of the regression line. Default
-\code{"#2166AC"}.}
+\code{"#D55E00"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}'s
+ungrouped color scheme. The confidence-interval ribbon uses that same
+scheme's fill, \code{"#56B4E9"}.}
 
 \item{point_size}{Numeric. Size of scatter points. Default \code{1}.}
 
@@ -65,14 +81,14 @@ Default \code{0.5}.}
 \item{annotation_size}{Numeric. Font size for the stats annotation.
 Default \code{3.5}.}
 
-\item{x_title}{Character. X-axis label.
+\item{x_axis_title}{Character. X-axis label.
 Default \code{"Spatial distance (km)"}.}
 
-\item{y_title}{Character or \code{NULL}. Y-axis label. If \code{NULL}
+\item{y_axis_title}{Character or \code{NULL}. Y-axis label. If \code{NULL}
 (default), it is built automatically from the \code{distance} method,
 e.g. \code{"Jaccard similarity (1 − dissimilarity)"}.}
 
-\item{figure_title}{Character or \code{NULL}. Plot title. Default
+\item{title}{Character or \code{NULL}. Plot title. Default
 \code{NULL} (no title).}
 }
 \value{
@@ -88,6 +104,12 @@ geographic distance, fits a linear regression, and returns a scatter plot
 annotated with the Mantel statistic, p-value, and regression slope.
 }
 \examples{
+\dontrun{
+# NOTE: beta_decay_plot requires latitude/longitude columns in metadata.
+# The bundled example dataset (table_with_taxonomy.tsv / metadata_bacteria.txt)
+# does not include geographic coordinates, so this example uses placeholder
+# object names — substitute your own table/metadata with lat/lon columns.
+
 # Jaccard + Spearman Mantel (default)
 beta_decay_plot(
   table    = table_taxa2r,
@@ -105,4 +127,14 @@ beta_decay_plot(
   distance = "horn",
   method   = "spearman"
 )
+
+# Separate Mantel test per geographical area
+beta_decay_plot(
+  table     = table_taxa2r,
+  metadata  = metas2r,
+  lat_col   = "lat",
+  lon_col   = "lon",
+  group_col = "estado2"
+)
+}
 }

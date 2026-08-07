@@ -16,7 +16,7 @@ abundance_barplot(
   top_n = 15,
   x_axis_title = "Samples",
   add_remained = FALSE,
-  save_table = TRUE,
+  save_table = FALSE,
   table_filename = "relative_abundance.txt"
 )
 }
@@ -43,7 +43,7 @@ abundance_barplot(
 
 \item{add_remained}{Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{TRUE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.}
 }
@@ -65,15 +65,22 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 }
 \examples{
 \dontrun{
+table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+colnames(metadata)[1] <- "SampleID"
+
 abundance_barplot(
-  table      = table_taxa,
-  metadata   = metadata,
-  taxonomy_db = "silva",
-  level      = "genus",
-  x_col      = "MUESTRA",
-  label = "Genus",
-  facet_col  = "SITIO",
-  top_n      = 30,
+  table        = table,
+  metadata     = metadata,
+  taxonomy_db  = "silva",
+  level        = "genus",
+  x_col        = "Type_of_soil",
+  label        = "Genus",
+  facet_col    = "Treatment",
+  top_n        = 30,
   add_remained = TRUE
 )
 }

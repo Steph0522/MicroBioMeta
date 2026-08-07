@@ -15,7 +15,7 @@
 #' @param x_axis_title Title for the x-axis.
 #' @param partition Type of beta diversity to compute: "shared", "turnover", or "nestedness".
 #' @param family Family for turnover/nestedness calculation: "sorensen" or "jaccard".
-#' @param save_table Logical. If \code{TRUE}, saves the beta diversity table to disk. Default \code{TRUE}.
+#' @param save_table Logical. If \code{TRUE}, saves the beta diversity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"betadiv_table.txt"}.
 #'
 #' @return A ggplot2 figure object.
@@ -23,12 +23,19 @@
 #' 
 #' @examples
 #' \dontrun{
+#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
+#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#'
+#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' colnames(metadata)[1] <- "SampleID"
+#'
 #' beta_diversity_boxplot(
 #'   table                = table,
 #'   metadata             = metadata,
-#'   comparison_condition1 = c("fenol_vs_kit"),
-#'   condition1_col       = "metodo",
-#'   condition2_col       = "edad",
+#'   comparison_condition1 = c("Rizosphere_vs_Roots"),
+#'   condition1_col       = "Type_of_soil",
+#'   condition2_col       = "Treatment",
 #'   x_axis_title         = "Samples",
 #'   partition            = "shared",
 #'   family               = "sorensen"
@@ -45,7 +52,7 @@ beta_diversity_boxplot <- function(
     x_axis_title = "Condition",
     partition = c("shared","turnover","nestedness"),
     family = c("sorensen","jaccard"),
-    save_table = TRUE,
+    save_table = FALSE,
     table_filename = "betadiv_table.txt"
 ) {
   
