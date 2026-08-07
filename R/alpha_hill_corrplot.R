@@ -52,7 +52,7 @@
 #' }
 
 alpha_hill_corrplot <- function(table,
-                                method = method,
+                                method = "spearman",
                                 facet_orientation = "horizontal",
                                 title = "default",
                                 panel_label_case = "upper",
