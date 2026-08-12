@@ -35,11 +35,11 @@
 #' 
 #' @examples
 #' \dontrun{
-#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
 #' # env_data must have rownames matching the sample names in `table`
@@ -50,7 +50,7 @@
 #'   table                = table,
 #'   env_data             = env_data,
 #'   metadata             = metadata,
-#'   env_vars             = c("pH", "TN", "WHC", "EC", "Clay"),
+#'   env_vars             = c("FW", "Root_FW", "DW"),
 #'   analysis             = "RDA",
 #'   show_all_env_vectors = TRUE,
 #'   group_col            = "Type_of_soil"

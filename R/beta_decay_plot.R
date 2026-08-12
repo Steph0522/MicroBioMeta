@@ -62,9 +62,9 @@
 #' @examples
 #' \dontrun{
 #' # NOTE: beta_decay_plot requires latitude/longitude columns in metadata.
-#' # The bundled example dataset (table_with_taxonomy.tsv / metadata_bacteria.txt)
+#' # The bundled example dataset (tabla_bacteria.txt / metadata_bacteria.txt)
 #' # does not include geographic coordinates, so this example uses placeholder
-#' # object names — substitute your own table/metadata with lat/lon columns.
+#' # object names - substitute your own table/metadata with lat/lon columns.
 #'
 #' # Jaccard + Spearman Mantel (default)
 #' beta_decay_plot(

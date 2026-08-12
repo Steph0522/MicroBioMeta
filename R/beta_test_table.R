@@ -29,11 +29,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
 #' # Example using a data frame
@@ -61,7 +61,7 @@
 #' beta_test_table(
 #'   table       = table,
 #'   metadata    = metadata,
-#'   formula_str = "dist_km",
+#'   formula_str = "Type_of_soil",
 #'   method      = "compositional",
 #'   test        = "permanova",
 #'   permutations = 999

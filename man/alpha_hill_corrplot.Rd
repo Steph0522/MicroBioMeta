@@ -6,7 +6,7 @@
 \usage{
 alpha_hill_corrplot(
   table,
-  method = method,
+  method = "spearman",
   facet_orientation = "horizontal",
   title = "default",
   panel_label_case = "upper",
@@ -63,8 +63,8 @@ q1, q2) into a single figure via \code{cowplot}.
 }
 \examples{
 \dontrun{
-table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 alpha_hill_corrplot(
   table             = table,

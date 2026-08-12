@@ -40,8 +40,8 @@ Generate a Sankey diagram from an OTU table with taxonomic information
 }
 \examples{
 \dontrun{
-table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 abundance_sankey_plot(
   table        = table,

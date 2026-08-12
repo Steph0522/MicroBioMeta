@@ -66,11 +66,11 @@ This function create a heatmap to visualize the relative abundance of ASV's, fea
 }
 \examples{
 \dontrun{
-table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
 abundance_heatmap_plot(
@@ -78,13 +78,13 @@ abundance_heatmap_plot(
   metadata               = metadata,
   condition1             = "Type_of_soil",
   condition2             = "Treatment",
-  condition3             = "Month",
+  condition3             = "Plot",
   top_n                  = 50,
   cluster                = TRUE,
   show_column_names      = FALSE,
   name_legend_condition1 = "Soil type",
   name_legend_condition2 = "Treatment",
-  name_legend_condition3 = "Month"
+  name_legend_condition3 = "Plot"
 )
 }
 }

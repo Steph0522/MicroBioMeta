@@ -49,19 +49,18 @@
 #'
 #' @examples
 #' \dontrun{
-#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # aldex_heatmap_plot requires exactly two groups in col_cond
-#' metadata_2groups <- metadata[metadata$Type_of_soil %in% c("Rizosphere", "Roots"), ]
-#'
+#' # col_cond must have exactly two groups; Type_of_soil has two
+#' # (Rizosphere and Roots) in the bundled example data
 #' aldex_heatmap_plot(
 #'   table            = table,
-#'   metadata         = metadata_2groups,
+#'   metadata         = metadata,
 #'   col_cond         = "Type_of_soil",
 #'   effect_threshold = 0.8
 #' )

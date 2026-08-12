@@ -50,11 +50,11 @@ minimum prevalence filtering and custom group color scales (manual).
 }
 \examples{
 \dontrun{
-table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SAMPLEID"
 
 venn_diagram_plot(
@@ -78,7 +78,7 @@ venn_diagram_plot(
   metadata       = metadata,
   merge_by       = "Type_of_soil",
   min_prevalence = 0,
-  group_colors   = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02")
+  group_colors   = c("#1B9E77", "#D95F02")
 )
 }
 }

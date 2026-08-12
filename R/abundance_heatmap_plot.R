@@ -26,11 +26,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
 #' abundance_heatmap_plot(
@@ -38,13 +38,13 @@
 #'   metadata               = metadata,
 #'   condition1             = "Type_of_soil",
 #'   condition2             = "Treatment",
-#'   condition3             = "Month",
+#'   condition3             = "Plot",
 #'   top_n                  = 50,
 #'   cluster                = TRUE,
 #'   show_column_names      = FALSE,
 #'   name_legend_condition1 = "Soil type",
 #'   name_legend_condition2 = "Treatment",
-#'   name_legend_condition3 = "Month"
+#'   name_legend_condition3 = "Plot"
 #' )
 #' }
 
@@ -108,10 +108,14 @@ abundance_heatmap_plot <- function(table,
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
     dplyr::mutate(phylum = sub("^p__", "", phylum)) %>%
     dplyr::mutate(phylum = dplyr::case_when(phylum == "Proteobacteria" ~ "Pseudomonadata",
-                                     phylum=="Firmicutes" ~ "Bacillota",  
+                                     phylum=="Firmicutes" ~ "Bacillota",
                                      phylum == "Actinobacteriota" ~ "Actinomycetota",
                                      phylum == "Bacteroidetes" ~ "Bacteroidota",
-                                     TRUE~as.character(phylum)))
+                                     TRUE~as.character(phylum))) %>%
+    # Taxa with an incomplete taxonomy string (e.g. missing the phylum field)
+    # would otherwise leave phylum = NA, which breaks the named-vector color
+    # mapping ComplexHeatmap expects for the Phylum row annotation.
+    dplyr::mutate(phylum = ifelse(is.na(phylum) | phylum == "", "Unclassified", phylum))
   warning("Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:\n",
           "\nReference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/")
   
@@ -177,7 +181,13 @@ abundance_heatmap_plot <- function(table,
   # Create annotation_columns only with provided conditions
   if (length(conditions) > 0) {
     annotation_columns <- heat %>%
-      dplyr::select(all_of(unlist(conditions))) 
+      dplyr::select(all_of(unlist(conditions)))
+    # Force discrete (character) columns even if values look numeric
+    # (e.g. Treatment = "1"/"2"/"3"), so ComplexHeatmap treats them as
+    # categorical annotations (named-vector colors) instead of continuous
+    # ones (which require a colorRamp2 function and would error with
+    # "elements in col should be named vectors").
+    annotation_columns[] <- lapply(annotation_columns, as.character)
     rownames(annotation_columns) <- colnames(heatmap)
   } else {
     annotation_columns <- data.frame()
@@ -187,8 +197,11 @@ abundance_heatmap_plot <- function(table,
   my_palette <- viridis::viridis(n = 13, option = "C", direction = -1)
   
   # Color for phylum annotations
+  # rep_len() (rather than RColorBrewer::brewer.pal(), which hard-errors
+  # above 8 colors for "Set2") cycles through the palette for any number of
+  # phyla, since real datasets commonly have more than 8 among the top taxa.
   unique_phyla <- unique(annotation_rows$phylum)
-  c5.phylum <- RColorBrewer::brewer.pal(max(3, length(unique_phyla)), "Set2")[seq_along(unique_phyla)]
+  c5.phylum <- rep_len(RColorBrewer::brewer.pal(8, "Set2"), length(unique_phyla))
   cols_phyl <- list(Phylum = setNames(c5.phylum, unique_phyla))
   
   # Phylum annotation (always present)

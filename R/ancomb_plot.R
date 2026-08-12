@@ -60,17 +60,24 @@
 #'
 #' @examples
 #' \dontrun{
-#' table_path <- system.file("extdata", "table_with_taxonomy.tsv", package = "MicroBioMeta")
-#' table <- read.delim(table_path, skip = 1, comment.char = "", check.names = FALSE, row.names = 1)
+#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-#' metadata <- read.delim(metadata_path, check.names = FALSE, comment.char = "")
+#' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
+#' # p_adj_method = "BH" (less strict than the "holm" default), and a higher
+#' # prv_cut than the 0.1 default to keep only well-represented taxa (this
+#' # bundled example table is sparse - most taxa are near-singletons - so
+#' # restricting to prevalent taxa keeps statistical power for the small
+#' # 46-sample dataset)
 #' ancombc_plot(
-#'   table    = table,
-#'   metadata = metadata,
-#'   col_cond = "Type_of_soil"
+#'   table        = table,
+#'   metadata     = metadata,
+#'   col_cond     = "Type_of_soil",
+#'   prv_cut      = 0.2,
+#'   p_adj_method = "BH"
 #' )
 #' }
 
