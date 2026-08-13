@@ -3,7 +3,9 @@
 #' This function create a table with the results of permanova or betadisper
 #' 
 #' 
-#' @param table Distance matrix or data frame with taxonomy, where the columns are the samples and rows are ASVs or taxa.
+#' @param table A precomputed distance matrix (\code{matrix} or \code{dist}
+#'   object, e.g. from \code{vegan::vegdist}), or a data frame with taxonomy,
+#'   where the columns are the samples and rows are ASVs or taxa.
 #' @param metadata Data frame of characteristics or important information of the samples
 #' @param formula_str Model formula
 #' @param method Method for calculating pairwise distances. Same convention
@@ -40,7 +42,7 @@
 #' beta_test_table(
 #'   table       = table,
 #'   metadata    = metadata,
-#'   formula_str = "Type_of_soil*Treatment",
+#'   formula_str = "Location*Treatment",
 #'   method      = "bray",
 #'   test        = "permanova",
 #'   permutations = 999,
@@ -48,12 +50,14 @@
 #' )
 #'
 #' # Example using a distance matrix
-#' dist_matrix <- vegan::vegdist(t(table[, setdiff(colnames(table), "taxonomy")]),
-#'                               method = "bray")
+#' dist_matrix <- vegan::vegdist(
+#'   t(table[, setdiff(colnames(table), "taxonomy")]),
+#'   method = "bray"
+#' )
 #' beta_test_table(
 #'   table       = dist_matrix,
 #'   metadata    = metadata,
-#'   formula_str = "Type_of_soil",
+#'   formula_str = "Location",
 #'   test        = "betadisper"
 #' )
 #'
@@ -61,7 +65,7 @@
 #' beta_test_table(
 #'   table       = table,
 #'   metadata    = metadata,
-#'   formula_str = "Type_of_soil",
+#'   formula_str = "Location",
 #'   method      = "compositional",
 #'   test        = "permanova",
 #'   permutations = 999
@@ -81,21 +85,23 @@ beta_test_table <- function(table,
   test <- match.arg(test)
   raw_input <- is.data.frame(table)
 
-  # --- Aceptar tambien data.frame como matriz ---
-  if (is.data.frame(table)) {
+  # --- Aceptar tambien data.frame o un objeto dist (p.ej. de vegan::vegdist) como matriz ---
+  if (inherits(table, "dist")) {
+    table <- as.matrix(table)
+  } else if (is.data.frame(table)) {
     # Si la ultima columna parece taxonomia, eliminarla
     tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
     if (length(tax_cols) > 0) {
       table <- table[, -tax_cols[1], drop = FALSE]
     }
-    
+
     # Convertir solo columnas numericas
     num_cols <- sapply(table, is.numeric)
     if (!all(num_cols)) {
     }
     table <- as.matrix(table[, num_cols, drop = FALSE])
   } else if (!is.matrix(table)) {
-    stop("'table' must be a matrix or dataframe")
+    stop("'table' must be a matrix, dataframe, or dist object")
   }
   
   # --- Detectar orientacion ---
@@ -158,7 +164,9 @@ beta_test_table <- function(table,
     perm <- vegan::permutest(disp, permutations = permutations)
     
     tabla <- as.data.frame(perm$tab)
-    tabla$Term <- rownames(tabla)
+    # vegan::permutest() always labels the between-group row "Groups"; show
+    # the actual variable name being tested instead, for clarity.
+    tabla$Term <- ifelse(rownames(tabla) == "Groups", var_group, rownames(tabla))
     rownames(tabla) <- NULL
   }
   

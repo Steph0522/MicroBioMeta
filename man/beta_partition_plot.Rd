@@ -76,7 +76,7 @@ colnames(metadata)[1] <- "SampleID"
 beta_partition_plot(
   table      = table,
   metadata   = metadata,
-  group_col  = "Type_of_soil",
+  group_col  = "Location",
   point_size = 4
 )
 }

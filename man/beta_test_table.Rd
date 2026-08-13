@@ -18,7 +18,9 @@ beta_test_table(
 )
 }
 \arguments{
-\item{table}{Distance matrix or data frame with taxonomy, where the columns are the samples and rows are ASVs or taxa.}
+\item{table}{A precomputed distance matrix (\code{matrix} or \code{dist}
+object, e.g. from \code{vegan::vegdist}), or a data frame with taxonomy,
+where the columns are the samples and rows are ASVs or taxa.}
 
 \item{metadata}{Data frame of characteristics or important information of the samples}
 
@@ -67,7 +69,7 @@ colnames(metadata)[1] <- "SampleID"
 beta_test_table(
   table       = table,
   metadata    = metadata,
-  formula_str = "Type_of_soil*Treatment",
+  formula_str = "Location*Treatment",
   method      = "bray",
   test        = "permanova",
   permutations = 999,
@@ -75,12 +77,14 @@ beta_test_table(
 )
 
 # Example using a distance matrix
-dist_matrix <- vegan::vegdist(t(table[, setdiff(colnames(table), "taxonomy")]),
-                              method = "bray")
+dist_matrix <- vegan::vegdist(
+  t(table[, setdiff(colnames(table), "taxonomy")]),
+  method = "bray"
+)
 beta_test_table(
   table       = dist_matrix,
   metadata    = metadata,
-  formula_str = "Type_of_soil",
+  formula_str = "Location",
   test        = "betadisper"
 )
 
@@ -88,7 +92,7 @@ beta_test_table(
 beta_test_table(
   table       = table,
   metadata    = metadata,
-  formula_str = "Type_of_soil",
+  formula_str = "Location",
   method      = "compositional",
   test        = "permanova",
   permutations = 999

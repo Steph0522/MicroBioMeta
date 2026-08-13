@@ -58,7 +58,7 @@
 #'   metadata   = metadata,
 #'   distance   = "aitchison",
 #'   ordination = "NMDS",
-#'   group_col  = "Type_of_soil",
+#'   group_col  = "Location",
 #'   top_n      = 5
 #' )
 #' }
@@ -233,16 +233,19 @@ beta_div_plot <- function(table, metadata,
     ggplot2::geom_vline(xintercept = 0, linetype = 2) +
     ggplot2::geom_hline(yintercept = 0, linetype = 2) +
     ggplot2::labs(
-      x     = x_lab,
-      y     = y_lab,
-      title = if (identical(title, "auto")) paste(ordination, "-", distance)
-              else title   # NULL → no title; custom string → that text
+      x       = x_lab,
+      y       = y_lab,
+      title   = if (identical(title, "auto")) paste(ordination, "-", distance)
+                else title,   # NULL → no title; custom string → that text
+      caption = if (ordination == "NMDS") sprintf("Stress = %.3f", ord_res$stress) else NULL
     ) +
     .mbm_theme(
       legend_position = "right",
       extra = ggplot2::theme(
         legend.box        = "vertical",
-        panel.grid.major  = ggplot2::element_blank()
+        panel.grid.major  = ggplot2::element_blank(),
+        plot.caption      = ggplot2::element_text(size = 11, color = "black",
+                                                   hjust = 1)
       )
     )
   

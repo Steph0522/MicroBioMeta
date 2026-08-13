@@ -50,10 +50,10 @@
 #'   table                = table,
 #'   env_data             = env_data,
 #'   metadata             = metadata,
-#'   env_vars             = c("FW", "Root_FW", "DW"),
+#'   env_vars             = c("pH", "TOC", "FW", "Root_FW", "DW"),
 #'   analysis             = "RDA",
 #'   show_all_env_vectors = TRUE,
-#'   group_col            = "Type_of_soil"
+#'   group_col            = "Location"
 #' )
 #' }
 cca_rda_biplot <- function(table,

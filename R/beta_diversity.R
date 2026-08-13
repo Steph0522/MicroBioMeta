@@ -32,14 +32,14 @@
 #' beta_plot(
 #'   table                 = table,
 #'   metadata              = metadata,
-#'   comparison_condition1 = c("Rizosphere_vs_Roots", "Rizosphere_vs_Rizosphere"),
-#'   comparison_condition2 = c("1_vs_1", "2_vs_2"),
-#'   condition1.x          = "Type_of_soil.x",
-#'   condition1.y          = "Type_of_soil.y",
+#'   comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
+#'   comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
+#'   condition1.x          = "Location.x",
+#'   condition1.y          = "Location.y",
 #'   condition2.x          = "Treatment.x",
 #'   condition2.y          = "Treatment.y",
 #'   color_facets_x        = c("#5D478B", "#8B668B"),
-#'   color_axis_x          = c("Roots" = "#2F4F4F", "Rizosphere" = "#698B69")
+#'   color_axis_x          = c("Roots" = "#2F4F4F", "Rhizosphere" = "#698B69")
 #' )
 #' }
 
@@ -58,6 +58,10 @@ beta_plot <- function(table,
 
   # Treat metadata's first column as the sample ID regardless of its original name
   colnames(metadata)[1] <- "OTUID"
+
+  # Drop a taxonomy column if present, so it isn't treated as a sample
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if (length(tax_col) == 1) table <- table[, -tax_col, drop = FALSE]
 
   # Paso 1: Filtrar y transponer tabla OTU
   otu_filter <- table %>%
@@ -103,7 +107,7 @@ beta_plot <- function(table,
     dplyr::filter(compar_condition1 %in% comparison_condition1)  %>%
     dplyr::filter(compar_condition2 %in% comparison_condition2) %>%
     dplyr::mutate(orden = dplyr::case_when(
-      q == 0 ~ "q=0", q == 1 ~ "q=1", q == 2 ~ "q=2", TRUE ~ as.character(q)
+      q == 0 ~ "q0", q == 1 ~ "q1", q == 2 ~ "q2", TRUE ~ as.character(q)
     ))
   
   if (nrow(beta_final) == 0) stop("Error: After filtering comparisons, the table is empty.")
@@ -117,13 +121,15 @@ beta_plot <- function(table,
   }
 
   # Paso 5: Crear grafico
+  q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
   figura <- beta_final %>%
     ggpubr::ggboxplot(x = condition1.y, y = "Recambio", fill = condition1.y) +
     ggplot2::ylab("Proportion of ASVs turnover") +
     ggplot2::scale_fill_manual(values = color_axis_x) +
-    ggh4x::facet_grid2(stats::as.formula(paste("orden ~", condition1.x)), 
-                       scales = "free_x", 
-                       strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +  
+    ggh4x::facet_grid2(stats::as.formula(paste("orden ~", condition1.x)),
+                       scales = "free_x",
+                       labeller = ggplot2::labeller(orden = q_labeller),
+                       strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +
     ggplot2::theme_bw(base_family = "serif") +
     ggplot2::theme(axis.text.x = ggplot2::element_blank(),
                    axis.ticks.x = ggplot2::element_blank(),
@@ -131,7 +137,7 @@ beta_plot <- function(table,
                    axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
                                                         margin = ggplot2::margin(t = 0, r = 0.5, b = 0, l = 0, "cm")),
                    strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
-                   strip.text.y = ggplot2::element_text(size = 12, face = "italic"),
+                   strip.text.y = ggplot2::element_text(size = 12, face = "bold"),
                    legend.text = ggplot2::element_text(size = 12, color = "black"),
                    legend.title = ggplot2::element_blank(),
                    panel.border = ggplot2::element_rect(color = "black", fill=NA, size=0.5)) +
@@ -160,9 +166,13 @@ shared_plot <- function(table,
   # Treat metadata's first column as the sample ID regardless of its original name
   colnames(metadata)[1] <- "OTUID"
 
+  # Drop a taxonomy column if present, so it isn't treated as a sample
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if (length(tax_col) == 1) table <- table[, -tax_col, drop = FALSE]
+
   #Obtener base de datos sin singletons por muestra
-  asv_table <- table 
-  asv_table[asv_table>0]=1 
+  asv_table <- table
+  asv_table[asv_table>0]=1
   asv_no_single<-asv_table %>% 
     dplyr::filter(rowSums(dplyr::across(dplyr::where(is.numeric)))>1) %>%
     t() %>%
@@ -257,10 +267,14 @@ beta_plot_flexible <- function(table,
   # Treat metadata's first column as the sample ID regardless of its original name
   colnames(metadata)[1] <- "OTUID"
 
+  # Drop a taxonomy column if present, so it isn't treated as a sample
+  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+  if (length(tax_col) == 1) table <- table[, -tax_col, drop = FALSE]
+
   # Validar argumentos
   partition <- match.arg(partition)
   family <- match.arg(family)
-  
+
   message("Filtering table (removing singletons)...")
   # Quitar singletons por muestra
   asv_table <- table

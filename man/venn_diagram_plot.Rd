@@ -60,7 +60,7 @@ colnames(metadata)[1] <- "SAMPLEID"
 venn_diagram_plot(
   table          = table,
   metadata       = metadata,
-  merge_by       = "Type_of_soil",
+  merge_by       = "Location",
   min_prevalence = 0
 )
 
@@ -68,7 +68,7 @@ venn_diagram_plot(
 venn_diagram_plot(
   table          = table,
   metadata       = metadata,
-  merge_by       = "Type_of_soil",
+  merge_by       = "Location",
   min_prevalence = 0.2
 )
 
@@ -76,7 +76,7 @@ venn_diagram_plot(
 venn_diagram_plot(
   table          = table,
   metadata       = metadata,
-  merge_by       = "Type_of_soil",
+  merge_by       = "Location",
   min_prevalence = 0,
   group_colors   = c("#1B9E77", "#D95F02")
 )

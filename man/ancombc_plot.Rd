@@ -101,10 +101,15 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
+# p_adj_method = "BH" (less strict than the "holm" default), and a lower
+# prv_cut than the 0.1 default so rare-but-compartment-specific taxa
+# (e.g. taxa found almost only in roots) aren't excluded before testing
 ancombc_plot(
-  table    = table,
-  metadata = metadata,
-  col_cond = "Type_of_soil"
+  table        = table,
+  metadata     = metadata,
+  col_cond     = "Location",
+  prv_cut      = 0.01,
+  p_adj_method = "BH"
 )
 }
 }

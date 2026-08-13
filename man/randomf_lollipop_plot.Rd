@@ -55,7 +55,7 @@ colnames(metadata)[1] <- "SampleID"
 randomf_lollipop_plot(
   table               = table,
   metadata            = metadata,
-  variable_to_predict = "Type_of_soil",
+  variable_to_predict = "Location",
   top_n               = 20,
   size                = 6
 )

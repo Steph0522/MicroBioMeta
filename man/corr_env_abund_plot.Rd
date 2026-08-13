@@ -100,7 +100,7 @@ corr_env_abund_plot(
   table          = table,
   env_table      = env_data,
   metadata       = metadata,
-  cond_vect      = c("FW", "Root_FW", "DW", "Root_L", "Stem_L"),
+  cond_vect      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
   method         = "pearson",
   geom           = "tile",
   hc.order       = FALSE,

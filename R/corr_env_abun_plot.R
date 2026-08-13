@@ -62,7 +62,7 @@
 #'   table          = table,
 #'   env_table      = env_data,
 #'   metadata       = metadata,
-#'   cond_vect      = c("FW", "Root_FW", "DW", "Root_L", "Stem_L"),
+#'   cond_vect      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
 #'   method         = "pearson",
 #'   geom           = "tile",
 #'   hc.order       = FALSE,
@@ -415,11 +415,11 @@ corr_env_abund_plot <- function(table,
                        dimnames = list(colnames(env), rownames(abund)))
     
     for (env_var in colnames(env)) {
-      for (taxon in rownames(abund)) {
+      for (tax_id in rownames(abund)) {
         test <- suppressWarnings(
-          cor.test(env[[env_var]], as.numeric(abund[taxon, ]), method = method)
+          cor.test(env[[env_var]], as.numeric(abund[tax_id, ]), method = method)
         )
-        pval_mat[env_var, taxon] <- test$p.value
+        pval_mat[env_var, tax_id] <- test$p.value
       }
     }
     

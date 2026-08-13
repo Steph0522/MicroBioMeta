@@ -28,7 +28,7 @@
 #' randomf_lollipop_plot(
 #'   table               = table,
 #'   metadata            = metadata,
-#'   variable_to_predict = "Type_of_soil",
+#'   variable_to_predict = "Location",
 #'   top_n               = 20,
 #'   size                = 6
 #' )
@@ -135,7 +135,11 @@ randomf_lollipop_plot <- function(table,
         Phylum == "p__Firmicutes" ~ "Bacillota",
         TRUE ~ sub("^p__", "", as.character(Phylum))
       ),
-      taxonomy2 = paste0(letters[1:dplyr::n()], ".", taxonomy) # Add letter labels
+      # A unique row id (not the displayed label) keeps each bar distinct on
+      # the axis even when two features share the same simplified taxonomy
+      # name; the axis is then labeled with the plain taxonomy text via
+      # scale_x_discrete(labels = ...) below.
+      row_id = paste0("row", dplyr::row_number())
     )
   # Generate warning if any updated phyla are present
   updated_phyla <- c("p__Proteobacteria", "p__Actinobacteriota", 
@@ -177,25 +181,27 @@ randomf_lollipop_plot <- function(table,
   }
 
   # Create lollipop plot
+  row_labels <- setNames(top_asvs.modified$taxonomy, top_asvs.modified$row_id)
   lollipop <- ggplot2::ggplot(
     top_asvs.modified,
-    ggplot2::aes(x = reorder(taxonomy2, MeanDecreaseGini),
+    ggplot2::aes(x = reorder(row_id, MeanDecreaseGini),
         y = MeanDecreaseGini,
         fill = Phylum)
   ) +
     ggplot2::geom_segment(
       ggplot2::aes(
-        x = reorder(taxonomy2, MeanDecreaseGini),
-        xend = reorder(taxonomy2, MeanDecreaseGini),
+        x = reorder(row_id, MeanDecreaseGini),
+        xend = reorder(row_id, MeanDecreaseGini),
         y = 0,
         yend = MeanDecreaseGini
       ),
-      color = "black", 
+      color = "black",
       linewidth = 1
     ) +
     ggplot2::ylab("Feature importance (MeanDecreaseGini)") +
     ggplot2::geom_point(size = size, shape = 21, color = "black") +
     ggplot2::scale_fill_manual(values = fill_colors) +
+    ggplot2::scale_x_discrete(labels = row_labels) +
     ggplot2::coord_flip() +
     ggplot2::labs(title = title) +
     .mbm_theme(

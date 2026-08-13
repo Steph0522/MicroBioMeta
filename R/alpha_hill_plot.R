@@ -56,8 +56,8 @@
 #'   table           = table,
 #'   metadata        = metadata,
 #'   type            = "boxplot",
-#'   x_col           = "Type_of_soil",
-#'   fill_col        = "Type_of_soil",
+#'   x_col           = "Location",
+#'   fill_col        = "Location",
 #'   legend_position = "top",
 #'   stat            = "kruskal.test"
 #' )

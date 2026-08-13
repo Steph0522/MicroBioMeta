@@ -56,19 +56,31 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
+#' # alpha_decay_plot expects a continuous environmental gradient (e.g.
+#' # distance, elevation, pH). This bundled example dataset doesn't include
+#' # one, so this creates an illustrative synthetic "distance to a reference
+#' # point" (km), spread across the 'Loc' site codes with a little
+#' # per-sample jitter - substitute your own real gradient variable.
+#' set.seed(1)
+#' loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
+#' metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
+#'   stats::rnorm(nrow(metadata), sd = 0.3)
+#'
 #' # All samples, no grouping
 #' alpha_decay_plot(
-#'   table    = table,
-#'   metadata = metadata,
-#'   cont_var = "FW"
+#'   table        = table,
+#'   metadata     = metadata,
+#'   cont_var     = "dist_km",
+#'   x_axis_title = "Distance (km)"
 #' )
 #'
-#' # Separate regression lines by soil type
+#' # Separate regression lines by location
 #' alpha_decay_plot(
-#'   table     = table,
-#'   metadata  = metadata,
-#'   cont_var  = "FW",
-#'   group_col = "Type_of_soil"
+#'   table        = table,
+#'   metadata     = metadata,
+#'   cont_var     = "dist_km",
+#'   x_axis_title = "Distance (km)",
+#'   group_col    = "Location"
 #' )
 #' }
 alpha_decay_plot <- function(

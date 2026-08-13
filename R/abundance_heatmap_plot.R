@@ -14,6 +14,12 @@
 #' @param name_legend_condition2 Title assigned to legend of condition 2
 #' @param name_legend_condition3 Title assigned to legend of condition 3
 #' @param top_n Number of features to plot.
+#' @param exclude_unclassified Logical. If \code{TRUE} (default), taxa with
+#'   no recognizable classification at any level (labeled "Unclassified")
+#'   are dropped \emph{before} selecting the \code{top_n} most abundant
+#'   features, so \code{top_n} always returns identified taxa. Set to
+#'   \code{FALSE} to keep the previous behavior and allow "Unclassified"
+#'   rows into the plot.
 #' @param cluster Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)
 #' @param show_column_names Logical indicating whether to show column names (TRUE) or not (FALSE)
 #' @param save_table Logical. If \code{TRUE}, saves the underlying abundance
@@ -36,13 +42,13 @@
 #' abundance_heatmap_plot(
 #'   table                  = table,
 #'   metadata               = metadata,
-#'   condition1             = "Type_of_soil",
+#'   condition1             = "Location",
 #'   condition2             = "Treatment",
 #'   condition3             = "Plot",
 #'   top_n                  = 50,
 #'   cluster                = TRUE,
 #'   show_column_names      = FALSE,
-#'   name_legend_condition1 = "Soil type",
+#'   name_legend_condition1 = "Location",
 #'   name_legend_condition2 = "Treatment",
 #'   name_legend_condition3 = "Plot"
 #' )
@@ -60,6 +66,7 @@ abundance_heatmap_plot <- function(table,
                                    name_legend_condition2 = NULL,
                                    name_legend_condition3 = NULL,
                                    top_n,
+                                   exclude_unclassified = TRUE,
                                    cluster = TRUE,
                                    show_column_names = TRUE,
                                    save_table = FALSE,
@@ -90,8 +97,6 @@ abundance_heatmap_plot <- function(table,
   table_abundance <- phy.ra.complete %>%
     dplyr::mutate(abun = rowMeans(.)) %>%
     tibble::rownames_to_column(var="OTUID") %>%
-    dplyr::arrange(-abun) %>%  # Esto ordena por abundancia descendente
-    dplyr::slice(1:top_n) %>%
     dplyr::left_join(table_tax, by = "OTUID")  %>%
     dplyr::mutate(taxonomy2 = taxonomy) %>%
     tidyr::separate(taxonomy2, into = c("dominio","phylum","clase","orden","familia","genero","especie"),
@@ -102,7 +107,13 @@ abundance_heatmap_plot <- function(table,
       grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
       grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
       grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
-      TRUE ~ "Unclassified")) %>% 
+      TRUE ~ "Unclassified")) %>%
+    # Exclude Unclassified taxa before ranking by abundance (rather than
+    # after), so top_n always returns identified taxa instead of possibly
+    # wasting slots on ones that get dropped anyway.
+    { if (exclude_unclassified) dplyr::filter(., taxonomy != "Unclassified") else . } %>%
+    dplyr::arrange(-abun) %>%  # Esto ordena por abundancia descendente
+    dplyr::slice(1:top_n) %>%
     dplyr::mutate(asv=paste0("ASV", dplyr::row_number())) %>%
     tidyr::unite("taxa", asv, taxonomy, remove = F) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
@@ -183,7 +194,7 @@ abundance_heatmap_plot <- function(table,
     annotation_columns <- heat %>%
       dplyr::select(all_of(unlist(conditions)))
     # Force discrete (character) columns even if values look numeric
-    # (e.g. Treatment = "1"/"2"/"3"), so ComplexHeatmap treats them as
+    # (e.g. Plot = "1"/"2"/"3"), so ComplexHeatmap treats them as
     # categorical annotations (named-vector colors) instead of continuous
     # ones (which require a colorRamp2 function and would error with
     # "elements in col should be named vectors").

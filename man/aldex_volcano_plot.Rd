@@ -65,18 +65,18 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# col_cond must have exactly two groups; Type_of_soil has two
-# (Rizosphere and Roots) in the bundled example data
+# col_cond must have exactly two groups; Location has two
+# (Rhizosphere and Roots) in the bundled example data
 aldex_volcano_plot(
   table           = table,
   metadata        = metadata,
-  col_cond        = "Type_of_soil",
+  col_cond        = "Location",
   type            = "effect",
   col_inf         = "#0072B2",
   col_sup         = "#E69F00",
-  threshold_lower = -1,
-  threshold_upper = 1,
-  cond            = "Rizosphere",
+  threshold_lower = -0.5,
+  threshold_upper = 0.5,
+  cond            = "Rhizosphere",
   show_labels     = TRUE
 )
 }

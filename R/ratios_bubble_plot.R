@@ -21,6 +21,9 @@
 #' @param level Character. Taxonomic level to use for comparison
 #'   (e.g. "phylum", "genus", "species").
 #' @param x_axis_title Character. Label for the x-axis (taxon names).
+#' @param legend_title Character. Title for the fill legend and the axis
+#'   showing the dominant condition. Defaults to \code{condition_col} when
+#'   \code{NULL} (default).
 #' @param group_colors Character vector of colors used to represent the dominant
 #'   condition.
 #' @param save_table Logical. If \code{TRUE}, saves the underlying ratio table
@@ -45,8 +48,8 @@
 #' ratio_plot(
 #'   table         = table,
 #'   metadata      = metadata,
-#'   condition_col = "Type_of_soil",
-#'   condition_A   = "Rizosphere",
+#'   condition_col = "Location",
+#'   condition_A   = "Rhizosphere",
 #'   condition_B   = "Roots",
 #'   taxonomy_db   = "silva",
 #'   level         = "genus",
@@ -63,6 +66,7 @@ ratio_plot <- function(table,
                                  top_n = 30,
                                  level = "genus",
                                  x_axis_title = "Taxon",
+                                 legend_title = NULL,
                                  group_colors = NULL,
                                  save_table = FALSE,
                                  table_filename = "ratios_bubble_table.txt") {
@@ -216,6 +220,7 @@ ratio_plot <- function(table,
   }
 
   # Bubble plot
+  legend_name <- if (!is.null(legend_title)) legend_title else condition_col
   ggplot2::ggplot(top_taxa,
          ggplot2::aes(
            x = reorder(taxonomy, Ratio),
@@ -230,11 +235,16 @@ ratio_plot <- function(table,
     ggplot2::scale_size(range = c(3, 10)) +
     ggplot2::labs(
       x    = x_axis_title,
-      y    = "Condition",
+      y    = legend_name,
       size = "Ratio",
-      fill = "Condition"
+      fill = legend_name
     ) +
     ggplot2::coord_flip() +
-    .mbm_theme(legend_position = "right")
-  
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        axis.text.y = ggplot2::element_text(face = "italic")
+      )
+    )
+
 }

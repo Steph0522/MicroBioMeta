@@ -65,8 +65,8 @@ colnames(metadata)[1] <- "SampleID"
 beta_diversity_boxplot(
   table                = table,
   metadata             = metadata,
-  comparison_condition1 = c("Rizosphere_vs_Roots"),
-  condition1_col       = "Type_of_soil",
+  comparison_condition1 = c("Rhizosphere_vs_Roots"),
+  condition1_col       = "Location",
   condition2_col       = "Treatment",
   x_axis_title         = "Samples",
   partition            = "shared",

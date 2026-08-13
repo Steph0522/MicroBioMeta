@@ -17,6 +17,7 @@ abundance_heatmap_plot(
   name_legend_condition2 = NULL,
   name_legend_condition3 = NULL,
   top_n,
+  exclude_unclassified = TRUE,
   cluster = TRUE,
   show_column_names = TRUE,
   save_table = FALSE,
@@ -48,6 +49,13 @@ abundance_heatmap_plot(
 
 \item{top_n}{Number of features to plot.}
 
+\item{exclude_unclassified}{Logical. If \code{TRUE} (default), taxa with
+no recognizable classification at any level (labeled "Unclassified")
+are dropped \emph{before} selecting the \code{top_n} most abundant
+features, so \code{top_n} always returns identified taxa. Set to
+\code{FALSE} to keep the previous behavior and allow "Unclassified"
+rows into the plot.}
+
 \item{cluster}{Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)}
 
 \item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
@@ -76,13 +84,13 @@ colnames(metadata)[1] <- "SampleID"
 abundance_heatmap_plot(
   table                  = table,
   metadata               = metadata,
-  condition1             = "Type_of_soil",
+  condition1             = "Location",
   condition2             = "Treatment",
   condition3             = "Plot",
   top_n                  = 50,
   cluster                = TRUE,
   show_column_names      = FALSE,
-  name_legend_condition1 = "Soil type",
+  name_legend_condition1 = "Location",
   name_legend_condition2 = "Treatment",
   name_legend_condition3 = "Plot"
 )

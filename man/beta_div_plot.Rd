@@ -93,7 +93,7 @@ beta_div_plot(
   metadata   = metadata,
   distance   = "aitchison",
   ordination = "NMDS",
-  group_col  = "Type_of_soil",
+  group_col  = "Location",
   top_n      = 5
 )
 }

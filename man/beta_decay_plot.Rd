@@ -105,36 +105,50 @@ annotated with the Mantel statistic, p-value, and regression slope.
 }
 \examples{
 \dontrun{
-# NOTE: beta_decay_plot requires latitude/longitude columns in metadata.
-# The bundled example dataset (tabla_bacteria.txt / metadata_bacteria.txt)
-# does not include geographic coordinates, so this example uses placeholder
-# object names - substitute your own table/metadata with lat/lon columns.
+table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table <- read.delim(table_path, row.names = 1, check.names = FALSE)
+
+metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata <- read.delim(metadata_path, check.names = FALSE)
+colnames(metadata)[1] <- "SampleID"
+
+# beta_decay_plot requires lat/lon columns, which this bundled example
+# dataset doesn't have. These coordinates are synthetic (one made-up
+# point per 'Loc' site code) purely to demonstrate the function - use
+# your own metadata's real coordinates for an actual analysis.
+loc_coords <- data.frame(
+  Loc = 1:7,
+  lat = 19.0 + seq(0, 0.6, length.out = 7),
+  lon = -99.0 + seq(0, 0.6, length.out = 7)
+)
+metadata$lat <- loc_coords$lat[match(metadata$Loc, loc_coords$Loc)]
+metadata$lon <- loc_coords$lon[match(metadata$Loc, loc_coords$Loc)]
 
 # Jaccard + Spearman Mantel (default)
 beta_decay_plot(
-  table    = table_taxa2r,
-  metadata = metas2r,
+  table    = table,
+  metadata = metadata,
   lat_col  = "lat",
   lon_col  = "lon"
 )
 
 # Horn dissimilarity + Spearman Mantel
 beta_decay_plot(
-  table    = table_taxa2r,
-  metadata = metas2r,
+  table    = table,
+  metadata = metadata,
   lat_col  = "lat",
   lon_col  = "lon",
   distance = "horn",
   method   = "spearman"
 )
 
-# Separate Mantel test per geographical area
+# Separate Mantel test per location
 beta_decay_plot(
-  table     = table_taxa2r,
-  metadata  = metas2r,
+  table     = table,
+  metadata  = metadata,
   lat_col   = "lat",
   lon_col   = "lon",
-  group_col = "estado2"
+  group_col = "Location"
 )
 }
 }

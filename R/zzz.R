@@ -48,12 +48,14 @@
 )
 
 # ── Hill-number facet strip labels ────────────────────────────────────────────
-# Renders q0/q1/q2 facet strips as bold italic "q=0", "q=1", "q=2" (plotmath).
+# Renders q0/q1/q2 facet strips as bold "q=0", "q=1", "q=2" (plotmath), with
+# only the "q" itself italic (standard math-variable convention) and the
+# "=0"/"=1"/"=2" part upright.
 # Use with `ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)`.
 .mbm_q_labels <- c(
-  q0 = 'bolditalic("q=0")',
-  q1 = 'bolditalic("q=1")',
-  q2 = 'bolditalic("q=2")'
+  q0 = 'bolditalic(q)*bold("=0")',
+  q1 = 'bolditalic(q)*bold("=1")',
+  q2 = 'bolditalic(q)*bold("=2")'
 )
 
 # ── Colorblind-friendly palette (Okabe-Ito, 8 colors) ─────────────────────────

@@ -77,7 +77,7 @@ abundance_barplot(
   metadata     = metadata,
   taxonomy_db  = "silva",
   level        = "genus",
-  x_col        = "Type_of_soil",
+  x_col        = "Location",
   label        = "Genus",
   facet_col    = "Treatment",
   top_n        = 30,

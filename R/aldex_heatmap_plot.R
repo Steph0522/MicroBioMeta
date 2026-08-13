@@ -33,9 +33,10 @@
 #'   the heatmap body and effect size defaults).
 #' @param group_colors Optional character vector of colors for the difference
 #'   barplot annotation, one color per condition in the order they appear in
-#'   \code{metadata[[col_cond]]}. If \code{NULL} (default) a sky blue/yellow
-#'   colorblind-friendly palette is used (distinct from the other annotations'
-#'   defaults), cycling through the rest of the Okabe-Ito palette as needed
+#'   \code{metadata[[col_cond]]}. If \code{NULL} (default) an orange/blue
+#'   colorblind-friendly palette is used (matching the col_sup/col_inf
+#'   convention used elsewhere, e.g. \code{aldex_volcano_plot}), cycling
+#'   through the rest of the Okabe-Ito palette as needed
 #'   for more than two groups.
 #' @param save_table Logical. If \code{TRUE}, saves the underlying ALDEx2
 #'   results table (filtered taxa, effect size, diff.btw, p-value category)
@@ -56,13 +57,16 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # col_cond must have exactly two groups; Type_of_soil has two
-#' # (Rizosphere and Roots) in the bundled example data
+#' # col_cond must have exactly two groups; Location has two
+#' # (Rhizosphere and Roots) in the bundled example data. effect_threshold
+#' # alone (no pvalue_BH) is used here since this small (46-sample) dataset
+#' # rarely has taxa that pass both an effect-size and a significance
+#' # threshold at once - combine both for a stricter, real analysis.
 #' aldex_heatmap_plot(
 #'   table            = table,
 #'   metadata         = metadata,
-#'   col_cond         = "Type_of_soil",
-#'   effect_threshold = 0.8
+#'   col_cond         = "Location",
+#'   effect_threshold = 0.5
 #' )
 #' }
 #'
@@ -244,11 +248,12 @@ aldex_heatmap_plot <- function(table,
     heatmap_colors   # assume already a colorRamp2 function
   }
 
-  # Resolve group colors for barplot: default starts at sky blue/yellow
-  # (distinct from the blue/orange heatmap and green/pink effect size
-  # defaults), then cycles through the rest of Okabe-Ito for N conditions
+  # Resolve group colors for barplot: default starts at orange/blue (higher
+  # in condition 1 = orange, higher in condition 2 = blue), matching the
+  # col_sup/col_inf convention used elsewhere (e.g. aldex_volcano_plot), then
+  # cycles through the rest of Okabe-Ito for N conditions
   if (is.null(group_colors)) {
-    group_default <- .mbm_colors[c(2, 4, 3, 7, 6, 8, 5, 1)]
+    group_default <- .mbm_colors[c(1, 5, 3, 7, 6, 8, 2, 4)]
     group_colors  <- rep_len(group_default, length(unique_conditions))
   } else {
     group_colors <- rep_len(group_colors, length(unique_conditions))
@@ -262,7 +267,9 @@ aldex_heatmap_plot <- function(table,
   gp_legend_title <- grid::gpar(fontsize = 14, fontface = "bold",
                                 fontfamily = "serif", col = "black")
   gp_labels <- grid::gpar(fontsize = 12, fontfamily = "serif", col = "black")
-  gp_border <- grid::gpar(col = "black")
+  # A white (rather than black) border between cells reads as a small gap,
+  # which keeps adjacent dark-colored cells visually distinguishable.
+  gp_border <- grid::gpar(col = "white", lwd = 1.5)
 
   # --- Left annotation: Effect size ---
   left_annotation <- ComplexHeatmap::rowAnnotation(
@@ -317,7 +324,7 @@ aldex_heatmap_plot <- function(table,
     width            = grid::unit(ncol(heat_data) * 7, "mm"),
     height           = grid::unit(nrow(heat_data) * 6, "mm"),
     column_names_rot = 90,
-    rect_gp          = grid::gpar(col = "black", lwd = 1),
+    rect_gp          = grid::gpar(col = "white", lwd = 1.5),
     left_annotation  = left_annotation,
     name             = "Median\nclr value",
     heatmap_legend_param = list(

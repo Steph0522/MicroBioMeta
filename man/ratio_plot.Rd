@@ -14,6 +14,7 @@ ratio_plot(
   top_n = 30,
   level = "genus",
   x_axis_title = "Taxon",
+  legend_title = NULL,
   group_colors = NULL,
   save_table = FALSE,
   table_filename = "ratios_bubble_table.txt"
@@ -43,6 +44,10 @@ experimental condition.}
 (e.g. "phylum", "genus", "species").}
 
 \item{x_axis_title}{Character. Label for the x-axis (taxon names).}
+
+\item{legend_title}{Character. Title for the fill legend and the axis
+showing the dominant condition. Defaults to \code{condition_col} when
+\code{NULL} (default).}
 
 \item{group_colors}{Character vector of colors used to represent the dominant
 condition.}
@@ -76,8 +81,8 @@ colnames(metadata)[1] <- "SampleID"
 ratio_plot(
   table         = table,
   metadata      = metadata,
-  condition_col = "Type_of_soil",
-  condition_A   = "Rizosphere",
+  condition_col = "Location",
+  condition_A   = "Rhizosphere",
   condition_B   = "Roots",
   taxonomy_db   = "silva",
   level         = "genus",

@@ -66,14 +66,14 @@ colnames(metadata)[1] <- "OTUID"
 beta_plot(
   table                 = table,
   metadata              = metadata,
-  comparison_condition1 = c("Rizosphere_vs_Roots", "Rizosphere_vs_Rizosphere"),
-  comparison_condition2 = c("1_vs_1", "2_vs_2"),
-  condition1.x          = "Type_of_soil.x",
-  condition1.y          = "Type_of_soil.y",
+  comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
+  comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
+  condition1.x          = "Location.x",
+  condition1.y          = "Location.y",
   condition2.x          = "Treatment.x",
   condition2.y          = "Treatment.y",
   color_facets_x        = c("#5D478B", "#8B668B"),
-  color_axis_x          = c("Roots" = "#2F4F4F", "Rizosphere" = "#698B69")
+  color_axis_x          = c("Roots" = "#2F4F4F", "Rhizosphere" = "#698B69")
 )
 }
 }
