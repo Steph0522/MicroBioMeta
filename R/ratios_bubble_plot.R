@@ -45,7 +45,7 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' ratio_plot(
+#' ratios_bubble_plot(
 #'   table         = table,
 #'   metadata      = metadata,
 #'   condition_col = "Location",
@@ -57,7 +57,7 @@
 #' )
 #' }
 
-ratio_plot <- function(table,
+ratios_bubble_plot <- function(table,
                                  metadata,
                                  condition_col,
                                  condition_A,
@@ -77,16 +77,16 @@ ratio_plot <- function(table,
 
   samples <- metadata_sub$SampleID
 
-  # Separar tabla de taxonomía y abundancias
+  # Split table into taxonomy and abundances
   abundance_raw <- table %>%
     dplyr::select(taxonomy, dplyr::all_of(samples))
 
-  # Colapsar por taxonomía si hay duplicados
+  # Collapse by taxonomy if there are duplicates
   abundance_raw <- abundance_raw %>%
     dplyr::group_by(taxonomy) %>%
     dplyr::summarise(dplyr::across(dplyr::where(is.numeric), \(x) sum(x, na.rm = TRUE)), .groups = "drop")
-  
-  # Corregir taxonomía según base y nivel
+
+  # Fix taxonomy according to database and level
   abundance_raw <- abundance_raw %>%
     dplyr::mutate(
       taxonomy = dplyr::case_when(
@@ -185,7 +185,7 @@ ratio_plot <- function(table,
     tidyr::pivot_longer(-taxonomy, names_to = "SampleID", values_to = "Abundance") %>%
     dplyr::left_join(metadata_sub, by = "SampleID")
 
-  # Calcular abundancia media por condición
+  # Compute mean abundance per condition
   summary_data <- long_data %>%
     dplyr::group_by(taxonomy, Condition) %>%
     dplyr::summarise(MeanAbundance = mean(Abundance), .groups = "drop") %>%
@@ -208,7 +208,7 @@ ratio_plot <- function(table,
     ) %>%
     dplyr::ungroup()
 
-  # Seleccionar top_n taxones más abundantes
+  # Select the top_n most abundant taxa
   top_taxa <- summary_data %>%
     dplyr::slice_max(order_by = MeanAbund, n = top_n) %>%
     dplyr::arrange(desc(Ratio))
@@ -230,7 +230,7 @@ ratio_plot <- function(table,
          )) +
     ggplot2::geom_point(shape = 21, color = "black") +
     ggplot2::scale_fill_manual(
-      values = if (!is.null(group_colors)) group_colors else .mbm_colors
+      values = if (!is.null(group_colors)) group_colors else .mbm_colors_2group
     ) +
     ggplot2::scale_size(range = c(3, 10)) +
     ggplot2::labs(

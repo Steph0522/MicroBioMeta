@@ -82,8 +82,8 @@ collapsed table to a tab-delimited file.</p>
 <span>  <span class="va">metadata</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"genus"</span>,</span>
 <span>  rel_abun <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  export_txt <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  file_name <span class="op">=</span> <span class="st">"collapsed_table.txt"</span></span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  table_filename <span class="op">=</span> <span class="st">"collapsed_table.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -111,31 +111,41 @@ used to define the order of samples in the output table.</p></dd>
 (%) per sample.</p></dd>
 
 
-<dt id="arg-export-txt">export_txt<a class="anchor" aria-label="anchor" href="#arg-export-txt"></a></dt>
-<dd><p>Logical. If TRUE, exports the collapsed table as a
-tab-delimited text file.</p></dd>
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, saves the collapsed table to
+disk. Default <code>FALSE</code>.</p></dd>
 
 
-<dt id="arg-file-name">file_name<a class="anchor" aria-label="anchor" href="#arg-file-name"></a></dt>
-<dd><p>Character. Name of the output file when
-export_txt = TRUE.</p></dd>
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. File path/name for the saved table (used
+when <code>save_table = TRUE</code>). Default <code>"collapsed_table.txt"</code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a table collapsed by taxonomic level</p>
+    <p>A list with two elements: <code>collapsed_table</code> (wide format,
+one row per collapsed taxon) and <code>long_format</code> (the same data
+pivoted to one row per taxon/sample combination).</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">collapse_table</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  level <span class="op">=</span> <span class="st">"genus"</span>,</span></span>
-<span class="r-in"><span>  rel_abun <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  export_txt <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">collapse_table</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table      <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  metadata   <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  level      <span class="op">=</span> <span class="st">"genus"</span>,</span></span>
+<span class="r-in"><span>  rel_abun   <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  save_table <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in table[, c("taxonomy", setdiff(names(table), "taxonomy"))]:</span> object of type 'closure' is not subsettable</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -146,7 +156,7 @@ export_txt = TRUE.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

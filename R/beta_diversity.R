@@ -10,6 +10,17 @@
 #' @param condition2.y Condition 2 of axis-y
 #' @param color_facets_x Color vector for facet strips.
 #' @param color_axis_x Named color vector for x-axis groups.
+#' @param x_axis_title Title for the x-axis. Default \code{"Section"}.
+#' @param show_x_labels Logical. If \code{TRUE}, x-axis tick labels are shown.
+#'   Default \code{FALSE}, since the same groups are already named in the legend.
+#' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis tick labels
+#'   when \code{show_x_labels = TRUE}. Default \code{0} (horizontal).
+#' @param strip_text_bold Logical. If \code{TRUE}, facet strip labels are bold.
+#'   Default \code{FALSE} (plain).
+#' @param strip_text_color Color of the top (x) facet strip labels, which sit on
+#'   the \code{color_facets_x} backgrounds. Default \code{"white"}.
+#' @param aspect_ratio Numeric. Aspect ratio (height/width) of each panel.
+#'   Default \code{NULL} (automatic).
 #' @param save_table Logical. If \code{TRUE}, saves the underlying turnover
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -29,7 +40,7 @@
 #'
 #' # comparison_condition1/2 match "value.x_vs_value.y" pairs created by the
 #' # pairwise self-join (condition.x = site1's value, condition.y = site2's value)
-#' beta_plot(
+#' beta_turnover_plot(
 #'   table                 = table,
 #'   metadata              = metadata,
 #'   comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
@@ -39,11 +50,11 @@
 #'   condition2.x          = "Treatment.x",
 #'   condition2.y          = "Treatment.y",
 #'   color_facets_x        = c("#5D478B", "#8B668B"),
-#'   color_axis_x          = c("Roots" = "#2F4F4F", "Rhizosphere" = "#698B69")
+#'   color_axis_x          = c("Roots" = "#0072B2", "Rhizosphere" = "#E69F00")
 #' )
 #' }
 
-beta_plot <- function(table, 
+beta_turnover_plot <- function(table, 
                       metadata, 
                       comparison_condition1, 
                       comparison_condition2,
@@ -53,6 +64,12 @@ beta_plot <- function(table,
                       condition2.y,
                       color_facets_x,
                       color_axis_x,
+                      x_axis_title = "Section",
+                      show_x_labels = FALSE,
+                      x_label_angle = 0,
+                      strip_text_bold = FALSE,
+                      strip_text_color = "white",
+                      aspect_ratio = NULL,
                       save_table = FALSE,
                       table_filename = "betadiv_turnover.txt") {
 
@@ -121,7 +138,14 @@ beta_plot <- function(table,
   }
 
   # Paso 5: Crear grafico
-  q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
+  q_labeller <- .mbm_q_labeller(strip_text_bold)
+
+  # The x-axis groups are already named in the legend, so their tick labels are
+  # hidden by default; `show_x_labels = TRUE` brings them back (rotated by
+  # `x_label_angle`, as in the other bar/boxplot functions).
+  x_text  <- if (show_x_labels) .mbm_x_text(x_label_angle) else ggplot2::element_blank()
+  x_ticks <- if (show_x_labels) ggplot2::element_line(colour = "black") else ggplot2::element_blank()
+
   figura <- beta_final %>%
     ggpubr::ggboxplot(x = condition1.y, y = "Recambio", fill = condition1.y) +
     ggplot2::ylab("Proportion of ASVs turnover") +
@@ -130,19 +154,29 @@ beta_plot <- function(table,
                        scales = "free_x",
                        labeller = ggplot2::labeller(orden = q_labeller),
                        strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +
-    ggplot2::theme_bw(base_family = "serif") +
-    ggplot2::theme(axis.text.x = ggplot2::element_blank(),
-                   axis.ticks.x = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-                   axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
-                                                        margin = ggplot2::margin(t = 0, r = 0.5, b = 0, l = 0, "cm")),
-                   strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
-                   strip.text.y = ggplot2::element_text(size = 12, face = "bold"),
-                   legend.text = ggplot2::element_text(size = 12, color = "black"),
-                   legend.title = ggplot2::element_blank(),
-                   panel.border = ggplot2::element_rect(color = "black", fill=NA, size=0.5)) +
-    ggplot2::xlab("Section")
-  
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        panel.grid   = ggplot2::element_blank(),
+        axis.text.x  = x_text,
+        axis.ticks.x = x_ticks,
+        axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
+                                             margin = ggplot2::margin(t = 0, r = 0.5, b = 0, l = 0, "cm")),
+        # x strips sit on the user-supplied `color_facets_x` backgrounds (often
+        # dark), so their text color is exposed separately from the y strips,
+        # which keep the package's plain black-on-white look.
+        strip.text.x = .mbm_strip_text(strip_text_bold, colour = strip_text_color),
+        strip.text.y = .mbm_strip_text(strip_text_bold),
+        legend.title = ggplot2::element_blank(),
+        panel.border = ggplot2::element_rect(color = "black", fill = NA, linewidth = 0.5)
+      )
+    ) +
+    ggplot2::xlab(x_axis_title)
+
+  if (!is.null(aspect_ratio)) {
+    figura <- figura + ggplot2::theme(aspect.ratio = aspect_ratio)
+  }
+
   # Devuelve plot
   return(list(plot = figura))
 }
@@ -195,8 +229,8 @@ shared_plot <- function(table,
   
   #Subset para obtener comparaciones anteriores
   beta.shared.final<-beta.shared.formato %>%
-    tidyr::unite("compar_condition1", dplyr::all_of(c(condition1.x, condition1.y)), sep="_vs_", remove=F) %>%
-    tidyr::unite("compar_condition2", dplyr::all_of(c(condition2.x, condition2.y)), sep="_vs_", remove=F) %>%
+    tidyr::unite("compar_condition1", dplyr::all_of(c(condition1.x, condition1.y)), sep="_vs_", remove=FALSE) %>%
+    tidyr::unite("compar_condition2", dplyr::all_of(c(condition2.x, condition2.y)), sep="_vs_", remove=FALSE) %>%
     dplyr::filter(compar_condition1 %in% comparison_condition1) %>%
     dplyr::filter(compar_condition2 %in% comparison_condition2)
   
@@ -223,14 +257,17 @@ shared_plot <- function(table,
     ggh4x::facet_grid2(stats::as.formula(paste(". ~", condition1.x)), 
                        scales = "free_x", 
                        strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +  
-    ggplot2::theme_bw(base_family = "serif") +
-    ggplot2::theme(axis.text.x = ggplot2::element_blank(),
-                   axis.ticks.x = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-                   axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black", margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
-                   strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
-                   legend.text = ggplot2::element_text(size = 12, color = "black"),
-                   legend.title = ggplot2::element_blank())+
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        panel.grid   = ggplot2::element_blank(),
+        axis.text.x  = ggplot2::element_blank(),
+        axis.ticks.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black", margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
+        strip.text.x = .mbm_strip_text(colour = "white"),
+        legend.title = ggplot2::element_blank()
+      )
+    ) +
     ggplot2::xlab(ggplot2::element_blank())+
     ggpubr::stat_compare_means(
       mapping = ggplot2::aes(
@@ -336,16 +373,19 @@ beta_plot_flexible <- function(table,
       stats::as.formula(paste(". ~", condition1.x)),
       scales = "free_x",
       strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x))) +
-    ggplot2::theme_bw(base_family = "serif") +
-    ggplot2::theme(axis.text.x = ggplot2::element_blank(),
-                   axis.ticks.x = ggplot2::element_blank(),
-                   axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-                   axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
-                                               margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
-                   strip.text.x = ggplot2::element_text(size = 12, face = "bold", color = "white"),
-                   legend.text = ggplot2::element_text(size = 12, color = "black"),
-                   legend.title = ggplot2::element_blank(),
-                   panel.border = ggplot2::element_rect(color = "black", fill=NA, size=0.5)) +
+    .mbm_theme(
+      legend_position = "right",
+      extra = ggplot2::theme(
+        panel.grid   = ggplot2::element_blank(),
+        axis.text.x  = ggplot2::element_blank(),
+        axis.ticks.x = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_text(size = 14, face = "bold", color = "black",
+                                             margin = ggplot2::margin(t=0, r=0.5, b=0, l=0, "cm")),
+        strip.text.x = .mbm_strip_text(colour = "white"),
+        legend.title = ggplot2::element_blank(),
+        panel.border = ggplot2::element_rect(color = "black", fill = NA, linewidth = 0.5)
+      )
+    ) +
     ggplot2::xlab(title_axis_x)
   
   # Devolver plot + tabla

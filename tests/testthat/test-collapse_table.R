@@ -40,7 +40,7 @@ test_that("collapse_table converts to relative abundance when rel_abun = TRUE", 
   expect_equal(sum(result$collapsed_table$Sample1), 100)
 })
 
-test_that("collapse_table writes a table to disk when export_txt = TRUE", {
+test_that("collapse_table writes a table to disk when save_table = TRUE", {
   table <- data.frame(
     taxonomy = "d__Bacteria;p__Firmicutes;c__Bacilli;o__Lactobacillales;f__Lactobacillaceae;g__Lactobacillus;s__casei",
     Sample1 = 10,
@@ -50,7 +50,7 @@ test_that("collapse_table writes a table to disk when export_txt = TRUE", {
 
   tmp <- tempfile(fileext = ".txt")
   on.exit(unlink(tmp), add = TRUE)
-  collapse_table(table, metadata, level = "genus", export_txt = TRUE, file_name = tmp)
+  collapse_table(table, metadata, level = "genus", save_table = TRUE, table_filename = tmp)
 
   expect_true(file.exists(tmp))
 })

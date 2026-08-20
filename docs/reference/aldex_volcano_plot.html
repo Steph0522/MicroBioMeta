@@ -74,15 +74,17 @@
 <span>  <span class="va">metadata</span>,</span>
 <span>  <span class="va">col_cond</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"volcano"</span>,</span>
-<span>  col_inf <span class="op">=</span> <span class="st">"blue"</span>,</span>
-<span>  col_sup <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>  col_inf <span class="op">=</span> <span class="st">"#0072B2"</span>,</span>
+<span>  col_sup <span class="op">=</span> <span class="st">"#E69F00"</span>,</span>
 <span>  threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>,</span>
 <span>  threshold_upper <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>  cond <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cutoff.pval <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  show_labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  taxa <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  save_table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  label_size <span class="op">=</span> <span class="fl">3.5</span>,</span>
+<span>  filter_uncultured <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"aldex_pval_effect.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -108,11 +110,11 @@
 
 
 <dt id="arg-col-inf">col_inf<a class="anchor" aria-label="anchor" href="#arg-col-inf"></a></dt>
-<dd><p>Color for points with effect size/difference lower than threshold (default for "effect" plot).</p></dd>
+<dd><p>Color for points lower than threshold. Default <code>'#0072B2'</code> (Okabe-Ito blue).</p></dd>
 
 
 <dt id="arg-col-sup">col_sup<a class="anchor" aria-label="anchor" href="#arg-col-sup"></a></dt>
-<dd><p>Color for points with effect size/difference higher than threshold (default for "effect" plot).</p></dd>
+<dd><p>Color for points higher than threshold. Default <code>'#E69F00'</code> (Okabe-Ito orange).</p></dd>
 
 
 <dt id="arg-threshold-lower">threshold_lower<a class="anchor" aria-label="anchor" href="#arg-threshold-lower"></a></dt>
@@ -138,6 +140,14 @@
 <dt id="arg-taxa">taxa<a class="anchor" aria-label="anchor" href="#arg-taxa"></a></dt>
 <dd><p>Data frame with taxonomic information (required for "volcano" plot only).</p></dd>
 
+
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, saves the ALDEx2 result table to disk. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. File path/name for the saved table. Default <code>"aldex_pval_effect.txt"</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -146,20 +156,29 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">aldex_volcano_plot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>                    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>                    col_inf <span class="op">=</span> <span class="st">"blue"</span>,</span></span>
-<span class="r-in"><span>                    col_sup <span class="op">=</span> <span class="st">"red"</span>,</span></span>
-<span class="r-in"><span>                    col_cond <span class="op">=</span> <span class="st">"metodo"</span>,</span></span>
-<span class="r-in"><span>                    type <span class="op">=</span> <span class="st">"effect"</span>,</span></span>
-<span class="r-in"><span>                    threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                    threshold_upper <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                    cond <span class="op">=</span> <span class="st">"kit"</span>,</span></span>
-<span class="r-in"><span>                    show_labels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'ggtext' was built under R version 4.4.3</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'metadata' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># col_cond must have exactly two groups; Location has two</span></span></span>
+<span class="r-in"><span><span class="co"># (Rhizosphere and Roots) in the bundled example data</span></span></span>
+<span class="r-in"><span><span class="fu">aldex_volcano_plot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table           <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  metadata        <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  col_cond        <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  type            <span class="op">=</span> <span class="st">"effect"</span>,</span></span>
+<span class="r-in"><span>  col_inf         <span class="op">=</span> <span class="st">"#0072B2"</span>,</span></span>
+<span class="r-in"><span>  col_sup         <span class="op">=</span> <span class="st">"#E69F00"</span>,</span></span>
+<span class="r-in"><span>  threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>  threshold_upper <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>  cond            <span class="op">=</span> <span class="st">"Rhizosphere"</span>,</span></span>
+<span class="r-in"><span>  show_labels     <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -170,7 +189,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

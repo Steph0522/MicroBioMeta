@@ -122,15 +122,15 @@ R, also we could export the data within <a href="https://qiime2.org/" class="ext
 data as <code>.txt</code>.</p>
 <p>First, Let’s call all raw data:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bacteria_table</span> <span class="op">&lt;-</span> <span class="fu">qiime2R</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"../man/Data/dada2.200.trimmed.single.filtered.cleaned.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bacteria_table</span> <span class="op">&lt;-</span> <span class="fu">qiime2R</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"articles/data/table_bacteria.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fungi_table</span> <span class="op">&lt;-</span> <span class="fu">qiime2R</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"../man/Data/merge_table_240_noplant_filtered_nous.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">fungi_table</span> <span class="op">&lt;-</span> <span class="fu">qiime2R</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"articles/data/table_fungi.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">bacteria_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="st">"../man/Data/FINALMAP.txt"</span>, check.names <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>SAMPLEID <span class="op">=</span><span class="va">`#SampleID`</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">bacteria_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="st">"articles/data/metadata_bacterias.txt"</span>, check.names <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>SAMPLEID <span class="op">=</span><span class="va">`#SampleID`</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Month</span> <span class="op">==</span> <span class="st">"2"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">Treatment</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"TC"</span>,</span>
 <span>      <span class="va">Treatment</span> <span class="op">==</span> <span class="fl">2</span> <span class="op">~</span> <span class="st">"TD"</span>,</span>
 <span>      <span class="va">Treatment</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">~</span> <span class="st">"TED"</span>,</span>
@@ -139,15 +139,15 @@ data as <code>.txt</code>.</p>
 <span>    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TC"</span>, <span class="st">"TD"</span>, <span class="st">"TED"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Type_of_soil <span class="op">=</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Rizosphere"</span> <span class="op">~</span> <span class="st">"Rhizosphere"</span>,</span>
 <span>      <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Non-rizospheric"</span> <span class="op">~</span> <span class="st">"Bulk soil"</span>,</span>
 <span>      <span class="cn">TRUE</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Type_of_soil</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fungi_metadata</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="st">"../man/Data/FINALMAP18S.txt"</span>, check.names <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>SAMPLEID<span class="op">=</span><span class="va">`#SampleID`</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">fungi_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="st">"articles/data/metadata_fungis.txt"</span>, check.names <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>SAMPLEID<span class="op">=</span><span class="va">`#SampleID`</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    Treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>        <span class="va">Treatment</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">"TC"</span>,</span>
 <span>        <span class="va">Treatment</span> <span class="op">==</span> <span class="fl">2</span> <span class="op">~</span> <span class="st">"TD"</span>,</span>
 <span>        <span class="va">Treatment</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">~</span> <span class="st">"TED"</span>,</span>
@@ -157,18 +157,18 @@ data as <code>.txt</code>.</p>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Type_of_soil <span class="op">=</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Rizospheric"</span> <span class="op">~</span> <span class="st">"Rhizosphere"</span>,</span>
 <span>      <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Non-rizospheric"</span> <span class="op">~</span> <span class="st">"Bulk soil"</span>,</span>
 <span>         <span class="cn">TRUE</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Type_of_soil</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span></span>
-<span><span class="va">taxonomy_bacteria</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"../man/Data/taxonomy_dada2.200.trimmed.single.seqs.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">taxonomy_bacteria</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"articles/data/taxonomy_bacteria.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="va">Taxon</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Confidence</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"Feature.ID"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">taxonomy_fungi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"../man/Data/taxonomy_blast_240_0.97.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">taxonomy_fungi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza</a></span><span class="op">(</span><span class="st">"articles/data/taxonomy_fungi.qza"</span><span class="op">)</span><span class="op">$</span><span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="va">Taxon</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Consensus</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"Feature.ID"</span><span class="op">)</span></span></code></pre></div>
@@ -251,7 +251,7 @@ the plot.</p>
 returns a table containing the relative abundances (percentages) used to
 generate the plot.<br></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_barplot.html">abundance_barplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
 <span>                  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
 <span>                  level <span class="op">=</span> <span class="st">"phylum"</span>, </span>
@@ -264,7 +264,7 @@ generate the plot.<br></p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">50</span>, hjust <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_barplot.html">abundance_barplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>                  x_col <span class="op">=</span> <span class="st">"Treatment"</span>, </span>
 <span>                  facet_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>, </span>
@@ -336,7 +336,7 @@ taxa.</p>
 <div class="section level3">
 <h3 id="correlation-among-hill-numbers">Correlation among Hill numbers<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
 </h3>
-<p>The <code><a href="../reference/alpha_hill_corrplot.html">alpha_hill_corrplot()</a></code> function calculates Hill
+<p>The <code><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot()</a></code> function calculates Hill
 numbers for different orders (typically, 𝑞=0,1,2) and visualizes the
 correlations among them using a correlation plot.</p>
 <p>This plot helps evaluate how strongly diversity metrics of different
@@ -346,13 +346,13 @@ and samples (columns).</p>
 <p>For the bacteria, we can observed that at all orders of <em>q</em>
 there is a strong correlation with sequencing depth.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corrplot.html">alpha_hill_corrplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
 <p>But, for fungi data this correlation is just strong and significative
 at <em>q</em>=0, it means for richness but not to the others <em>q</em>
 orders.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corrplot.html">alpha_hill_corrplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
@@ -407,16 +407,16 @@ an statistical comparison indication the method to use:</p>
 </h3>
 <p>Another way to explore alpha diversity patterns is by examining
 <strong>which taxa are shared or unique among groups of
-samples</strong>. The function <code><a href="../reference/venn_diagram_plot.html">venn_diagram_plot()</a></code>
-generates Venn diagrams that summarize the overlap of taxa between
-groups defined in the metadata.</p>
+samples</strong>. The function <code><a href="../reference/venn_plot.html">venn_plot()</a></code> generates Venn
+diagrams that summarize the overlap of taxa between groups defined in
+the metadata.</p>
 <p>The function can optionally filter taxa using a <strong>minimum
 prevalence threshold</strong>, allowing the visualization to focus only
 on taxa consistently detected within each group.</p>
 <p>Next, we generate a Venn diagram grouping samples according to the
 soil compartment.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_diagram_plot.html">venn_diagram_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span> <span class="op">)</span></span></code></pre></div>
@@ -454,7 +454,7 @@ table to the <strong>genus level</strong>.</p></li>
 <span>  level <span class="op">=</span> <span class="st">"genus"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/venn_diagram_plot.html">venn_diagram_plot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span></span>
 <span>  table <span class="op">=</span> <span class="va">table_genus</span><span class="op">$</span><span class="va">collapsed_table</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
@@ -478,7 +478,7 @@ within each group. This can be done using the
 <p>For example, the following diagram includes only taxa present in
 <strong>at least 20% of the samples within each group</strong>.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_diagram_plot.html">venn_diagram_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0.2</span> <span class="op">)</span></span></code></pre></div>
@@ -489,7 +489,7 @@ within each group. This can be done using the
 </h4>
 <p>The function also allows custom colors for the groups.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_diagram_plot.html">venn_diagram_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span>,   </span>
@@ -503,7 +503,7 @@ within each group. This can be done using the
 it can also generate the diagram using
 <strong>ggVennDiagram</strong>.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_diagram_plot.html">venn_diagram_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
 <span>                  merge_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,   </span>
 <span>                  method <span class="op">=</span> <span class="st">"ggvenndiagram"</span> <span class="op">)</span></span></code></pre></div>
@@ -526,7 +526,7 @@ of compositional patterns and formal hypothesis testing.</p>
 <div class="section level3">
 <h3 id="ordination-of-community-composition">Ordination of community composition<a class="anchor" aria-label="anchor" href="#ordination-of-community-composition"></a>
 </h3>
-<p>The <code><a href="../reference/beta_div_plot.html">beta_div_plot()</a></code> function calculates pairwise
+<p>The <code><a href="../reference/beta_ord_plot.html">beta_ord_plot()</a></code> function calculates pairwise
 dissimilarities among samples and visualizes the results using an
 ordination method. By default, the function uses common ecological
 distance metrics (e.g., Bray–Curtis or Euclidean) and dimensionality
@@ -545,7 +545,7 @@ used to calculate beta diversity, and <code>ordination</code> specifies
 the ordination method applied to visualize the distances among
 samples.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_div_plot.html">beta_div_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>, </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>, </span>
 <span>              metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>, </span>
 <span>               distance <span class="op">=</span> <span class="st">"compositional"</span>,</span>
 <span>              ordination <span class="op">=</span> <span class="st">"PCA"</span>,</span>
@@ -553,7 +553,7 @@ samples.</p>
 <span>              shape_col <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_div_plot.html">beta_div_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,                </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,                </span>
 <span>              metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,                </span>
 <span>              group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,               </span>
 <span>              shape_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
@@ -633,15 +633,16 @@ permutations used to estimate statistical significance.</p>
 <h3 id="beta-diversity-partitioning">Beta diversity partitioning<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
 </h3>
 <p>Beta diversity can also be decomposed into different components that
-describe how communities differ. The <code><a href="../reference/beta_partition_plot.html">beta_partition_plot()</a></code>
-function partitions beta diversity into shared and unique fractions
-based on selected dissimilarity indices.</p>
+describe how communities differ. The
+<code><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot()</a></code> function partitions beta
+diversity into shared and unique fractions based on selected
+dissimilarity indices.</p>
 <p>The <code>index</code> argument specifies the dissimilarity family
 used for the partition (e.g., Jaccard or Sørensen). The
 <code>group_col</code> and <code>shape_col</code> parameters define how
 samples are visualized according to metadata variables.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_plot.html">beta_partition_plot</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot</a></span><span class="op">(</span></span>
 <span>  table <span class="op">=</span> <span class="va">table_bac</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
 <span>  index <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
@@ -650,7 +651,7 @@ samples are visualized according to metadata variables.</p>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="" width="1728"></p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_plot.html">beta_partition_plot</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot</a></span><span class="op">(</span></span>
 <span>  table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>  index <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
@@ -662,7 +663,7 @@ samples are visualized according to metadata variables.</p>
 <div class="section level3">
 <h3 id="pairwise-beta-diversity-visualization">Pairwise beta diversity visualization<a class="anchor" aria-label="anchor" href="#pairwise-beta-diversity-visualization"></a>
 </h3>
-<p>The <code><a href="../reference/beta_diversity_boxplot.html">beta_diversity_boxplot()</a></code> function summarizes
+<p>The <code><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code> function summarizes
 pairwise beta diversity values using boxplots, allowing comparison of
 diversity patterns among groups of samples.</p>
 <p>The <code>condition1_col</code> and <code>condition2_col</code>
@@ -673,20 +674,20 @@ of beta diversity is displayed (e.g., shared or unique), while
 <p>If <code>save_table = TRUE</code>, the function also returns a table
 containing the beta diversity values used to generate the plot.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_diversity_boxplot.html">beta_diversity_boxplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
 <span>                       metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
 <span>                       condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>                       condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                       title_axis_x <span class="op">=</span> <span class="st">"Samples"</span>,</span>
+<span>                       x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
 <span>                       partition <span class="op">=</span> <span class="st">"shared"</span>, family <span class="op">=</span> <span class="st">"jaccard"</span>, </span>
 <span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_diversity_boxplot.html">beta_diversity_boxplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>                       metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>                       condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>                       condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                       title_axis_x <span class="op">=</span> <span class="st">"Samples"</span>,</span>
+<span>                       x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
 <span>                       partition <span class="op">=</span> <span class="st">"shared"</span>, </span>
 <span>                       family <span class="op">=</span> <span class="st">"jaccard"</span>, </span>
 <span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -715,11 +716,11 @@ a <strong>heatmap representation</strong>.</p></li>
 <li><p>Additionally, two complementary approaches help identify
 <strong>important taxa that discriminate between
 groups</strong>:</p></li>
-<li><p><code><a href="../reference/ratio_plot.html">ratio_plot()</a></code> highlights taxa based on
+<li><p><code><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot()</a></code> highlights taxa based on
 <strong>log-ratio differences between conditions</strong>.</p></li>
-<li><p><code><a href="../reference/randomf_lollipop_plot.html">randomf_lollipop_plot()</a></code> uses a <strong>Random Forest
-model</strong> to identify features that best predict a given variable,
-visualized as a <strong>lollipop plot of feature
+<li><p><code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> uses a <strong>Random
+Forest model</strong> to identify features that best predict a given
+variable, visualized as a <strong>lollipop plot of feature
 importance</strong>.</p></li>
 <li><p>Since ALDEx2 performs <strong>pairwise comparisons</strong>, we
 first subset the data to include only two experimental
@@ -772,15 +773,15 @@ plot</strong>.</p>
 <div class="section level3">
 <h3 id="identifying-important-taxa">Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
 </h3>
-<p>The functions <code><a href="../reference/randomf_lollipop_plot.html">randomf_lollipop_plot()</a></code> and
-<code><a href="../reference/ratio_plot.html">ratio_plot()</a></code> can also be used to highlight taxa that
-contribute most strongly to the observed differences between
+<p>The functions <code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> and
+<code><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot()</a></code> can also be used to highlight taxa
+that contribute most strongly to the observed differences between
 conditions.</p>
 <p>For example, a <strong>Random Forest model</strong> can be used to
 identify the taxa that best predict the soil compartment:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/randomf_lollipop_plot.html">randomf_lollipop_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>, metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>, top_n <span class="op">=</span> <span class="fl">10</span>, variable_to_predict <span class="op">=</span> <span class="st">"Type_of_soil"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in randomf_lollipop_plot(table = table_bac, metadata = metadata_bacteria, : Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>, metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>, top_n <span class="op">=</span> <span class="fl">10</span>, variable_to_predict <span class="op">=</span> <span class="st">"Type_of_soil"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in random_forest_lollipop_plot(table = table_bac, metadata = metadata_bacteria, : Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:</span></span>
 <span><span class="co">##   - 'Proteobacteria' changed to 'Pseudomonadota'</span></span>
 <span><span class="co">##   - 'Actinobacteriota' changed to 'Actinomycetota'</span></span>
 <span><span class="co">## Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/</span></span></code></pre>
@@ -788,7 +789,7 @@ identify the taxa that best predict the soil compartment:</p>
 <p>Alternatively, taxa with the strongest <strong>log-ratio differences
 between two conditions</strong> can be visualized using:</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ratio_plot.html">ratio_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung_compar</span>, </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung_compar</span>, </span>
 <span>           metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>, </span>
 <span>           condition_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>, </span>
 <span>           top_n <span class="op">=</span> <span class="fl">20</span>, </span>
@@ -909,7 +910,7 @@ relationships</strong></p></li>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+<p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

@@ -88,7 +88,9 @@ sample scores and environmental vectors.</p>
 <span>  analysis <span class="op">=</span> <span class="st">"CCA"</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">126</span>,</span>
 <span>  scale_arrows <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  title <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  table_filename <span class="op">=</span> <span class="st">"cca_rda_scores.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -97,11 +99,15 @@ sample scores and environmental vectors.</p>
 
 
 <dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd><p>A data frame or matrix of species abundances (samples as rows, species as columns).</p></dd>
+<dd><p>A data frame of species abundances with taxa as rows and
+samples as columns, plus a final <code>taxonomy</code> column (same format as
+the rest of the package). Internally transposed to samples-as-rows for
+the ordination.</p></dd>
 
 
 <dt id="arg-env-data">env_data<a class="anchor" aria-label="anchor" href="#arg-env-data"></a></dt>
-<dd><p>A data frame of environmental variables (rows must match <code>table</code>).</p></dd>
+<dd><p>A data frame of environmental variables, with row names
+matching the sample names in <code>table</code>.</p></dd>
 
 
 <dt id="arg-env-vars">env_vars<a class="anchor" aria-label="anchor" href="#arg-env-vars"></a></dt>
@@ -153,7 +159,19 @@ sample scores and environmental vectors.</p>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
-<dd><p>Optional plot title.</p></dd>
+<dd><p>Plot title. <code>"auto"</code> (default) generates <code>"CCA Biplot"</code> or <code>"RDA Biplot"</code>;
+<code>NULL</code> shows no title; any other string is used as-is.</p></dd>
+
+
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, saves a combined table of sample
+scores and environmental vector loadings to disk, distinguished by a
+<code>type</code> column (<code>"site"</code> or <code>"vector"</code>). Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. File path/name for the saved table (used
+when <code>save_table = TRUE</code>). Default <code>"cca_rda_scores.txt"</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -163,32 +181,28 @@ sample scores and environmental vectors.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">cca_rda_biplot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>              env_data <span class="op">=</span> <span class="va">env_data</span>,</span></span>
-<span class="r-in"><span>              env_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"Nitrogen"</span>, <span class="st">"Calcium"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              metadata <span class="op">=</span> <span class="va">metadata</span> ,</span></span>
-<span class="r-in"><span>              group_col <span class="op">=</span> <span class="st">"metodo"</span>,</span></span>
-<span class="r-in"><span>              analysis <span class="op">=</span> <span class="st">"RDA"</span>,</span></span>
-<span class="r-in"><span>              show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>              legend_title <span class="op">=</span> <span class="st">"Método"</span>,</span></span>
-<span class="r-in"><span>              group_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              title <span class="op">=</span> <span class="st">"title"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: ggplot2</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'ggplot2' was built under R version 4.4.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'dplyr' was built under R version 4.4.3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: 'dplyr'</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from 'package:stats':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from 'package:base':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in cca_rda_biplot(table = table, env_data = env_data, env_vars = c("pH",     "Nitrogen", "Calcium"), metadata = metadata, group_col = "metodo",     analysis = "RDA", show_all_env_vectors = TRUE, legend_title = "Método",     group_colors = c("red", "blue"), title = "title"):</span> There is no taxonomy column in the table</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># env_data must have rownames matching the sample names in `table`</span></span></span>
+<span class="r-in"><span><span class="va">env_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">env_data</span><span class="op">$</span><span class="va">SampleID</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cca_rda_biplot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table                <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  env_data             <span class="op">=</span> <span class="va">env_data</span>,</span></span>
+<span class="r-in"><span>  metadata             <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  env_vars             <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"TOC"</span>, <span class="st">"FW"</span>, <span class="st">"Root_FW"</span>, <span class="st">"DW"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  analysis             <span class="op">=</span> <span class="st">"RDA"</span>,</span></span>
+<span class="r-in"><span>  show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  group_col            <span class="op">=</span> <span class="st">"Location"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -199,7 +213,7 @@ sample scores and environmental vectors.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

@@ -149,7 +149,7 @@ cca_rda_biplot <- function(table,
   # 3. Verificar correspondencia de filas
   stopifnot(identical(rownames(spp_table), rownames(env_data)))
   
-  # 4. Ejecutar CCA o RDA según análisis
+  # 4. Run CCA or RDA depending on the requested analysis
   set.seed(seed)
   if (toupper(analysis) == "RDA") {
     ord_result <- vegan::rda(spp_hell ~ ., data = env_scaled)
@@ -162,7 +162,7 @@ cca_rda_biplot <- function(table,
   # 5. Ajuste de vectores ambientales
   fit <- vegan::envfit(ord_result, env_scaled)
   
-  # 6. Selección de variables a graficar
+  # 6. Select variables to plot
   if (show_all_env_vectors) {
     vars_to_plot <- rownames(vegan::scores(fit, display = "vectors"))
   } else {
@@ -204,9 +204,9 @@ cca_rda_biplot <- function(table,
     site_scores <- merge(site_scores, metadata[, c("SampleID", group_col)], by = "SampleID", all.x = TRUE)
     colnames(site_scores)[colnames(site_scores) == group_col] <- "Group"
     
-    default_colors <- .mbm_colors
     groups_present <- unique(site_scores$Group)
-    
+    default_colors <- if (length(groups_present) == 2) .mbm_colors_2group else .mbm_colors
+
     if (is.null(group_colors)) {
       color_values <- rep(default_colors, length.out = length(groups_present))
       names(color_values) <- groups_present
@@ -223,7 +223,7 @@ cca_rda_biplot <- function(table,
       ggplot2::geom_point(size = 4, shape=21)
   }
 
-  # 9. Añadir vectores ambientales
+  # 9. Add environmental vectors
   plot <- plot +
     ggplot2::geom_segment(
       data = vectors_scores,
@@ -250,7 +250,7 @@ cca_rda_biplot <- function(table,
     ) +
     ggplot2::coord_fixed(ratio = 1)
 
-  # 10. Escalar límites del gráfico + tema unificado (una sola llamada)
+  # 10. Scale plot limits + unified theme (single call)
   max_range <- max(abs(c(site_scores[[axis_names[1]]],
                          vectors_scores[[axis_names[1]]] * scale_arrows,
                          site_scores[[axis_names[2]]],
@@ -273,7 +273,7 @@ cca_rda_biplot <- function(table,
     ) +
     ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title))
 
-  # 11. Título del gráfico
+  # 11. Plot title
   auto_title <- paste(toupper(analysis), "Biplot")
   plot <- plot + ggplot2::labs(
     title = if (identical(title, "auto")) auto_title else title

@@ -36,12 +36,12 @@ First, Let's call all raw data:
 
 ```{r}
 
-bacteria_table <- qiime2R::read_qza("../man/Data/dada2.200.trimmed.single.filtered.cleaned.qza")$data %>% as.data.frame()
+bacteria_table <- qiime2R::read_qza("articles/data/table_bacteria.qza")$data %>% as.data.frame()
 
-fungi_table <- qiime2R::read_qza("../man/Data/merge_table_240_noplant_filtered_nous.qza")$data %>% 
+fungi_table <- qiime2R::read_qza("articles/data/table_fungi.qza")$data %>%
   as.data.frame()
 
-bacteria_metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>% rename(SAMPLEID =`#SampleID`) %>% 
+bacteria_metadata <- read.delim("articles/data/metadata_bacterias.txt", check.names = F) %>% rename(SAMPLEID =`#SampleID`) %>%
   filter(Month == "2") %>%
   mutate(Treatment = factor(
     case_when(
@@ -58,7 +58,7 @@ bacteria_metadata <- read.delim("../man/Data/FINALMAP.txt", check.names = F) %>%
       Type_of_soil == "Non-rizospheric" ~ "Bulk soil",
       TRUE ~ as.character(Type_of_soil)))
 
-fungi_metadata<- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% rename(SAMPLEID=`#SampleID`)%>%
+fungi_metadata <- read.delim("articles/data/metadata_fungis.txt", check.names = F) %>% rename(SAMPLEID=`#SampleID`) %>%
   mutate(
     Treatment = factor(
       case_when(
@@ -77,12 +77,12 @@ fungi_metadata<- read.delim("../man/Data/FINALMAP18S.txt", check.names = F)%>% r
          TRUE ~ as.character(Type_of_soil)))
 
 
-taxonomy_bacteria <- read_qza("../man/Data/taxonomy_dada2.200.trimmed.single.seqs.qza")$data %>%
+taxonomy_bacteria <- read_qza("articles/data/taxonomy_bacteria.qza")$data %>%
   as.data.frame() %>% rename(taxonomy = Taxon) %>% 
   dplyr::select(-Confidence) %>% 
   column_to_rownames(var = "Feature.ID")
 
-taxonomy_fungi <- read_qza("../man/Data/taxonomy_blast_240_0.97.qza")$data %>% as.data.frame() %>% 
+taxonomy_fungi <- read_qza("articles/data/taxonomy_fungi.qza")$data %>% as.data.frame() %>%
   rename(taxonomy = Taxon) %>% 
   dplyr::select(-Consensus) %>% 
   column_to_rownames(var = "Feature.ID")
@@ -155,7 +155,7 @@ The `label` parameter defines the legend title displayed in the plot.
 Finally, when `save.table = TRUE`, the function also returns a table containing the relative abundances (percentages) used to generate the plot.\
 
 ```{r}
-abundance_barplot(table = table_bac,
+abundance_bar_plot(table = table_bac,
                   metadata = metadata_bacteria,
                   taxonomy_db = "silva",
                   level = "phylum", 
@@ -170,7 +170,7 @@ abundance_barplot(table = table_bac,
 ```
 
 ```{r}
-abundance_barplot(table = table_fung,
+abundance_bar_plot(table = table_fung,
                   metadata = metadata_fungi,
                   x_col = "Treatment", 
                   facet_col = "Type_of_soil", 
@@ -217,7 +217,7 @@ Alpha diversity describes the diversity within individual samples. In `MicroBioM
 
 ### Correlation among Hill numbers
 
-The `alpha_hill_corrplot()` function calculates Hill numbers for different orders (typically, 𝑞=0,1,2) and visualizes the correlations among them using a correlation plot.
+The `alpha_hill_corr_plot()` function calculates Hill numbers for different orders (typically, 𝑞=0,1,2) and visualizes the correlations among them using a correlation plot.
 
 This plot helps evaluate how strongly diversity metrics of different orders are related to the depth sequencing.
 
@@ -226,14 +226,14 @@ The table argument must be a data frame containing features (rows) and samples (
 For the bacteria, we can observed that at all orders of *q* there is a strong correlation with sequencing depth.
 
 ```{r, warning=FALSE}
-alpha_hill_corrplot(table = table_bac)
+alpha_hill_corr_plot(table = table_bac)
 
 ```
 
 But, for fungi data this correlation is just strong and significative at *q*=0, it means for richness but not to the others *q* orders.
 
 ```{r, warning=FALSE}
-alpha_hill_corrplot(table = table_fung)
+alpha_hill_corr_plot(table = table_fung)
 ```
 
 ### Alpha diversity visualization
@@ -282,14 +282,14 @@ alpha_diversity_plot(table = table_fung,
 
 ### Shared taxa between sample groups
 
-Another way to explore alpha diversity patterns is by examining **which taxa are shared or unique among groups of samples**. The function `venn_diagram_plot()` generates Venn diagrams that summarize the overlap of taxa between groups defined in the metadata.
+Another way to explore alpha diversity patterns is by examining **which taxa are shared or unique among groups of samples**. The function `venn_plot()` generates Venn diagrams that summarize the overlap of taxa between groups defined in the metadata.
 
 The function can optionally filter taxa using a **minimum prevalence threshold**, allowing the visualization to focus only on taxa consistently detected within each group.
 
 Next, we generate a Venn diagram grouping samples according to the soil compartment.
 
 ```{r, fig.width=16, fig.height=12}
-venn_diagram_plot(table = table_fung,   
+venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
                   min_prevalence = 0 )
@@ -319,7 +319,7 @@ table_genus <- collapse_table(
   level = "genus"
 )
 
-venn_diagram_plot(
+venn_plot(
   table = table_genus$collapsed_table,
   metadata = metadata_fungi,
   merge_by = "Type_of_soil"
@@ -337,7 +337,7 @@ Sometimes it is useful to visualize only taxa that occur frequently within each 
 For example, the following diagram includes only taxa present in **at least 20% of the samples within each group**.
 
 ```{r, fig.width=16, fig.height=12}
-venn_diagram_plot(table = table_fung,   
+venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
                   min_prevalence = 0.2 )
@@ -348,7 +348,7 @@ venn_diagram_plot(table = table_fung,
 The function also allows custom colors for the groups.
 
 ```{r, fig.width=16, fig.height=12}
-venn_diagram_plot(table = table_fung,   
+venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
                   min_prevalence = 0,   
@@ -360,7 +360,7 @@ venn_diagram_plot(table = table_fung,
 By default the function uses the package **ggvenn**, but it can also generate the diagram using **ggVennDiagram**.
 
 ```{r}
-venn_diagram_plot(table = table_fung,   
+venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
                   method = "ggvenndiagram" )
@@ -374,14 +374,14 @@ Beta diversity describes the differences in community composition among samples.
 
 ### Ordination of community composition
 
-The `beta_div_plot()` function calculates pairwise dissimilarities among samples and visualizes the results using an ordination method. By default, the function uses common ecological distance metrics (e.g., Bray–Curtis or Euclidean) and dimensionality reduction techniques such as **PCoA**, **PCA**, or **NMDS**. Accounting for compositional data in the examples `aitchinson` and `compositional` distances are used. Compositional refers to the *clr* (log centered ratio) transformation made by `ALDEx2` package.
+The `beta_ord_plot()` function calculates pairwise dissimilarities among samples and visualizes the results using an ordination method. By default, the function uses common ecological distance metrics (e.g., Bray–Curtis or Euclidean) and dimensionality reduction techniques such as **PCoA**, **PCA**, or **NMDS**. Accounting for compositional data in the examples `aitchinson` and `compositional` distances are used. Compositional refers to the *clr* (log centered ratio) transformation made by `ALDEx2` package.
 
 The `group_col` parameter specifies the metadata column used to color the samples, while `shape_col` allows an additional metadata variable to be displayed using different point shapes.
 
 The `distance` argument defines the dissimilarity metric used to calculate beta diversity, and `ordination` specifies the ordination method applied to visualize the distances among samples.
 
 ```{r, warning=FALSE, message=FALSE}
-beta_div_plot(table = table_bac, 
+beta_ord_plot(table = table_bac, 
               metadata = metadata_bacteria, 
                distance = "compositional",
               ordination = "PCA",
@@ -390,7 +390,7 @@ beta_div_plot(table = table_bac,
 ```
 
 ```{r}
-beta_div_plot(table = table_fung,                
+beta_ord_plot(table = table_fung,                
               metadata = metadata_fungi,                
               group_col = "Type_of_soil",               
               shape_col = "Treatment",
@@ -427,12 +427,12 @@ beta_test_table(table = table_fung,
 
 ### Beta diversity partitioning
 
-Beta diversity can also be decomposed into different components that describe how communities differ. The `beta_partition_plot()` function partitions beta diversity into shared and unique fractions based on selected dissimilarity indices.
+Beta diversity can also be decomposed into different components that describe how communities differ. The `beta_partition_ord_plot()` function partitions beta diversity into shared and unique fractions based on selected dissimilarity indices.
 
 The `index` argument specifies the dissimilarity family used for the partition (e.g., Jaccard or Sørensen). The `group_col` and `shape_col` parameters define how samples are visualized according to metadata variables.
 
 ```{r, fig.width=18}
-beta_partition_plot(
+beta_partition_ord_plot(
   table = table_bac,
   metadata = metadata_bacteria,
   index = "jaccard",
@@ -442,7 +442,7 @@ beta_partition_plot(
 ```
 
 ```{r, fig.width=18}
-beta_partition_plot(
+beta_partition_ord_plot(
   table = table_fung,
   metadata = metadata_fungi,
   index = "jaccard",
@@ -453,29 +453,29 @@ beta_partition_plot(
 
 ### Pairwise beta diversity visualization
 
-The `beta_diversity_boxplot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples.
+The `beta_dissimilarity_plot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples.
 
 The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
 
 If `save_table = TRUE`, the function also returns a table containing the beta diversity values used to generate the plot.
 
 ```{r}
-beta_diversity_boxplot(table = table_bac,
+beta_dissimilarity_plot(table = table_bac,
                        metadata = metadata_bacteria,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
-                       title_axis_x = "Samples",
+                       x_axis_title = "Samples",
                        partition = "shared", family = "jaccard", 
                        save_table = FALSE)
 
 ```
 
 ```{r}
-beta_diversity_boxplot(table = table_fung,
+beta_dissimilarity_plot(table = table_fung,
                        metadata = metadata_fungi,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
-                       title_axis_x = "Samples",
+                       x_axis_title = "Samples",
                        partition = "shared", 
                        family = "jaccard", 
                        save_table = FALSE)
@@ -496,9 +496,9 @@ The functions:
 
 -   Additionally, two complementary approaches help identify **important taxa that discriminate between groups**:
 
--   `ratio_plot()` highlights taxa based on **log-ratio differences between conditions**.
+-   `ratios_bubble_plot()` highlights taxa based on **log-ratio differences between conditions**.
 
--   `randomf_lollipop_plot()` uses a **Random Forest model** to identify features that best predict a given variable, visualized as a **lollipop plot of feature importance**.
+-   `random_forest_lollipop_plot()` uses a **Random Forest model** to identify features that best predict a given variable, visualized as a **lollipop plot of feature importance**.
 
 -   Since ALDEx2 performs **pairwise comparisons**, we first subset the data to include only two experimental conditions.
 
@@ -549,18 +549,18 @@ aldex_heatmap_plot(table = table_fung_compar,
 
 ### Identifying important taxa
 
-The functions `randomf_lollipop_plot()` and `ratio_plot()` can also be used to highlight taxa that contribute most strongly to the observed differences between conditions.
+The functions `random_forest_lollipop_plot()` and `ratios_bubble_plot()` can also be used to highlight taxa that contribute most strongly to the observed differences between conditions.
 
 For example, a **Random Forest model** can be used to identify the taxa that best predict the soil compartment:
 
 ```{r}
-randomf_lollipop_plot(table = table_bac, metadata = metadata_bacteria, top_n = 10, variable_to_predict = "Type_of_soil")
+random_forest_lollipop_plot(table = table_bac, metadata = metadata_bacteria, top_n = 10, variable_to_predict = "Type_of_soil")
 ```
 
 Alternatively, taxa with the strongest **log-ratio differences between two conditions** can be visualized using:
 
 ```{r, fig.height=6}
-ratio_plot(table = table_fung_compar, 
+ratios_bubble_plot(table = table_fung_compar, 
            metadata = metadata_fungi_compar, 
            condition_col = "Type_of_soil", 
            top_n = 20, 

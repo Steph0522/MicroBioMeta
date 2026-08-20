@@ -328,6 +328,7 @@ beta_decay_plot <- function(
   color_scale <- NULL
   if (!is.null(group_col)) {
     is_named_palette <- is.character(palette) && length(palette) == 1
+    colorb_default <- if (length(unique(groups)) == 2) .mbm_colors_2group else .mbm_colors
     color_scale <- if (!is_named_palette) {
       ggplot2::scale_color_manual(name = group_col, values = palette)
     } else {
@@ -335,7 +336,7 @@ beta_decay_plot <- function(
         "grey"    = ggplot2::scale_color_grey(name = group_col, start = 0.7, end = 0.2),
         "viridis" = ggplot2::scale_color_viridis_d(name = group_col),
         "brewer"  = ggplot2::scale_color_brewer(name = group_col, palette = "Set2"),
-        ggplot2::scale_color_manual(name = group_col, values = .mbm_colors)
+        ggplot2::scale_color_manual(name = group_col, values = colorb_default)
       )
     }
   }

@@ -23,7 +23,10 @@ alpha_decay_plot(
   point_size = 2,
   line_width = 0.9,
   point_alpha = 0.8,
-  annotation_size = 3.5
+  annotation_size = 3.5,
+  panel_label_case = "upper",
+  panel_labels = NULL,
+  panel_label_bold = TRUE
 )
 }
 \arguments{
@@ -79,9 +82,24 @@ Default \code{TRUE}.}
 
 \item{annotation_size}{Numeric. Font size for the stats annotation.
 Default \code{3.5}.}
+
+\item{panel_label_case}{Character. Case of the auto-generated A/B/C panel
+tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
+("a", "b", "c"). Ignored if \code{panel_labels} is supplied.}
+
+\item{panel_labels}{Optional character vector of 3 custom panel tags (one
+per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+\code{c("a.", "b.", "c.")}) — for journal styles that
+\code{panel_label_case} alone can't produce. Overrides
+\code{panel_label_case} when provided.}
+
+\item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
+bold. Set to \code{FALSE} for journals that require plain (non-bold)
+panel tags.}
 }
 \value{
-A \code{ggplot} object.
+A \code{ggplot} object (a \code{cowplot} composite of the three
+q0/q1/q2 panels, always tagged A/B/C).
 }
 \description{
 Computes Hill numbers (q = 0, 1, 2) from an ASV/OTU table and plots them
@@ -112,7 +130,8 @@ loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
   stats::rnorm(nrow(metadata), sd = 0.3)
 
-# All samples, no grouping
+# All samples, no grouping. Always tagged A/B/C (see panel_label_case and
+# panel_labels to customize)
 alpha_decay_plot(
   table        = table,
   metadata     = metadata,

@@ -55,10 +55,12 @@ aldex_volcano_plot <- function(table,
                                cutoff.pval = 0.05,
                                show_labels = TRUE,
                                taxa = NULL,
+                               label_size = 3.5,
+                               filter_uncultured = FALSE,
                                save_table = FALSE,
                                table_filename = "aldex_pval_effect.txt") {
   
-  # Verificar que type tiene un valor válido
+  # Verify that type has a valid value
   if (!type %in% c("effect", "volcano")) {
     stop("type must be either 'effect' or 'volcano'")
   }
@@ -71,7 +73,7 @@ aldex_volcano_plot <- function(table,
     stop("Package 'ggplot2' needed for this function to work. Please install it.")
   }
   
-  # Verificar que la columna de condición existe
+  # Verify that the condition column exists
   if (!col_cond %in% colnames(metadata)) {
     stop(
       paste(
@@ -86,7 +88,7 @@ aldex_volcano_plot <- function(table,
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
   
-  #Identificar automáticamente la columna taxonómica (última columna)
+  #Automatically identify the taxonomy column (last column)
   if (is.null(taxa)) {
     last_col <- ncol(table)
    taxa_colname <- colnames(table)[last_col]
@@ -95,7 +97,7 @@ aldex_volcano_plot <- function(table,
    Taxon = table[[taxa_colname]],
    stringsAsFactors = FALSE
   )
-  #  Eliminar la última columna de table para el análisis
+  #  Remove the last column of table for the analysis
     table <- table[, -last_col, drop = FALSE]
   }
 
@@ -118,7 +120,7 @@ aldex_volcano_plot <- function(table,
   
   
   
-  # Procesar datos taxonómicos para ambos tipos de gráficos
+  # Process taxonomic data for both plot types
   processed_data <- aldex_clr %>%
     tibble::rownames_to_column(var = "Feature.ID") %>%
     dplyr::left_join(taxa, by = "Feature.ID") %>%
@@ -165,11 +167,11 @@ aldex_volcano_plot <- function(table,
     
     lim_x <- max(abs(plot_data$effect), na.rm = TRUE)
     
-    # Crear vector de colores con nombres dinámicos
+    # Create a color vector with dynamic names
     color_values <- c(col_sup, col_inf, "gray")
     names(color_values) <- c(paste("Higher in", cond), paste("Lower in", cond), "Not significant")
     
-    # Crear el gráfico base
+    # Create the base plot
     p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = effect, y = log_pvalue, color = grupo)) +
       ggplot2::geom_point(size = 3) +
       ggplot2::scale_color_manual(values = color_values) +
@@ -191,18 +193,23 @@ aldex_volcano_plot <- function(table,
       .mbm_theme(legend_position = "none") +
       ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x))
     
-    # Añadir etiquetas de taxones significativos
+    # Add labels for significant taxa
     if (nrow(top_taxa) > 0) {
-      p <- p +
-        ggplot2::geom_text(
-          data = top_taxa,
-          ggplot2::aes(label = taxa),
-          color = "black",
-          family = "serif",
-          size = 3,
-          vjust = -0.5,
-          fontface = "italic"
-        )
+      plot_taxa <- if (filter_uncultured) {
+        top_taxa[!grepl("uncultured|unculture", top_taxa$taxa, ignore.case = TRUE), ]
+      } else top_taxa
+      if (nrow(plot_taxa) > 0) {
+        p <- p +
+          ggplot2::geom_text(
+            data = plot_taxa,
+            ggplot2::aes(label = taxa),
+            color = "black",
+            family = "serif",
+            size = label_size,
+            vjust = -0.5,
+            fontface = "italic"
+          )
+      }
     }
 
     # Condition labels (plain annotate, no ggtext required)
@@ -251,11 +258,11 @@ aldex_volcano_plot <- function(table,
       dplyr::group_by(direction) %>%
       dplyr::slice_max(order_by = abs(diff.btw), n = 3)
     
-    # Crear vector de colores con nombres dinámicos
+    # Create a color vector with dynamic names
     color_values <- c(col_sup, col_inf)
     names(color_values) <- c(paste("Higher in", cond), paste("Lower in", cond))
     
-    # Crear el gráfico base
+    # Create the base plot
     p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = diff.btw, y = log_pvalue)) +
       ggplot2::geom_point(
         data = dplyr::filter(plot_data, !significant),
@@ -286,18 +293,23 @@ aldex_volcano_plot <- function(table,
       ) +
       .mbm_theme(legend_position = "none")
     
-    # Añadir etiquetas de taxones
+    # Add taxa labels
     if (nrow(top_taxa) > 0) {
-      p <- p +
-        ggplot2::geom_text(
-          data = top_taxa,
-          ggplot2::aes(label = taxa),
-          color = "black",
-          family = "serif",
-          size = 3,
-          vjust = -0.5,
-          fontface = "italic"
-        )
+      plot_taxa <- if (filter_uncultured) {
+        top_taxa[!grepl("uncultured|unculture", top_taxa$taxa, ignore.case = TRUE), ]
+      } else top_taxa
+      if (nrow(plot_taxa) > 0) {
+        p <- p +
+          ggplot2::geom_text(
+            data = plot_taxa,
+            ggplot2::aes(label = taxa),
+            color = "black",
+            family = "serif",
+            size = label_size,
+            vjust = -0.5,
+            fontface = "italic"
+          )
+      }
     }
 
     # Condition labels

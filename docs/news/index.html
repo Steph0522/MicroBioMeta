@@ -67,10 +67,27 @@
 <h2 class="page-header" data-toc-text="0.99.0" id="microbiometa-0990">MicroBioMeta 0.99.0<a class="anchor" aria-label="anchor" href="#microbiometa-0990"></a></h2>
 <p>NEW FEATURES</p>
 <ul><li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
+<li>Bundled a real (subset) 16S example dataset in <code>inst/extdata</code> (<code>tabla_bacteria.txt</code> / <code>metadata_bacteria.txt</code>), used throughout the documentation examples.</li>
 </ul><p>SIGNIFICANT USER-VISIBLE CHANGES</p>
-<ul><li>Your main changes to a function <code>foo()</code> or parameter <code>param</code>.</li>
+<ul><li>Standardized the optional table-export interface across all plotting and processing functions: every function now uses <code>save_table</code>/<code>table_filename</code> (default <code>FALSE</code>) instead of the previous, inconsistent argument names (e.g. <code>export_txt</code>/<code>file_name</code>).</li>
+<li>Renamed the example metadata column <code>Type_of_soil</code> to <code>Location</code>, and recoded <code>Treatment</code> from numeric codes (1/2/3) to descriptive labels (<code>Control</code>, <code>Moderate_drought</code>, <code>Severe_drought</code>).</li>
+<li>
+<code><a href="../reference/beta_ord_plot.html">beta_ord_plot()</a></code> now displays the NMDS stress value on the plot when <code>ordination = "NMDS"</code>.</li>
+<li>
+<code><a href="../reference/beta_test_table.html">beta_test_table()</a></code> now labels <code>betadisper</code> output with the actual grouping variable name instead of vegan’s generic <code>"Groups"</code> label.</li>
+<li>Added <code>panel_label_case</code>/<code>panel_labels</code>/<code>panel_label_bold</code> arguments to multi-panel plotting functions for journal-style figure labeling, and removed hardcoded letter prefixes (a./b./c.) from lollipop-style plots.</li>
+<li>Ratio and lollipop plots now share a consistent visual style, and legend titles are derived dynamically from the chosen condition column instead of being hardcoded.</li>
+<li>Genus/species-level taxon labels are now italicized across plots.</li>
 </ul><p>BUG FIXES</p>
-<ul><li>Your bug fixes. See more details at <a href="http://bioconductor.org/developers/package-guidelines/#news" class="external-link uri">http://bioconductor.org/developers/package-guidelines/#news</a>.</li>
+<ul><li>Fixed a crash in <code><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot()</a></code> when the phylum annotation contained <code>NA</code> values, when more than 8 groups were requested from <code>RColorBrewer</code>, and when annotation columns were numeric.</li>
+<li>Fixed a bug in <code><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot()</a></code> where a <code>for (taxon in ...)</code> loop variable shadowed the <code>taxon</code> object used downstream, causing a <code>auto_copy(): x and y must share the same src</code> error.</li>
+<li>Fixed taxonomy columns being dropped unintentionally in <code><a href="../reference/beta_turnover_plot.html">beta_turnover_plot()</a></code>, <code>shared_plot()</code>, and <code>beta_plot_flexible()</code>.</li>
+<li>Fixed italic formatting of Hill-number (q0/q1/q2) facet labels in <code><a href="../reference/beta_turnover_plot.html">beta_turnover_plot()</a></code>.</li>
+</ul><p>OTHER</p>
+<ul><li>Removed all <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> calls from within functions; missing Suggested/Imported packages now fail with an informative <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop()</a></code> message instead of installing silently, per Bioconductor guidelines.</li>
+<li>Removed <code>assign(..., envir = .GlobalEnv)</code> side effects; functions return their results directly.</li>
+<li>Replaced <code>T</code>/<code>F</code> literals with <code>TRUE</code>/<code>FALSE</code>, and <code>1:length(x)</code>-style indexing (which breaks on zero-length input) with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along()</a></code>/<code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code>.</li>
+<li>Added a <code>Depends: R (&gt;= 4.1)</code> floor to <code>DESCRIPTION</code>, reflecting the package’s use of the native lambda (<code>\(x) ...</code>) syntax.</li>
 </ul></div>
   </div>
 
@@ -82,7 +99,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

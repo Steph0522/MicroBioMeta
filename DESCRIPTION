@@ -16,6 +16,7 @@ Description: The goal of MicroBioMeta is to support beginners in microbiome
     on scripting, while still producing statistically robust results and
     publication-ready figures in an intuitive and accessible way.
 License: Artistic-2.0
+Depends: R (>= 4.1)
 URL: https://github.com/Steph0522/MicroBioMeta
 BugReports: https://github.com/Steph0522/MicroBioMeta/issues
 biocViews: Software, Microbiome, Metagenomics, Visualization,
@@ -55,7 +56,8 @@ Imports:
     ANCOMBC,
     circlize,
     geosphere,
-    tools
+    tools,
+    gtable
 Suggests:
     BiocStyle,
     knitr,

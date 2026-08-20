@@ -69,7 +69,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">merge_feature_taxonomy</span><span class="op">(</span><span class="va">table</span>, <span class="va">taxonomy</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">merge_feature_taxonomy</span><span class="op">(</span></span>
+<span>  <span class="va">table</span>,</span>
+<span>  <span class="va">taxonomy</span>,</span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  table_filename <span class="op">=</span> <span class="st">"merged_feature_taxonomy.txt"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -85,6 +90,16 @@ Row names must contain OTUIDs, ASVs, or species names.</p></dd>
 <dd><p>A data frame or matrix with taxonomy information.
 Row names must match the identifiers in the table.</p></dd>
 
+
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, saves the merged table to disk.
+Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. File path/name for the saved table (used
+when <code>save_table = TRUE</code>). Default <code>"merged_feature_taxonomy.txt"</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -94,16 +109,20 @@ it will be renamed to 'taxonomy'.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vegandevs.github.io/vegan/" class="external-link">vegan</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dune</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dune.env</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Example usage (note: taxonomy not provided in this dataset)</span></span></span>
-<span class="r-in"><span><span class="fu">alpha_hill_corplot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    table <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">dune</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">dune.env</span> <span class="op">%&gt;%</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames_to_column</a></span><span class="op">(</span><span class="st">"SampleID"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">full_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Split the combined table into a counts-only feature table and a</span></span></span>
+<span class="r-in"><span><span class="co"># separate taxonomy data frame, as merge_feature_taxonomy expects them</span></span></span>
+<span class="r-in"><span><span class="va">feature_table</span> <span class="op">&lt;-</span> <span class="va">full_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">full_table</span><span class="op">)</span>, <span class="st">"taxonomy"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">taxonomy_df</span> <span class="op">&lt;-</span> <span class="va">full_table</span><span class="op">[</span>, <span class="st">"taxonomy"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">merged</span> <span class="op">&lt;-</span> <span class="fu">merge_feature_taxonomy</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table    <span class="op">=</span> <span class="va">feature_table</span>,</span></span>
+<span class="r-in"><span>  taxonomy <span class="op">=</span> <span class="va">taxonomy_df</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in alpha_hill_corplot(table = t(dune), metadata = dune.env %&gt;% tibble::rownames_to_column("SampleID"),     facet_orientation = "horizontal"):</span> could not find function "alpha_hill_corplot"</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -114,7 +133,7 @@ it will be renamed to 'taxonomy'.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

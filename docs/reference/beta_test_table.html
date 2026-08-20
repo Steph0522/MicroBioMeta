@@ -77,7 +77,9 @@
 <span>  test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"permanova"</span>, <span class="st">"betadisper"</span><span class="op">)</span>,</span>
 <span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span>
 <span>  strata_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  decimales <span class="op">=</span> <span class="fl">3</span></span>
+<span>  decimales <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  table_filename <span class="op">=</span> <span class="st">"beta_test_results.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,7 +87,13 @@
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
+<dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
+<dd><p>A precomputed distance matrix (<code>matrix</code> or <code>dist</code>
+object, e.g. from <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code>), or a data frame with taxonomy,
+where the columns are the samples and rows are ASVs or taxa.</p></dd>
+
+
+<dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
 <dd><p>Data frame of characteristics or important information of the samples</p></dd>
 
 
@@ -94,7 +102,15 @@
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Method for calculate pairwise distances of a matrix</p></dd>
+<dd><p>Method for calculating pairwise distances. Same convention
+as <code>beta_div_plot</code>'s <code>distance</code> argument: <code>"compositional"</code>
+runs ALDEx2's CLR transform (<code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr</a></code>) on the raw counts
+and then a Euclidean distance on the CLR values (requires <code>table</code> to
+be a raw abundance data frame with a taxonomy column, not a precomputed
+distance matrix); <code>"aitchison"</code>/<code>"robust.aitchison"</code> use
+vegan's built-in Aitchison distance (<code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code> with a
+pseudocount); any other value (e.g. <code>"euclidean"</code>, <code>"bray"</code>)
+is passed straight to <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code> on the raw values.</p></dd>
 
 
 <dt id="arg-test">test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
@@ -113,8 +129,14 @@
 <dd><p>Number of decimales required</p></dd>
 
 
-<dt id="arg-matriz">matriz<a class="anchor" aria-label="anchor" href="#arg-matriz"></a></dt>
-<dd><p>Distance matrix or data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.</p></dd>
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, saves the results table to disk.
+Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. File path/name for the saved table (used
+when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -124,22 +146,47 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example using a data frame</span></span></span>
-<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>                metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>                formula_str <span class="op">=</span> <span class="st">"metodo*edad"</span>,</span></span>
-<span class="r-in"><span>                method <span class="op">=</span> <span class="st">"euclidean"</span>,</span></span>
-<span class="r-in"><span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
-<span class="r-in"><span>                permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
-<span class="r-in"><span>                strata_var <span class="op">=</span> <span class="st">"Individuo"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in beta_test_table(table = table, metadata = metadata, formula_str = "metodo*edad",     method = "euclidean", test = "permanova", permutations = 999,     strata_var = "Individuo"):</span> 'table' must be a matrix or dataframe</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example using a matrix</span></span></span>
-<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span>table <span class="op">=</span> <span class="va">matriz</span>,</span></span>
-<span class="r-in"><span>                metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>                formula_str <span class="op">=</span> <span class="st">"Origen"</span>,</span></span>
-<span class="r-in"><span>                test <span class="op">=</span> <span class="st">"betadisper"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'matriz' not found</span>
+<span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example using a data frame</span></span></span>
+<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table       <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location*Treatment"</span>,</span></span>
+<span class="r-in"><span>  method      <span class="op">=</span> <span class="st">"bray"</span>,</span></span>
+<span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
+<span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
+<span class="r-in"><span>  strata_var  <span class="op">=</span> <span class="st">"Plot"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example using a distance matrix</span></span></span>
+<span class="r-in"><span><span class="va">dist_matrix</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span>, <span class="st">"taxonomy"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"bray"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table       <span class="op">=</span> <span class="va">dist_matrix</span>,</span></span>
+<span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"betadisper"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Compositional PERMANOVA (CLR via ALDEx2, then Euclidean)</span></span></span>
+<span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table       <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  method      <span class="op">=</span> <span class="st">"compositional"</span>,</span></span>
+<span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
+<span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -150,7 +197,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

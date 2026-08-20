@@ -63,7 +63,7 @@ abundances and environmental variables, and visualizes the results as either a h
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Plot Correlation Between Environmental Variables and Taxonomic Groups</h1>
-    <small class="dont-index">Source: <a href="https://github.com/Steph0522/MicroBioMeta/blob/HEAD/R/corr_env_abun_plot.R" class="external-link"><code>R/corr_env_abun_plot.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/Steph0522/MicroBioMeta/blob/HEAD/R/corr_env_abund_plot.R" class="external-link"><code>R/corr_env_abund_plot.R</code></a></small>
     <div class="hidden name"><code>corr_env_abund_plot.Rd</code></div>
     </div>
 
@@ -78,18 +78,19 @@ abundances and environmental variables, and visualizes the results as either a h
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">corr_env_abund_plot</span><span class="op">(</span></span>
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">env_table</span>,</span>
-<span>  <span class="va">metadata</span>,</span>
+<span>  metadata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cond_vect <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"spearman"</span>,</span>
 <span>  hc.order <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  geom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tile"</span>, <span class="st">"circle"</span><span class="op">)</span>,</span>
 <span>  show_labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  col_palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  diverging_palette <span class="op">=</span> <span class="st">"BuOr"</span>,</span>
 <span>  invert_axes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"genus"</span>,</span>
 <span>  pval_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  save_table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"corr.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -140,7 +141,23 @@ the plot.</p></dd>
 
 <dt id="arg-col-palette">col_palette<a class="anchor" aria-label="anchor" href="#arg-col-palette"></a></dt>
 <dd><p>Character vector defining the color palette for correlation
-values. If NULL, a blue–white–red palette is used.</p></dd>
+values. If NULL, the palette is chosen via <code>diverging_palette</code>.</p></dd>
+
+
+<dt id="arg-diverging-palette">diverging_palette<a class="anchor" aria-label="anchor" href="#arg-diverging-palette"></a></dt>
+<dd><p>Character. Name of a built-in colorblind-friendly
+diverging palette to use when <code>col_palette</code> is NULL. One of
+<code>"BuOr"</code> (default; blue-white-orange, the same Okabe-Ito blue/
+orange pairing used for the two-group color convention elsewhere in the
+package, e.g. <code>aldex_volcano_plot</code>'s col_inf/col_sup and the
+Rhizosphere/Roots colors in the bundled examples), <code>"BuVm"</code>
+(blue-vermillion), <code>"BuPk"</code> (blue-pink), <code>"GnPk"</code>
+(green-pink), <code>"PuYl"</code> (purple-white-yellow, viridis endpoints);
+or <code>"viridis"</code> for the plain sequential purple-to-yellow scale
+used in <code>aldex_heatmap_plot</code> (no neutral midpoint - not
+recommended for correlations, where 0 should look distinct from either
+extreme). All presets have a true white midpoint at 0 except
+<code>"viridis"</code>.</p></dd>
 
 
 <dt id="arg-invert-axes">invert_axes<a class="anchor" aria-label="anchor" href="#arg-invert-axes"></a></dt>
@@ -180,7 +197,34 @@ save_table = TRUE.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">color</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pink"</span>,<span class="st">"white"</span>,<span class="st">"purple"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># env_table must have rownames matching the sample names in `table`</span></span></span>
+<span class="r-in"><span><span class="va">env_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">env_data</span><span class="op">$</span><span class="va">SampleID</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Uses the default colorblind-friendly diverging palette (purple-white-yellow)</span></span></span>
+<span class="r-in"><span><span class="fu">corr_env_abund_plot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  table          <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  env_table      <span class="op">=</span> <span class="va">env_data</span>,</span></span>
+<span class="r-in"><span>  metadata       <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  cond_vect      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"TOC"</span>, <span class="st">"FW"</span>, <span class="st">"Root_FW"</span>, <span class="st">"DW"</span>, <span class="st">"Root_L"</span>, <span class="st">"Stem_L"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  method         <span class="op">=</span> <span class="st">"pearson"</span>,</span></span>
+<span class="r-in"><span>  geom           <span class="op">=</span> <span class="st">"tile"</span>,</span></span>
+<span class="r-in"><span>  hc.order       <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  invert_axes    <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  show_labels    <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  level          <span class="op">=</span> <span class="st">"phylum"</span>,</span></span>
+<span class="r-in"><span>  taxonomy_db    <span class="op">=</span> <span class="st">"silva"</span>,</span></span>
+<span class="r-in"><span>  pval_threshold <span class="op">=</span> <span class="fl">0.05</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -191,7 +235,7 @@ save_table = TRUE.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

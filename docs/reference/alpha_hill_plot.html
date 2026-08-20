@@ -83,19 +83,25 @@ It supports palette customization, faceting, and statistical comparison.</p>
 <span>  facet_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  facet_by2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>  fill_palette <span class="op">=</span> <span class="st">"colorb"</span>,</span>
-<span>  custom_palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  palette <span class="op">=</span> <span class="st">"colorb"</span>,</span>
+<span>  group_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  strip_color <span class="op">=</span> <span class="st">"grey"</span>,</span>
 <span>  show_legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  figure_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>  axis_x_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  axis_y_title <span class="op">=</span> <span class="st">"Effective number of features"</span>,</span>
+<span>  x_axis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y_axis_title <span class="op">=</span> <span class="st">"Effective number of features"</span>,</span>
 <span>  free_y <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  save_table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  panel_label_case <span class="op">=</span> <span class="st">"upper"</span>,</span>
+<span>  panel_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  panel_label_bold <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  x_label_angle <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  strip_text_bold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  aspect_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"hill.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -141,12 +147,12 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 <dd><p>Whether <code>facet_by</code> appears in columns ("horizontal", default) or rows ("vertical").</p></dd>
 
 
-<dt id="arg-fill-palette">fill_palette<a class="anchor" aria-label="anchor" href="#arg-fill-palette"></a></dt>
+<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
 <dd><p>Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".</p></dd>
 
 
-<dt id="arg-custom-palette">custom_palette<a class="anchor" aria-label="anchor" href="#arg-custom-palette"></a></dt>
-<dd><p>A vector of custom colors. Overrides <code>fill_palette</code> if provided.</p></dd>
+<dt id="arg-group-colors">group_colors<a class="anchor" aria-label="anchor" href="#arg-group-colors"></a></dt>
+<dd><p>A vector of custom colors. Overrides <code>palette</code> if provided.</p></dd>
 
 
 <dt id="arg-n-cols">n_cols<a class="anchor" aria-label="anchor" href="#arg-n-cols"></a></dt>
@@ -165,7 +171,7 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 <dd><p>Logical. Show legend? Default: TRUE.</p></dd>
 
 
-<dt id="arg-figure-title">figure_title<a class="anchor" aria-label="anchor" href="#arg-figure-title"></a></dt>
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
 <dd><p>Title for the entire plot.</p></dd>
 
 
@@ -177,16 +183,61 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 <dd><p>Position of the legend: "bottom", "top", "right", or "left". Default is "bottom".</p></dd>
 
 
-<dt id="arg-axis-x-title">axis_x_title<a class="anchor" aria-label="anchor" href="#arg-axis-x-title"></a></dt>
+<dt id="arg-x-axis-title">x_axis_title<a class="anchor" aria-label="anchor" href="#arg-x-axis-title"></a></dt>
 <dd><p>Title for the x-axis.</p></dd>
 
 
-<dt id="arg-axis-y-title">axis_y_title<a class="anchor" aria-label="anchor" href="#arg-axis-y-title"></a></dt>
+<dt id="arg-y-axis-title">y_axis_title<a class="anchor" aria-label="anchor" href="#arg-y-axis-title"></a></dt>
 <dd><p>Title for the y-axis.</p></dd>
 
 
 <dt id="arg-free-y">free_y<a class="anchor" aria-label="anchor" href="#arg-free-y"></a></dt>
-<dd><p>Logical. Wether if scales in y are free or not.</p></dd>
+<dd><p>Logical. Whether y-axis scales are free across facets. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-panel-label-case">panel_label_case<a class="anchor" aria-label="anchor" href="#arg-panel-label-case"></a></dt>
+<dd><p>Character. Case of the auto-generated panel tags
+(A, B, C... added per panel when <code>stat</code> is used). One of
+<code>"upper"</code> (default, "A", "B", "C") or <code>"lower"</code> ("a", "b", "c").
+Ignored if <code>panel_labels</code> is supplied.</p></dd>
+
+
+<dt id="arg-panel-labels">panel_labels<a class="anchor" aria-label="anchor" href="#arg-panel-labels"></a></dt>
+<dd><p>Optional character vector of custom panel tags, one per
+panel, used as-is (e.g. <code>c("(a)", "(b)", "(c)")</code> or
+<code>c("a.", "b.", "c.")</code>) — for journal styles that
+<code>panel_label_case</code> alone can't produce. Overrides
+<code>panel_label_case</code> when provided.</p></dd>
+
+
+<dt id="arg-panel-label-bold">panel_label_bold<a class="anchor" aria-label="anchor" href="#arg-panel-label-bold"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), panel tags are
+bold. Set to <code>FALSE</code> for journals that require plain (non-bold)
+panel tags.</p></dd>
+
+
+<dt id="arg-x-label-angle">x_label_angle<a class="anchor" aria-label="anchor" href="#arg-x-label-angle"></a></dt>
+<dd><p>Numeric. Rotation (in degrees) of the x-axis tick
+labels. Default <code>0</code> (horizontal); use e.g. <code>45</code> or <code>90</code> when
+group names are long enough to overlap.</p></dd>
+
+
+<dt id="arg-strip-text-bold">strip_text_bold<a class="anchor" aria-label="anchor" href="#arg-strip-text-bold"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, facet strip labels are bold.
+Default <code>FALSE</code> (plain).</p></dd>
+
+
+<dt id="arg-aspect-ratio">aspect_ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
+<dd><p>Numeric. Aspect ratio (height/width) of each panel.
+Default <code>NULL</code>, which lets the panels fill the available space.</p></dd>
+
+
+<dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, saves the diversity table to disk. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
+<dd><p>Character. File path/name for the saved table. Default <code>"hill.txt"</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -196,29 +247,28 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">alpha_hill_plot</span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_taxa</span>,</span></span>
-<span class="r-in"><span>                           metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>                           type <span class="op">=</span> <span class="st">"boxplot"</span>,</span></span>
-<span class="r-in"><span>                           fill_col <span class="op">=</span> <span class="st">"SITIO"</span>,</span></span>
-<span class="r-in"><span>                           x_col <span class="op">=</span> <span class="st">"SITIO"</span>,</span></span>
-<span class="r-in"><span>                           facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span></span>
-<span class="r-in"><span>                           free_y <span class="op">=</span> <span class="cn">T</span>,</span></span>
-<span class="r-in"><span>                           legend_position <span class="op">=</span> <span class="st">"top"</span>,</span></span>
-<span class="r-in"><span>                           stat <span class="op">=</span> <span class="st">"kruskal.test"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'metadata' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vegandevs.github.io/vegan/" class="external-link">vegan</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dune</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dune.env</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># facet_by + stat triggers the auto A/B/C panel tags (see panel_label_case</span></span></span>
+<span class="r-in"><span><span class="co"># and panel_labels to customize their case/format)</span></span></span>
 <span class="r-in"><span><span class="fu">alpha_hill_plot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    table <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">dune</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">dune.env</span> <span class="op">%&gt;%</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames_to_column</a></span><span class="op">(</span><span class="st">"SampleID"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    x_col <span class="op">=</span> <span class="st">"Management"</span>,</span></span>
-<span class="r-in"><span>    fill_col <span class="op">=</span> <span class="st">"Management"</span>,</span></span>
-<span class="r-in"><span>    facet_by <span class="op">=</span> <span class="st">"Use"</span>,</span></span>
-<span class="r-in"><span>    facet_orientation <span class="op">=</span> <span class="st">"vertical"</span></span></span>
+<span class="r-in"><span>  table            <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>  metadata         <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>  type             <span class="op">=</span> <span class="st">"boxplot"</span>,</span></span>
+<span class="r-in"><span>  x_col            <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  fill_col         <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  facet_by         <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>  legend_position  <span class="op">=</span> <span class="st">"top"</span>,</span></span>
+<span class="r-in"><span>  stat             <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span></span>
+<span class="r-in"><span>  panel_label_case <span class="op">=</span> <span class="st">"upper"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dune.env %&gt;% tibble::rownames_to_column("SampleID"):</span> could not find function "%&gt;%"</span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -229,7 +279,7 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/Steph0522/" class="external-link">Stephanie Hereira</a>.</p>
+  <p></p><p>Developed by Stephanie Hereira Pacheco, Nina Montoya Ciriaco, Karla Zarco González.</p>
 </div>
 
 <div class="pkgdown">

@@ -17,6 +17,8 @@ aldex_volcano_plot(
   cutoff.pval = 0.05,
   show_labels = TRUE,
   taxa = NULL,
+  label_size = 3.5,
+  filter_uncultured = FALSE,
   save_table = FALSE,
   table_filename = "aldex_pval_effect.txt"
 )

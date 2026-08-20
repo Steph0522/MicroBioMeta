@@ -97,9 +97,11 @@ aldex_heatmap_plot <- function(table,
 
   # Check ComplexHeatmap
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
-    message("Package 'ComplexHeatmap' not installed. Installing from Bioconductor...")
-    if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-    BiocManager::install("ComplexHeatmap")
+    stop(
+      "Package 'ComplexHeatmap' is required but not installed.\n",
+      "Install it with: BiocManager::install(\"ComplexHeatmap\")",
+      call. = FALSE
+    )
   }
 
   # Verify condition column

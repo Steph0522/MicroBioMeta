@@ -10,8 +10,8 @@ collapse_table(
   metadata,
   level = "genus",
   rel_abun = FALSE,
-  export_txt = FALSE,
-  file_name = "collapsed_table.txt"
+  save_table = FALSE,
+  table_filename = "collapsed_table.txt"
 )
 }
 \arguments{
@@ -27,14 +27,16 @@ used to define the order of samples in the output table.}
 \item{rel_abun}{Logical. If TRUE, converts counts to relative abundance
 (\%) per sample.}
 
-\item{export_txt}{Logical. If TRUE, exports the collapsed table as a
-tab-delimited text file.}
+\item{save_table}{Logical. If \code{TRUE}, saves the collapsed table to
+disk. Default \code{FALSE}.}
 
-\item{file_name}{Character. Name of the output file when
-export_txt = TRUE.}
+\item{table_filename}{Character. File path/name for the saved table (used
+when \code{save_table = TRUE}). Default \code{"collapsed_table.txt"}.}
 }
 \value{
-a table collapsed by taxonomic level
+A list with two elements: \code{collapsed_table} (wide format,
+one row per collapsed taxon) and \code{long_format} (the same data
+pivoted to one row per taxon/sample combination).
 }
 \description{
 Collapses an abundance table by a specified taxonomic rank (e.g. genus,
@@ -57,7 +59,7 @@ collapse_table(
   metadata   = metadata,
   level      = "genus",
   rel_abun   = FALSE,
-  export_txt = FALSE
+  save_table = FALSE
 )
 }
 }

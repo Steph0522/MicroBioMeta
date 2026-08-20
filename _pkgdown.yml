@@ -33,22 +33,24 @@ reference:
   - title: Abundance visualizations
     desc: Functions used for abundance visualizations.
     contents:
-      - abundance_barplot
+      - abundance_bar_plot
       - abundance_heatmap_plot
       - abundance_sankey_plot
   - title: Alpha diversity
-    desc: Functions used for alpha diversity index and analyses. 
+    desc: Functions used for alpha diversity index and analyses.
     contents:
-      - alpha_hill_corrplot
+      - alpha_hill_corr_plot
       - alpha_hill_plot
       - alpha_diversity_plot
+      - alpha_decay_plot
   - title: Beta diversity
-    desc: Functions used for betadiversity analyses and visualizations.
+    desc: Functions used for beta diversity analyses and visualizations.
     contents:
-      - beta_div_plot
-      - beta_diversity_boxplot
-      - beta_plot
-      - beta_partition_plot
+      - beta_ord_plot
+      - beta_dissimilarity_plot
+      - beta_turnover_plot
+      - beta_partition_ord_plot
+      - beta_decay_plot
       - beta_test_table
   - title: Important taxa
     desc: Functions used to identify important taxa
@@ -56,14 +58,14 @@ reference:
       - aldex_heatmap_plot
       - aldex_volcano_plot
       - ancombc_plot
-      - randomf_lollipop_plot
-      - ratio_plot
+      - random_forest_lollipop_plot
+      - ratios_bubble_plot
   - title: Other functions
     desc: Functions used for other analyses
     contents:
       - cca_rda_biplot
       - corr_env_abund_plot
-      - venn_diagram_plot
+      - venn_plot
   
 authors:
   Stephanie Hereira:

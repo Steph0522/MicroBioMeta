@@ -43,14 +43,14 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     )
   }
 
-  # Función interna para abundancia relativa
+  # Internal function for relative abundance
   relabunda <- function(x) as.data.frame(t(t(x) / colSums(x))) * 100
-  
-  # Identificar columna de taxonomía
+
+  # Identify the taxonomy column
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
-  table <- table[, c(setdiff(1:ncol(table), tax_col), tax_col)]
+  table <- table[, c(setdiff(seq_len(ncol(table)), tax_col), tax_col)]
   
   otu_mat <- table[, -ncol(table)]
   rownames(otu_mat) <- rownames(table)
@@ -61,7 +61,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     tibble::rownames_to_column("Feature.ID") %>%
     tidyr::separate(taxonomy, into = c("k","p","c","o","f","g","s"), sep = ";", fill = "right")
   
-  # Limpieza según base
+  # Cleanup according to database
   if(tolower(taxonomy_db) == "silva") {
     otu_rel_parse <- otu_rel_parse %>%
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
@@ -98,7 +98,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                     s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g,s,sep=" "), s))
   }
   
-  # Función interna para resumir por nivel y quitar vacíos
+  # Internal function to summarize by level and drop empty ones
   get_level_data <- function(df, level, unite_cols) {
     df %>%
       tidyr::unite(col = !!level, all_of(unite_cols), remove = FALSE) %>%
@@ -143,7 +143,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     dplyr::slice_max(order_by = abund, n = maxn, with_ties = FALSE) %>%
     dplyr::ungroup()
   
-  # Construcción de nodos y links para Sankey
+  # Construct nodes and links for Sankey
   splits <- strsplit(my_report$ids,"_")
   sel <- sapply(splits,length) >= 3
   splits <- splits[sel]

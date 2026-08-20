@@ -30,6 +30,9 @@ alpha_diversity_plot(
   panel_label_case = "upper",
   panel_labels = NULL,
   panel_label_bold = TRUE,
+  x_label_angle = 0,
+  strip_text_bold = FALSE,
+  aspect_ratio = NULL,
   save_table = FALSE,
   table_filename = "diversity.txt"
 )
@@ -95,6 +98,16 @@ panel, used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
 bold. Set to \code{FALSE} for journals that require plain (non-bold)
 panel tags.}
 
+\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
+labels. Default \code{0} (horizontal); use e.g. \code{45} or \code{90} when
+group names are long enough to overlap.}
+
+\item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold.
+Default \code{FALSE} (plain).}
+
+\item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
+Default \code{NULL}, which lets the panels fill the available space.}
+
 \item{save_table}{Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table. Default \code{"diversity.txt"}.}
@@ -116,16 +129,19 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SAMPLEID"
 
+# facet_by + stat triggers the auto A/B/C panel tags (see panel_label_case
+# and panel_labels to customize their case/format)
 alpha_diversity_plot(
-  table           = table,
-  metadata        = metadata,
-  type            = "barplot",
-  x_col           = "Location",
-  fill_col        = "Location",
-  facet_by2       = "Treatment",
-  free_y          = TRUE,
-  legend_position = "top",
-  stat            = "t.test"
+  table            = table,
+  metadata         = metadata,
+  type             = "barplot",
+  x_col            = "Location",
+  fill_col         = "Location",
+  facet_by         = "Treatment",
+  free_y           = TRUE,
+  legend_position  = "top",
+  stat             = "t.test",
+  panel_label_case = "upper"
 )
 }
 }

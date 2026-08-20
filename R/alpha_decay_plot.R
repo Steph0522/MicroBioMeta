@@ -43,8 +43,20 @@
 #' @param point_alpha Numeric (0–1). Transparency of points. Default \code{0.8}.
 #' @param annotation_size Numeric. Font size for the stats annotation.
 #'   Default \code{3.5}.
+#' @param panel_label_case Character. Case of the auto-generated A/B/C panel
+#'   tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
+#'   ("a", "b", "c"). Ignored if \code{panel_labels} is supplied.
+#' @param panel_labels Optional character vector of 3 custom panel tags (one
+#'   per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
+#'   \code{c("a.", "b.", "c.")}) — for journal styles that
+#'   \code{panel_label_case} alone can't produce. Overrides
+#'   \code{panel_label_case} when provided.
+#' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
+#'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
+#'   panel tags.
 #'
-#' @return A \code{ggplot} object.
+#' @return A \code{ggplot} object (a \code{cowplot} composite of the three
+#'   q0/q1/q2 panels, always tagged A/B/C).
 #' @export
 #'
 #' @examples
@@ -66,7 +78,8 @@
 #' metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
 #'   stats::rnorm(nrow(metadata), sd = 0.3)
 #'
-#' # All samples, no grouping
+#' # All samples, no grouping. Always tagged A/B/C (see panel_label_case and
+#' # panel_labels to customize)
 #' alpha_decay_plot(
 #'   table        = table,
 #'   metadata     = metadata,
@@ -102,7 +115,10 @@ alpha_decay_plot <- function(
     point_size        = 2,
     line_width        = 0.9,
     point_alpha       = 0.8,
-    annotation_size   = 3.5
+    annotation_size   = 3.5,
+    panel_label_case  = "upper",
+    panel_labels      = NULL,
+    panel_label_bold  = TRUE
 ) {
 
   # ---- 0. Validate inputs ----
@@ -224,15 +240,20 @@ alpha_decay_plot <- function(
   }
 
   # ---- 6. Color scale ----
+  colorb_default <- if (!is.null(group_col) && length(unique(hills_long[[group_col]])) == 2) {
+    .mbm_colors_2group
+  } else {
+    .mbm_colors
+  }
   color_scale <- if (!is.null(group_colors)) {
     ggplot2::scale_color_manual(values = group_colors)
   } else {
     switch(palette,
-      "colorb"  = ggplot2::scale_color_manual(values = .mbm_colors),
+      "colorb"  = ggplot2::scale_color_manual(values = colorb_default),
       "grey"    = ggplot2::scale_color_grey(start = 0.7, end = 0.2),
       "viridis" = ggplot2::scale_color_viridis_d(option = "plasma"),
       "brewer"  = ggplot2::scale_color_brewer(palette = "Set2"),
-      ggplot2::scale_color_manual(values = .mbm_colors)
+      ggplot2::scale_color_manual(values = colorb_default)
     )
   }
 
@@ -280,58 +301,107 @@ alpha_decay_plot <- function(
     )
   }
 
-  p <- ggplot2::ggplot(hills_long, aes_pts) +
-    ggplot2::geom_point(size = point_size, alpha = point_alpha) +
-    smooth_layer +
-    ggplot2::geom_text(
-      data        = stats_df,
-      mapping     = aes_ann,
-      size        = annotation_size,
-      family      = "serif",
-      inherit.aes = FALSE,
-      show.legend = FALSE
-    ) +
-    ggplot2::facet_wrap(
-      ~q,
-      ncol     = facet_ncol,
-      scales   = if (free_y) "free_y" else "fixed",
-      labeller = q_labeller
-    ) +
-    color_scale +
-    ggplot2::labs(
-      title = title,
-      x     = if (!is.null(x_axis_title)) x_axis_title else cont_var,
-      y     = y_axis_title,
-      color = group_col
-    ) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      panel.grid       = ggplot2::element_blank(),
-      panel.spacing    = grid::unit(1, "lines"),
-      strip.text       = ggplot2::element_text(
-        size = 12, color = "black", family = "serif", face = "bold"
-      ),
-      strip.background = ggplot2::element_rect(fill = "grey"),
-      axis.title.x     = ggplot2::element_text(
-        size = 14, color = "black", family = "serif"
-      ),
-      axis.title.y     = ggplot2::element_text(
-        size = 14, color = "black", family = "serif"
-      ),
-      axis.text.x      = ggplot2::element_text(
-        size = 12, colour = "black", family = "serif"
-      ),
-      axis.text.y      = ggplot2::element_text(
-        size = 12, color = "black", family = "serif"
-      ),
-      legend.title     = ggplot2::element_text(
-        size = 14, color = "black", family = "serif", face = "bold"
-      ),
-      legend.text      = ggplot2::element_text(
-        size = 12, color = "black", family = "serif"
-      ),
-      legend.position  = if (show_legend) legend_position else "none"
+  # Shared y-axis range across the three q panels when scales aren't free
+  y_range <- if (!free_y) range(hills_long$hill, na.rm = TRUE) else NULL
+
+  # ---- 7. Build one panel per q level, then combine with cowplot so the
+  # A/B/C tags land outside each panel (matching alpha_hill_corrplot) ----
+  q_levels <- intersect(c("q0", "q1", "q2"), unique(hills_long$q))
+
+  build_q_panel <- function(q_level) {
+    ggplot2::ggplot(hills_long[hills_long$q == q_level, ], aes_pts) +
+      ggplot2::geom_point(size = point_size, alpha = point_alpha) +
+      smooth_layer +
+      ggplot2::geom_text(
+        data        = stats_df[stats_df$q == q_level, ],
+        mapping     = aes_ann,
+        size        = annotation_size,
+        family      = "serif",
+        inherit.aes = FALSE,
+        show.legend = FALSE
+      ) +
+      ggplot2::facet_wrap(~q, ncol = 1, labeller = q_labeller) +
+      color_scale +
+      { if (!is.null(y_range)) ggplot2::coord_cartesian(ylim = y_range) } +
+      ggplot2::labs(
+        x     = if (!is.null(x_axis_title)) x_axis_title else cont_var,
+        y     = y_axis_title,
+        color = group_col
+      ) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        panel.grid       = ggplot2::element_blank(),
+        strip.text       = ggplot2::element_text(
+          size = 12, color = "black", family = "serif", face = "bold"
+        ),
+        strip.background = ggplot2::element_rect(fill = "grey"),
+        axis.title.x     = ggplot2::element_text(
+          size = 14, color = "black", family = "serif"
+        ),
+        axis.title.y     = ggplot2::element_text(
+          size = 14, color = "black", family = "serif"
+        ),
+        axis.text.x      = ggplot2::element_text(
+          size = 12, colour = "black", family = "serif"
+        ),
+        axis.text.y      = ggplot2::element_text(
+          size = 12, color = "black", family = "serif"
+        ),
+        legend.title     = ggplot2::element_text(
+          size = 14, color = "black", family = "serif", face = "bold"
+        ),
+        legend.text      = ggplot2::element_text(
+          size = 12, color = "black", family = "serif"
+        ),
+        legend.position  = legend_position
+      )
+  }
+
+  panel_letters <- if (!is.null(panel_labels)) {
+    panel_labels
+  } else if (identical(panel_label_case, "lower")) {
+    letters[seq_along(q_levels)]
+  } else {
+    LETTERS[seq_along(q_levels)]
+  }
+
+  plots <- lapply(q_levels, build_q_panel)
+
+  has_legend <- !is.null(group_col) && show_legend
+  if (has_legend) {
+    leg <- cowplot::get_legend(plots[[1]])
+    plots <- lapply(plots, function(pl) pl + ggplot2::theme(legend.position = "none"))
+  }
+
+  panel_grid <- cowplot::plot_grid(
+    plotlist         = plots,
+    ncol              = facet_ncol,
+    labels            = panel_letters,
+    label_fontfamily  = "serif",
+    label_fontface    = if (panel_label_bold) "bold" else "plain",
+    label_size        = 14,
+    label_x           = 0,
+    label_y           = 1,
+    hjust             = -0.2,
+    vjust             = 1.3
+  )
+
+  p <- if (has_legend) {
+    switch(legend_position,
+      "top"    = cowplot::plot_grid(leg, panel_grid, ncol = 1, rel_heights = c(0.1, 1)),
+      "left"   = cowplot::plot_grid(leg, panel_grid, nrow = 1, rel_widths = c(0.2, 1)),
+      "right"  = cowplot::plot_grid(panel_grid, leg, nrow = 1, rel_widths = c(1, 0.2)),
+      cowplot::plot_grid(panel_grid, leg, ncol = 1, rel_heights = c(1, 0.1))
     )
+  } else {
+    panel_grid
+  }
+
+  if (!is.null(title)) {
+    title_grob <- cowplot::ggdraw() +
+      cowplot::draw_label(title, fontface = "bold", fontfamily = "serif", size = 14)
+    p <- cowplot::plot_grid(title_grob, p, ncol = 1, rel_heights = c(0.08, 1))
+  }
 
   p
 }

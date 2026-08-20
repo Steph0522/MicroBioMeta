@@ -115,7 +115,7 @@ abundance_heatmap_plot <- function(table,
     dplyr::arrange(-abun) %>%  # Esto ordena por abundancia descendente
     dplyr::slice(1:top_n) %>%
     dplyr::mutate(asv=paste0("ASV", dplyr::row_number())) %>%
-    tidyr::unite("taxa", asv, taxonomy, remove = F) %>%
+    tidyr::unite("taxa", asv, taxonomy, remove = FALSE) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
     dplyr::mutate(phylum = sub("^p__", "", phylum)) %>%
     dplyr::mutate(phylum = dplyr::case_when(phylum == "Proteobacteria" ~ "Pseudomonadata",
@@ -239,13 +239,19 @@ abundance_heatmap_plot <- function(table,
     unique_vals <- sort(unique(annotation_columns[[condition1]]))
     
     if (is.null(colors_condition1)) {
-      # Okabe-Ito starting at index 1: orange, sky-blue, green, yellow...
-      colors_condition1 <- rep_len(.mbm_colors, length(unique_vals))
+      # Exactly 2 levels (e.g. Location: Rhizosphere/Roots) get the same
+      # orange/dark-blue pair used as the 2-group default elsewhere in the
+      # package; 3+ levels cycle through the full Okabe-Ito palette.
+      colors_condition1 <- if (length(unique_vals) == 2) {
+        .mbm_colors_2group
+      } else {
+        rep_len(.mbm_colors, length(unique_vals))
+      }
     } else if (length(colors_condition1) < length(unique_vals)) {
       colors_condition1 <- rep_len(colors_condition1, length(unique_vals))
     }
     
-    color_mapping <- setNames(colors_condition1[1:length(unique_vals)], unique_vals)
+    color_mapping <- setNames(colors_condition1[seq_along(unique_vals)], unique_vals)
     
     heatmap_annotations$ann1 <- ComplexHeatmap::HeatmapAnnotation(
       df = annotation_columns[condition1],
@@ -276,7 +282,7 @@ abundance_heatmap_plot <- function(table,
       colors_condition2 <- rep_len(colors_condition2, length(unique_vals))
     }
     
-    color_mapping <- setNames(colors_condition2[1:length(unique_vals)], unique_vals)
+    color_mapping <- setNames(colors_condition2[seq_along(unique_vals)], unique_vals)
     
     heatmap_annotations$ann2 <- ComplexHeatmap::HeatmapAnnotation(
       df = annotation_columns[condition2],
@@ -308,7 +314,7 @@ abundance_heatmap_plot <- function(table,
       colors_condition3 <- rep_len(colors_condition3, length(unique_vals))
     }
     
-    color_mapping <- setNames(colors_condition3[1:length(unique_vals)], unique_vals)
+    color_mapping <- setNames(colors_condition3[seq_along(unique_vals)], unique_vals)
     
     heatmap_annotations$ann3 <- ComplexHeatmap::HeatmapAnnotation(
       df = annotation_columns[condition3],
@@ -351,7 +357,7 @@ abundance_heatmap_plot <- function(table,
     column_names_gp = grid::gpar(fontsize=12, fontfamily= "serif"),
     cluster_columns = FALSE,
     cluster_rows = cluster,
-    row_order = row_order,  # Añadido para mantener orden cuando cluster=FALSE
+    row_order = row_order,  # Added to preserve order when cluster=FALSE
     show_column_names = show_column_names,
     show_heatmap_legend = TRUE, 
     top_annotation = if (length(heatmap_annotations) > 0) top_annotation else NULL,
