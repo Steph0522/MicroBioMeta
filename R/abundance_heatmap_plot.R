@@ -22,6 +22,12 @@
 #'   rows into the plot.
 #' @param cluster Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)
 #' @param show_column_names Logical indicating whether to show column names (TRUE) or not (FALSE)
+#' @param annotation_height Numeric. Height, in millimeters, of each column
+#'   annotation bar (condition1/condition2/condition3). Column annotation
+#'   bars have a fixed height regardless of how many rows the heatmap body
+#'   has, so with few rows and many columns the body cells can look like
+#'   thin stripes next to blockier annotation bars; lower this value to make
+#'   the annotation bars thinner. Default \code{3}.
 #' @param save_table Logical. If \code{TRUE}, saves the underlying abundance
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -69,6 +75,7 @@ abundance_heatmap_plot <- function(table,
                                    exclude_unclassified = TRUE,
                                    cluster = TRUE,
                                    show_column_names = TRUE,
+                                   annotation_height = 3,
                                    save_table = FALSE,
                                    table_filename = "abundance_heatmap_table.txt") {
   
@@ -260,9 +267,10 @@ abundance_heatmap_plot <- function(table,
       show_legend = FALSE,
       show_annotation_name = TRUE,
       annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
-      gp = grid::gpar(col = "white")
+      gp = grid::gpar(col = "white"),
+      simple_anno_size = grid::unit(annotation_height, "mm")
     )
-    
+
     legend_list$lgd2 <- ComplexHeatmap::Legend(
       at = names(color_mapping),
       legend_gp = grid::gpar(fill = color_mapping),
@@ -291,9 +299,10 @@ abundance_heatmap_plot <- function(table,
       show_legend = FALSE,
       show_annotation_name = TRUE,
       annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
-      gp = grid::gpar(col = "white")
+      gp = grid::gpar(col = "white"),
+      simple_anno_size = grid::unit(annotation_height, "mm")
     )
-    
+
     legend_list$lgd3 <- ComplexHeatmap::Legend(
       at = names(color_mapping),
       legend_gp = grid::gpar(fill = color_mapping),
@@ -323,9 +332,10 @@ abundance_heatmap_plot <- function(table,
       show_legend = FALSE,
       show_annotation_name = TRUE,
       annotation_name_gp = grid::gpar(fontsize = 12, fontface="bold", fontfamily= "serif"),
-      gp = grid::gpar(col = "white")
+      gp = grid::gpar(col = "white"),
+      simple_anno_size = grid::unit(annotation_height, "mm")
     )
-    
+
     legend_list$lgd4 <- ComplexHeatmap::Legend(
       at = names(color_mapping),
       legend_gp = grid::gpar(fill = color_mapping),

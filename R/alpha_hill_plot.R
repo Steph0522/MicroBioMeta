@@ -9,6 +9,8 @@
 #' @param metadata A data frame with metadata. The first column must match sample names in `table`.
 #' @param type Type of plot: either "boxplot" or "barplot". Default is "boxplot".
 #' @param stat Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
+#'   Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
+#'   \code{stat} only adds the p-value annotations on top of them.
 #' @param x_col Column in `metadata` to be used on the x-axis.
 #' @param fill_col Column in `metadata` to define fill color.
 #' @param facet_by Optional. A metadata column to facet (e.g., Treatment, Site).
@@ -27,7 +29,7 @@
 #' @param y_axis_title Title for the y-axis.
 #' @param free_y Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.
 #' @param panel_label_case Character. Case of the auto-generated panel tags
-#'   (A, B, C... added per panel when \code{stat} is used). One of
+#'   (A, B, C... added to every panel by default). One of
 #'   \code{"upper"} (default, "A", "B", "C") or \code{"lower"} ("a", "b", "c").
 #'   Ignored if \code{panel_labels} is supplied.
 #' @param panel_labels Optional character vector of custom panel tags, one per
@@ -59,8 +61,10 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # facet_by + stat triggers the auto A/B/C panel tags (see panel_label_case
-#' # and panel_labels to customize their case/format)
+#' # Panel tags (A/B/C) are always added (see panel_label_case and
+#' # panel_labels to customize their case/format); stat additionally
+#' # overlays p-value annotations on each panel
+
 #' alpha_hill_plot(
 #'   table            = table,
 #'   metadata         = metadata,
@@ -161,13 +165,12 @@ alpha_hill_plot <- function(
   facet_scales <- if (free_y) "free_y" else "fixed"  # Esto ahora se usa correctamente
   q_labeller <- .mbm_q_labeller(strip_text_bold)
 
-  # When panel tags are needed (stat set) and there's no nested double
-  # facet, build the grid as separate cowplot-composed subplots instead of
-  # a single faceted ggplot, so the A/B/C tags land truly outside each
-  # panel - the same mechanism already used by alpha_hill_corrplot and
-  # beta_partition_plot - instead of trying to carve out space inside one
-  # shared facet gtable.
-  use_grid_compose <- !is.null(stat) && is.null(facet_by2) &&
+  # Panel tags (A/B/C) are always added. When there's no nested double facet,
+  # build the grid as separate cowplot-composed subplots instead of a single
+  # faceted ggplot, so the tags land truly outside each panel - the same
+  # mechanism already used by alpha_hill_corrplot and beta_partition_plot -
+  # instead of trying to carve out space inside one shared facet gtable.
+  use_grid_compose <- is.null(facet_by2) &&
     identical(facet_orientation, "horizontal")
 
   facet_config <- if (!is.null(facet_by) && !is.null(facet_by2)) {
@@ -313,18 +316,20 @@ alpha_hill_plot <- function(
         p_cell <- p_cell + ggplot2::theme(aspect.ratio = aspect_ratio)
       }
 
-      y_val <- max(cell_data$value, na.rm = TRUE) * 0.98
-      x_lvls <- levels(factor(cell_data[[x_col]]))
-      x_numeric <- match(cell_data[[x_col]], x_lvls)
-      x_center <- mean(range(x_numeric, na.rm = TRUE))
-      p_cell <- p_cell + ggpubr::stat_compare_means(
-        data = cell_data, method = stat,
-        mapping = ggplot2::aes(
-          label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-        ),
-        size = 3.5, family = "serif", hide.ns = TRUE,
-        label.y = y_val, label.x = x_center
-      )
+      if (!is.null(stat)) {
+        y_val <- max(cell_data$value, na.rm = TRUE) * 0.98
+        x_lvls <- levels(factor(cell_data[[x_col]]))
+        x_numeric <- match(cell_data[[x_col]], x_lvls)
+        x_center <- mean(range(x_numeric, na.rm = TRUE))
+        p_cell <- p_cell + ggpubr::stat_compare_means(
+          data = cell_data, method = stat,
+          mapping = ggplot2::aes(
+            label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
+          ),
+          size = 3.5, family = "serif", hide.ns = TRUE,
+          label.y = y_val, label.x = x_center
+        )
+      }
 
       show_top_strip   <- row_idx == 1
       show_right_strip <- has_facet_by && col_idx == n_cols_grid
@@ -485,8 +490,9 @@ alpha_hill_plot <- function(
     p <- p + p_vals_layers
   }
 
-  if (!is.null(stat) || !is.null(panel_labels)) {
-    # Add A, B, C... style labels to the panels. Rather than reusing an
+  {
+    # Add A, B, C... style labels to the panels, regardless of whether a
+    # statistical comparison (`stat`) was requested. Rather than reusing an
     # existing gtable row (which may not exist, e.g. the 2nd/3rd row of a
     # facet_by grid has no strip above it, only panel.spacing), a brand new,
     # dedicated, guaranteed-empty row is inserted directly above every

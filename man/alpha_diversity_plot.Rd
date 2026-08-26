@@ -45,7 +45,9 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{type}{Type of plot: either "boxplot" or "barplot". Default is "boxplot".}
 
-\item{stat}{Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").}
+\item{stat}{Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
+Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
+\code{stat} only adds the p-value annotations on top of them.}
 
 \item{x_col}{Column in \code{metadata} to be used on the x-axis.}
 
@@ -84,7 +86,7 @@ The first column must contain the OTUID, ASV, or species name.}
 \item{rarefy_depth}{Integer. If provided, rarefies samples to this depth before diversity estimation. Default \code{NULL}.}
 
 \item{panel_label_case}{Character. Case of the auto-generated panel tags
-(A, B, C... added per panel when \code{stat} is used). One of
+(A, B, C... added to every panel by default). One of
 \code{"upper"} (default, "A", "B", "C") or \code{"lower"} ("a", "b", "c").
 Ignored if \code{panel_labels} is supplied.}
 
@@ -129,8 +131,9 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SAMPLEID"
 
-# facet_by + stat triggers the auto A/B/C panel tags (see panel_label_case
-# and panel_labels to customize their case/format)
+# Panel tags (A/B/C) are always added (see panel_label_case and
+# panel_labels to customize their case/format); stat additionally
+# overlays p-value annotations on each panel
 alpha_diversity_plot(
   table            = table,
   metadata         = metadata,

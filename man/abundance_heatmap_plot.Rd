@@ -20,6 +20,7 @@ abundance_heatmap_plot(
   exclude_unclassified = TRUE,
   cluster = TRUE,
   show_column_names = TRUE,
+  annotation_height = 3,
   save_table = FALSE,
   table_filename = "abundance_heatmap_table.txt"
 )
@@ -59,6 +60,13 @@ rows into the plot.}
 \item{cluster}{Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)}
 
 \item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
+
+\item{annotation_height}{Numeric. Height, in millimeters, of each column
+annotation bar (condition1/condition2/condition3). Column annotation
+bars have a fixed height regardless of how many rows the heatmap body
+has, so with few rows and many columns the body cells can look like
+thin stripes next to blockier annotation bars; lower this value to make
+the annotation bars thinner. Default \code{3}.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the underlying abundance
 table to disk. Default \code{FALSE}.}
