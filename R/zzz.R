@@ -118,14 +118,17 @@
                  "#0072B2", "#D55E00", "#CC79A7", "#000000")
 
 # --- Dedicated 2-group color pair --------------------------------------------
-# The orange/dark-blue pairing used as THE 2-group comparison default across
-# the package (e.g. aldex_volcano_plot's col_inf/col_sup, corr_env_abund_plot's
-# "BuOr", ancombc_plot's bar_colors). Deliberately a separate constant from
-# `.mbm_colors` (rather than relying on `.mbm_colors[1:2]`) so it stays fixed
-# regardless of how the 8-color qualitative palette above is ordered - use
-# this explicitly whenever a function needs a default color for an
-# exactly-2-group comparison.
-.mbm_colors_2group <- c("#E69F00", "#0072B2")
+# The orange/blue pairing used as THE 2-group comparison default across the
+# package (e.g. aldex_volcano_plot's col_inf/col_sup, ancombc_plot's
+# bar_colors). Deliberately a separate constant from `.mbm_colors` (rather
+# than relying on `.mbm_colors[1:2]`) so it stays fixed regardless of how the
+# 8-color qualitative palette above is ordered - use this explicitly whenever
+# a function needs a default color for an exactly-2-group comparison.
+# Matches `.mbm_colors[1:2]` exactly (same orange, same light blue) so a
+# group's color doesn't change shade depending on whether it's being plotted
+# alongside 1 or 3+ other groups (e.g. a "Rhizosphere" boxplot shouldn't be
+# dark navy in a 2-group plot and light sky-blue in a 4-group one).
+.mbm_colors_2group <- c("#E69F00", "#56B4E9")
 
 # Suppress R CMD check NOTEs for column names used in dplyr/ggplot2 NSE
 # (no visible binding for global variable)

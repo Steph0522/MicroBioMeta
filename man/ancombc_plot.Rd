@@ -15,7 +15,7 @@ ancombc_plot(
   rand_formula = NULL,
   ref_level = NULL,
   diverging_palette = "BuOr",
-  bar_colors = c("#0072B2", "#E69F00"),
+  bar_colors = c("#56B4E9", "#E69F00"),
   save_table = FALSE,
   table_filename = "ancombc_results.txt"
 )
@@ -71,7 +71,7 @@ scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
 bar plot (2-group or continuous \code{col_cond}). First color is the
 "positive" direction (the non-reference group / increases with the
 variable); second color is the "negative" direction (the reference
-group / decreases with the variable). Default \code{c("#0072B2",
+group / decreases with the variable). Default \code{c("#56B4E9",
 "#E69F00")} (the same colorblind-friendly blue/orange pairing used as
 the 2-group default throughout the package). Ignored for the
 3+-group heatmap, which uses \code{diverging_palette} instead.}

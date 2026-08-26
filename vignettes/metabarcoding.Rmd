@@ -1,11 +1,32 @@
 ---
 title: "Metabarcoding"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+    fig_caption: true
 vignette: >
   %\VignetteIndexEntry{Metabarcoding}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8} 
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup, include=FALSE}
+# Sensible package-wide defaults for figure size: most plots here are single
+# panels or small facet grids, so 7x5in reads well without oversizing text
+# relative to the panel (this package's theme uses fixed point sizes, so a
+# too-large fig.width/fig.height makes labels look tiny once rendered).
+# out.width keeps the display responsive to the page instead of overflowing
+# it, independent of each chunk's fig.width/fig.height (which still control
+# the plot's internal proportions/aspect ratio).
+knitr::opts_chunk$set(
+  fig.align = "center",
+  out.width = "100%",
+  fig.width = 7,
+  fig.height = 5,
+  dpi = 96
+)
+```
 
 For this example, we will use *metabarcoding* data, specifically 16S for bacteria and 18S for fungi.
 
@@ -15,13 +36,13 @@ For 16S: [Hereira-Pacheco, S.E., Navarro-Noya, Y.E. & Dendooven, L. The root end
 
 For 18S: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities under drought conditions in Ricinus communis. Fungal Ecology, 63, 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
-First, Let's call the `MicroBioMeta` package:
+First, let's load the `MicroBioMeta` package:
 
 ```{r "start", message=FALSE}
 library("MicroBioMeta")
 ```
 
-Let's call other packages needed:
+Let's also load the other packages we'll need:
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -30,9 +51,9 @@ library(qiime2R)
 
 [`tidyverse`](https://tidyverse.org/) is used for all the data wrangling and visualizations and [`qiime2R`](https://github.com/jbisanz/qiime2R) for calling `.qza` objects as output from [`QIIME2`](https://qiime2.org/).
 
-Then, Load the data and reformat. Notice the data we are loading came from processing in [`QIIME2`](https://qiime2.org/) , so the `read_qza` function is used to import this data into R, also we could export the data within [`QIIME2`](https://qiime2.org/) and then import the data as `.txt`.
+Next, we load the data and reformat it. This dataset was processed in [`QIIME2`](https://qiime2.org/), so `read_qza()` is used to import the `.qza` artifacts into R. Alternatively, you could export the same data from `QIIME2` as plain `.txt` files and read them directly.
 
-First, Let's call all raw data:
+First, let's load all the raw data:
 
 ```{r}
 
@@ -41,40 +62,14 @@ bacteria_table <- qiime2R::read_qza("articles/data/table_bacteria.qza")$data %>%
 fungi_table <- qiime2R::read_qza("articles/data/table_fungi.qza")$data %>%
   as.data.frame()
 
-bacteria_metadata <- read.delim("articles/data/metadata_bacterias.txt", check.names = F) %>% rename(SAMPLEID =`#SampleID`) %>%
-  filter(Month == "2") %>%
-  mutate(Treatment = factor(
-    case_when(
-      Treatment == 1 ~ "TC",
-      Treatment == 2 ~ "TD",
-      Treatment == 3 ~ "TED",
-      TRUE ~ as.character(Treatment)
-    ),
-    levels = c("TC", "TD", "TED")
-  ))%>%
-  mutate(Type_of_soil = 
-    case_when(
-      Type_of_soil == "Rizosphere" ~ "Rhizosphere",
-      Type_of_soil == "Non-rizospheric" ~ "Bulk soil",
-      TRUE ~ as.character(Type_of_soil)))
+# The sample-ID column, Treatment labels (TC/TD/TED), and Type_of_soil
+# spelling (e.g. Rhizosphere, Bulk soil) are already clean in these files, so
+# no renaming or recoding is needed here - just read and, for bacteria,
+# keep only the month-2 timepoint.
+bacteria_metadata <- read.delim("articles/data/metadata_bacterias.txt", check.names = FALSE) %>%
+  filter(Month == "2")
 
-fungi_metadata <- read.delim("articles/data/metadata_fungis.txt", check.names = F) %>% rename(SAMPLEID=`#SampleID`) %>%
-  mutate(
-    Treatment = factor(
-      case_when(
-        Treatment == 1 ~ "TC",
-        Treatment == 2 ~ "TD",
-        Treatment == 3 ~ "TED",
-        TRUE ~ as.character(Treatment)
-      ),
-      levels = c("TC", "TD", "TED")
-    )
-  )%>%
-  mutate(Type_of_soil = 
-    case_when(
-      Type_of_soil == "Rizospheric" ~ "Rhizosphere",
-      Type_of_soil == "Non-rizospheric" ~ "Bulk soil",
-         TRUE ~ as.character(Type_of_soil)))
+fungi_metadata <- read.delim("articles/data/metadata_fungis.txt", check.names = FALSE)
 
 
 taxonomy_bacteria <- read_qza("articles/data/taxonomy_bacteria.qza")$data %>%
@@ -119,9 +114,9 @@ metadata_fungi <- fungi_metadata[
 
 ## Pre-processing data
 
-In order to use the data as input for functions of `MicroBioMeta` should be in a `biom` format with the column of **taxonomy** at the end.
+To be used as input for most `MicroBioMeta` functions, the data should be in `biom` format, with a **taxonomy** column at the end.
 
-In case your data is not in a `biom` form, we could use the `merge_feature_taxonomy` function to set the data in this format. This format will allow the use of taxonomy identity without load another object into R.
+If your data is not already in that form, `merge_feature_taxonomy()` combines an abundance table and a taxonomy table into this format. Keeping taxonomy as a column of the same table means most functions can look up taxonomic identity without requiring a separate object.
 
 ```{r}
 
@@ -152,32 +147,34 @@ The `top_n_groups` controls the number of most abundant taxa displayed in the ba
 If `add_remain = TRUE`, the relative abundances are completed to 100% by adding a gray category representing the remaining taxa not explicitly displayed; if `FALSE`, only the selected taxa are shown.\
 The `label` parameter defines the legend title displayed in the plot.
 
-Finally, when `save.table = TRUE`, the function also returns a table containing the relative abundances (percentages) used to generate the plot.\
+The x-axis tick labels can be rotated with `x_label_angle` (default `0`, horizontal) — useful when sample or group names are long enough to overlap, as in the examples below. `strip_text_bold` controls whether facet strip titles are bold (default `FALSE`), and `aspect_ratio` fixes the height/width ratio of the panel when you need consistent proportions across figures.
 
-```{r}
+Finally, when `save_table = TRUE`, the function also returns a table containing the relative abundances (percentages) used to generate the plot.
+
+```{r, fig.width=9, fig.height=6}
 abundance_bar_plot(table = table_bac,
                   metadata = metadata_bacteria,
                   taxonomy_db = "silva",
-                  level = "phylum", 
+                  level = "phylum",
                   top_n = 15,
-                  x_col = "Type_of_soil", 
-                  facet_col = "Treatment", 
+                  x_col = "Type_of_soil",
+                  facet_col = "Treatment",
                   add_remained = TRUE,
                   label =   "Phylum",
-                  save_table = FALSE)+
-  theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+                  x_label_angle = 45,
+                  save_table = FALSE)
 
 ```
 
-```{r}
+```{r, fig.width=9, fig.height=6}
 abundance_bar_plot(table = table_fung,
                   metadata = metadata_fungi,
-                  x_col = "Treatment", 
-                  facet_col = "Type_of_soil", 
-                  add_remained = TRUE,  
+                  x_col = "Treatment",
+                  facet_col = "Type_of_soil",
+                  add_remained = TRUE,
                   label =   "Genera",
-                  save_table = FALSE)+
-  theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+                  x_label_angle = 45,
+                  save_table = FALSE)
 ```
 
 ### Abundance heatmaps
@@ -193,22 +190,45 @@ The `top_n` argument controls the number of most abundant features included in t
 If `cluster = TRUE`, rows are hierarchically clustered; if `FALSE`, features are ordered by decreasing relative abundance.\
 The `show_column_names` parameter determines whether sample names are displayed in the heatmap.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.width=8, fig.height=9}
 abundance_heatmap_plot(table = table_bac,
                   metadata = metadata_bacteria,
                   top_n = 30,
                   show_column_names = FALSE,
-                  condition1 = "Type_of_soil", 
+                  condition1 = "Type_of_soil",
                   condition2 = "Treatment")
 ```
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.width=8, fig.height=9}
 abundance_heatmap_plot(table = table_fung,
                   metadata = metadata_fungi,
                   top_n = 30,
                   show_column_names = FALSE,
-                  condition1 = "Type_of_soil", 
+                  condition1 = "Type_of_soil",
                   condition2 = "Treatment")
+```
+
+### Sankey diagram of taxonomic flow
+
+`abundance_sankey_plot()` visualizes how relative abundance flows across taxonomic ranks — from Kingdom/Domain down to Species — as an interactive Sankey diagram. It is especially useful for getting a quick overview of which lineages dominate the community without picking a single taxonomic level in advance, the way `abundance_bar_plot()` requires.
+
+The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps the number of taxa kept per rank (to avoid an unreadable diagram), and `taxonomy_db` tells the function how the taxonomy strings are formatted (e.g. `"silva"`, `"gg"`, `"kraken2"`) so prefixes like `p__`/`g__` are parsed correctly. The diagram is written to an HTML file (`output_file`) that can be opened in a browser or embedded in a report.
+
+This function depends on the [`sankeyD3`](https://github.com/fbreitwieser/sankeyD3) package, which is only available on GitHub:
+
+```{r, eval=FALSE}
+# install.packages("remotes")
+remotes::install_github("fbreitwieser/sankeyD3")
+```
+
+```{r, eval=FALSE}
+abundance_sankey_plot(
+  table       = table_bac,
+  output_file = "sankey_bacteria.html",
+  maxn        = 15,
+  taxRanks    = c("P", "C", "O", "F", "G"),
+  taxonomy_db = "silva"
+)
 ```
 
 ## Alpha diversity
@@ -225,14 +245,14 @@ The table argument must be a data frame containing features (rows) and samples (
 
 For the bacteria, we can observed that at all orders of *q* there is a strong correlation with sequencing depth.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_bac)
 
 ```
 
 But, for fungi data this correlation is just strong and significative at *q*=0, it means for richness but not to the others *q* orders.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_fung)
 ```
 
@@ -248,8 +268,8 @@ The `facet_by` argument allows splitting the plot according to a metadata variab
 
 If `save_table = TRUE`, the function also returns a table containing the alpha diversity values calculated for each sample.
 
-```{r, warning=FALSE}
-alpha_hill_plot(table = table_bac, 
+```{r, warning=FALSE, fig.width=8, fig.height=6}
+alpha_hill_plot(table = table_bac,
                 metadata = metadata_bacteria,
                 x_col = "Treatment",
                 fill_col = "Treatment",
@@ -258,8 +278,8 @@ alpha_hill_plot(table = table_bac,
                 save_table = FALSE)
 ```
 
-```{r, warning=FALSE, fig.height=6, fig.width=6}
-alpha_hill_plot(table = table_fung, 
+```{r, warning=FALSE, fig.height=6, fig.width=9}
+alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
@@ -270,14 +290,46 @@ alpha_hill_plot(table = table_fung,
 
 Also, we can visualize other metrics considering classic alpha diversity indexes. Also, using the parameter stat it is possible to set an statistical comparison indication the method to use:
 
-```{r, warning=FALSE, fig.height=6, fig.width=6}
-alpha_diversity_plot(table = table_fung, 
+```{r, warning=FALSE, fig.height=6, fig.width=9}
+alpha_diversity_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
                 facet_by = "Type_of_soil",
-                facet_orientation = "horizontal",stat = "anova",
+                facet_orientation = "horizontal", stat = "anova",
                 save_table = FALSE)
+```
+
+When a statistical comparison (`stat`) is requested, each panel is automatically tagged (A, B, C, ...) so it can be referenced in a figure caption. `panel_label_case` switches between upper- and lowercase tags, `panel_label_bold` toggles bold tags, and `panel_labels` lets you supply custom tags (e.g. `c("(a)", "(b)", "(c)")`) instead of the auto-generated ones. `free_y` lets each panel use its own y-axis scale instead of a shared one — useful when comparing Hill orders (*q*=0, 1, 2) that differ by an order of magnitude, as below:
+
+```{r, warning=FALSE, fig.height=6, fig.width=9}
+alpha_diversity_plot(table = table_fung,
+                metadata = metadata_fungi,
+                x_col = "Treatment",
+                fill_col = "Treatment",
+                facet_by = "Type_of_soil",
+                facet_orientation = "horizontal",
+                stat = "anova",
+                free_y = TRUE,
+                x_label_angle = 45,
+                panel_label_bold = FALSE,
+                save_table = FALSE)
+```
+
+### Alpha diversity along a continuous gradient
+
+Instead of comparing diversity across discrete groups, `alpha_decay_plot()` regresses Hill numbers against a **continuous** metadata variable (e.g. pH, elevation, distance to a reference point). Each Hill order (*q*=0, 1, 2) gets its own panel with an OLS regression line and an annotation reporting the correlation coefficient (Spearman's rho by default), its p-value, and — when `show_lm_stats = TRUE` — the linear model's R² and slope.
+
+The `cont_var` parameter names the continuous metadata column to place on the x-axis, and the optional `group_col` fits a separate regression line per group instead of a single global one.
+
+Here we use soil `pH` as the gradient:
+
+```{r, warning=FALSE, fig.height=4, fig.width=10}
+alpha_decay_plot(table = table_bac,
+                 metadata = metadata_bacteria,
+                 cont_var = "pH",
+                 group_col = "Type_of_soil",
+                 x_axis_title = "Soil pH")
 ```
 
 ### Shared taxa between sample groups
@@ -288,7 +340,7 @@ The function can optionally filter taxa using a **minimum prevalence threshold**
 
 Next, we generate a Venn diagram grouping samples according to the soil compartment.
 
-```{r, fig.width=16, fig.height=12}
+```{r, fig.width=7, fig.height=6}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
@@ -311,7 +363,7 @@ The function returns a **list with two elements**:
 
 -   For example, the following code collapses the fungal abundance table to the **genus level**.
 
-```{r, fig.width=16, fig.height=12}
+```{r, fig.width=7, fig.height=6}
 
 table_genus <- collapse_table(
   table = table_fung,
@@ -336,7 +388,7 @@ Sometimes it is useful to visualize only taxa that occur frequently within each 
 
 For example, the following diagram includes only taxa present in **at least 20% of the samples within each group**.
 
-```{r, fig.width=16, fig.height=12}
+```{r, fig.width=7, fig.height=6}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
@@ -347,7 +399,7 @@ venn_plot(table = table_fung,
 
 The function also allows custom colors for the groups.
 
-```{r, fig.width=16, fig.height=12}
+```{r, fig.width=7, fig.height=6}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
                   merge_by = "Type_of_soil",   
@@ -380,21 +432,21 @@ The `group_col` parameter specifies the metadata column used to color the sample
 
 The `distance` argument defines the dissimilarity metric used to calculate beta diversity, and `ordination` specifies the ordination method applied to visualize the distances among samples.
 
-```{r, warning=FALSE, message=FALSE}
-beta_ord_plot(table = table_bac, 
-              metadata = metadata_bacteria, 
+```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+beta_ord_plot(table = table_bac,
+              metadata = metadata_bacteria,
                distance = "compositional",
               ordination = "PCA",
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
 
-```{r}
-beta_ord_plot(table = table_fung,                
-              metadata = metadata_fungi,                
-              group_col = "Type_of_soil",               
+```{r, fig.width=8, fig.height=6}
+beta_ord_plot(table = table_fung,
+              metadata = metadata_fungi,
+              group_col = "Type_of_soil",
               shape_col = "Treatment",
-              distance = "aitchison", 
+              distance = "aitchison",
               ordination = "NMDS")
 
 ```
@@ -407,20 +459,20 @@ The `formula_str` argument specifies the experimental design using a formula syn
 
 The `permutations` parameter determines the number of permutations used to estimate statistical significance.
 
-```{r}
-beta_test_table(table = table_bac, 
+```{r, fig.width=8, fig.height=4}
+beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
-                method = "euclidean", 
+                method = "euclidean",
                 test = "permanova",
                 permutations = 999)
 ```
 
-```{r}
-beta_test_table(table = table_fung, 
+```{r, fig.width=8, fig.height=4}
+beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
-                method = "euclidean", 
+                method = "euclidean",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -431,7 +483,7 @@ Beta diversity can also be decomposed into different components that describe ho
 
 The `index` argument specifies the dissimilarity family used for the partition (e.g., Jaccard or Sørensen). The `group_col` and `shape_col` parameters define how samples are visualized according to metadata variables.
 
-```{r, fig.width=18}
+```{r, fig.width=14, fig.height=5.5}
 beta_partition_ord_plot(
   table = table_bac,
   metadata = metadata_bacteria,
@@ -441,7 +493,7 @@ beta_partition_ord_plot(
   save_table = FALSE)
 ```
 
-```{r, fig.width=18}
+```{r, fig.width=14, fig.height=5.5}
 beta_partition_ord_plot(
   table = table_fung,
   metadata = metadata_fungi,
@@ -457,29 +509,108 @@ The `beta_dissimilarity_plot()` function summarizes pairwise beta diversity valu
 
 The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
 
-If `save_table = TRUE`, the function also returns a table containing the beta diversity values used to generate the plot.
+By default `beta_dissimilarity_plot()` keeps every pairwise combination of `condition1_col`, including a group compared against itself (e.g. `"Roots_vs_Roots"`), which isn't usually meaningful. The `comparison_condition1` argument restricts the plot to specific `"value1_vs_value2"` labels (the two values sorted alphabetically and joined with `"_vs_"`). Here we build that list programmatically to keep only the comparisons of every other compartment **against Roots**, dropping self-comparisons:
 
 ```{r}
+groups_bac <- setdiff(unique(as.character(metadata_bacteria$Type_of_soil)), "Roots")
+vs_roots_bac <- paste0(pmin(groups_bac, "Roots"), "_vs_", pmax(groups_bac, "Roots"))
+vs_roots_bac
+```
+
+As with the alpha diversity plots, `x_label_angle` rotates the x-axis tick labels (default `0`), `strip_text_bold` toggles bold facet strip titles (default `FALSE`), and `aspect_ratio` fixes the panel's height/width ratio. As with the alpha plots, `stat` (e.g. `"wilcox.test"`, `"kruskal.test"`, `"anova"`) adds a statistical comparison across the boxplots, passed through to `ggpubr::stat_compare_means()`.
+
+If `save_table = TRUE`, the function also returns a table containing the beta diversity values used to generate the plot.
+
+```{r, fig.width=9, fig.height=6}
 beta_dissimilarity_plot(table = table_bac,
                        metadata = metadata_bacteria,
+                       comparison_condition1 = vs_roots_bac,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        x_axis_title = "Samples",
-                       partition = "shared", family = "jaccard", 
+                       x_label_angle = 45,
+                       stat = "kruskal.test",
+                       partition = "shared", family = "jaccard",
                        save_table = FALSE)
 
 ```
 
 ```{r}
+groups_fung <- setdiff(unique(as.character(metadata_fungi$Type_of_soil)), "Roots")
+vs_roots_fung <- paste0(pmin(groups_fung, "Roots"), "_vs_", pmax(groups_fung, "Roots"))
+```
+
+```{r, fig.width=9, fig.height=6}
 beta_dissimilarity_plot(table = table_fung,
                        metadata = metadata_fungi,
+                       comparison_condition1 = vs_roots_fung,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        x_axis_title = "Samples",
-                       partition = "shared", 
-                       family = "jaccard", 
+                       x_label_angle = 45,
+                       stat = "kruskal.test",
+                       partition = "shared",
+                       family = "jaccard",
                        save_table = FALSE)
 
+```
+
+### Pairwise turnover: between-group vs. within-group
+
+`beta_turnover_plot()` answers a different question than `beta_dissimilarity_plot()`: for **one reference group** (e.g. Rhizosphere), is its ASV turnover **against another group** (e.g. Roots — a *between-group* comparison) greater than its turnover **against itself** (Rhizosphere-vs-Rhizosphere pairs — a *within-group* baseline)? If between-group turnover is significantly higher, that's evidence the two compartments really do host distinct communities, beyond the variability already present among replicates of the same compartment. It reports the ASV turnover component of Hill-number-based beta diversity (*q*=0, 1, 2), one facet row per Hill order.
+
+`comparison_condition1` selects which `"value1_vs_value2"` combinations (built internally from `condition1.x`/`condition1.y`) to keep — unlike `beta_dissimilarity_plot()`, these are **not** sorted alphabetically, so `"Rhizosphere_vs_Roots"` (between-group) and `"Rhizosphere_vs_Rhizosphere"` (within-group) both need to be listed explicitly, with Rhizosphere always first. `comparison_condition2` keeps only same-treatment pairs, so turnover isn't confounded by comparing samples from different treatments.
+
+`color_facets_x` colors the top facet strip (`condition1.x` is constant here, "Rhizosphere", since it's the reference group in both comparisons) and `color_axis_x` colors the two boxes (the between- and within-group values) on the x-axis (`condition1.y`). Tick labels are hidden by default since the groups are already identified in the legend — set `show_x_labels = TRUE` to bring them back. `stat` (e.g. `"wilcox.test"`) adds a statistical comparison between the two boxes.
+
+```{r, warning=FALSE, fig.width=6, fig.height=9}
+beta_turnover_plot(
+  table                 = table_fungi,
+  metadata              = metadata_fungi,
+  comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
+  comparison_condition2 = c("TC_vs_TC", "TD_vs_TD", "TED_vs_TED"),
+  condition1.x          = "Type_of_soil.x",
+  condition1.y          = "Type_of_soil.y",
+  condition2.x          = "Treatment.x",
+  condition2.y          = "Treatment.y",
+  color_facets_x        = "#5D478B",
+  color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00"),
+  stat                  = "wilcox.test"
+)$plot
+```
+
+### Distance-decay of community similarity
+
+`beta_decay_plot()` tests whether communities that are geographically closer are also more similar in composition — the classic **distance-decay** relationship. It computes pairwise community dissimilarity (`distance`, e.g. `"jaccard"`, `"bray"`, `"horn"`) and pairwise geographic distances from sample coordinates, runs a Mantel test between them, and plots similarity (1 − dissimilarity) against distance with a fitted regression line.
+
+`lat_col`/`lon_col` name the latitude/longitude columns in `metadata` (decimal degrees), and the optional `group_col` runs a separate Mantel test and regression line per group instead of one global test.
+
+Our example metadata doesn't include real coordinates, so here we build small synthetic latitude/longitude values per sampling site (`Loc`) purely to demonstrate the function — substitute your own site coordinates for a real analysis.
+
+```{r, warning=FALSE, fig.width=8, fig.height=6}
+loc_coords <- data.frame(
+  Loc = 0:8,
+  lat = 19.0 + seq(0, 0.8, length.out = 9),
+  lon = -99.0 + seq(0, 0.8, length.out = 9)
+)
+metadata_bacteria$lat <- loc_coords$lat[match(metadata_bacteria$Loc, loc_coords$Loc)]
+metadata_bacteria$lon <- loc_coords$lon[match(metadata_bacteria$Loc, loc_coords$Loc)]
+
+# "Uncultivated" has too few samples for a per-group Mantel test to return
+# anything (it comes back as NA and just clutters the plot), so it's
+# excluded from this particular example - group_col works fine with groups
+# this small as long as each one actually has enough pairs to test.
+metadata_bacteria_decay <- metadata_bacteria %>%
+  filter(Type_of_soil != "Uncultivated")
+
+beta_decay_plot(
+  table     = table_bac,
+  metadata  = metadata_bacteria_decay,
+  lat_col   = "lat",
+  lon_col   = "lon",
+  distance  = "jaccard",
+  group_col = "Type_of_soil"
+)
 ```
 
 ## Differential abundant analysis
@@ -493,6 +624,8 @@ The functions:
 -   `aldex_volcano_plot()` visualizes differential abundance results using a **volcano plot**.
 
 -   `aldex_heatmap_plot()` highlights significant taxa in a **heatmap representation**.
+
+-   `ancombc_plot()` runs [ANCOMBC2](https://bioconductor.org/packages/ANCOMBC/), an alternative differential abundance method that explicitly models compositional bias and structural zeros, and returns a bar plot (2 groups), a heatmap (3+ groups), or a bar plot of the effect size per unit increase (continuous covariate).
 
 -   Additionally, two complementary approaches help identify **important taxa that discriminate between groups**:
 
@@ -516,22 +649,47 @@ table_bac_compar <- merge_feature_taxonomy(table_bacteria_compar, taxonomy_bacte
 
 ```
 
-We can visualize differential abundance using a **volcano plot**.
+We can visualize differential abundance using a **volcano plot**. Taxa near the significance thresholds are labeled with their name; `label_size` controls the font size of these labels, and `filter_uncultured = TRUE` drops "uncultured"/"unculture" taxa from the labels (they are still plotted as points, just not labeled) — useful when such generic labels would otherwise crowd out more informative ones.
 
-```{r, fig.width=12, fig.height=10, message=FALSE, warning=FALSE}
-aldex_volcano_plot(table = table_bac_compar, 
+```{r, fig.width=7, fig.height=5.5, message=FALSE, warning=FALSE}
+aldex_volcano_plot(table = table_bac_compar,
                    metadata = metadata_bacteria_compar,
                    col_cond = "Type_of_soil",
-                   type = "volcano" )
+                   type = "volcano",
+                   label_size = 3,
+                   filter_uncultured = TRUE )
 
+```
+
+### ANCOMBC2 as an alternative method
+
+`ancombc_plot()` provides an alternative to the ALDEx2-based functions above. It depends on the Bioconductor packages `ANCOMBC` and `phyloseq`, plus `qiime2R` (GitHub-only):
+
+```{r, eval=FALSE}
+# install.packages("BiocManager")
+BiocManager::install(c("ANCOMBC", "phyloseq"))
+remotes::install_github("jbisanz/qiime2R")
+```
+
+For a two-group comparison such as `Type_of_soil` (Roots vs. Rhizosphere), `ancombc_plot()` returns a bar plot of log-fold changes, in the same spirit as the volcano/heatmap plots above but based on ANCOMBC2's own significance testing. `tax_level` agglomerates the ASV table to a taxonomic rank before testing (default `"Genus"`), and `p_adj_method`/`prv_cut` control the multiple-testing correction and prevalence filter.
+
+```{r, fig.width=8, fig.height=6, message=FALSE, warning=FALSE}
+ancombc_plot(
+  table        = table_bac_compar,
+  metadata     = metadata_bacteria_compar,
+  col_cond     = "Type_of_soil",
+  tax_level    = "Genus",
+  prv_cut      = 0.05,
+  p_adj_method = "BH"
+)
 ```
 
 ### Example: Fungal data
 
-We follow the same procedure but visualize the results with a **heatmap**.
+We follow the same procedure but visualize the results with a **heatmap**. Unlike the `ggplot2`-based figures above, this heatmap is built with `ComplexHeatmap`, which sizes each row/column in fixed physical units rather than stretching to fill the chunk's `fig.width`/`fig.height` — so its rendered size scales with the **number of significant taxa found**, and will look compact (with blank margin around it) whenever few taxa pass the significance threshold, as is the case here.
 
 ```{r}
-metadata_fungi_compar <-  metadata_fungi %>% 
+metadata_fungi_compar <-  metadata_fungi %>%
   filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Rhizosphere")
 
 table_fungi_compar <- table_fung[match(metadata_fungi_compar$SAMPLEID, colnames(table_fung))]
@@ -540,8 +698,8 @@ table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
 
 ```
 
-```{r, fig.width=12, message=FALSE, warning=FALSE}
-aldex_heatmap_plot(table = table_fung_compar, 
+```{r, fig.width=9, fig.height=4, message=FALSE, warning=FALSE}
+aldex_heatmap_plot(table = table_fung_compar,
                    metadata = metadata_fungi_compar,
                    col_cond = "Type_of_soil")
 
@@ -553,22 +711,20 @@ The functions `random_forest_lollipop_plot()` and `ratios_bubble_plot()` can als
 
 For example, a **Random Forest model** can be used to identify the taxa that best predict the soil compartment:
 
-```{r}
+```{r, fig.width=7, fig.height=6}
 random_forest_lollipop_plot(table = table_bac, metadata = metadata_bacteria, top_n = 10, variable_to_predict = "Type_of_soil")
 ```
 
 Alternatively, taxa with the strongest **log-ratio differences between two conditions** can be visualized using:
 
-```{r, fig.height=6}
-ratios_bubble_plot(table = table_fung_compar, 
-           metadata = metadata_fungi_compar, 
-           condition_col = "Type_of_soil", 
-           top_n = 20, 
-           condition_A = "Rhizosphere", 
+```{r, fig.width=8, fig.height=9}
+ratios_bubble_plot(table = table_fung_compar,
+           metadata = metadata_fungi_compar,
+           condition_col = "Type_of_soil",
+           top_n = 20,
+           condition_A = "Rhizosphere",
            condition_B = "Bulk soil")
 ```
-
-## Environmental analyses
 
 ## Environmental analyses
 
@@ -582,12 +738,12 @@ MicroBioMeta provides two functions to explore the relationship between **enviro
 
 Environmental variables must be organized in a **data frame where rows correspond to samples and columns correspond to environmental variables**.
 
-In this example, environmental variables are extracted from the metadata.
+In this example, environmental variables are extracted from the metadata — here we use the fungal dataset, which has the same set of soil measurements.
 
 ```{r}
-env_table_bac <- metadata_bacteria %>% 
-  dplyr::select(SAMPLEID, pH:Arbus_per) %>% 
-  remove_rownames() %>% 
+env_table_fung <- metadata_fungi %>%
+  dplyr::select(SAMPLEID, pH:Arbus_per) %>%
+  remove_rownames() %>%
   column_to_rownames(var = "SAMPLEID")
 ```
 
@@ -597,11 +753,11 @@ The function `corr_env_abund_plot()` calculates correlations between **environme
 
 Example using **phylum-level abundances**:
 
-```{r, fig.height=10}
-corr_env_abund_plot(table = table_bac, 
-                    env_table = env_table_bac, 
-                    metadata = metadata_bacteria, 
-                    level = "phylum",  
+```{r, fig.width=9, fig.height=8}
+corr_env_abund_plot(table = table_fung,
+                    env_table = env_table_fung,
+                    metadata = metadata_fungi,
+                    level = "phylum",
                     save_table = FALSE)
 
 ```
@@ -612,12 +768,12 @@ This function produces a **correlation heatmap** showing how environmental varia
 
 Correlations can also be displayed using circle markers instead of tiles:
 
-```{r, fig.height=10}
-corr_env_abund_plot(table = table_bac, 
-                    env_table = env_table_bac,
-                    metadata = metadata_bacteria, 
-                    level = "phylum",  
-                    save_table = FALSE, 
+```{r, fig.width=9, fig.height=8}
+corr_env_abund_plot(table = table_fung,
+                    env_table = env_table_fung,
+                    metadata = metadata_fungi,
+                    level = "phylum",
+                    save_table = FALSE,
                     geom = "circle")
 
 ```
@@ -626,27 +782,25 @@ corr_env_abund_plot(table = table_bac,
 
 The function `cca_rda_biplot()` performs a constrained ordination analysis to evaluate how environmental variables explain variation in microbial community composition.
 
-Before running the analysis, ensure that the **sample order in the environmental table matches the metadata**.
+Before running the analysis, ensure that the **sample order in the environmental table matches the metadata**. `env_table_fung` already has `SAMPLEID` as row names (set earlier via `column_to_rownames()`), so we just reorder its rows to match `metadata_fungi`:
 
-```{r, eval=FALSE}
-rownames(env_table_bac) <- env_table_bac$SAMPLEID
-
-env_table_bac <- env_table_bac[
-  match(metadata_bacteria$SAMPLEID, rownames(env_table_bac)), ]
+```{r}
+env_table_fung <- env_table_fung[
+  match(metadata_fungi$SAMPLEID, rownames(env_table_fung)), , drop = FALSE]
 
 ```
 
-Then run the RDA analysis:
+Then run the RDA analysis. The environmental vectors are often short relative to the sample scores (as the arrows themselves only encode *direction*, not the scale shown on the axes) — `scale_arrows` stretches them by a fixed multiplier purely for legibility, without changing their direction or relative lengths:
 
-```{r, eval=FALSE}
-
-cca_rda_biplot(table = table_bac, 
-               env_data = env_table_bac, 
-               metadata = metadata_bacteria, 
+```{r, fig.width=8, fig.height=6}
+cca_rda_biplot(table = table_fung,
+               env_data = env_table_fung,
+               metadata = metadata_fungi,
                env_vars = c("pH","TN","WHC", "EC", "Clay"),
                analysis = "RDA",
                show_all_env_vectors = TRUE,
-               group_col = "Type_of_soil")
+               group_col = "Type_of_soil",
+               scale_arrows = 3)
 
 ```
 

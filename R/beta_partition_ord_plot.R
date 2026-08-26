@@ -220,7 +220,10 @@ beta_partition_ord_plot <- function(table, metadata,
       .mbm_theme(
         legend_position = "right",
         extra = ggplot2::theme(
-          legend.box        = "vertical",
+          # Horizontal (not stacked) so the color + shape legends fit inside
+          # the slim top strip reserved for them below (rel_heights = 0.12)
+          # instead of overflowing onto the panel titles.
+          legend.box        = "horizontal",
           panel.grid.major  = ggplot2::element_blank(),
           plot.margin       = grid::unit(c(0, 0, 0, 0), "cm"),
           aspect.ratio      = 3/10,
@@ -239,7 +242,10 @@ beta_partition_ord_plot <- function(table, metadata,
   plot_jac  <- function_plot_beta(jacs, env1) + 
     ggplot2::guides(
       colour = ggplot2::guide_legend(nrow = 1, title = if(!is.null(legend_title)) legend_title else group_col),
-      shape  = ggplot2::guide_legend(nrow = 1)
+      # Without an explicit title, ggplot falls back to deparsing the raw
+      # aes() expression used for `shape` (the `if (!is.null(shape_col)) ...`
+      # conditional itself) as the legend label, instead of the column name.
+      shape  = ggplot2::guide_legend(nrow = 1, title = shape_col)
     ) + ggplot2::theme(legend.position = "top")
   
   plot_turn <- function_plot_beta(jtus, env1)
@@ -266,7 +272,7 @@ beta_partition_ord_plot <- function(table, metadata,
     vjust = 1.3
     )
   
-  combined_plot <- cowplot::plot_grid(leg, panel, ncol = 1, rel_heights = c(0.1,1))
+  combined_plot <- cowplot::plot_grid(leg, panel, ncol = 1, rel_heights = c(0.12, 1))
   
   return(combined_plot)
   })  # <- closes suppressWarnings

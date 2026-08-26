@@ -46,7 +46,7 @@
 #'   bar plot (2-group or continuous \code{col_cond}). First color is the
 #'   "positive" direction (the non-reference group / increases with the
 #'   variable); second color is the "negative" direction (the reference
-#'   group / decreases with the variable). Default \code{c("#0072B2",
+#'   group / decreases with the variable). Default \code{c("#56B4E9",
 #'   "#E69F00")} (the same colorblind-friendly blue/orange pairing used as
 #'   the 2-group default throughout the package). Ignored for the
 #'   3+-group heatmap, which uses \code{diverging_palette} instead.
@@ -90,7 +90,7 @@ ancombc_plot <- function(table,
                          rand_formula      = NULL,
                          ref_level         = NULL,
                          diverging_palette = "BuOr",
-                         bar_colors        = c("#0072B2", "#E69F00"),
+                         bar_colors        = c("#56B4E9", "#E69F00"),
                          save_table        = FALSE,
                          table_filename    = "ancombc_results.txt") {
 
@@ -226,6 +226,11 @@ ancombc_plot <- function(table,
       dplyr::filter(.data[[diff_col]] %in% TRUE) %>%
       dplyr::arrange(.data[[lfc_col]]) %>%
       dplyr::mutate(
+        # SILVA/GTDB clade placeholder names (e.g. "Subgroup_7", "bacteriap25")
+        # use "_" as a word separator, which reads oddly as-is; the saved
+        # table keeps the original ANCOMBC2 taxon string, only the plotted
+        # label is cleaned up.
+        taxon  = gsub("_", " ", taxon),
         taxon  = factor(taxon, levels = taxon),
         direct = factor(
           ifelse(.data[[lfc_col]] > 0, cmp_group, ref_group),
@@ -278,6 +283,7 @@ ancombc_plot <- function(table,
       dplyr::filter(.data[[diff_col]] %in% TRUE) %>%
       dplyr::arrange(.data[[lfc_col]]) %>%
       dplyr::mutate(
+        taxon  = gsub("_", " ", taxon),
         taxon  = factor(taxon, levels = taxon),
         direct = factor(
           ifelse(.data[[lfc_col]] > 0, "Increases", "Decreases"),
@@ -333,7 +339,10 @@ ancombc_plot <- function(table,
 
     df_long <- df_sig %>%
       dplyr::select(taxon, dplyr::all_of(lfc_cols)) %>%
-      dplyr::mutate(dplyr::across(dplyr::all_of(lfc_cols), ~ round(.x, 2))) %>%
+      dplyr::mutate(
+        taxon = gsub("_", " ", taxon),
+        dplyr::across(dplyr::all_of(lfc_cols), ~ round(.x, 2))
+      ) %>%
       tidyr::pivot_longer(
         cols      = dplyr::all_of(lfc_cols),
         names_to  = "comparison",

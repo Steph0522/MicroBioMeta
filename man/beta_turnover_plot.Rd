@@ -21,6 +21,7 @@ beta_turnover_plot(
   strip_text_bold = FALSE,
   strip_text_color = "white",
   aspect_ratio = NULL,
+  stat = NULL,
   save_table = FALSE,
   table_filename = "betadiv_turnover.txt"
 )
@@ -63,6 +64,11 @@ the \code{color_facets_x} backgrounds. Default \code{"white"}.}
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}
 
+\item{stat}{Character or \code{NULL}. Statistical test to compare groups
+within each panel, passed to \code{ggpubr::stat_compare_means()} (e.g.
+\code{"wilcox.test"}, \code{"kruskal.test"}, \code{"anova"}). Default
+\code{NULL} (no test shown).}
+
 \item{save_table}{Logical. If \code{TRUE}, saves the underlying turnover
 table to disk. Default \code{FALSE}.}
 
@@ -96,7 +102,7 @@ beta_turnover_plot(
   condition2.x          = "Treatment.x",
   condition2.y          = "Treatment.y",
   color_facets_x        = c("#5D478B", "#8B668B"),
-  color_axis_x          = c("Roots" = "#0072B2", "Rhizosphere" = "#E69F00")
+  color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 )
 }
 }

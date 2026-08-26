@@ -21,6 +21,10 @@
 #'   the \code{color_facets_x} backgrounds. Default \code{"white"}.
 #' @param aspect_ratio Numeric. Aspect ratio (height/width) of each panel.
 #'   Default \code{NULL} (automatic).
+#' @param stat Character or \code{NULL}. Statistical test to compare groups
+#'   within each panel, passed to \code{ggpubr::stat_compare_means()} (e.g.
+#'   \code{"wilcox.test"}, \code{"kruskal.test"}, \code{"anova"}). Default
+#'   \code{NULL} (no test shown).
 #' @param save_table Logical. If \code{TRUE}, saves the underlying turnover
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -50,7 +54,7 @@
 #'   condition2.x          = "Treatment.x",
 #'   condition2.y          = "Treatment.y",
 #'   color_facets_x        = c("#5D478B", "#8B668B"),
-#'   color_axis_x          = c("Roots" = "#0072B2", "Rhizosphere" = "#E69F00")
+#'   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 #' )
 #' }
 
@@ -70,6 +74,7 @@ beta_turnover_plot <- function(table,
                       strip_text_bold = FALSE,
                       strip_text_color = "white",
                       aspect_ratio = NULL,
+                      stat = NULL,
                       save_table = FALSE,
                       table_filename = "betadiv_turnover.txt") {
 
@@ -87,13 +92,20 @@ beta_turnover_plot <- function(table,
   if (nrow(otu_filter) == 0) stop("Error: OTU table is empty after filtering rows with sum=0.")
 
   otu_filter_t <- as.data.frame(t(otu_filter))
-  message("Step 1: OTU table filtered and transposed - dimension: ", paste(dim(otu_filter_t), collapse = " x "))
-  
+
   # Paso 2: Calcular diversidad beta (Hill numbers)
   beta_q_list <- list()
   for (q in c(0, 1, 2)) {
     beta_res <- tryCatch({
-      hillR::hill_taxa_parti_pairwise(comm = otu_filter_t, q = q) %>%
+      # hill_taxa_parti_pairwise() prints a raw pairwise-comparison progress
+      # bar straight to stdout (not via message()/warning()), which
+      # suppressMessages() can't catch - capture.output() discards it while
+      # still returning the function's actual result.
+      result <- NULL
+      utils::capture.output(
+        result <- hillR::hill_taxa_parti_pairwise(comm = otu_filter_t, q = q)
+      )
+      result %>%
         dplyr::mutate(Recambio = TD_beta - 1, q = q)
     }, error = function(e) {
       warning(paste("WARNING: Error computing hill_taxa_parti_pairwise with q =", q, ":", e$message))
@@ -106,8 +118,7 @@ beta_turnover_plot <- function(table,
   
   if (nrow(beta_total) == 0) stop("Error: Could not compute beta partitions (empty table).")
 
-  message("Step 2: beta_total computed - rows: ", nrow(beta_total))
-  
+
   # Paso 3: Unir con metadata
   beta_formato <- beta_total %>%
     dplyr::inner_join(metadata, by = c("site1" = "OTUID")) %>%
@@ -115,8 +126,7 @@ beta_turnover_plot <- function(table,
   
   if (nrow(beta_formato) == 0) stop("Error: Could not join beta_total with metadata (empty table).")
 
-  message("Step 3: beta_formato joined with metadata - rows: ", nrow(beta_formato))
-  
+
   # Paso 4: Crear comparaciones y filtrar
   beta_final <- beta_formato %>%
     tidyr::unite("compar_condition1", dplyr::all_of(c(condition1.x, condition1.y)), sep = "_vs_", remove = FALSE) %>%
@@ -128,8 +138,6 @@ beta_turnover_plot <- function(table,
     ))
   
   if (nrow(beta_final) == 0) stop("Error: After filtering comparisons, the table is empty.")
-
-  message("Step 4: beta_final ready - rows: ", nrow(beta_final))
 
   if (save_table) {
     utils::write.table(beta_final, file = table_filename, sep = "\t",
@@ -175,6 +183,16 @@ beta_turnover_plot <- function(table,
 
   if (!is.null(aspect_ratio)) {
     figura <- figura + ggplot2::theme(aspect.ratio = aspect_ratio)
+  }
+
+  if (!is.null(stat)) {
+    figura <- figura + ggpubr::stat_compare_means(
+      method = stat,
+      mapping = ggplot2::aes(
+        label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
+      ),
+      size = 3.5, family = "serif", hide.ns = TRUE
+    )
   }
 
   # Devuelve plot

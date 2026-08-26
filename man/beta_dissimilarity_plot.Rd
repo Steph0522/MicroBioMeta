@@ -15,6 +15,7 @@ beta_dissimilarity_plot(
   x_axis_title = "Condition",
   partition = c("shared", "turnover", "nestedness"),
   family = c("sorensen", "jaccard"),
+  stat = NULL,
   x_label_angle = 0,
   strip_text_bold = FALSE,
   aspect_ratio = NULL,
@@ -43,6 +44,10 @@ colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
 \item{partition}{Type of beta diversity to compute: "shared", "turnover", or "nestedness".}
 
 \item{family}{Family for turnover/nestedness calculation: "sorensen" or "jaccard".}
+
+\item{stat}{Character or \code{NULL}. Statistical test to compare groups,
+passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
+\code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).}
 
 \item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
 labels. Default \code{0} (horizontal); use e.g. \code{45} or \code{90} when

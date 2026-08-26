@@ -4,7 +4,7 @@
 #' @param metadata Data frame containing metadata for the samples.
 #' @param col_cond Name of the column in `metadata` that contains the experimental conditions.
 #' @param type Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.
-#' @param col_inf Color for points lower than threshold. Default `'#0072B2'` (Okabe-Ito blue).
+#' @param col_inf Color for points lower than threshold. Default `'#56B4E9'` (Okabe-Ito blue, matching the package's 2-group default).
 #' @param col_sup Color for points higher than threshold. Default `'#E69F00'` (Okabe-Ito orange).
 #' @param threshold_lower Lower threshold for effect size/difference (x-axis).
 #' @param threshold_upper Upper threshold for effect size/difference (x-axis).
@@ -34,7 +34,7 @@
 #'   metadata        = metadata,
 #'   col_cond        = "Location",
 #'   type            = "effect",
-#'   col_inf         = "#0072B2",
+#'   col_inf         = "#56B4E9",
 #'   col_sup         = "#E69F00",
 #'   threshold_lower = -0.5,
 #'   threshold_upper = 0.5,
@@ -47,7 +47,7 @@ aldex_volcano_plot <- function(table,
                                metadata,
                                col_cond,
                                type = "volcano",
-                               col_inf = "#0072B2",
+                               col_inf = "#56B4E9",
                                col_sup = "#E69F00",
                                threshold_lower = -1.5,
                                threshold_upper = 1.5,
@@ -191,8 +191,12 @@ aldex_volcano_plot <- function(table,
         color = NULL
       ) +
       .mbm_theme(legend_position = "none") +
-      ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x))
-    
+      ggplot2::scale_x_continuous(limits = c(-lim_x, lim_x)) +
+      # Generous top headroom: the corner condition labels sit in this
+      # padding, strictly above the highest data point, so they don't
+      # compete with that point's own taxon-name label for space.
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18)))
+
     # Add labels for significant taxa
     if (nrow(top_taxa) > 0) {
       plot_taxa <- if (filter_uncultured) {
@@ -206,38 +210,44 @@ aldex_volcano_plot <- function(table,
             color = "black",
             family = "serif",
             size = label_size,
-            vjust = -0.5,
+            vjust = -0.9,
             fontface = "italic"
           )
       }
     }
 
-    # Condition labels (plain annotate, no ggtext required)
+    # Condition labels: anchored to the panel's own top-left/top-right
+    # corners (-Inf/Inf on x, Inf on y) with exactly hjust = 0/1 (the only
+    # values that keep text fully inside an Inf-anchored edge without
+    # clipping - an inset like 0.05/0.95 still overhangs past the boundary
+    # on the outward side). vjust > 1 plus the generous top expansion above
+    # push them into the padding strictly above the highest data point, so
+    # they don't compete with that point's own taxon-name label for space.
     if (show_labels) {
       p <- p +
         ggplot2::annotate(
           "text",
-          x = threshold_lower,
-          y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("Lower in ", cond),
+          x = -Inf,
+          y = Inf,
+          label = paste0("Lower in\n", cond),
           color = col_inf,
           family = "serif",
           fontface = "bold",
           size = 5,
-          hjust = 1,
-          vjust = 1
+          hjust = 0,
+          vjust = 1.3
         ) +
         ggplot2::annotate(
           "text",
-          x = threshold_upper,
-          y = max(plot_data$log_pvalue) * 0.95,
-          label = paste0("Higher in ", cond),
+          x = Inf,
+          y = Inf,
+          label = paste0("Higher in\n", cond),
           color = col_sup,
           family = "serif",
           fontface = "bold",
           size = 5,
-          hjust = 0,
-          vjust = 1
+          hjust = 1,
+          vjust = 1.3
         )
     }
     
@@ -291,8 +301,13 @@ aldex_volcano_plot <- function(table,
         y = expression("-Log"[10]~"p-value"),
         color = NULL
       ) +
-      .mbm_theme(legend_position = "none")
-    
+      .mbm_theme(legend_position = "none") +
+      # Generous top headroom: the corner condition labels sit in this
+      # padding, strictly above the highest data point, so they don't
+      # compete with that point's own taxon-name label for space.
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.1)) +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18)))
+
     # Add taxa labels
     if (nrow(top_taxa) > 0) {
       plot_taxa <- if (filter_uncultured) {
@@ -306,37 +321,40 @@ aldex_volcano_plot <- function(table,
             color = "black",
             family = "serif",
             size = label_size,
-            vjust = -0.5,
+            vjust = -0.9,
             fontface = "italic"
           )
       }
     }
 
-    # Condition labels
+    # Condition labels: anchored to the panel's own top-left/top-right
+    # corners (see the "effect" branch above for why: exact hjust = 0/1, and
+    # the generous top expansion above keeps them clear of the highest
+    # point's own taxon-name label).
     p <- p +
       ggplot2::annotate(
         "text",
-        x = min(plot_data$diff.btw) + 2,
-        y = max(plot_data$log_pvalue) * 0.95,
-        label = paste0("Lower in ", cond),
+        x = -Inf,
+        y = Inf,
+        label = paste0("Lower in\n", cond),
         color = col_inf,
         family = "serif",
         fontface = "bold",
         size = 5,
-        hjust = 1,
-        vjust = 1
+        hjust = 0,
+        vjust = 1.3
       ) +
       ggplot2::annotate(
         "text",
-        x = max(plot_data$diff.btw) - 2,
-        y = max(plot_data$log_pvalue) * 0.95,
-        label = paste0("Higher in ", cond),
+        x = Inf,
+        y = Inf,
+        label = paste0("Higher in\n", cond),
         color = col_sup,
         family = "serif",
         fontface = "bold",
         size = 5,
-        hjust = 0,
-        vjust = 1
+        hjust = 1,
+        vjust = 1.3
       )
   }
   

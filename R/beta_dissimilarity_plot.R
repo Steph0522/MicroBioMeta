@@ -16,6 +16,9 @@
 #' @param x_axis_title Title for the x-axis.
 #' @param partition Type of beta diversity to compute: "shared", "turnover", or "nestedness".
 #' @param family Family for turnover/nestedness calculation: "sorensen" or "jaccard".
+#' @param stat Character or \code{NULL}. Statistical test to compare groups,
+#'   passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
+#'   \code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).
 #' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis tick
 #'   labels. Default \code{0} (horizontal); use e.g. \code{45} or \code{90} when
 #'   comparison names are long enough to overlap.
@@ -58,6 +61,7 @@ beta_dissimilarity_plot <- function(
     x_axis_title = "Condition",
     partition = c("shared","turnover","nestedness"),
     family = c("sorensen","jaccard"),
+    stat = NULL,
     x_label_angle = 0,
     strip_text_bold = FALSE,
     aspect_ratio = NULL,
@@ -167,6 +171,16 @@ beta_dissimilarity_plot <- function(
       ggplot2::scale_fill_manual(values=group_colors) +
       ggplot2::xlab(x_axis_title) +
       base_theme
+  }
+
+  if (!is.null(stat)) {
+    figura <- figura + ggpubr::stat_compare_means(
+      method = stat,
+      mapping = ggplot2::aes(
+        label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
+      ),
+      size = 3.5, family = "serif", hide.ns = TRUE
+    )
   }
 
   return(figura)

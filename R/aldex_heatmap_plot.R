@@ -324,7 +324,7 @@ aldex_heatmap_plot <- function(table,
     cluster_rows     = cluster_rows,
     cluster_columns  = cluster_columns,
     width            = grid::unit(ncol(heat_data) * 7, "mm"),
-    height           = grid::unit(nrow(heat_data) * 6, "mm"),
+    height           = grid::unit(nrow(heat_data) * 8, "mm"),
     column_names_rot = 90,
     rect_gp          = grid::gpar(col = "white", lwd = 1.5),
     left_annotation  = left_annotation,
@@ -337,13 +337,41 @@ aldex_heatmap_plot <- function(table,
     ),
     column_names_gp  = gp_title,
     col              = heatmap_colors_fn,
-    row_names_gp     = grid::gpar(fontsize = 12, fontface = "italic",
-                                  fontfamily = "serif", col = "black"),
+    # Heatmap()'s own built-in row-name mechanism (show_row_names +
+    # row_names_gp/row_names_max_width) never actually drew anything in this
+    # composite left_annotation + right-annotations layout, despite
+    # heat_data's dimnames being verified correct - so row names are instead
+    # drawn as their own explicit rowAnnotation() below (`taxon_labels`),
+    # which doesn't depend on Heatmap()'s automatic row-name space
+    # allocation.
+    show_row_names   = FALSE,
     show_heatmap_legend = TRUE
   )
 
-  # Draw: main heatmap + p-value annotation + barplot side by side
-  ht_list <- heatmap + annP + barpl
+  # Only an actual genus-level hit gets italicized, matching standard
+  # taxonomic convention; the "other <higher rank>" / "Unclassified"
+  # fallbacks (see the taxonomy case_when above) aren't a genus name, so they
+  # stay upright. gpar() accepts a per-element vector here, recycled across
+  # rows of the annotation in order.
+  taxon_names <- rownames(heat_data)
+  taxon_face  <- ifelse(grepl("^other |^Unclassified", taxon_names), "plain", "italic")
+
+  # Explicit row-label annotation (see comment above): draws the taxon names
+  # via anno_text() as its own component in ht_list, independent of
+  # Heatmap()'s built-in (here non-functional) row-name mechanism.
+  taxon_labels <- ComplexHeatmap::rowAnnotation(
+    taxon = ComplexHeatmap::anno_text(
+      taxon_names,
+      gp   = grid::gpar(fontsize = 12, fontfamily = "serif", col = "black",
+                        fontface = taxon_face),
+      just = "left"
+    ),
+    show_annotation_name = FALSE
+  )
+
+  # Draw: main heatmap + p-value annotation + barplot + taxon labels, in that
+  # left-to-right order, so the taxon names sit at the far right.
+  ht_list <- heatmap + annP + barpl + taxon_labels
 
   ComplexHeatmap::draw(
     ht_list,

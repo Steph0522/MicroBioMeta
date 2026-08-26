@@ -302,7 +302,7 @@ beta_ord_plot <- function(table, metadata,
       
       # --- 5) Seleccion del nivel mas especifico valido ---
       invalid_literals <- c("", " ", "NA", "na", "unclassified", "Unassigned",
-                            "uncultured", "uncultured_soil", "__")
+                            "uncultured", "uncultured_soil", "metagenome", "__")
       
       invalid_regex <- c("bacteriap[0-9]+")
       
@@ -343,6 +343,11 @@ beta_ord_plot <- function(table, metadata,
     
     
     rot_df$label <- sapply(rot_df$Taxon, extract_clean_label)
+    # Taxonomy strings use "_" (and sometimes "-") as internal word
+    # separators (e.g. "uncultured_Acidobacteriaceae"), which left as-is
+    # renders as one long unbroken label. Normalize both to spaces before
+    # wrapping onto multiple lines, so long compound names read naturally.
+    rot_df$label <- gsub("[_-]", " ", rot_df$label)
     rot_df$label <- gsub(" ", "\n", rot_df$label)
     ###
     rot_df_out <- rot_df
