@@ -13,6 +13,7 @@ beta_ord_plot(
   palette = "colorb",
   shape_col = NULL,
   legend_title = NULL,
+  taxonomy_db = "silva",
   arrows_size = 10,
   top_n = 5,
   title = "auto",
@@ -55,6 +56,12 @@ stops (\code{scale_*_gradientn}).
 \item{shape_col}{Optional column in \code{metadata} to shape points.}
 
 \item{legend_title}{Optional legend title.}
+
+\item{taxonomy_db}{Character. Reference taxonomy database used to clean up
+the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
+\code{"unite"}, or \code{"Kraken2"}. \code{"Kraken2"} additionally
+concatenates genus + species (e.g. \code{"Aspergillus flavus"}) instead of
+showing the species epithet alone. Ignored when \code{ordination != "PCA"}.}
 
 \item{arrows_size}{Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.}
 

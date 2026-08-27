@@ -42,6 +42,9 @@ It supports palette customization, faceting, and statistical comparison."><meta 
   <ul class="dropdown-menu" role="menu"><li>
       <a href="../articles/metabarcoding.html">Metabarcoding</a>
     </li>
+    <li>
+      <a href="../articles/metagenomic.html">Metagenomic</a>
+    </li>
   </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -124,7 +127,9 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 
 
 <dt id="arg-stat">stat<a class="anchor" aria-label="anchor" href="#arg-stat"></a></dt>
-<dd><p>Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").</p></dd>
+<dd><p>Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
+Panel tags (A, B, C...) are added regardless of whether <code>stat</code> is set;
+<code>stat</code> only adds the p-value annotations on top of them.</p></dd>
 
 
 <dt id="arg-x-col">x_col<a class="anchor" aria-label="anchor" href="#arg-x-col"></a></dt>
@@ -197,7 +202,7 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 
 <dt id="arg-panel-label-case">panel_label_case<a class="anchor" aria-label="anchor" href="#arg-panel-label-case"></a></dt>
 <dd><p>Character. Case of the auto-generated panel tags
-(A, B, C... added per panel when <code>stat</code> is used). One of
+(A, B, C... added to every panel by default). One of
 <code>"upper"</code> (default, "A", "B", "C") or <code>"lower"</code> ("a", "b", "c").
 Ignored if <code>panel_labels</code> is supplied.</p></dd>
 
@@ -255,8 +260,9 @@ Default <code>NULL</code>, which lets the panels fill the available space.</p></
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># facet_by + stat triggers the auto A/B/C panel tags (see panel_label_case</span></span></span>
-<span class="r-in"><span><span class="co"># and panel_labels to customize their case/format)</span></span></span>
+<span class="r-in"><span><span class="co"># Panel tags (A/B/C) are always added (see panel_label_case and</span></span></span>
+<span class="r-in"><span><span class="co"># panel_labels to customize their case/format); stat additionally</span></span></span>
+<span class="r-in"><span><span class="co"># overlays p-value annotations on each panel</span></span></span>
 <span class="r-in"><span><span class="fu">alpha_hill_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table            <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata         <span class="op">=</span> <span class="va">metadata</span>,</span></span>

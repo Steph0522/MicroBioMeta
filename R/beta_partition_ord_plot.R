@@ -62,14 +62,6 @@ beta_partition_ord_plot <- function(table, metadata,
                                 save_table = FALSE,
                                 table_filename = "SAMPLE1") {
 
-  if (!requireNamespace("ggordiplots", quietly = TRUE)) {
-    stop(
-      "Package 'ggordiplots' is required but not installed.\n",
-      "Install it with: remotes::install_github(\"jfq3/ggordiplots\")",
-      call. = FALSE
-    )
-  }
-
   suppressWarnings({
 
     # --- Also accept a data.frame as input, coercing it to a matrix ---
@@ -175,13 +167,10 @@ beta_partition_ord_plot <- function(table, metadata,
   
   # --- 5. Internal plotting function ---
   function_plot_beta <- function(x, env){
-    y <- ggordiplots::gg_ordiplot(
-      x, groups = env[[group_col]], hull = FALSE, 
-      spiders = TRUE, ellipse = FALSE, plot = FALSE, label = TRUE
-    )
-    
-    xlabs <- y$plot$labels$x
-    ylabs <- y$plot$labels$y
+    y <- .mbm_betadisper_spider_df(x, groups = env[[group_col]])
+
+    xlabs <- y$xlab
+    ylabs <- y$ylab
     
     z <- ggplot2::ggplot() + 
       ggplot2::geom_point(

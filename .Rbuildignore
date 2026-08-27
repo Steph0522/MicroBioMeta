@@ -9,8 +9,4 @@
 ^docs$
 ^pkgdown$
 ^\.claude$
-^Oldies$
 ^vignettes/articles$
-^dev$
-^bash$
-^inst/examples$

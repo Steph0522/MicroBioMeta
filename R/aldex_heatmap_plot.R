@@ -143,7 +143,7 @@ aldex_heatmap_plot <- function(table,
     mc.samples             = 128,
     effect                 = TRUE,
     test                   = "t",
-    verbose                = TRUE,
+    verbose                = FALSE,
     denom                  = "all",
     include.sample.summary = FALSE
   )

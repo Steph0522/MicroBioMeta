@@ -1,3 +1,87 @@
+# --- Taxonomy string parser -------------------------------------------------
+# Splits a QIIME2-style Feature.ID/Taxon table into one column per rank
+# (Kingdom..Species). Adapted from qiime2R::parse_taxonomy() (MIT License,
+# Copyright (c) 2018 Jordan Bisanz, https://github.com/jbisanz/qiime2R) so
+# ancombc_plot() doesn't need qiime2R (a GitHub-only package) just to split a
+# string already sitting in the `taxonomy` column of MicroBioMeta's own
+# tables - no artifact reading involved.
+.mbm_parse_taxonomy <- function(taxonomy, tax_sep = "; |;", trim_extra = TRUE) {
+  if (sum(colnames(taxonomy) %in% c("Feature.ID", "Taxon")) != 2) {
+    stop("Table does not match expected format, i.e. does not have columns Feature.ID and Taxon.")
+  }
+
+  taxonomy <- taxonomy[, c("Feature.ID", "Taxon")]
+  if (trim_extra) {
+    taxonomy$Taxon <- gsub("[kdpcofgs]__", "", taxonomy$Taxon) # GreenGenes/SILVA/Kraken2-style prefixes
+    taxonomy$Taxon <- gsub("D_\\d__", "", taxonomy$Taxon)      # SILVA D_0__ style prefixes
+  }
+  taxonomy <- suppressWarnings(
+    tidyr::separate(taxonomy, Taxon,
+      c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+      sep = tax_sep, fill = "right", extra = "merge")
+  )
+  taxonomy <- apply(taxonomy, 2, function(x) ifelse(x == "", NA_character_, x))
+  taxonomy <- as.data.frame(taxonomy)
+  rownames(taxonomy) <- taxonomy$Feature.ID
+  taxonomy$Feature.ID <- NULL
+  taxonomy
+}
+
+# --- Ordination "spider" plot data ------------------------------------------
+# Builds the site scores, group centroids and per-sample-to-centroid segments
+# needed for a ggplot2 spider plot from a vegan::betadisper() object - the
+# specific subset of what ggordiplots::gg_ordiplot(spiders = TRUE, ellipse =
+# FALSE, hull = FALSE) computes that beta_partition_ord_plot() actually uses.
+# Written independently against vegan's public scores()/eigenvals() API
+# (rather than adapted from ggordiplots' GPL-licensed source, which isn't
+# compatible with this package's Artistic-2.0 license) so the two are
+# expected to differ in implementation while matching in numeric output.
+.mbm_betadisper_spider_df <- function(betadisper_obj, groups) {
+  groups <- factor(groups)
+
+  n_axes <- length(vegan::eigenvals(betadisper_obj))
+  if (n_axes < 2) {
+    stop(
+      "This dissimilarity partition only has ", n_axes, " usable ordination axis, ",
+      "so a 2D spider plot can't be drawn for it. This happens when one component ",
+      "of the beta-diversity partition (often nestedness) is close to zero across ",
+      "the whole dataset - i.e. it's a property of this data, not a fixable bug.",
+      call. = FALSE
+    )
+  }
+
+  df_ord <- vegan::scores(betadisper_obj, display = "sites", choices = c(1, 2))
+  df_ord <- data.frame(x = df_ord[, 1], y = df_ord[, 2], Group = groups)
+
+  df_mean.ord <- stats::aggregate(df_ord[, c("x", "y")], by = list(Group = df_ord$Group), mean)
+
+  df_spiders <- df_ord
+  df_spiders$cntr.x <- df_mean.ord$x[match(df_spiders$Group, df_mean.ord$Group)]
+  df_spiders$cntr.y <- df_mean.ord$y[match(df_spiders$Group, df_mean.ord$Group)]
+
+  # % variance explained, following the same convention used elsewhere in the
+  # package for PCoA axes (positive eigenvalues only in the denominator);
+  # falls back to a plain "PCoAn" label if eigenvalues aren't usable (e.g. all
+  # non-positive), the same situation ord_labels() falls back to "DIMn" for.
+  eig <- vegan::eigenvals(betadisper_obj)
+  pos_sum <- sum(eig[eig > 0])
+  axis_label <- function(i) {
+    if (is.na(pos_sum) || pos_sum <= 0 || is.na(eig[i]) || eig[i] <= 0) {
+      paste0("PCoA", i)
+    } else {
+      sprintf("PCoA%d (%.1f%%)", i, 100 * eig[i] / pos_sum)
+    }
+  }
+
+  list(
+    df_ord      = df_ord,
+    df_mean.ord = df_mean.ord,
+    df_spiders  = df_spiders,
+    xlab        = axis_label(1),
+    ylab        = axis_label(2)
+  )
+}
+
 # --- Shared p-value formatter ---------------------------------------------
 # Formats a p-value to 3 decimal places, rendering values below `accuracy` as
 # "<0.001". Matches the formatting used for group-comparison p-values drawn by

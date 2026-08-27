@@ -31,6 +31,11 @@
 #'   }
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
+#' @param taxonomy_db Character. Reference taxonomy database used to clean up
+#'   the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
+#'   \code{"unite"}, or \code{"Kraken2"}. \code{"Kraken2"} additionally
+#'   concatenates genus + species (e.g. \code{"Aspergillus flavus"}) instead of
+#'   showing the species epithet alone. Ignored when \code{ordination != "PCA"}.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
 #' @param arrows_size Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
@@ -71,6 +76,7 @@ beta_ord_plot <- function(table, metadata,
                           palette = "colorb",
                           shape_col = NULL,
                           legend_title = NULL,
+                          taxonomy_db = "silva",
                           arrows_size = 10,
                           top_n = 5,
                           title = "auto",
@@ -342,7 +348,7 @@ beta_ord_plot <- function(table, metadata,
     
     
     
-    rot_df$label <- sapply(rot_df$Taxon, extract_clean_label)
+    rot_df$label <- sapply(rot_df$Taxon, extract_clean_label, taxonomy_db = taxonomy_db)
     # Taxonomy strings use "_" (and sometimes "-") as internal word
     # separators (e.g. "uncultured_Acidobacteriaceae"), which left as-is
     # renders as one long unbroken label. Normalize both to spaces before

@@ -108,15 +108,6 @@ ancombc_plot <- function(table,
       )
     }
   }
-  # qiime2R lives on GitHub only; it cannot be auto-installed via BiocManager.
-  if (!requireNamespace("qiime2R", quietly = TRUE)) {
-    stop(
-      "Package 'qiime2R' is required but not installed.\n",
-      "Install it with: remotes::install_github(\"jbisanz/qiime2R\")",
-      call. = FALSE
-    )
-  }
-
   # --- 1. validate inputs --------------------------------------------------
   if (!col_cond %in% colnames(metadata))
     stop(paste("Column", col_cond, "not found in metadata."))
@@ -140,7 +131,7 @@ ancombc_plot <- function(table,
   taxa_df <- table %>%
     dplyr::select(Taxon = taxonomy) %>%
     tibble::rownames_to_column(var = "Feature.ID")
-  taxmat  <- qiime2R::parse_taxonomy(taxa_df) %>% as.matrix()
+  taxmat  <- .mbm_parse_taxonomy(taxa_df) %>% as.matrix()
 
   sample_id_col <- colnames(metadata)[1]
 

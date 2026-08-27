@@ -31,7 +31,7 @@ The data comes from forest soils along the Iztaccíhuatl-Popocatépetl (PNIP) an
 
 Raw data, metadata and the original analysis scripts: [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
 
-## :computer: Loading data
+## Loading data 💻
 
 First, let's load `MicroBioMeta` and `tidyverse` (used for data wrangling):
 
@@ -50,7 +50,7 @@ table_kraken[1:3, c(1:2, ncol(table_kraken))]
 
 Because taxonomy already ships with the table, `merge_feature_taxonomy()` isn't needed for this dataset — it's only required when counts and taxonomy come as two separate objects, as in the metabarcoding example.
 
-:warning: Taxonomy strings from Kraken2 use a `k__`/`p__`/`c__`/... prefix like SILVA/GTDB, but ranks are separated by `"; "` (semicolon **and space**) instead of `";"`. `MicroBioMeta` already accounts for this wherever a `taxonomy_db` argument exists — just pass `taxonomy_db = "Kraken2"`.
+⚠️ Taxonomy strings from Kraken2 use a `k__`/`p__`/`c__`/... prefix like SILVA/GTDB, but ranks are separated by `"; "` (semicolon **and space**) instead of `";"`. `MicroBioMeta` already accounts for this wherever a `taxonomy_db` argument exists — just pass `taxonomy_db = "Kraken2"`.
 
 Now the metadata. These sites were sampled in **two seasons** (dry/*secas* in March and rainy/*lluvias* in September), but the metagenomes were sequenced only once per site — from the **dry-season** sampling — so that's the metadata to use here; the rainy-season file records the same sites' soil chemistry at a different time of year and doesn't correspond to a separate set of metagenomes.
 
@@ -68,23 +68,27 @@ sample_cols <- setdiff(colnames(table_kraken), "taxonomy")
 id_metagenome <- as.integer(gsub("kraken_pluspfp_|_report_bracken_species", "", sample_cols))
 
 colnames(table_kraken)[match(sample_cols, colnames(table_kraken))] <-
-  metadata_meta$SampleID[match(id_metagenome, metadata_meta$id_metagenome)]
+  metadata_meta$SAMPLEID[match(id_metagenome, metadata_meta$id_metagenome)]
+```
 
-table_meta <- table_kraken[, c(setdiff(colnames(table_kraken), "taxonomy"), "taxonomy")]
+Two metadata columns we'll use repeatedly below as grouping variables — `Poligono` (6 sampling blocks, 6 replicates each) and `Sitio` (2 sub-sites per block) — come in as plain numbers. `Sitio` just needs to be character so it's treated as a group rather than a continuous covariate; `Poligono` is relabeled to `"Pol1"`...`"Pol6"` with explicit, numerically-sorted factor levels, so every plot below lists/facets the blocks in that order instead of whatever order they happen to first appear in the data:
+
+```{r}
+metadata_meta$Poligono <- factor(paste0("Pol", metadata_meta$Poligono), levels = paste0("Pol", 1:6))
+metadata_meta$Sitio <- as.character(metadata_meta$Sitio)
+```
+
+`table_meta`'s sample columns are also reordered to match `metadata_meta`'s row order (rather than the ascending `id_metagenome` order they came in), for the same reason — several plotting functions derive their group order from column/row appearance order:
+
+```{r}
+table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 ```
 
 `table_meta` is now in the same `taxonomy`-as-last-column format used throughout the package, ready for every `MicroBioMeta` function — equivalent to `table_bac`/`table_fung` in the metabarcoding vignette.
 
-Two metadata columns we'll use repeatedly below as grouping variables — `Poligono` (6 sampling blocks, 6 replicates each) and `Sitio` (2 sub-sites per block) — come in as numeric, so they need to be character for the categorical parameters (`x_col`, `condition1`, `col_cond`, etc.) to treat them as groups rather than a continuous covariate:
+## Composition exploration 📊
 
-```{r}
-metadata_meta$Poligono <- as.character(metadata_meta$Poligono)
-metadata_meta$Sitio <- as.character(metadata_meta$Sitio)
-```
-
-## :bar_chart: Composition exploration
-
-### :bar_chart: Abundance barplot
+### Abundance barplot 📊
 
 Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
 
@@ -100,26 +104,25 @@ abundance_bar_plot(table = table_meta,
                   save_table = FALSE)
 ```
 
-### :desktop_computer: Abundance heatmap
+### Abundance heatmap 🖥️
 
-```{r, warning=FALSE, fig.width=8, fig.height=9}
+```{r, warning=FALSE, fig.width=8, fig.height=8.5}
 abundance_heatmap_plot(table = table_meta,
                   metadata = metadata_meta,
                   top_n = 20,
                   show_column_names = FALSE,
-                  condition1 = "Poligono",
-                  condition2 = "Sitio")
+                  condition1 = "Poligono")
 ```
 
-## :bar_chart: Alpha diversity
+## Alpha diversity 📊
 
-### :chart_with_upwards_trend: Correlation among Hill numbers
+### Correlation among Hill numbers 📈
 
 ```{r, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_meta)
 ```
 
-### :bar_chart: Alpha diversity visualization
+### Alpha diversity visualization 📊
 
 ```{r, warning=FALSE, fig.width=9, fig.height=5}
 alpha_hill_plot(table = table_meta,
@@ -133,17 +136,6 @@ alpha_hill_plot(table = table_meta,
 
 Richness (*q*=0) is nearly saturated and flat across blocks here — this genus-level Bracken table simply doesn't have much room left to vary at *q*=0 — while *q*=1 and *q*=2 (which weight by relative abundance) do pick up differences between blocks.
 
-```{r, warning=FALSE, fig.height=6, fig.width=9}
-alpha_diversity_plot(table = table_meta,
-                metadata = metadata_meta,
-                x_col = "Poligono",
-                fill_col = "Poligono",
-                stat = "kruskal.test",
-                free_y = TRUE,
-                x_label_angle = 45,
-                save_table = FALSE)
-```
-
 ### Alpha diversity along a continuous gradient
 
 ```{r, warning=FALSE, fig.height=4, fig.width=10}
@@ -155,51 +147,29 @@ alpha_decay_plot(table = table_meta,
 
 Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't, for the same ceiling-effect reason as above.
 
-### Shared taxa between sample groups
-
-```{r, fig.width=7, fig.height=6}
-venn_plot(table = table_meta,
-                  metadata = metadata_meta,
-                  merge_by = "Sitio",
-                  min_prevalence = 0)
-```
-
-### Collapsing the table by taxonomic level
-
-```{r, fig.width=7, fig.height=6}
-table_genus <- collapse_table(
-  table = table_meta,
-  metadata = metadata_meta,
-  level = "genus"
-)
-
-venn_plot(
-  table = table_genus$collapsed_table,
-  metadata = metadata_meta,
-  merge_by = "Sitio"
-)
-```
-
 ## Beta diversity
 
 ### Ordination of community composition
 
+The CLR-based `distance = "compositional"` (used for PCA in the metabarcoding vignette) is dominated here by a single compositionally extreme sample, which stretches the plot and squashes everything else into one corner. Bray-Curtis dissimilarity with PCoA is far less sensitive to that one sample, so it's used instead — this is also closer to what the original study behind this dataset used for its own ordination.
+
 ```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 beta_ord_plot(table = table_meta,
               metadata = metadata_meta,
-              distance = "compositional",
-              ordination = "PCA",
-              group_col = "Poligono",
-              shape_col = "Sitio")
+              distance = "bray",
+              ordination = "PCoA",
+              group_col = "Poligono")
 ```
 
 ### Statistical tests for beta diversity
+
+`method = "bray"` matches the `distance = "bray"` used for the PCoA above, so the ordination and the significance test are evaluating the same notion of dissimilarity. `Poligono` comes out strongly significant (R² = 0.47).
 
 ```{r, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
                 metadata = metadata_meta,
                 formula_str = "Poligono*Sitio",
-                method = "euclidean",
+                method = "bray",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -208,42 +178,18 @@ beta_test_table(table = table_meta,
 
 `beta_partition_ord_plot()` works the same way here as in the metabarcoding vignette — see that vignette for a worked example. It's skipped for *this particular* dataset because the nestedness component of the Jaccard/Sørensen partition is close to singular (turnover dominates almost completely over nestedness among these forest-soil fungal communities), which makes the underlying ordination fail; that's a property of this community's structure, not something specific to metagenomic data.
 
-### Pairwise beta diversity visualization
-
-```{r, fig.width=9, fig.height=6}
-beta_dissimilarity_plot(table = table_meta,
-                       metadata = metadata_meta,
-                       condition1_col = "Sitio",
-                       condition2_col = "Poligono",
-                       x_axis_title = "Samples",
-                       partition = "shared",
-                       family = "jaccard",
-                       save_table = FALSE)
-```
-
 ## Differential abundant analysis
 
-`Sitio` already has exactly the two groups ALDEx2 requires, so — unlike the metabarcoding example — no filtering step is needed for the volcano plot:
-
-```{r, fig.width=7, fig.height=5.5, message=FALSE, warning=FALSE}
-aldex_volcano_plot(table = table_meta,
-                   metadata = metadata_meta,
-                   col_cond = "Sitio",
-                   type = "volcano",
-                   label_size = 3,
-                   filter_uncultured = TRUE)
-```
-
-For the heatmap and ANCOMBC2 versions we instead need a 2-group subset of the 6-level `Poligono`, the same way the metabarcoding vignette filters `Type_of_soil` down to two levels — blocks `2` and `5` are used here as they show a clear compositional difference:
+For the heatmap and ANCOMBC2 versions we need a 2-group subset of the 6-level `Poligono`, the same way the metabarcoding vignette filters `Type_of_soil` down to two levels — blocks `2` and `5` are used here as they show a clear compositional difference:
 
 ```{r}
 metadata_meta_compar <- metadata_meta %>%
-  filter(Poligono == "2" | Poligono == "5")
+  filter(Poligono == "Pol2" | Poligono == "Pol5")
 
-table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SampleID, colnames(table_meta)), ncol(table_meta))]
+table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SAMPLEID, colnames(table_meta)), ncol(table_meta))]
 ```
 
-```{r, fig.width=9, fig.height=4, message=FALSE, warning=FALSE}
+```{r, fig.width=7, fig.height=6, message=FALSE, warning=FALSE}
 aldex_heatmap_plot(table = table_meta_compar,
                    metadata = metadata_meta_compar,
                    col_cond = "Poligono")
@@ -271,8 +217,8 @@ ratios_bubble_plot(table = table_meta_compar,
            metadata = metadata_meta_compar,
            condition_col = "Poligono",
            top_n = 20,
-           condition_A = "2",
-           condition_B = "5")
+           condition_A = "Pol2",
+           condition_B = "Pol5")
 ```
 
 ## Environmental analyses
@@ -281,14 +227,14 @@ The metadata already carries the soil physicochemical variables measured for the
 
 ```{r}
 env_table_meta <- metadata_meta %>%
-  dplyr::select(SampleID, pH:ARENA) %>%
+  dplyr::select(SAMPLEID, pH:ARENA) %>%
   remove_rownames() %>%
-  column_to_rownames(var = "SampleID")
+  column_to_rownames(var = "SAMPLEID")
 ```
 
 ### Correlation between environmental variables and taxonomic abundance
 
-```{r, fig.width=9, fig.height=8}
+```{r, fig.width=9, fig.height=3.2}
 corr_env_abund_plot(table = table_meta,
                     env_table = env_table_meta,
                     metadata = metadata_meta,
@@ -297,11 +243,11 @@ corr_env_abund_plot(table = table_meta,
                     save_table = FALSE)
 ```
 
-### Constrained ordination (CCA / RDA)
+### Constrained ordination (CCA)
 
 ```{r}
 env_table_meta <- env_table_meta[
-  match(metadata_meta$SampleID, rownames(env_table_meta)), , drop = FALSE]
+  match(metadata_meta$SAMPLEID, rownames(env_table_meta)), , drop = FALSE]
 ```
 
 ```{r, fig.width=8, fig.height=6}
@@ -309,7 +255,7 @@ cca_rda_biplot(table = table_meta,
                env_data = env_table_meta,
                metadata = metadata_meta,
                env_vars = c("pH", "MO", "N", "P", "K"),
-               analysis = "RDA",
+               analysis = "CCA",
                show_all_env_vectors = TRUE,
                group_col = "Poligono",
                scale_arrows = 3)

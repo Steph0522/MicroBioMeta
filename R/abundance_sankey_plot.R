@@ -35,10 +35,10 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                                   save_table = FALSE,
                                   table_filename = "sankey_nodes_links.txt") {
 
-  if (!requireNamespace("sankeyD3", quietly = TRUE)) {
+  if (!requireNamespace("networkD3", quietly = TRUE)) {
     stop(
-      "Package 'sankeyD3' is required but not installed.\n",
-      "Install it with: remotes::install_github(\"fbreitwieser/sankeyD3\")",
+      "Package 'networkD3' is required but not installed.\n",
+      "Install it with: install.packages(\"networkD3\")",
       call. = FALSE
     )
   }
@@ -191,37 +191,23 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     message(paste("Table saved as:", table_filename))
   }
 
-  sankey <- sankeyD3::sankeyNetwork(
+  sankey <- networkD3::sankeyNetwork(
     Links = links,
     Nodes = nodes,
-    doubleclickTogglesChildren = TRUE,
-    LinkGroup = "type",
-    fontFamily = "serif",
     Source = "source",
     Target = "target",
     Value = "value",
     NodeID = "name",
     NodeGroup = "name",
-    NodePosX = "depth",
-    NodeValue = "value",
-    dragY = TRUE,
-    xAxisDomain = valid_ranks,
-    numberFormat = "pavian",
-    title = NULL,
-    nodeWidth = 15,
-    linkGradient = TRUE,
-    nodeShadow = TRUE,
-    nodeCornerRadius = 5,
+    LinkGroup = "type",
     units = "abund",
+    fontFamily = "serif",
     fontSize = 12,
-    iterations = 1000,
-    align = "none",
-    highlightChildLinks = TRUE,
-    orderByPath = TRUE,
-    scaleNodeBreadthsByString = TRUE
+    nodeWidth = 15,
+    iterations = 64
   )
-  
-  sankeyD3::saveNetwork(sankey, file = output_file)
+
+  networkD3::saveNetwork(sankey, file = output_file)
   message("Sankey diagram saved to: ", output_file)
   
 }

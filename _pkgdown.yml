@@ -19,6 +19,8 @@ navbar:
      menu:
      - text: Metabarcoding
        href: articles/Metabarcoding.html
+     - text: Metagenomic
+       href: articles/Metagenomic.html
 
     
 
