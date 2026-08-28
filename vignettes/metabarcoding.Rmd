@@ -31,8 +31,7 @@ For 16S 🦠: [Hereira-Pacheco, S.E., Navarro-Noya, Y.E. & Dendooven, L. The roo
 
 For 18S 🍄: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities under drought conditions in Ricinus communis. Fungal Ecology, 63, 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
-## Loading data 💻
-
+## 💻 Loading data
 First, let's load the `MicroBioMeta` package:
 
 ```{r "start", message=FALSE}
@@ -147,12 +146,10 @@ table_fung <- merge_feature_taxonomy(table = table_fungi,
 ⚠️ Notice that this warning reports how many taxonomy IDs did not match the feature table and were excluded from the result.
 
 
-## Composition exploration 📊
-
+## 📊 Composition exploration
 `MicroBioMeta` has several functions to explore composition, taxonomic identity, and abundance. Let's explore each of them.
 
-### Abundance barplots 📊
-
+### 📊 Abundance barplots
 Abundance barplots are useful to identify patterns in community composition based on taxonomic identity.\
 This function generates stacked barplots of relative abundances using an abundance table and a metadata file as input.
 
@@ -196,8 +193,7 @@ abundance_bar_plot(table = table_fung,
                   save_table = FALSE)
 ```
 
-### Abundance heatmaps 🖥️
-
+### 🖥️ Abundance heatmaps
 Notice that the input files are the same as the previous function and this is consistent with all functions from now on. 
 
 The parameters `condition1`, `condition2`, and `condition3` define the three metadata variables to be displayed as horizontal annotations above the heatmap.\
@@ -208,26 +204,29 @@ The `top_n` argument controls the number of most abundant features included in t
 If `cluster = TRUE`, rows are hierarchically clustered; if `FALSE`, features are ordered by decreasing relative abundance.\
 The `show_column_names` parameter determines whether sample names are displayed in the heatmap.
 
-```{r, warning=FALSE, fig.width=8, fig.height=9}
+Row labels default to just the feature's rank number (`"1"`, `"2"`...); `feature_prefix` prepends whatever fits the data - `"ASV"` here, since this table's features are QIIME2/DADA2 amplicon sequence variants.
+
+```{r, warning=FALSE, fig.width=11, fig.height=6.5}
 abundance_heatmap_plot(table = table_bac,
                   metadata = metadata_bacteria,
                   top_n = 20,
                   show_column_names = FALSE,
                   condition1 = "Type_of_soil",
-                  condition2 = "Treatment")
+                  condition2 = "Treatment",
+                  feature_prefix = "ASV")
 ```
 
-```{r, warning=FALSE, fig.width=8, fig.height=9}
+```{r, warning=FALSE, fig.width=11, fig.height=6.5}
 abundance_heatmap_plot(table = table_fung,
                   metadata = metadata_fungi,
                   top_n = 20,
                   show_column_names = FALSE,
                   condition1 = "Type_of_soil",
-                  condition2 = "Treatment")
+                  condition2 = "Treatment",
+                  feature_prefix = "ASV")
 ```
 
-### Sankey diagram of taxonomic flow 🖥️
-
+### 🖥️ Sankey diagram of taxonomic flow
 `abundance_sankey_plot()` visualizes how relative abundance flows across taxonomic ranks — from Kingdom to Species as an interactive Sankey diagram. It is useful for getting a quick overview of which lineages dominate the community.
 
 The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps the number of taxa kept per rank and `taxonomy_db` tells the function how the taxonomy strings are formatted (e.g. `"silva"`, `"gg"`, `"kraken2"`). The diagram is written to an HTML file (`output_file`) that can be opened in a browser.
@@ -249,12 +248,10 @@ abundance_sankey_plot(
 )
 ```
 
-## Alpha diversity 📊
-
+## 📊 Alpha diversity
 Alpha diversity describes the diversity within individual samples. With `MicroBioMeta`, alpha diversity can be explored using several different metrics, like classic metrcis as Chao and Simpson. Also, the package implements functions based on the **Hill numbers framework**, which provides a unified way to represent different units. Hill numbers are parameterized by the order *q*, which regulates the weight given to the abundance. For example, *q*=0 corresponds to species richness (total species), *q*=1 to the exponential of Shannon entropy (frequent species), and *q*=2 to the inverse Simpson index (dominant species). 
 
-### Correlation among Hill numbers 📈
-
+### 📈 Correlation among Hill numbers
 The `alpha_hill_corr_plot()` function calculates Hill numbers for different orders (typically, 𝑞=0,1,2) and visualizes the correlations among them using a correlation plot and evaluate how strongly diversity metrics of different orders are related to the depth sequencing.
 
 This is the first step before analyze alpha diversity metrics.
@@ -273,8 +270,7 @@ But, for fungi 🍄 data this correlation is just strong and significative at *q
 alpha_hill_corr_plot(table = table_fung)
 ```
 
-### Alpha diversity visualization 📊
-
+### 📊 Alpha diversity visualization
 The `alpha_hill_plot()` function calculates Hill numbers and visualizes alpha diversity patterns across experimental conditions using boxplots.
 
 The `x_col` parameter specifies the metadata column used on the x-axis, while `fill_col` controls the grouping used to color the boxplots.
@@ -352,8 +348,7 @@ alpha_decay_plot(table = table_bac,
                  x_axis_title = "Soil pH")
 ```
 
-### Shared taxa between sample groups 💻
-
+### 💻 Shared taxa between sample groups
 Another way to explore alpha diversity patterns is by examining **which taxa are shared or unique among groups of samples**. The function `venn_plot()` generates Venn diagrams that summarize the overlap of taxa between groups defined in the metadata.
 
 We generate a Venn diagram grouping samples according to the soil compartment.
@@ -367,8 +362,7 @@ venn_plot(table = table_fung,
 
 
 
-#### Collapsing the table by taxonomic level 💻
-
+#### 💻 Collapsing the table by taxonomic level
 Microbial community tables are often generated at the **ASV or OTU level**, which can contain hundreds or thousands of features. For interpretation and visualization, it is often useful to group these features at a higher **taxonomic level**, such as genus. 
 
 The function `collapse_table()` performs this aggregation by grouping features that are at the same taxonomy level and summing their counts. 
@@ -399,8 +393,7 @@ venn_plot(
 By default, `collapse_table()` returns the **raw counts** summed at the selected taxonomic level. However, microbial community data are needed to visualized or analyzed as **relative abundance**. Setting `rel_abun = TRUE` converts the counts of each sample into **percentages**, where the total abundance per sample sums to 100%.
 
 
-#### Filtering taxa by prevalence 🖥️
-
+#### 🖥️ Filtering taxa by prevalence
 Sometimes it is useful to visualize only taxa that occur frequently within each group. This can be done using the `min_prevalence` parameter.
 
 For example, the following diagram includes only taxa present in **at least 20% of the samples within each group**. The parameter is default to 0, that means that nor filtering is applied. 
@@ -412,8 +405,7 @@ venn_plot(table = table_fung,
                   min_prevalence = 0.2 )
 ```
 
-#### Customizing group colors 🖥️
-
+#### 🖥️ Customizing group colors
 The function also allows custom colors for the groups.
 
 ```{r, fig.width=7, fig.height=6}
@@ -424,8 +416,7 @@ venn_plot(table = table_fung,
                   group_colors = c("#1B9E77", "#D95F02", "#7570B3") )
 ```
 
-#### Alternative plotting method 🖥️
-
+#### 🖥️ Alternative plotting method
 By default the function uses the package **ggvenn**, but it can also generate the diagram using **ggVennDiagram**.
 
 ```{r}
@@ -435,14 +426,12 @@ venn_plot(table = table_fung,
                   method = "ggvenndiagram" )
 ```
 
-## Beta diversity 💻
-
+## 💻 Beta diversity
 Beta diversity describes the differences in community composition and structure among samples. These analyses help determine whether microbial communities vary across environmental conditions, treatments, or experimental groups and how this clustered or grouped for. 
 
 `MicroBioMeta` has several functions to explore beta diversity, including ordination plots, statistical tests for community differences and partitioning approaches that separate shared and unique components of diversity. These functions allow both visual exploration and formal hypothesis testing.
 
-### Ordination of community composition 🖥️
-
+### 🖥️ Ordination of community composition
 The `beta_ord_plot()` function calculates pairwise dissimilarities among samples and visualizes the results using an ordination method. By default, the function uses common ecological distance metrics (e.g., Bray–Curtis or Euclidean) and dimensionality reduction techniques such as **PCoA**, **PCA**, or **NMDS**. Accounting for compositional data in the examples `aitchinson` and `compositional` distances are used. Compositional uses the *clr* (log centered ratio) transformation made by `ALDEx2` package.
 
 The `group_col` parameter specifies the metadata column used to color the samples, while `shape_col` allows an additional metadata variable to be displayed using different point shapes.
@@ -468,8 +457,7 @@ beta_ord_plot(table = table_fung,
 
 ```
 
-### Statistical tests for beta diversity 🖥️
-
+### 🖥️ Statistical tests for beta diversity
 The `beta_test_table()` function performs statistical tests to evaluate whether community composition differs among experimental groups.
 
 The `formula_str` argument specifies the experimental design using a formula syntax similar to linear models in R or as it is used for `vegan` package. The `method` parameter defines the distance metric used to calculate dissimilarities, and the `test` argument specifies the statistical test (options: **PERMANOVA** or **BETADISPER**).
@@ -496,8 +484,7 @@ beta_test_table(table = table_fung,
                 permutations = 999)
 ```
 
-### Beta diversity partitioning 💻
-
+### 💻 Beta diversity partitioning
 Beta diversity can also be decomposed into different components. The `beta_partition_ord_plot()` function partitions beta diversity into the turnover and nestedness components based on selected dissimilarity indices.
 
 The `index` argument specifies the dissimilarity family used for the partition (e.g., Jaccard or Sørensen). The `group_col` and `shape_col` parameters define how samples are visualized according to metadata variables.
@@ -522,8 +509,7 @@ beta_partition_ord_plot(
   save_table = FALSE)
 ```
 
-### Pairwise beta diversity visualization 🖥️
-
+### 🖥️ Pairwise beta diversity visualization
 The `beta_dissimilarity_plot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples.
 
 The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
@@ -574,8 +560,7 @@ beta_dissimilarity_plot(table = table_fung,
 
 ```
 
-### Pairwise turnover: between-group vs. within-group 🖥️
-
+### 🖥️ Pairwise turnover: between-group vs. within-group
 `beta_turnover_plot()` reports the ASV turnover component of Hill-number-based beta diversity (*q*=0, 1, 2), one facet row per Hill order.
 
 `beta_turnover_plot()` answers a different question than `beta_dissimilarity_plot()`: for **one reference group** (e.g. Rhizosphere), is its turnover **against another group** (e.g. Roots — a between-group comparison) greater than its turnover **against itself** (Rhizosphere-vs-Rhizosphere pairs — a within-group baseline)? If between-group turnover is significantly higher, that's evidence the two compartments really do host distinct communities, beyond the variability already present among replicates of the same compartment.
@@ -586,7 +571,7 @@ So the plot below has one purple strip on top — labeled **"Rhizosphere"**, the
 
 `color_facets_x` colors the top facet strip (`condition1.x`) and `color_axis_x` colors the two boxes (`condition1.y`). Tick labels are hidden by default since the groups are already identified in the legend. Set `show_x_labels = TRUE` to bring them back. `stat` adds a statistical comparison between the two boxes.
 
-```{r, warning=FALSE, fig.width=5, fig.height=6}
+```{r, warning=FALSE, fig.width=3.5, fig.height=4.5, out.width="60%"}
 beta_turnover_plot(
   table                 = table_fungi,
   metadata              = metadata_fungi,
@@ -602,8 +587,7 @@ beta_turnover_plot(
 )$plot
 ```
 
-### Distance-decay of community similarity 💻
-
+### 💻 Distance-decay of community similarity
 The function `beta_decay_plot()` tests whether communities that are geographically closer are also more similar in composition. It computes pairwise community dissimilarity (`distance`, e.g. `"jaccard"`, `"bray"`, `"horn"`) and pairwise geographic distances from sample coordinates, runs a Mantel test between them, and plots similarity (1 − dissimilarity) against distance with a fitted regression line.
 
 `lat_col`/`lon_col` name the latitude/longitude columns in `metadata` (decimal degrees), and the optional `group_col` runs a separate Mantel test and regression line per group instead of one global test.
@@ -636,8 +620,7 @@ beta_decay_plot(
 )
 ```
 
-## Differential abundant analysis 📊
-
+## 📊 Differential abundant analysis
 `MicroBioMeta` has several functions to explore **differentially abundant taxa**. These analyses help identify microbial features that vary significantly across experimental groups.
 
 Two functions rely on a **compositional data analysis framework implemented in the package** [ALDEx2](https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html). This approach accounts for the compositional nature of sequencing data by using Monte Carlo Dirichlet instances and centered log-ratio transformations and in the package [ANCOMBC2](https://bioconductor.org/packages/ANCOMBC/) an alternative differential abundance method that explicitly models compositional bias and structural zeros.
@@ -659,8 +642,7 @@ Additionally, two complementary approaches help identify **important taxa that d
 
 
 
-### Example: Bacterial data 📊
-
+### 📊 Example: Bacterial data
 First, we filter the metadata to retain only two soil compartments to apply ALDEx2.
 
 ```{r}
@@ -685,8 +667,7 @@ aldex_volcano_plot(table = table_bac_compar,
 
 ```
 
-### ANCOMBC2 as an alternative method 📊
-
+### 📊 ANCOMBC2 as an alternative method
 `ancombc_plot()` provides an alternative to the ALDEx2-based functions above. This functions depends on the Bioconductor packages `ANCOMBC` and `phyloseq`:
 
 ```{r, eval=FALSE}
@@ -709,8 +690,7 @@ ancombc_plot(
 )
 ```
 
-### Example: Fungal data 📊
-
+### 📊 Example: Fungal data
 We follow the same procedure but visualize the results with a **heatmap**. This funtcions uses `ComplexHeatmap`. 
 
 ```{r}
@@ -730,8 +710,7 @@ aldex_heatmap_plot(table = table_fung_compar,
 
 ```
 
-### Identifying important taxa 📊
-
+### 📊 Identifying important taxa
 The functions `random_forest_lollipop_plot()` and `ratios_bubble_plot()` can also be used to highlight taxa that contribute most strongly to the observed differences between conditions.
 
 For example, a **Random Forest model** can be used to identify the taxa that best predict the soil compartment:
@@ -755,16 +734,14 @@ ratios_bubble_plot(table = table_fung_compar,
            condition_B = "Bulk soil")
 ```
 
-## Environmental analyses 💻
-
+## 💻 Environmental analyses
 `MicroBioMeta` provides two functions to explore the relationship between **environmental variables** and **microbial community composition**:
 
 -   `corr_env_abund_plot()` — computes correlations between taxonomic abundance and environmental variables.
 
 -   `cca_rda_biplot()` — performs constrained ordination using **Canonical Correspondence Analysis (CCA)** or **Redundancy Analysis (RDA)**.
 
-#### Preparing the environmental table 🖥️
-
+#### 🖥️ Preparing the environmental table
 Environmental variables must be organized in a **data frame where rows correspond to samples and columns correspond to environmental variables**.
 
 ```{r}
@@ -774,8 +751,7 @@ env_table_fung <- metadata_fungi %>%
   column_to_rownames(var = "SAMPLEID")
 ```
 
-#### Correlation between environmental variables and taxonomic abundance 🖥️
-
+#### 🖥️ Correlation between environmental variables and taxonomic abundance
 The function `corr_env_abund_plot()` calculates correlations between **environmental variables** and **taxonomic relative abundances** at a selected taxonomic level and returns a **correlation heatmap** showing how environmental variables relate to taxonomic abundances.
 
 Example using **phylum-level abundances**:
@@ -791,8 +767,7 @@ corr_env_abund_plot(table = table_fung,
 
 
 
-### Alternative visualization 🖥️
-
+### 🖥️ Alternative visualization
 Correlations can also be displayed using circle markers instead of tiles:
 
 ```{r, fig.width=9, fig.height=8}
@@ -805,8 +780,7 @@ corr_env_abund_plot(table = table_fung,
 
 ```
 
-#### Constrained ordination (CCA / RDA) 🖥️
-
+#### 🖥️ Constrained ordination (CCA / RDA)
 The function `cca_rda_biplot()` performs a constrained ordination analysis to evaluate how environmental variables explain variation in microbial community composition.
 
 Before running the analysis, ensure that the **sample order in the environmental table matches the metadata**:

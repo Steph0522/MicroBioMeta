@@ -111,7 +111,7 @@ S. E., Estrada-Torres, A., Dendooven, L., &amp; Navarro-Noya, Y. E.
 (2023). Shifts in root-associated fungal communities under drought
 conditions in Ricinus communis. Fungal Ecology, 63, 101225.</a></p>
 <div class="section level2">
-<h2 id="loading-data">Loading data 💻<a class="anchor" aria-label="anchor" href="#loading-data"></a>
+<h2 id="loading-data">💻 Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
 </h2>
 <p>First, let’s load the <code>MicroBioMeta</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -215,13 +215,13 @@ requiring a separate object.</p>
 match the feature table and were excluded from the result.</p>
 </div>
 <div class="section level2">
-<h2 id="composition-exploration">Composition exploration 📊<a class="anchor" aria-label="anchor" href="#composition-exploration"></a>
+<h2 id="composition-exploration">📊 Composition exploration<a class="anchor" aria-label="anchor" href="#composition-exploration"></a>
 </h2>
 <p><code>MicroBioMeta</code> has several functions to explore
 composition, taxonomic identity, and abundance. Let’s explore each of
 them.</p>
 <div class="section level3">
-<h3 id="abundance-barplots">Abundance barplots 📊<a class="anchor" aria-label="anchor" href="#abundance-barplots"></a>
+<h3 id="abundance-barplots">📊 Abundance barplots<a class="anchor" aria-label="anchor" href="#abundance-barplots"></a>
 </h3>
 <p>Abundance barplots are useful to identify patterns in community
 composition based on taxonomic identity.<br>
@@ -278,7 +278,7 @@ generate the plot.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="abundance-heatmaps">Abundance heatmaps 🖥️<a class="anchor" aria-label="anchor" href="#abundance-heatmaps"></a>
+<h3 id="abundance-heatmaps">🖥️ Abundance heatmaps<a class="anchor" aria-label="anchor" href="#abundance-heatmaps"></a>
 </h3>
 <p>Notice that the input files are the same as the previous function and
 this is consistent with all functions from now on.</p>
@@ -299,13 +299,18 @@ If <code>cluster = TRUE</code>, rows are hierarchically clustered; if
 abundance.<br>
 The <code>show_column_names</code> parameter determines whether sample
 names are displayed in the heatmap.</p>
+<p>Row labels default to just the feature’s rank number
+(<code>"1"</code>, <code>"2"</code>…); <code>feature_prefix</code>
+prepends whatever fits the data - <code>"ASV"</code> here, since this
+table’s features are QIIME2/DADA2 amplicon sequence variants.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
 <span>                  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                  condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
+<span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>                  feature_prefix <span class="op">=</span> <span class="st">"ASV"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
@@ -313,11 +318,12 @@ names are displayed in the heatmap.</p>
 <span>                  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                  condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
+<span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>                  feature_prefix <span class="op">=</span> <span class="st">"ASV"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="sankey-diagram-of-taxonomic-flow">Sankey diagram of taxonomic flow 🖥️<a class="anchor" aria-label="anchor" href="#sankey-diagram-of-taxonomic-flow"></a>
+<h3 id="sankey-diagram-of-taxonomic-flow">🖥️ Sankey diagram of taxonomic flow<a class="anchor" aria-label="anchor" href="#sankey-diagram-of-taxonomic-flow"></a>
 </h3>
 <p><code><a href="../reference/abundance_sankey_plot.html">abundance_sankey_plot()</a></code> visualizes how relative
 abundance flows across taxonomic ranks — from Kingdom to Species as an
@@ -345,7 +351,7 @@ package, which is only available on GitHub:</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="alpha-diversity">Alpha diversity 📊<a class="anchor" aria-label="anchor" href="#alpha-diversity"></a>
+<h2 id="alpha-diversity">📊 Alpha diversity<a class="anchor" aria-label="anchor" href="#alpha-diversity"></a>
 </h2>
 <p>Alpha diversity describes the diversity within individual samples.
 With <code>MicroBioMeta</code>, alpha diversity can be explored using
@@ -358,7 +364,7 @@ corresponds to species richness (total species), <em>q</em>=1 to the
 exponential of Shannon entropy (frequent species), and <em>q</em>=2 to
 the inverse Simpson index (dominant species).</p>
 <div class="section level3">
-<h3 id="correlation-among-hill-numbers">Correlation among Hill numbers 📈<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
+<h3 id="correlation-among-hill-numbers">📈 Correlation among Hill numbers<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
 </h3>
 <p>The <code><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot()</a></code> function calculates Hill
 numbers for different orders (typically, 𝑞=0,1,2) and visualizes the
@@ -379,7 +385,7 @@ others <em>q</em> orders.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="alpha-diversity-visualization">Alpha diversity visualization 📊<a class="anchor" aria-label="anchor" href="#alpha-diversity-visualization"></a>
+<h3 id="alpha-diversity-visualization">📊 Alpha diversity visualization<a class="anchor" aria-label="anchor" href="#alpha-diversity-visualization"></a>
 </h3>
 <p>The <code><a href="../reference/alpha_hill_plot.html">alpha_hill_plot()</a></code> function calculates Hill numbers
 and visualizes alpha diversity patterns across experimental conditions
@@ -475,7 +481,7 @@ comparison:</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="shared-taxa-between-sample-groups">Shared taxa between sample groups 💻<a class="anchor" aria-label="anchor" href="#shared-taxa-between-sample-groups"></a>
+<h3 id="shared-taxa-between-sample-groups">💻 Shared taxa between sample groups<a class="anchor" aria-label="anchor" href="#shared-taxa-between-sample-groups"></a>
 </h3>
 <p>Another way to explore alpha diversity patterns is by examining
 <strong>which taxa are shared or unique among groups of
@@ -491,7 +497,7 @@ compartment.</p>
 <span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span> <span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="section level4">
-<h4 id="collapsing-the-table-by-taxonomic-level">Collapsing the table by taxonomic level 💻<a class="anchor" aria-label="anchor" href="#collapsing-the-table-by-taxonomic-level"></a>
+<h4 id="collapsing-the-table-by-taxonomic-level">💻 Collapsing the table by taxonomic level<a class="anchor" aria-label="anchor" href="#collapsing-the-table-by-taxonomic-level"></a>
 </h4>
 <p>Microbial community tables are often generated at the <strong>ASV or
 OTU level</strong>, which can contain hundreds or thousands of features.
@@ -535,7 +541,7 @@ microbial community data are needed to visualized or analyzed as
 to 100%.</p>
 </div>
 <div class="section level4">
-<h4 id="filtering-taxa-by-prevalence">Filtering taxa by prevalence 🖥️<a class="anchor" aria-label="anchor" href="#filtering-taxa-by-prevalence"></a>
+<h4 id="filtering-taxa-by-prevalence">🖥️ Filtering taxa by prevalence<a class="anchor" aria-label="anchor" href="#filtering-taxa-by-prevalence"></a>
 </h4>
 <p>Sometimes it is useful to visualize only taxa that occur frequently
 within each group. This can be done using the
@@ -551,7 +557,7 @@ parameter is default to 0, that means that nor filtering is applied.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="customizing-group-colors">Customizing group colors 🖥️<a class="anchor" aria-label="anchor" href="#customizing-group-colors"></a>
+<h4 id="customizing-group-colors">🖥️ Customizing group colors<a class="anchor" aria-label="anchor" href="#customizing-group-colors"></a>
 </h4>
 <p>The function also allows custom colors for the groups.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
@@ -563,7 +569,7 @@ parameter is default to 0, that means that nor filtering is applied.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-26-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="alternative-plotting-method">Alternative plotting method 🖥️<a class="anchor" aria-label="anchor" href="#alternative-plotting-method"></a>
+<h4 id="alternative-plotting-method">🖥️ Alternative plotting method<a class="anchor" aria-label="anchor" href="#alternative-plotting-method"></a>
 </h4>
 <p>By default the function uses the package <strong>ggvenn</strong>, but
 it can also generate the diagram using
@@ -578,7 +584,7 @@ it can also generate the diagram using
 </div>
 </div>
 <div class="section level2">
-<h2 id="beta-diversity">Beta diversity 💻<a class="anchor" aria-label="anchor" href="#beta-diversity"></a>
+<h2 id="beta-diversity">💻 Beta diversity<a class="anchor" aria-label="anchor" href="#beta-diversity"></a>
 </h2>
 <p>Beta diversity describes the differences in community composition and
 structure among samples. These analyses help determine whether microbial
@@ -590,7 +596,7 @@ differences and partitioning approaches that separate shared and unique
 components of diversity. These functions allow both visual exploration
 and formal hypothesis testing.</p>
 <div class="section level3">
-<h3 id="ordination-of-community-composition">Ordination of community composition 🖥️<a class="anchor" aria-label="anchor" href="#ordination-of-community-composition"></a>
+<h3 id="ordination-of-community-composition">🖥️ Ordination of community composition<a class="anchor" aria-label="anchor" href="#ordination-of-community-composition"></a>
 </h3>
 <p>The <code><a href="../reference/beta_ord_plot.html">beta_ord_plot()</a></code> function calculates pairwise
 dissimilarities among samples and visualizes the results using an
@@ -663,11 +669,11 @@ ordination method applied to visualize the distances among samples.</p>
 <span><span class="co">## ... Similar to previous best</span></span>
 <span><span class="co">## *** Best solution repeated 1 times</span></span></code></pre>
 <pre><code><span><span class="co">## Coordinate system already present.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
+<span><span class="co">## ℹ Adding new coordinate system, which will replace the existing one.</span></span></code></pre>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="statistical-tests-for-beta-diversity">Statistical tests for beta diversity 🖥️<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
+<h3 id="statistical-tests-for-beta-diversity">🖥️ Statistical tests for beta diversity<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
 </h3>
 <p>The <code><a href="../reference/beta_test_table.html">beta_test_table()</a></code> function performs statistical
 tests to evaluate whether community composition differs among
@@ -702,7 +708,7 @@ table or an element obtain in each function</strong>.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-31-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="beta-diversity-partitioning">Beta diversity partitioning 💻<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
+<h3 id="beta-diversity-partitioning">💻 Beta diversity partitioning<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
 </h3>
 <p>Beta diversity can also be decomposed into different components. The
 <code><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot()</a></code> function partitions beta
@@ -732,7 +738,7 @@ samples are visualized according to metadata variables.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-33-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="pairwise-beta-diversity-visualization">Pairwise beta diversity visualization 🖥️<a class="anchor" aria-label="anchor" href="#pairwise-beta-diversity-visualization"></a>
+<h3 id="pairwise-beta-diversity-visualization">🖥️ Pairwise beta diversity visualization<a class="anchor" aria-label="anchor" href="#pairwise-beta-diversity-visualization"></a>
 </h3>
 <p>The <code><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code> function summarizes
 pairwise beta diversity values using boxplots, allowing comparison of
@@ -796,7 +802,7 @@ containing the beta diversity values used to generate the plot.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-37-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="pairwise-turnover-between-group-vs--within-group">Pairwise turnover: between-group vs. within-group 🖥️<a class="anchor" aria-label="anchor" href="#pairwise-turnover-between-group-vs--within-group"></a>
+<h3 id="pairwise-turnover-between-group-vs--within-group">🖥️ Pairwise turnover: between-group vs. within-group<a class="anchor" aria-label="anchor" href="#pairwise-turnover-between-group-vs--within-group"></a>
 </h3>
 <p><code><a href="../reference/beta_turnover_plot.html">beta_turnover_plot()</a></code> reports the ASV turnover component
 of Hill-number-based beta diversity (<em>q</em>=0, 1, 2), one facet row
@@ -845,10 +851,10 @@ adds a statistical comparison between the two boxes.</p>
 <span>  color_axis_x          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>, <span class="st">"Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span><span class="op">)</span>,</span>
 <span>  stat                  <span class="op">=</span> <span class="st">"wilcox.test"</span></span>
 <span><span class="op">)</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="metabarcoding_files/figure-html/unnamed-chunk-38-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metabarcoding_files/figure-html/unnamed-chunk-38-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="distance-decay-of-community-similarity">Distance-decay of community similarity 💻<a class="anchor" aria-label="anchor" href="#distance-decay-of-community-similarity"></a>
+<h3 id="distance-decay-of-community-similarity">💻 Distance-decay of community similarity<a class="anchor" aria-label="anchor" href="#distance-decay-of-community-similarity"></a>
 </h3>
 <p>The function <code><a href="../reference/beta_decay_plot.html">beta_decay_plot()</a></code> tests whether communities
 that are geographically closer are also more similar in composition. It
@@ -887,7 +893,7 @@ per group instead of one global test.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="differential-abundant-analysis">Differential abundant analysis 📊<a class="anchor" aria-label="anchor" href="#differential-abundant-analysis"></a>
+<h2 id="differential-abundant-analysis">📊 Differential abundant analysis<a class="anchor" aria-label="anchor" href="#differential-abundant-analysis"></a>
 </h2>
 <p><code>MicroBioMeta</code> has several functions to explore
 <strong>differentially abundant taxa</strong>. These analyses help
@@ -920,7 +926,7 @@ variable or condition, visualized as a <strong>lollipop plot of feature
 importance</strong>.</p></li>
 </ul>
 <div class="section level3">
-<h3 id="example-bacterial-data">Example: Bacterial data 📊<a class="anchor" aria-label="anchor" href="#example-bacterial-data"></a>
+<h3 id="example-bacterial-data">📊 Example: Bacterial data<a class="anchor" aria-label="anchor" href="#example-bacterial-data"></a>
 </h3>
 <p>First, we filter the metadata to retain only two soil compartments to
 apply ALDEx2.</p>
@@ -949,7 +955,7 @@ labeled).</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-42-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="ancombc2-as-an-alternative-method">ANCOMBC2 as an alternative method 📊<a class="anchor" aria-label="anchor" href="#ancombc2-as-an-alternative-method"></a>
+<h3 id="ancombc2-as-an-alternative-method">📊 ANCOMBC2 as an alternative method<a class="anchor" aria-label="anchor" href="#ancombc2-as-an-alternative-method"></a>
 </h3>
 <p><code><a href="../reference/ancombc_plot.html">ancombc_plot()</a></code> provides an alternative to the
 ALDEx2-based functions above. This functions depends on the Bioconductor
@@ -979,7 +985,7 @@ testing and avoids it.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-44-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="example-fungal-data">Example: Fungal data 📊<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
+<h3 id="example-fungal-data">📊 Example: Fungal data<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
 </h3>
 <p>We follow the same procedure but visualize the results with a
 <strong>heatmap</strong>. This funtcions uses
@@ -1000,7 +1006,7 @@ testing and avoids it.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-46-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="identifying-important-taxa">Identifying important taxa 📊<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
+<h3 id="identifying-important-taxa">📊 Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
 </h3>
 <p>The functions <code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> and
 <code><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot()</a></code> can also be used to highlight taxa
@@ -1032,7 +1038,7 @@ between two conditions</strong> can be visualized using:</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="environmental-analyses">Environmental analyses 💻<a class="anchor" aria-label="anchor" href="#environmental-analyses"></a>
+<h2 id="environmental-analyses">💻 Environmental analyses<a class="anchor" aria-label="anchor" href="#environmental-analyses"></a>
 </h2>
 <p><code>MicroBioMeta</code> provides two functions to explore the
 relationship between <strong>environmental variables</strong> and
@@ -1045,7 +1051,7 @@ using <strong>Canonical Correspondence Analysis (CCA)</strong> or
 <strong>Redundancy Analysis (RDA)</strong>.</p></li>
 </ul>
 <div class="section level4">
-<h4 id="preparing-the-environmental-table">Preparing the environmental table 🖥️<a class="anchor" aria-label="anchor" href="#preparing-the-environmental-table"></a>
+<h4 id="preparing-the-environmental-table">🖥️ Preparing the environmental table<a class="anchor" aria-label="anchor" href="#preparing-the-environmental-table"></a>
 </h4>
 <p>Environmental variables must be organized in a <strong>data frame
 where rows correspond to samples and columns correspond to environmental
@@ -1057,8 +1063,8 @@ variables</strong>.</p>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"SAMPLEID"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="correlation-between-environmental-variables-and-taxonomic-abundance">Correlation between environmental variables and taxonomic abundance
-🖥️<a class="anchor" aria-label="anchor" href="#correlation-between-environmental-variables-and-taxonomic-abundance"></a>
+<h4 id="correlation-between-environmental-variables-and-taxonomic-abundance">🖥️ Correlation between environmental variables and taxonomic
+abundance<a class="anchor" aria-label="anchor" href="#correlation-between-environmental-variables-and-taxonomic-abundance"></a>
 </h4>
 <p>The function <code><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot()</a></code> calculates
 correlations between <strong>environmental variables</strong> and
@@ -1075,7 +1081,7 @@ environmental variables relate to taxonomic abundances.</p>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-50-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="alternative-visualization">Alternative visualization 🖥️<a class="anchor" aria-label="anchor" href="#alternative-visualization"></a>
+<h3 id="alternative-visualization">🖥️ Alternative visualization<a class="anchor" aria-label="anchor" href="#alternative-visualization"></a>
 </h3>
 <p>Correlations can also be displayed using circle markers instead of
 tiles:</p>
@@ -1088,7 +1094,7 @@ tiles:</p>
 <span>                    geom <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/unnamed-chunk-51-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="section level4">
-<h4 id="constrained-ordination-cca-rda">Constrained ordination (CCA / RDA) 🖥️<a class="anchor" aria-label="anchor" href="#constrained-ordination-cca-rda"></a>
+<h4 id="constrained-ordination-cca-rda">🖥️ Constrained ordination (CCA / RDA)<a class="anchor" aria-label="anchor" href="#constrained-ordination-cca-rda"></a>
 </h4>
 <p>The function <code><a href="../reference/cca_rda_biplot.html">cca_rda_biplot()</a></code> performs a constrained
 ordination analysis to evaluate how environmental variables explain

@@ -186,13 +186,19 @@ beta_turnover_plot <- function(table,
   }
 
   if (!is.null(stat)) {
-    figura <- figura + ggpubr::stat_compare_means(
-      method = stat,
-      mapping = ggplot2::aes(
-        label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-      ),
-      size = 3.5, family = "serif", hide.ns = TRUE
-    )
+    # stat_compare_means() places its label a fixed fraction above the data's
+    # max, which the default 5% top expansion doesn't leave room for - the
+    # label gets clipped by the panel border. Widen the top expansion instead
+    # of leaving that headroom out only for this stat-annotated case.
+    figura <- figura +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.15))) +
+      ggpubr::stat_compare_means(
+        method = stat,
+        mapping = ggplot2::aes(
+          label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
+        ),
+        size = 3.5, family = "serif", hide.ns = TRUE
+      )
   }
 
   # Devuelve plot

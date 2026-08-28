@@ -32,6 +32,13 @@
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"abundance_heatmap_table.txt"}.
+#' @param feature_prefix Character. Prefix used to label each row in the
+#'   heatmap, immediately before the row number (e.g. \code{feature_prefix =
+#'   "ASV"} labels rows \code{"ASV1"}, \code{"ASV2"}...). Default \code{""}
+#'   (rows are labeled just \code{"1"}, \code{"2"}...) since the right label
+#'   depends on how \code{table}'s features were generated - set it to
+#'   whatever fits (\code{"ASV"}, \code{"OTU"}, \code{"Taxon"},
+#'   \code{"Species"}...).
 #'
 #' @return A plot with the fifty (XX) taxonomic groups most abundant. 
 #' @export
@@ -77,7 +84,8 @@ abundance_heatmap_plot <- function(table,
                                    show_column_names = TRUE,
                                    annotation_height = 3,
                                    save_table = FALSE,
-                                   table_filename = "abundance_heatmap_table.txt") {
+                                   table_filename = "abundance_heatmap_table.txt",
+                                   feature_prefix = "") {
   
   #Check for taxonomy column
   
@@ -121,7 +129,7 @@ abundance_heatmap_plot <- function(table,
     { if (exclude_unclassified) dplyr::filter(., taxonomy != "Unclassified") else . } %>%
     dplyr::arrange(-abun) %>%  # Esto ordena por abundancia descendente
     dplyr::slice(1:top_n) %>%
-    dplyr::mutate(asv=paste0("ASV", dplyr::row_number())) %>%
+    dplyr::mutate(asv=paste0(feature_prefix, dplyr::row_number())) %>%
     tidyr::unite("taxa", asv, taxonomy, remove = FALSE) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
     dplyr::mutate(phylum = sub("^p__", "", phylum)) %>%

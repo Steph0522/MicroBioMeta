@@ -31,8 +31,7 @@ The data comes from forest soils along the Iztaccíhuatl-Popocatépetl (PNIP) an
 
 Raw data, metadata and the original analysis scripts: [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
 
-## Loading data 💻
-
+## 💻 Loading data
 First, let's load `MicroBioMeta` and `tidyverse` (used for data wrangling):
 
 ```{r "start", message=FALSE}
@@ -86,10 +85,8 @@ table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 
 `table_meta` is now in the same `taxonomy`-as-last-column format used throughout the package, ready for every `MicroBioMeta` function — equivalent to `table_bac`/`table_fung` in the metabarcoding vignette.
 
-## Composition exploration 📊
-
-### Abundance barplot 📊
-
+## 📊 Composition exploration
+### 📊 Abundance barplot
 Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
 
 ```{r, fig.width=9, fig.height=6}
@@ -99,31 +96,31 @@ abundance_bar_plot(table = table_meta,
                   level = "genus",
                   top_n = 20,
                   x_col = "Poligono",
+                  x_axis_title = "Polygons",
                   add_remained = TRUE,
                   label = "Genus",
                   save_table = FALSE)
 ```
 
-### Abundance heatmap 🖥️
+### 🖥️ Abundance heatmap
+Kraken2/Bracken taxa aren't ASVs (there's no sequence-variant denoising step in a shotgun metagenomic workflow), so `feature_prefix = "Taxon"` is used here instead of the default `"ASV"` row-label prefix.
 
-```{r, warning=FALSE, fig.width=8, fig.height=8.5}
+```{r, warning=FALSE, fig.width=7.5, fig.height=6.5, out.width="85%"}
 abundance_heatmap_plot(table = table_meta,
                   metadata = metadata_meta,
                   top_n = 20,
                   show_column_names = FALSE,
-                  condition1 = "Poligono")
+                  condition1 = "Poligono",
+                  feature_prefix = "Taxon")
 ```
 
-## Alpha diversity 📊
-
-### Correlation among Hill numbers 📈
-
+## 📊 Alpha diversity
+### 📈 Correlation among Hill numbers
 ```{r, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_meta)
 ```
 
-### Alpha diversity visualization 📊
-
+### 📊 Alpha diversity visualization
 ```{r, warning=FALSE, fig.width=9, fig.height=5}
 alpha_hill_plot(table = table_meta,
                 metadata = metadata_meta,
@@ -131,6 +128,7 @@ alpha_hill_plot(table = table_meta,
                 fill_col = "Poligono",
                 facet_by = "Sitio",
                 facet_orientation = "horizontal",
+                legend_position = "top",
                 save_table = FALSE)
 ```
 
@@ -151,32 +149,32 @@ Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't
 
 ### Ordination of community composition
 
-The CLR-based `distance = "compositional"` (used for PCA in the metabarcoding vignette) is dominated here by a single compositionally extreme sample, which stretches the plot and squashes everything else into one corner. Bray-Curtis dissimilarity with PCoA is far less sensitive to that one sample, so it's used instead — this is also closer to what the original study behind this dataset used for its own ordination.
+The CLR-based `distance = "compositional"` (used for PCA in the metabarcoding vignette) is dominated here by a single compositionally extreme sample, which stretches the plot and squashes everything else into one corner. NMDS on Aitchison distance is far less sensitive to that one sample, so it's used instead.
 
 ```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 beta_ord_plot(table = table_meta,
               metadata = metadata_meta,
-              distance = "bray",
-              ordination = "PCoA",
+              distance = "aitchison",
+              ordination = "NMDS",
               group_col = "Poligono")
 ```
 
 ### Statistical tests for beta diversity
 
-`method = "bray"` matches the `distance = "bray"` used for the PCoA above, so the ordination and the significance test are evaluating the same notion of dissimilarity. `Poligono` comes out strongly significant (R² = 0.47).
+`method = "aitchison"` matches the `distance = "aitchison"` used for the NMDS above, so the ordination and the significance test are evaluating the same notion of dissimilarity. `Poligono` comes out significant (R² = 0.24).
 
 ```{r, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
                 metadata = metadata_meta,
                 formula_str = "Poligono*Sitio",
-                method = "bray",
+                method = "aitchison",
                 test = "permanova",
                 permutations = 999)
 ```
 
 ### Beta diversity partitioning
 
-`beta_partition_ord_plot()` works the same way here as in the metabarcoding vignette — see that vignette for a worked example. It's skipped for *this particular* dataset because the nestedness component of the Jaccard/Sørensen partition is close to singular (turnover dominates almost completely over nestedness among these forest-soil fungal communities), which makes the underlying ordination fail; that's a property of this community's structure, not something specific to metagenomic data.
+There's intentionally no figure in this section. `beta_partition_ord_plot()` works the same way here as in the metabarcoding vignette — see that vignette for a worked example — but for *this particular* dataset it errors out no matter which group is used to color the plot, jaccard or sorensen: the nestedness component of the partition turns out to have only **one** usable ordination axis (checked directly — `vegan::eigenvals()` on its distance matrix returns a single positive value), so there's no second axis to put on a 2D plot. That's because turnover dominates almost completely over nestedness among these forest-soil fungal communities — a property of this community's structure, not a bug or something specific to metagenomic data.
 
 ## Differential abundant analysis
 
