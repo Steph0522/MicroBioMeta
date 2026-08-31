@@ -349,11 +349,14 @@ beta_ord_plot <- function(table, metadata,
     
     
     rot_df$label <- sapply(rot_df$Taxon, extract_clean_label, taxonomy_db = taxonomy_db)
-    # Taxonomy strings use "_" (and sometimes "-") as internal word
-    # separators (e.g. "uncultured_Acidobacteriaceae"), which left as-is
-    # renders as one long unbroken label. Normalize both to spaces before
-    # wrapping onto multiple lines, so long compound names read naturally.
-    rot_df$label <- gsub("[_-]", " ", rot_df$label)
+    # Taxonomy strings use "_" as an internal word separator (e.g.
+    # "uncultured_Acidobacteriaceae"), which left as-is renders as one long
+    # unbroken label. Normalize it to a space before wrapping onto multiple
+    # lines, so long compound names read naturally. Hyphens are left alone -
+    # unlike "_", they're sometimes part of the taxon's actual name (e.g.
+    # "MB-A2-108", a real clade name), and wrapping on those splits a single
+    # name into unrelated-looking fragments.
+    rot_df$label <- gsub("_", " ", rot_df$label)
     rot_df$label <- gsub(" ", "\n", rot_df$label)
     ###
     rot_df_out <- rot_df

@@ -85,6 +85,32 @@ table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 
 `table_meta` is now in the same `taxonomy`-as-last-column format used throughout the package, ready for every `MicroBioMeta` function — equivalent to `table_bac`/`table_fung` in the metabarcoding vignette.
 
+Unlike the metabarcoding vignette (where geographic coordinates weren't available and had to be simulated for the `beta_decay_plot()` example), this dataset's original source includes **real GPS coordinates** for each sampling point. Joining them in by `Poligono`/`Sitio`/`Transecto` lets us use actual, not simulated, spatial distances below:
+
+```{r}
+coord_meta <- read.csv("articles/data/coord_metagenomic.csv") %>%
+  dplyr::rename(Poligono_num = pol) %>%
+  dplyr::select(Poligono_num, Sitio, Transecto, Latitude, Longitude)
+
+metadata_meta <- metadata_meta %>%
+  dplyr::mutate(Poligono_num = as.integer(gsub("Pol", "", Poligono)), Sitio = as.integer(Sitio)) %>%
+  dplyr::left_join(coord_meta, by = c("Poligono_num", "Sitio", "Transecto")) %>%
+  dplyr::mutate(Sitio = as.character(Sitio))
+```
+
+`alpha_decay_plot()` needs a single continuous covariate rather than a pair of coordinates, so we derive one: distance from `Pol1` (the transect's westernmost/lowest-elevation block), using `geosphere::distHaversine()` on each sample's coordinates against `Pol1`'s mean position:
+
+```{r}
+pol1_ref <- metadata_meta %>%
+  dplyr::filter(Poligono_num == 1) %>%
+  dplyr::summarise(lat = mean(Latitude), lon = mean(Longitude))
+
+metadata_meta$dist_km <- geosphere::distHaversine(
+  cbind(metadata_meta$Longitude, metadata_meta$Latitude),
+  c(pol1_ref$lon, pol1_ref$lat)
+) / 1000
+```
+
 ## 📊 Composition exploration
 ### 📊 Abundance barplot
 Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
@@ -145,6 +171,17 @@ alpha_decay_plot(table = table_meta,
 
 Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't, for the same ceiling-effect reason as above.
 
+The same regression can be run against `dist_km` (real geographic distance from `Pol1`, computed above) instead of a soil chemistry variable:
+
+```{r, warning=FALSE, fig.height=4, fig.width=10}
+alpha_decay_plot(table = table_meta,
+                 metadata = metadata_meta,
+                 cont_var = "dist_km",
+                 x_axis_title = "Distance from Pol1 (km)")
+```
+
+Unlike pH, geographic distance alone doesn't predict alpha diversity here (*p* > 0.1 at every *q*) — the blocks vary in diversity, but not simply as a function of how far apart they are.
+
 ## Beta diversity
 
 ### Ordination of community composition
@@ -175,6 +212,22 @@ beta_test_table(table = table_meta,
 ### Beta diversity partitioning
 
 There's intentionally no figure in this section. `beta_partition_ord_plot()` works the same way here as in the metabarcoding vignette — see that vignette for a worked example — but for *this particular* dataset it errors out no matter which group is used to color the plot, jaccard or sorensen: the nestedness component of the partition turns out to have only **one** usable ordination axis (checked directly — `vegan::eigenvals()` on its distance matrix returns a single positive value), so there's no second axis to put on a 2D plot. That's because turnover dominates almost completely over nestedness among these forest-soil fungal communities — a property of this community's structure, not a bug or something specific to metagenomic data.
+
+### Distance-decay of community similarity
+
+`beta_decay_plot()` tests whether communities that are geographically closer are also more similar in composition — see the metabarcoding vignette for the function's parameters. That example had to fabricate coordinates; here `Latitude`/`Longitude` (joined in above) are the real GPS positions of each sampling point.
+
+```{r, warning=FALSE, fig.width=8, fig.height=6}
+beta_decay_plot(
+  table    = table_meta,
+  metadata = metadata_meta,
+  lat_col  = "Latitude",
+  lon_col  = "Longitude",
+  distance = "bray"
+)
+```
+
+Communities that are geographically closer are significantly more similar (Mantel *r* ≈ 0.2, *p* < 0.01 — the exact value jitters slightly between runs since the Mantel test is permutation-based) — a real distance-decay signal across these forest soils. `bray` is used here rather than `aitchison` (kept consistent with the ordination/PERMANOVA above) because the CLR transform behind `aitchison` fails on the zero counts in this table without an explicit pseudocount.
 
 ## Differential abundant analysis
 

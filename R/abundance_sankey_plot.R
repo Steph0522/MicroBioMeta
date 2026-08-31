@@ -209,5 +209,6 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
 
   networkD3::saveNetwork(sankey, file = output_file)
   message("Sankey diagram saved to: ", output_file)
-  
+
+  invisible(sankey)
 }

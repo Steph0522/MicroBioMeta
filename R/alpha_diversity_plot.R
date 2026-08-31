@@ -340,18 +340,24 @@ alpha_diversity_plot <- function(
       # it instead of filling the cell the way facet_grid2 used to.
 
       if (!is.null(stat)) {
-        y_val <- max(cell_data$value, na.rm = TRUE) * 0.98
+        # label.y is placed above the data max, not at 0.98x it (which sits
+        # right at the top whisker/outlier and collides with it); extra top
+        # expansion gives it room so it isn't clipped by the panel border.
+        data_range <- range(cell_data$value, na.rm = TRUE)
+        y_val <- data_range[2] + diff(data_range) * 0.12
         x_lvls <- levels(factor(cell_data[[x_col]]))
         x_numeric <- match(cell_data[[x_col]], x_lvls)
         x_center <- mean(range(x_numeric, na.rm = TRUE))
-        p_cell <- p_cell + ggpubr::stat_compare_means(
-          data = cell_data, method = stat,
-          mapping = ggplot2::aes(
-            label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-          ),
-          size = 3.5, family = "serif", hide.ns = TRUE,
-          label.y = y_val, label.x = x_center
-        )
+        p_cell <- p_cell +
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18))) +
+          ggpubr::stat_compare_means(
+            data = cell_data, method = stat,
+            mapping = ggplot2::aes(
+              label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
+            ),
+            size = 3.5, family = "serif", hide.ns = TRUE,
+            label.y = y_val, label.x = x_center
+          )
       }
 
       show_top_strip   <- row_idx == 1
@@ -488,13 +494,16 @@ alpha_diversity_plot <- function(
     p_vals_layers <- results_largo %>%
       dplyr::group_split(dplyr::across(dplyr::all_of(split_vars))) %>%
       purrr::map(~ {
-        y_val <- max(.x$value, na.rm = TRUE) * 0.98
-        
+        # Above the data max, not at 0.98x it (which sits right at the top
+        # whisker/outlier and collides with it).
+        data_range <- range(.x$value, na.rm = TRUE)
+        y_val <- data_range[2] + diff(data_range) * 0.12
+
         # Get the unique x-axis levels and compute the central value
         x_levels <- levels(factor(.x[[x_col]]))
         x_numeric <- match(.x[[x_col]], x_levels)
         x_center <- mean(range(x_numeric, na.rm = TRUE))
-        
+
         ggpubr::stat_compare_means(
           data = .x,
           method = stat,
@@ -508,8 +517,10 @@ alpha_diversity_plot <- function(
           label.x = x_center
         )
       })
-    
-    p <- p + p_vals_layers
+
+    p <- p +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18))) +
+      p_vals_layers
   }
 
   {

@@ -129,7 +129,7 @@ metadata_fungi <- fungi_metadata[
 
 ## Pre-processing data
 
-To be used as input for most `MicroBioMeta` functions, the data should be in `biom` format, with a **taxonomy** column at the end.
+`MicroBioMeta` function needs the data should be in `biom` format, with a **taxonomy** column at the end.
 
 If your data is not already in that form, `merge_feature_taxonomy()` combines an abundance table and a taxonomy table into this format. Keeping taxonomy as a column of the same table means most functions can look up taxonomic identity without requiring a separate object.
 
@@ -229,23 +229,23 @@ abundance_heatmap_plot(table = table_fung,
 ### 🖥️ Sankey diagram of taxonomic flow
 `abundance_sankey_plot()` visualizes how relative abundance flows across taxonomic ranks — from Kingdom to Species as an interactive Sankey diagram. It is useful for getting a quick overview of which lineages dominate the community.
 
-The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps the number of taxa kept per rank and `taxonomy_db` tells the function how the taxonomy strings are formatted (e.g. `"silva"`, `"gg"`, `"kraken2"`). The diagram is written to an HTML file (`output_file`) that can be opened in a browser.
-
-This function depends on the [`sankeyD3`](https://github.com/fbreitwieser/sankeyD3) package, which is only available on GitHub:
+The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps the number of taxa kept per rank and `taxonomy_db` tells the function how the taxonomy strings are formatted (e.g. `"silva"`, `"gg"`, `"kraken2"`). This function depends on [`networkD3`](https://CRAN.R-project.org/package=networkD3), available on CRAN:
 
 ```{r, eval=FALSE}
-# install.packages("remotes")
-remotes::install_github("fbreitwieser/sankeyD3")
+install.packages("networkD3")
 ```
 
-```{r, eval=FALSE}
-abundance_sankey_plot(
+⚠️ Unlike the other plotting functions in `MicroBioMeta`, this one always **saves an HTML file** (`output_file`) rather than returning a `ggplot`, so it doesn't show up as a static image like the other figures in this vignette. It also (invisibly) returns the underlying `networkD3` widget object, which is what lets it render below as an interactive diagram embedded directly in this page — assign the call's result to a variable and reference that variable to display it, as done here:
+
+```{r, warning=FALSE}
+sankey_bacteria <- abundance_sankey_plot(
   table       = table_bac,
   output_file = "sankey_bacteria.html",
   maxn        = 15,
   taxRanks    = c("P", "C", "O", "F", "G"),
   taxonomy_db = "silva"
 )
+sankey_bacteria
 ```
 
 ## 📊 Alpha diversity
@@ -441,8 +441,8 @@ The `distance` argument defines the dissimilarity metric used to calculate beta 
 ```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 beta_ord_plot(table = table_bac,
               metadata = metadata_bacteria,
-               distance = "compositional",
-              ordination = "PCA",
+               distance = "aitchison",
+              ordination = "NMDS",
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
@@ -452,8 +452,8 @@ beta_ord_plot(table = table_fung,
               metadata = metadata_fungi,
               group_col = "Type_of_soil",
               shape_col = "Treatment",
-              distance = "aitchison",
-              ordination = "NMDS")
+              distance = "compositional",
+              ordination = "PCA")
 
 ```
 
@@ -466,11 +466,13 @@ The `permutations` parameter determines the number of permutations used to estim
 
 ⚠️ **NOTE: Each function has the option save_* that export a table or an element obtain in each function**. 
 
+`method` is set to match each dataset's ordination above (`aitchison` for bacteria's NMDS, `compositional` for fungi's PCA), so the significance test evaluates the same notion of dissimilarity shown in the plot.
+
 ```{r, fig.width=8, fig.height=4}
 beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
-                method = "euclidean",
+                method = "aitchison",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -479,7 +481,7 @@ beta_test_table(table = table_bac,
 beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
-                method = "euclidean",
+                method = "compositional",
                 test = "permanova",
                 permutations = 999)
 ```

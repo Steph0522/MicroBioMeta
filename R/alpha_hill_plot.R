@@ -305,7 +305,12 @@ alpha_hill_plot <- function(
           legend_position = legend_position,
           extra = ggplot2::theme(
             panel.grid   = ggplot2::element_blank(),
-            axis.text.x  = .mbm_x_text(x_label_angle)
+            axis.text.x  = .mbm_x_text(x_label_angle),
+            # Smaller than the package default (12) so the topmost y-axis
+            # tick number doesn't collide with the panel tag letter, which
+            # cowplot draws in the panel's top-left corner overlapping the
+            # axis area rather than in a reserved margin.
+            axis.text.y  = ggplot2::element_text(size = 9, color = "black")
           )
         )
       # A fixed aspect.ratio shrinks each cowplot cell's panel to fit inside
@@ -317,18 +322,24 @@ alpha_hill_plot <- function(
       }
 
       if (!is.null(stat)) {
-        y_val <- max(cell_data$value, na.rm = TRUE) * 0.98
+        # label.y is placed above the data max, not at 0.98x it (which sits
+        # right at the top whisker/outlier and collides with it); extra top
+        # expansion gives it room so it isn't clipped by the panel border.
+        data_range <- range(cell_data$value, na.rm = TRUE)
+        y_val <- data_range[2] + diff(data_range) * 0.12
         x_lvls <- levels(factor(cell_data[[x_col]]))
         x_numeric <- match(cell_data[[x_col]], x_lvls)
         x_center <- mean(range(x_numeric, na.rm = TRUE))
-        p_cell <- p_cell + ggpubr::stat_compare_means(
-          data = cell_data, method = stat,
-          mapping = ggplot2::aes(
-            label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-          ),
-          size = 3.5, family = "serif", hide.ns = TRUE,
-          label.y = y_val, label.x = x_center
-        )
+        p_cell <- p_cell +
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18))) +
+          ggpubr::stat_compare_means(
+            data = cell_data, method = stat,
+            mapping = ggplot2::aes(
+              label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
+            ),
+            size = 3.5, family = "serif", hide.ns = TRUE,
+            label.y = y_val, label.x = x_center
+          )
       }
 
       show_top_strip   <- row_idx == 1
@@ -466,7 +477,10 @@ alpha_hill_plot <- function(
     p_vals_layers <- results_largo %>%
       dplyr::group_split(dplyr::across(dplyr::all_of(split_vars))) %>%
       purrr::map(~ {
-        y_val <- max(.x$value, na.rm = TRUE) * 0.98
+        # Above the data max, not at 0.98x it (which sits right at the top
+        # whisker/outlier and collides with it).
+        data_range <- range(.x$value, na.rm = TRUE)
+        y_val <- data_range[2] + diff(data_range) * 0.12
 
         # Get the unique x-axis levels and compute the central value
         x_levels <- levels(factor(.x[[x_col]]))
@@ -487,7 +501,9 @@ alpha_hill_plot <- function(
         )
       })
 
-    p <- p + p_vals_layers
+    p <- p +
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18))) +
+      p_vals_layers
   }
 
   {
