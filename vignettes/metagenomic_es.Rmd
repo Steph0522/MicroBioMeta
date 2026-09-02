@@ -1,12 +1,12 @@
 ---
-title: "Metagenomic"
+title: "Metagenómica"
 output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
     fig_caption: true
 vignette: >
-  %\VignetteIndexEntry{Metagenomic}
+  %\VignetteIndexEntry{Metagenómica}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,25 +21,25 @@ knitr::opts_chunk$set(
 )
 ```
 
-🍄 This tutorial shows how to use `MicroBioMeta` on **shotgun metagenomic** data, as an alternative to the amplicon (metabarcoding) workflow covered in the [Metabarcoding vignette](metabarcoding.html). The functions and most of their parameters are exactly the same across both workflows, so they aren't re-explained here only what's specific to metagenomic data is.
+🍄 Este tutorial muestra cómo usar `MicroBioMeta` con datos de **metagenómica shotgun**, como alternativa al flujo de trabajo de amplicón (metabarcoding) cubierto en la [viñeta de Amplicón](metabarcoding_es.html). Las funciones y la mayoría de sus parámetros son exactamente los mismos en ambos flujos de trabajo, así que no se vuelven a explicar aquí, solo lo que es específico de los datos metagenómicos.
 
-For this example, reads were taxonomically classified with [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) and abundance-corrected at the species level with [`Bracken`](https://ccb.jhu.edu/software/bracken/).
+Para este ejemplo, las lecturas fueron clasificadas taxonómicamente con [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) y corregidas en abundancia a nivel de especie con [`Bracken`](https://ccb.jhu.edu/software/bracken/).
 
-The data comes from forest soils along the Iztaccíhuatl-Popocatépetl (PNIP) and La Malinche (PNML) transects, Central Mexico:
+Los datos provienen de suelos forestales a lo largo de los transectos Iztaccíhuatl-Popocatépetl (PNIP) y La Malinche (PNML), en el centro de México:
 
 [Hereira-Pacheco, S. E. et al. (2025). Metagenomic analysis of the diversity and composition of the fungal communities of forest soils of the transect Iztaccíhuatl-Popocatépetl and La Malinche. *PeerJ*, 13, e18323.](https://peerj.com/articles/18323/)
 
-Raw data, metadata and the original analysis scripts: [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
+Datos crudos, metadatos y los scripts originales del análisis: [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
 
-## 💻 Loading data
-First, let's load `MicroBioMeta` and `tidyverse` (used for data wrangling):
+## 💻 Cargar los datos
+Primero, carguemos `MicroBioMeta` y `tidyverse` (usado para el manejo de datos):
 
 ```{r "start", message=FALSE}
 library("MicroBioMeta")
 library(tidyverse)
 ```
 
-Each sample was processed separately, so `bracken_species` reports were merged into a single table beforehand (one column per sample, named `kraken_pluspfp_<id_metagenome>_report_bracken_species`) with a **`taxonomy`** column already attached as the last column:
+Cada muestra se procesó por separado, así que los reportes `bracken_species` se combinaron de antemano en una sola tabla (una columna por muestra, llamada `kraken_pluspfp_<id_metagenome>_report_bracken_species`) con una columna **`taxonomy`** ya agregada como última columna:
 
 ```{r}
 table_kraken <- read.delim("articles/data/table_kraken.txt", row.names = 1, check.names = FALSE)
@@ -47,11 +47,11 @@ table_kraken <- read.delim("articles/data/table_kraken.txt", row.names = 1, chec
 table_kraken[1:3, c(1:2, ncol(table_kraken))]
 ```
 
-Taxonomy is already in the table  so, there is no need to use  `merge_feature_taxonomy()` function.
+La taxonomía ya está en la tabla, así que no hace falta usar la función `merge_feature_taxonomy()`.
 
-⚠️ Taxonomy strings from Kraken2 use a `k__`/`p__`/`c__`/... prefix like SILVA/GTDB, but ranks are separated by `"; "` (semicolon **and space**) instead of `";"`. `MicroBioMeta` already accounts for this wherever a `taxonomy_db` argument exists, just pass `taxonomy_db = "Kraken2"`.
+⚠️ Las cadenas de taxonomía de Kraken2 usan un prefijo `k__`/`p__`/`c__`/... como SILVA/GTDB, pero los rangos están separados por `"; "` (punto y coma **y espacio**) en vez de `";"`. `MicroBioMeta` ya tiene esto contemplado en cualquier lugar donde exista un argumento `taxonomy_db`, solo pasa `taxonomy_db = "Kraken2"`.
 
-Now, let's load the metadata:
+Ahora, carguemos los metadatos:
 
 ```{r}
 metadata_meta <- read.delim("articles/data/metadata_metagenomic.txt", check.names = FALSE)
@@ -59,7 +59,7 @@ metadata_meta <- read.delim("articles/data/metadata_metagenomic.txt", check.name
 head(metadata_meta[, 1:10])
 ```
 
-Kraken column names encode a `id_metagenome` number (e.g. `kraken_pluspfp_100_report_bracken_species`) rather than the sample's actual ID, so we recover it with a regular expression and use `metadata_meta$id_metagenome` to rename each column to its `SampleID`:
+Los nombres de columna de Kraken codifican un número `id_metagenome` (por ejemplo, `kraken_pluspfp_100_report_bracken_species`) en vez del ID real de la muestra, así que lo recuperamos con una expresión regular y usamos `metadata_meta$id_metagenome` para renombrar cada columna a su `SampleID`:
 
 ```{r}
 sample_cols <- setdiff(colnames(table_kraken), "taxonomy")
@@ -70,7 +70,7 @@ colnames(table_kraken)[match(sample_cols, colnames(table_kraken))] <-
   metadata_meta$SAMPLEID[match(id_metagenome, metadata_meta$id_metagenome)]
 ```
 
-Let's rename and format the metadata:
+Renombremos y demos formato a los metadatos:
 
 ```{r}
 metadata_meta$Polygon <- factor(paste0("Pol", metadata_meta$Poligono), levels = paste0("Pol", 1:6))
@@ -81,11 +81,11 @@ metadata_meta$Site <- as.character(metadata_meta$Sitio)
 table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 ```
 
-Coordinates were taken and loaded:
+Las coordenadas se tomaron y cargaron así:
 
 ```{r}
 coord_meta <- read.csv("articles/data/coord_metagenomic.csv") %>%
-  dplyr::select(-Site) %>% # drop the CSV's own overall site index (1-12); we want `Sitio` (1-2) instead
+  dplyr::select(-Site) %>% # descartamos el índice de sitio general propio del CSV (1-12); queremos `Sitio` (1-2) en su lugar
   dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
   dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)
 
@@ -95,9 +95,9 @@ metadata_meta <- metadata_meta %>%
   dplyr::mutate(Site = as.character(Site))
 ```
 
-## 📊 Composition exploration
-### 📊 Abundance barplot
-Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
+## 📊 Exploración de la composición
+### 📊 Barplot de abundancia
+Misma función que en la viñeta de amplicón; la única diferencia es `taxonomy_db = "Kraken2"`, que le indica a la lógica de parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.
 
 ```{r, fig.width=9, fig.height=6}
 abundance_bar_plot(table = table_meta,
@@ -112,8 +112,8 @@ abundance_bar_plot(table = table_meta,
                   save_table = FALSE)
 ```
 
-### 🖥️ Abundance heatmap
-Kraken2/Bracken taxa aren't ASVs, so `feature_prefix = "Taxon"` is used here instead of the default `"ASV"` row-label prefix.
+### 🖥️ Heatmap de abundancia
+Los taxones de Kraken2/Bracken no son ASVs, así que aquí se usa `feature_prefix = "Taxon"` en vez del prefijo `"ASV"` por defecto para las etiquetas de fila.
 
 ```{r, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
 abundance_heatmap_plot(table = table_meta,
@@ -124,14 +124,14 @@ abundance_heatmap_plot(table = table_meta,
                   feature_prefix = "Taxon")
 ```
 
-## 📊 Alpha diversity
-### 📈 Correlation among Hill numbers
+## 📊 Diversidad alfa
+### 📈 Correlación entre números de Hill
 ```{r, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_meta)
 ```
 
-### 📊 Alpha diversity visualization
-`fill_col` is the same as `x_col` here, so the legend would just repeat the x-axis tick labels - `show_legend = FALSE` drops it.
+### 📊 Visualización de diversidad alfa
+`fill_col` es igual a `x_col` aquí, así que la leyenda solo repetiría las etiquetas del eje x - `show_legend = FALSE` la quita.
 
 ```{r, warning=FALSE, fig.width=9, fig.height=5}
 alpha_hill_plot(table = table_meta,
@@ -146,9 +146,9 @@ alpha_hill_plot(table = table_meta,
                 save_table = FALSE)
 ```
 
-Richness (*q*=0) is nearly saturated and flat across blocks here — this genus-level Bracken table simply doesn't have much room left to vary at *q*=0 — while *q*=1 and *q*=2 (which weight by relative abundance) do pick up differences between blocks.
+La riqueza (*q*=0) está casi saturada y plana entre bloques aquí — esta tabla de Bracken a nivel de género simplemente no tiene mucho margen para variar en *q*=0 — mientras que *q*=1 y *q*=2 (que ponderan por abundancia relativa) sí capturan diferencias entre bloques.
 
-### Alpha diversity along a continuous gradient
+### Diversidad alfa a lo largo de un gradiente continuo
 
 ```{r, warning=FALSE, fig.height=4, fig.width=10}
 alpha_decay_plot(table = table_meta,
@@ -157,13 +157,13 @@ alpha_decay_plot(table = table_meta,
                  x_axis_title = "Soil pH")
 ```
 
-Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't, for the same ceiling-effect reason as above.
+La diversidad en *q*=1 y *q*=2 aumenta significativamente con el pH del suelo; *q*=0 no, por la misma razón de efecto techo que arriba.
 
-## Beta diversity
+## Diversidad beta
 
-### Ordination of community composition
+### Ordenación de la composición de la comunidad
 
-We can use metrics that consider only presence/absence like **jaccard**:
+Podemos usar métricas que solo consideran presencia/ausencia como **jaccard**:
 
 ```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 beta_ord_plot(table = table_meta,
@@ -173,9 +173,9 @@ beta_ord_plot(table = table_meta,
               group_col = "Polygon")
 ```
 
-### Statistical tests for beta diversity
+### Pruebas estadísticas para diversidad beta
 
-`method = "jaccard"` matches with the one used for the ordinatrion above, so the ordination and the significance test are evaluating the same notion of dissimilarity. 
+`method = "jaccard"` coincide con el usado en la ordenación de arriba, de modo que la ordenación y la prueba de significancia evalúan la misma noción de disimilitud.
 
 ```{r, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
@@ -187,9 +187,9 @@ beta_test_table(table = table_meta,
 ```
 
 
-### Distance-decay of community similarity
+### Decaimiento de la similitud comunitaria con la distancia
 
-`beta_decay_plot()` tests whether communities that are geographically closer are also more similar in composition:
+`beta_decay_plot()` evalúa si las comunidades geográficamente más cercanas también son más similares en composición:
 
 ```{r, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
 beta_decay_plot(
@@ -201,11 +201,11 @@ beta_decay_plot(
 )
 ```
 
-Communities that are geographically closer are significantly more similar (Mantel *r* ≈ 0.2, *p* = 0.002. the exact value jitters slightly between runs since the Mantel test is permutation-based), a real distance-decay signal across these forest soils. `jaccard` is used to be consistent with the ordination above. 
+Las comunidades geográficamente más cercanas son significativamente más similares (Mantel *r* ≈ 0.2, *p* = 0.002; el valor exacto varía ligeramente entre corridas ya que la prueba de Mantel se basa en permutaciones), una señal real de decaimiento con la distancia en estos suelos forestales. Se usa `jaccard` para ser consistentes con la ordenación de arriba.
 
-## Differential abundant analysis
+## Análisis de abundancia diferencial
 
-For the heatmap and ANCOMBC2 versions we need a 2-group subset of the 6-level `Polygon`, in this part we will compare Polygon 2 and 5:
+Para las versiones de heatmap y ANCOMBC2 necesitamos un subconjunto de 2 grupos del `Polygon` de 6 niveles; en esta parte compararemos Polygon 2 y 5:
 
 ```{r}
 metadata_meta_compar <- metadata_meta %>%
@@ -231,7 +231,7 @@ ancombc_plot(
 )
 ```
 
-### Identifying important taxa
+### Identificando taxones importantes
 
 ```{r, fig.width=7, fig.height=6, out.width="60%"}
 random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n = 10, variable_to_predict = "Polygon")
@@ -246,9 +246,9 @@ ratios_bubble_plot(table = table_meta_compar,
            condition_B = "Pol5")
 ```
 
-## Environmental analyses
+## Análisis ambientales
 
-The metadata already carries the soil physicochemical variables measured for these samples, so the environmental table is built the same way as in the metabarcoding vignette:
+Los metadatos ya traen las variables fisicoquímicas del suelo medidas para estas muestras, así que la tabla ambiental se construye de la misma forma que en la viñeta de amplicón:
 
 ```{r}
 env_table_meta <- metadata_meta %>%
@@ -257,7 +257,7 @@ env_table_meta <- metadata_meta %>%
   column_to_rownames(var = "SAMPLEID")
 ```
 
-### Correlation between environmental variables and taxonomic abundance
+### Correlación entre variables ambientales y abundancia taxonómica
 
 ```{r, fig.width=9, fig.height=3.2}
 corr_env_abund_plot(table = table_meta,
@@ -268,7 +268,7 @@ corr_env_abund_plot(table = table_meta,
                     save_table = FALSE)
 ```
 
-### Constrained ordination (CCA)
+### Ordenación restringida (CCA)
 
 ```{r}
 env_table_meta <- env_table_meta[

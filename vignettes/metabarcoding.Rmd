@@ -163,7 +163,7 @@ The `top_n_groups` controls the number of most abundant taxa displayed in the ba
 If `add_remain = TRUE`, the relative abundances are completed to 100% by adding a gray category representing the remaining taxa not explicitly displayed; if `FALSE`, only the selected taxa are shown.\
 The `label` parameter defines the legend title displayed in the plot.
 
-The x-axis tick labels can be rotated with `x_label_angle` (default `0`, horizontal) — useful when sample or group names are long enough to overlap, as in the examples below. `strip_text_bold` controls whether facet strip titles are bold (default `FALSE`), and `aspect_ratio` fixes the height/width ratio of the panel when you need consistent proportions across figures.
+The x-axis tick labels can be rotated with `x_label_angle` (default `0`, horizontal), useful when sample or group names are long enough to overlap, as in the examples below. `strip_text_bold` controls whether facet strip titles are bold (default `FALSE`), and `aspect_ratio` fixes the height/width ratio of the panel when you need consistent proportions across figures.
 
 Finally, when `save_table = TRUE`, the function also returns a table containing the relative abundances (percentages) used to generate the plot.
 
@@ -227,7 +227,7 @@ abundance_heatmap_plot(table = table_fung,
 ```
 
 ### 🖥️ Sankey diagram of taxonomic flow
-`abundance_sankey_plot()` visualizes how relative abundance flows across taxonomic ranks — from Kingdom to Species as an interactive Sankey diagram. It is useful for getting a quick overview of which lineages dominate the community.
+`abundance_sankey_plot()` visualizes how relative abundance flows across taxonomic ranks: from Kingdom to Species as an interactive Sankey diagram. It is useful for getting a quick overview of which lineages dominate the community.
 
 The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps the number of taxa kept per rank and `taxonomy_db` tells the function how the taxonomy strings are formatted (e.g. `"silva"`, `"gg"`, `"kraken2"`). This function depends on [`networkD3`](https://CRAN.R-project.org/package=networkD3), available on CRAN:
 
@@ -235,7 +235,7 @@ The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps t
 install.packages("networkD3")
 ```
 
-⚠️ Unlike the other plotting functions in `MicroBioMeta`, this one always **saves an HTML file** (`output_file`) rather than returning a `ggplot`, so it doesn't show up as a static image like the other figures in this vignette. It also (invisibly) returns the underlying `networkD3` widget object, which is what lets it render below as an interactive diagram embedded directly in this page — assign the call's result to a variable and reference that variable to display it, as done here:
+⚠️ Unlike the other functions, this one doesn't return a `ggplot` object but a `sankeyNetwork` object  and it has a parameter (`output_file`)  that allows to  **saves an HTML file** with an interactive sankey diafgram.
 
 ```{r, warning=FALSE}
 sankey_bacteria <- abundance_sankey_plot(
@@ -255,7 +255,6 @@ Alpha diversity describes the diversity within individual samples. With `MicroBi
 The `alpha_hill_corr_plot()` function calculates Hill numbers for different orders (typically, 𝑞=0,1,2) and visualizes the correlations among them using a correlation plot and evaluate how strongly diversity metrics of different orders are related to the depth sequencing.
 
 This is the first step before analyze alpha diversity metrics.
-
 
 For the bacteria 🦠, we can observed that at all orders of *q* there is a strong correlation with sequencing depth.
 
@@ -299,7 +298,7 @@ alpha_hill_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
-Also, we can visualize other metrics considering classic alpha diversity indexes. Also, using the parameter stat it is possible to set an statistical comparison indication the method to use:
+Also, we can visualize other metrics considering classic alpha diversity indexes:
 
 ```{r, warning=FALSE, fig.height=6, fig.width=9}
 alpha_diversity_plot(table = table_fung,
@@ -313,7 +312,8 @@ alpha_diversity_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
-Each panel is automatically tagged (A, B, C, ...) so it can be referenced in a figure caption. When a comparison (`stat`) is set, a p-value annotation is added to each panel as well. `panel_label_case` switches between upper- and lowercase tags, `panel_label_bold` toggles bold tags, and `panel_labels` lets you supply custom tags (e.g. `c("(a)", "(b)", "(c)")`) instead of the auto-generated ones. `free_y` lets each panel use its own y-axis scale instead of a shared one, as below:
+Each panel is automatically labeled (A, B, C, ...) so it can be referenced. When `stat` is set, a p-value annotation is added to each panel as well (default Wilcoxon for two comparisons and Kruskal-Wallis for three comparisons), we can indicate the method to use with `stat` as the function `stat_compare_means()` of `ggpubr`.
+`panel_label_case` switches between upper and lowercase labels, `panel_label_bold` for bold labels and `panel_labels` lets you supply custom labels(e.g. `c("(a)", "(b)", "(c)")`) instead of the auto-generated ones. `free_y` lets each panel use its own y-axis scale instead of a shared one, as below:
 
 ```{r, warning=FALSE, fig.height=6, fig.width=9}
 alpha_diversity_plot(table = table_fung,
@@ -512,7 +512,7 @@ beta_partition_ord_plot(
 ```
 
 ### 🖥️ Pairwise beta diversity visualization
-The `beta_dissimilarity_plot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples.
+The `beta_dissimilarity_plot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples. This funciont uses betapart on incidence data using Sorensen or Jaccard index: shared, turnover or nestedness. 
 
 The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
 
@@ -537,7 +537,8 @@ beta_dissimilarity_plot(table = table_bac,
                        x_axis_title = "Samples",
                        x_label_angle = 45,
                        stat = "kruskal.test",
-                       partition = "shared", family = "jaccard",
+                       partition = "shared", 
+                       family = "jaccard",
                        save_table = FALSE)
 
 ```
@@ -565,11 +566,11 @@ beta_dissimilarity_plot(table = table_fung,
 ### 🖥️ Pairwise turnover: between-group vs. within-group
 `beta_turnover_plot()` reports the ASV turnover component of Hill-number-based beta diversity (*q*=0, 1, 2), one facet row per Hill order.
 
-`beta_turnover_plot()` answers a different question than `beta_dissimilarity_plot()`: for **one reference group** (e.g. Rhizosphere), is its turnover **against another group** (e.g. Roots — a between-group comparison) greater than its turnover **against itself** (Rhizosphere-vs-Rhizosphere pairs — a within-group baseline)? If between-group turnover is significantly higher, that's evidence the two compartments really do host distinct communities, beyond the variability already present among replicates of the same compartment.
+`beta_turnover_plot()` answers a different question than `beta_dissimilarity_plot()`: for **one reference group** (e.g. Rhizosphere), is its turnover **against another group** (e.g. Roots, a between-group comparison) greater than its turnover **against itself** (Rhizosphere-vs-Rhizosphere pairs, a within-group baseline)? If between-group turnover is significantly higher, that's evidence the two compartments really do host distinct communities, beyond the variability already present among replicates of the same compartment.
 
-So the plot below has one purple strip on top — labeled **"Rhizosphere"**, the fixed reference group in both comparisons — and, inside it, two boxes: **"Roots"** (Rhizosphere vs. Roots, between-group) and **"Rhizosphere"** (Rhizosphere vs. Rhizosphere, within-group). The strip and the "Rhizosphere" box both being labeled the same is intentional, not a duplicate — the strip names the reference, the box names what it's being compared *against* (itself, in that one case).
+So the plot below has one purple (this color can be set) strip on top labeled **"Rhizosphere"**, the fixed reference group in both comparisons and,inside it, two boxes: **"Roots"** (Rhizosphere vs. Roots, between-group) and **"Rhizosphere"** (Rhizosphere vs. Rhizosphere, within-group). The strip and the "Rhizosphere" box both being labeled the same is intentional, not a duplicate, the strip names the reference, the box names what it's being compared *against* (itself, in that one case).
 
-`comparison_condition1` selects which `"value1_vs_value2"` combinations to keep — always with the reference group (`Rhizosphere`) first. `comparison_condition2` keeps only the same treatment pairs, so turnover isn't confounded by comparing samples from different treatments.
+`comparison_condition1` selects which `"value1_vs_value2"` combinations to keep always with the reference group (`Rhizosphere`) first. `comparison_condition2` keeps only the same treatment pairs, so turnover isn't confounded by comparing samples from different treatments.
 
 `color_facets_x` colors the top facet strip (`condition1.x`) and `color_axis_x` colors the two boxes (`condition1.y`). Tick labels are hidden by default since the groups are already identified in the legend. Set `show_x_labels = TRUE` to bring them back. `stat` adds a statistical comparison between the two boxes.
 
@@ -679,7 +680,7 @@ BiocManager::install(c("ANCOMBC", "phyloseq"))
 
 `tax_level` groups the table to a taxonomic rank before testing (default `"Genus"`), and `p_adj_method`/`prv_cut` control the multiple-testing correction and prevalence filter.
 
-⚠️ With a low `prv_cut`, rare/sparse taxa can trigger a `"Zero variances have been detected..."` error from ANCOMBC2's internal bias-correction step on some runs (it doesn't always happen - it depends on which taxa the bootstrap iteration happens to keep). Raising `prv_cut` filters those sparse taxa out before testing and avoids it.
+⚠️ With a low `prv_cut`, rare/sparse taxa can trigger a `"Zero variances have been detected..."` error from ANCOMBC2's internal bias-correction step on some runs (it doesn't always happen, it depends on which taxa the bootstrap iteration happens to keep). Raising `prv_cut` filters those sparse taxa out before testing and avoids it.
 
 ```{r, fig.width=8, fig.height=6, message=FALSE, warning=FALSE}
 ancombc_plot(

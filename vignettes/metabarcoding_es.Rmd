@@ -163,7 +163,7 @@ El parámetro `level` permite elegir el nivel taxonómico al que se colapsan los
 Si `add_remain = TRUE`, las abundancias relativas se completan hasta el 100% agregando una categoría gris que representa los taxones restantes no mostrados explícitamente; si es `FALSE`, solo se muestran los taxones seleccionados.\
 El parámetro `label` define el título de la leyenda mostrada en el gráfico.
 
-Las etiquetas del eje x pueden rotarse con `x_label_angle` (por defecto `0`, horizontal) — útil cuando los nombres de muestras o grupos son lo suficientemente largos como para superponerse, como en los ejemplos de abajo. `strip_text_bold` controla si los títulos de las facetas van en negritas (por defecto `FALSE`), y `aspect_ratio` fija la relación alto/ancho del panel cuando necesitas proporciones consistentes entre figuras.
+Las etiquetas del eje x pueden rotarse con `x_label_angle` (por defecto `0`, horizontal), útil cuando los nombres de muestras o grupos son lo suficientemente largos como para superponerse, como en los ejemplos de abajo. `strip_text_bold` controla si los títulos de las facetas van en negritas (por defecto `FALSE`), y `aspect_ratio` fija la relación alto/ancho del panel cuando necesitas proporciones consistentes entre figuras.
 
 Finalmente, cuando `save_table = TRUE`, la función también retorna una tabla con las abundancias relativas (porcentajes) usadas para generar el gráfico.
 
@@ -227,7 +227,7 @@ abundance_heatmap_plot(table = table_fung,
 ```
 
 ### 🖥️ Diagrama de Sankey del flujo taxonómico
-`abundance_sankey_plot()` visualiza cómo fluye la abundancia relativa a través de los rangos taxonómicos — de Reino a Especie, como un diagrama de Sankey interactivo. Es útil para tener una visión rápida de qué linajes dominan la comunidad.
+`abundance_sankey_plot()` visualiza cómo fluye la abundancia relativa a través de los rangos taxonómicos: de Reino a Especie, como un diagrama de Sankey interactivo. Es útil para tener una visión rápida de qué linajes dominan la comunidad.
 
 El argumento `taxRanks` especifica qué rangos incluir como nodos, `maxn` limita el número de taxones conservados por rango, y `taxonomy_db` le indica a la función cómo están formateadas las cadenas de taxonomía (por ejemplo, `"silva"`, `"gg"`, `"kraken2"`). Esta función depende de [`networkD3`](https://CRAN.R-project.org/package=networkD3), disponible en CRAN:
 
@@ -235,7 +235,7 @@ El argumento `taxRanks` especifica qué rangos incluir como nodos, `maxn` limita
 install.packages("networkD3")
 ```
 
-⚠️ A diferencia de las demás funciones de graficación de `MicroBioMeta`, esta siempre **guarda un archivo HTML** (`output_file`) en vez de retornar un `ggplot`, así que no aparece como una imagen estática como las demás figuras de esta viñeta. También retorna (de forma invisible) el objeto widget de `networkD3` subyacente, que es lo que permite que se muestre abajo como un diagrama interactivo embebido directamente en esta página — asigna el resultado de la llamada a una variable y referencia esa variable para mostrarlo, como se hace aquí:
+⚠️ A diferencia de las demás funciones, esta no retorna un objeto `ggplot` sino un objeto `sankeyNetwork`, y tiene un parámetro (`output_file`) que permite **guardar un archivo HTML** con un diagrama de Sankey interactivo.
 
 ```{r, warning=FALSE}
 sankey_bacteria <- abundance_sankey_plot(
@@ -299,7 +299,7 @@ alpha_hill_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
-También podemos visualizar otras métricas considerando índices clásicos de diversidad alfa. Además, usando el parámetro stat es posible establecer una comparación estadística indicando el método a usar:
+También podemos visualizar otras métricas considerando índices clásicos de diversidad alfa:
 
 ```{r, warning=FALSE, fig.height=6, fig.width=9}
 alpha_diversity_plot(table = table_fung,
@@ -313,7 +313,8 @@ alpha_diversity_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
-Cada panel se etiqueta automáticamente (A, B, C, ...) para poder referenciarlo en el pie de figura. Cuando se establece una comparación (`stat`), también se agrega una anotación con el valor p a cada panel. `panel_label_case` alterna entre etiquetas en mayúsculas y minúsculas, `panel_label_bold` activa/desactiva las etiquetas en negritas, y `panel_labels` te permite dar etiquetas personalizadas (por ejemplo `c("(a)", "(b)", "(c)")`) en vez de las generadas automáticamente. `free_y` permite que cada panel use su propia escala del eje y en vez de una compartida, como abajo:
+Cada panel se etiqueta automáticamente (A, B, C, ...) para poder referenciarlo. Cuando se establece `stat`, también se agrega una anotación con el valor p a cada panel (por defecto Wilcoxon para dos comparaciones y Kruskal-Wallis para tres comparaciones); podemos indicar el método a usar con `stat`, tal como la función `stat_compare_means()` de `ggpubr`.
+`panel_label_case` alterna entre etiquetas en mayúsculas y minúsculas, `panel_label_bold` para etiquetas en negritas, y `panel_labels` te permite dar etiquetas personalizadas (por ejemplo `c("(a)", "(b)", "(c)")`) en vez de las generadas automáticamente. `free_y` permite que cada panel use su propia escala del eje y en vez de una compartida, como abajo:
 
 ```{r, warning=FALSE, fig.height=6, fig.width=9}
 alpha_diversity_plot(table = table_fung,
@@ -512,7 +513,7 @@ beta_partition_ord_plot(
 ```
 
 ### 🖥️ Visualización pareada de diversidad beta
-La función `beta_dissimilarity_plot()` resume los valores pareados de diversidad beta usando boxplots, permitiendo comparar los patrones de diversidad entre grupos de muestras.
+La función `beta_dissimilarity_plot()` resume los valores pareados de diversidad beta usando boxplots, permitiendo comparar los patrones de diversidad entre grupos de muestras. Esta función usa `betapart` sobre datos de incidencia (presencia/ausencia), con el índice de Sørensen o Jaccard: shared, turnover o nestedness.
 
 Los parámetros `condition1_col` y `condition2_col` especifican las variables de metadatos usadas para definir los grupos que se comparan. El argumento `partition` determina qué componente de la diversidad beta se muestra (por ejemplo, compartido o exclusivo), mientras que `family` define el índice de disimilitud usado.
 
@@ -537,7 +538,8 @@ beta_dissimilarity_plot(table = table_bac,
                        x_axis_title = "Samples",
                        x_label_angle = 45,
                        stat = "kruskal.test",
-                       partition = "shared", family = "jaccard",
+                       partition = "shared",
+                       family = "jaccard",
                        save_table = FALSE)
 
 ```
@@ -565,11 +567,11 @@ beta_dissimilarity_plot(table = table_fung,
 ### 🖥️ Recambio pareado (turnover): entre grupos vs. dentro del grupo
 `beta_turnover_plot()` reporta el componente de recambio (ASV turnover) de la diversidad beta basada en números de Hill (*q*=0, 1, 2), con una fila de faceta por orden de Hill.
 
-`beta_turnover_plot()` responde una pregunta distinta a la de `beta_dissimilarity_plot()`: para **un grupo de referencia** (por ejemplo, Rhizosphere), ¿es su recambio **contra otro grupo** (por ejemplo, Roots — una comparación entre grupos) mayor que su recambio **contra sí mismo** (pares Rhizosphere-vs-Rhizosphere — una línea base dentro del grupo)? Si el recambio entre grupos es significativamente mayor, eso es evidencia de que los dos compartimentos realmente albergan comunidades distintas, más allá de la variabilidad ya presente entre réplicas del mismo compartimento.
+`beta_turnover_plot()` responde una pregunta distinta a la de `beta_dissimilarity_plot()`: para **un grupo de referencia** (por ejemplo, Rhizosphere), ¿es su recambio **contra otro grupo** (por ejemplo, Roots, una comparación entre grupos) mayor que su recambio **contra sí mismo** (pares Rhizosphere-vs-Rhizosphere, una línea base dentro del grupo)? Si el recambio entre grupos es significativamente mayor, eso es evidencia de que los dos compartimentos realmente albergan comunidades distintas, más allá de la variabilidad ya presente entre réplicas del mismo compartimento.
 
-Así que el gráfico de abajo tiene una franja morada arriba — etiquetada **"Rhizosphere"**, el grupo de referencia fijo en ambas comparaciones — y, dentro de ella, dos cajas: **"Roots"** (Rhizosphere vs. Roots, entre grupos) y **"Rhizosphere"** (Rhizosphere vs. Rhizosphere, dentro del grupo). Que la franja y la caja "Rhizosphere" tengan la misma etiqueta es intencional, no un duplicado — la franja nombra la referencia, la caja nombra contra qué se está comparando (contra sí misma, en ese caso).
+Así que el gráfico de abajo tiene una franja morada arriba (este color se puede configurar) etiquetada **"Rhizosphere"**, el grupo de referencia fijo en ambas comparaciones y, dentro de ella, dos cajas: **"Roots"** (Rhizosphere vs. Roots, entre grupos) y **"Rhizosphere"** (Rhizosphere vs. Rhizosphere, dentro del grupo). Que la franja y la caja "Rhizosphere" tengan la misma etiqueta es intencional, no un duplicado, la franja nombra la referencia, la caja nombra contra qué se está comparando (contra sí misma, en ese caso).
 
-`comparison_condition1` selecciona qué combinaciones `"valor1_vs_valor2"` conservar — siempre con el grupo de referencia (`Rhizosphere`) primero. `comparison_condition2` conserva solo los pares del mismo tratamiento, para que el recambio no se confunda al comparar muestras de tratamientos distintos.
+`comparison_condition1` selecciona qué combinaciones `"valor1_vs_valor2"` conservar, siempre con el grupo de referencia (`Rhizosphere`) primero. `comparison_condition2` conserva solo los pares del mismo tratamiento, para que el recambio no se confunda al comparar muestras de tratamientos distintos.
 
 `color_facets_x` colorea la franja de faceta superior (`condition1.x`) y `color_axis_x` colorea las dos cajas (`condition1.y`). Las etiquetas del eje están ocultas por defecto ya que los grupos ya están identificados en la leyenda. Establece `show_x_labels = TRUE` para mostrarlas de nuevo. `stat` agrega una comparación estadística entre las dos cajas.
 
@@ -679,7 +681,7 @@ BiocManager::install(c("ANCOMBC", "phyloseq"))
 
 `tax_level` agrupa la tabla a un rango taxonómico antes de la prueba (por defecto `"Genus"`), y `p_adj_method`/`prv_cut` controlan la corrección por pruebas múltiples y el filtro de prevalencia.
 
-⚠️ Con un `prv_cut` bajo, los taxones raros o dispersos pueden disparar un error `"Zero variances have been detected..."` en el paso interno de corrección de sesgo de ANCOMBC2 en algunas corridas (no siempre ocurre — depende de qué taxones conserve la iteración de bootstrap en turno). Subir `prv_cut` filtra esos taxones dispersos antes de la prueba y evita el error.
+⚠️ Con un `prv_cut` bajo, los taxones raros o dispersos pueden disparar un error `"Zero variances have been detected..."` en el paso interno de corrección de sesgo de ANCOMBC2 en algunas corridas (no siempre ocurre, depende de qué taxones conserve la iteración de bootstrap en turno). Subir `prv_cut` filtra esos taxones dispersos antes de la prueba y evita el error.
 
 ```{r, fig.width=8, fig.height=6, message=FALSE, warning=FALSE}
 ancombc_plot(

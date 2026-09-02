@@ -89,7 +89,13 @@ beta_ord_plot <- function(table, metadata,
   requireNamespace("ALDEx2")
   requireNamespace("dplyr")
   requireNamespace("stringr")
-  
+
+  # vegan::vegdist() matches its method argument case-sensitively (e.g.
+  # "Jaccard" errors with "invalid distance method" where "jaccard" works),
+  # which isn't obvious from the outside since every method name documented
+  # here happens to be lowercase - normalize case so any capitalization works.
+  distance <- tolower(distance)
+
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
@@ -130,6 +136,12 @@ beta_ord_plot <- function(table, metadata,
     dist_matrix <- dist(otu_trans, method = "euclidean")
   } else if (distance %in% c("aitchison", "robust.aitchison")) {
     dist_matrix <- vegan::vegdist(t(otu_table), method = distance, pseudocount = 0.5)
+    otu_trans <- NULL
+  } else if (distance == "sorensen") {
+    # vegdist() has no "sorensen" method, despite it being a documented
+    # option here - Sorensen dissimilarity is Bray-Curtis computed on
+    # presence/absence data, i.e. vegdist(..., method = "bray", binary = TRUE).
+    dist_matrix <- vegan::vegdist(t(otu_table), method = "bray", binary = TRUE)
     otu_trans <- NULL
   } else {
     dist_matrix <- vegan::vegdist(t(otu_table), method = distance)
@@ -286,15 +298,21 @@ beta_ord_plot <- function(table, metadata,
       levels <- trimws(levels)
       
       # --- 3) Limpieza por base de datos ---
+      # Matched case-insensitively below - "Kraken2", "kraken2", "KRAKEN2"
+      # all need to hit the same branch, since the genus+species
+      # concatenation special case further down silently gets skipped
+      # (falling back to species-only) if this comparison is case-sensitive
+      # and the caller's casing doesn't match exactly.
       clean_by_db <- list(
-        
-        silva = function(x) sub("^[a-zA-Z]__", "", x),
-        gg    = function(x) sub("^[a-zA-Z]__", "", x),
-        unite = function(x) sub("^[a-zA-Z]__", "", x),
-        Kraken2 = function(x) sub("^[a-zA-Z]__", "", x,) 
+
+        silva   = function(x) sub("^[a-zA-Z]__", "", x),
+        gg      = function(x) sub("^[a-zA-Z]__", "", x),
+        unite   = function(x) sub("^[a-zA-Z]__", "", x),
+        kraken2 = function(x) sub("^[a-zA-Z]__", "", x,)
       )
-      
-      cleaner <- clean_by_db[[taxonomy_db]]
+
+      taxonomy_db_norm <- tolower(taxonomy_db)
+      cleaner <- clean_by_db[[taxonomy_db_norm]]
       
       # Si no existe el limpiador, usar limpieza generica
       if (is.null(cleaner)) {
@@ -321,7 +339,7 @@ beta_ord_plot <- function(table, metadata,
             !any(grepl(invalid_regex, lvl, ignore.case = TRUE))) {
           
           # > Regla especial: Kraken2 species -> concatenar "Genus species"
-          if (taxonomy_db == "Kraken2" && grepl("s__", levels[i])) {
+          if (taxonomy_db_norm == "kraken2" && grepl("s__", levels[i])) {
             
             genus_full <- stringr::str_extract(taxon_string, "g__[^;]*")
             

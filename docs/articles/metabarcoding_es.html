@@ -63,6 +63,9 @@
     <li>
       <a href="../articles/metagenomic.html">Metagenomic</a>
     </li>
+    <li>
+      <a href="../articles/metagenomic_es.html">Metagenómica</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -250,7 +253,7 @@ solo se muestran los taxones seleccionados.<br>
 El parámetro <code>label</code> define el título de la leyenda mostrada
 en el gráfico.</p>
 <p>Las etiquetas del eje x pueden rotarse con <code>x_label_angle</code>
-(por defecto <code>0</code>, horizontal) — útil cuando los nombres de
+(por defecto <code>0</code>, horizontal), útil cuando los nombres de
 muestras o grupos son lo suficientemente largos como para superponerse,
 como en los ejemplos de abajo. <code>strip_text_bold</code> controla si
 los títulos de las facetas van en negritas (por defecto
@@ -335,7 +338,7 @@ de secuencia de amplicón (ASV) de QIIME2/DADA2.</p>
 <h3 id="diagrama-de-sankey-del-flujo-taxonómico">🖥️ Diagrama de Sankey del flujo taxonómico<a class="anchor" aria-label="anchor" href="#diagrama-de-sankey-del-flujo-taxon%C3%B3mico"></a>
 </h3>
 <p><code><a href="../reference/abundance_sankey_plot.html">abundance_sankey_plot()</a></code> visualiza cómo fluye la
-abundancia relativa a través de los rangos taxonómicos — de Reino a
+abundancia relativa a través de los rangos taxonómicos: de Reino a
 Especie, como un diagrama de Sankey interactivo. Es útil para tener una
 visión rápida de qué linajes dominan la comunidad.</p>
 <p>El argumento <code>taxRanks</code> especifica qué rangos incluir como
@@ -346,16 +349,10 @@ formateadas las cadenas de taxonomía (por ejemplo, <code>"silva"</code>,
 disponible en CRAN:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"networkD3"</span><span class="op">)</span></span></code></pre></div>
-<p>⚠️ A diferencia de las demás funciones de graficación de
-<code>MicroBioMeta</code>, esta siempre <strong>guarda un archivo
-HTML</strong> (<code>output_file</code>) en vez de retornar un
-<code>ggplot</code>, así que no aparece como una imagen estática como
-las demás figuras de esta viñeta. También retorna (de forma invisible)
-el objeto widget de <code>networkD3</code> subyacente, que es lo que
-permite que se muestre abajo como un diagrama interactivo embebido
-directamente en esta página — asigna el resultado de la llamada a una
-variable y referencia esa variable para mostrarlo, como se hace
-aquí:</p>
+<p>⚠️ A diferencia de las demás funciones, esta no retorna un objeto
+<code>ggplot</code> sino un objeto <code>sankeyNetwork</code>, y tiene
+un parámetro (<code>output_file</code>) que permite <strong>guardar un
+archivo HTML</strong> con un diagrama de Sankey interactivo.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sankey_bacteria</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abundance_sankey_plot.html">abundance_sankey_plot</a></span><span class="op">(</span></span>
 <span>  table       <span class="op">=</span> <span class="va">table_bac</span>,</span>
@@ -442,8 +439,7 @@ muestra.</p>
 <span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_es_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>También podemos visualizar otras métricas considerando índices
-clásicos de diversidad alfa. Además, usando el parámetro stat es posible
-establecer una comparación estadística indicando el método a usar:</p>
+clásicos de diversidad alfa:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_diversity_plot.html">alpha_diversity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -456,13 +452,15 @@ establecer una comparación estadística indicando el método a usar:</p>
 <span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_es_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Cada panel se etiqueta automáticamente (A, B, C, …) para poder
-referenciarlo en el pie de figura. Cuando se establece una comparación
-(<code>stat</code>), también se agrega una anotación con el valor p a
-cada panel. <code>panel_label_case</code> alterna entre etiquetas en
-mayúsculas y minúsculas, <code>panel_label_bold</code> activa/desactiva
-las etiquetas en negritas, y <code>panel_labels</code> te permite dar
-etiquetas personalizadas (por ejemplo
-<code>c("(a)", "(b)", "(c)")</code>) en vez de las generadas
+referenciarlo. Cuando se establece <code>stat</code>, también se agrega
+una anotación con el valor p a cada panel (por defecto Wilcoxon para dos
+comparaciones y Kruskal-Wallis para tres comparaciones); podemos indicar
+el método a usar con <code>stat</code>, tal como la función
+<code>stat_compare_means()</code> de <code>ggpubr</code>.
+<code>panel_label_case</code> alterna entre etiquetas en mayúsculas y
+minúsculas, <code>panel_label_bold</code> para etiquetas en negritas, y
+<code>panel_labels</code> te permite dar etiquetas personalizadas (por
+ejemplo <code>c("(a)", "(b)", "(c)")</code>) en vez de las generadas
 automáticamente. <code>free_y</code> permite que cada panel use su
 propia escala del eje y en vez de una compartida, como abajo:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
@@ -760,7 +758,9 @@ cómo se visualizan las muestras según variables de metadatos.</p>
 </h3>
 <p>La función <code><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code> resume los valores
 pareados de diversidad beta usando boxplots, permitiendo comparar los
-patrones de diversidad entre grupos de muestras.</p>
+patrones de diversidad entre grupos de muestras. Esta función usa
+<code>betapart</code> sobre datos de incidencia (presencia/ausencia),
+con el índice de Sørensen o Jaccard: shared, turnover o nestedness.</p>
 <p>Los parámetros <code>condition1_col</code> y
 <code>condition2_col</code> especifican las variables de metadatos
 usadas para definir los grupos que se comparan. El argumento
@@ -804,7 +804,8 @@ gráfico.</p>
 <span>                       x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
 <span>                       x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
 <span>                       stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
-<span>                       partition <span class="op">=</span> <span class="st">"shared"</span>, family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>                       partition <span class="op">=</span> <span class="st">"shared"</span>,</span>
+<span>                       family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
 <span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_es_files/figure-html/unnamed-chunk-35-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
@@ -834,24 +835,23 @@ grupo<a class="anchor" aria-label="anchor" href="#recambio-pareado-turnover-entr
 <p><code><a href="../reference/beta_turnover_plot.html">beta_turnover_plot()</a></code> responde una pregunta distinta a la
 de <code><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>: para <strong>un grupo de
 referencia</strong> (por ejemplo, Rhizosphere), ¿es su recambio
-<strong>contra otro grupo</strong> (por ejemplo, Roots — una comparación
+<strong>contra otro grupo</strong> (por ejemplo, Roots, una comparación
 entre grupos) mayor que su recambio <strong>contra sí mismo</strong>
-(pares Rhizosphere-vs-Rhizosphere — una línea base dentro del grupo)? Si
+(pares Rhizosphere-vs-Rhizosphere, una línea base dentro del grupo)? Si
 el recambio entre grupos es significativamente mayor, eso es evidencia
 de que los dos compartimentos realmente albergan comunidades distintas,
 más allá de la variabilidad ya presente entre réplicas del mismo
 compartimento.</p>
-<p>Así que el gráfico de abajo tiene una franja morada arriba —
-etiquetada <strong>“Rhizosphere”</strong>, el grupo de referencia fijo
-en ambas comparaciones — y, dentro de ella, dos cajas:
-<strong>“Roots”</strong> (Rhizosphere vs. Roots, entre grupos) y
+<p>Así que el gráfico de abajo tiene una franja morada arriba (este
+color se puede configurar) etiquetada <strong>“Rhizosphere”</strong>, el
+grupo de referencia fijo en ambas comparaciones y, dentro de ella, dos
+cajas: <strong>“Roots”</strong> (Rhizosphere vs. Roots, entre grupos) y
 <strong>“Rhizosphere”</strong> (Rhizosphere vs. Rhizosphere, dentro del
 grupo). Que la franja y la caja “Rhizosphere” tengan la misma etiqueta
-es intencional, no un duplicado — la franja nombra la referencia, la
-caja nombra contra qué se está comparando (contra sí misma, en ese
-caso).</p>
+es intencional, no un duplicado, la franja nombra la referencia, la caja
+nombra contra qué se está comparando (contra sí misma, en ese caso).</p>
 <p><code>comparison_condition1</code> selecciona qué combinaciones
-<code>"valor1_vs_valor2"</code> conservar — siempre con el grupo de
+<code>"valor1_vs_valor2"</code> conservar, siempre con el grupo de
 referencia (<code>Rhizosphere</code>) primero.
 <code>comparison_condition2</code> conserva solo los pares del mismo
 tratamiento, para que el recambio no se confunda al comparar muestras de
@@ -999,7 +999,7 @@ por pruebas múltiples y el filtro de prevalencia.</p>
 pueden disparar un error
 <code>"Zero variances have been detected..."</code> en el paso interno
 de corrección de sesgo de ANCOMBC2 en algunas corridas (no siempre
-ocurre — depende de qué taxones conserve la iteración de bootstrap en
+ocurre, depende de qué taxones conserve la iteración de bootstrap en
 turno). Subir <code>prv_cut</code> filtra esos taxones dispersos antes
 de la prueba y evita el error.</p>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
