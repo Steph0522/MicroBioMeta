@@ -377,7 +377,13 @@ aldex_heatmap_plot <- function(table,
     ht_list,
     heatmap_legend_side    = "right",
     annotation_legend_side = "right",
-    merge_legend           = FALSE
+    merge_legend           = FALSE,
+    # The rotated "Effect size" annotation name is wider than the default
+    # left margin, and that margin doesn't grow with the plotting device's
+    # size (this heatmap's components all use fixed physical units) - so
+    # without an explicit left pad the name gets clipped by the device edge
+    # regardless of fig.width. Padding order is (top, right, bottom, left).
+    padding = grid::unit(c(2, 2, 2, 12), "mm")
   )
   return(invisible(ht_list))
 }

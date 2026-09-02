@@ -441,8 +441,8 @@ The `distance` argument defines the dissimilarity metric used to calculate beta 
 ```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 beta_ord_plot(table = table_bac,
               metadata = metadata_bacteria,
-               distance = "aitchison",
-              ordination = "NMDS",
+               distance = "compositional",
+              ordination = "PCA",
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
@@ -466,13 +466,13 @@ The `permutations` parameter determines the number of permutations used to estim
 
 ⚠️ **NOTE: Each function has the option save_* that export a table or an element obtain in each function**. 
 
-`method` is set to match each dataset's ordination above (`aitchison` for bacteria's NMDS, `compositional` for fungi's PCA), so the significance test evaluates the same notion of dissimilarity shown in the plot.
+`method` is set to `compositional` for both datasets, matching each one's PCA above, so the significance test evaluates the same notion of dissimilarity shown in the plot.
 
 ```{r, fig.width=8, fig.height=4}
 beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
-                method = "aitchison",
+                method = "compositional",
                 test = "permanova",
                 permutations = 999)
 ```

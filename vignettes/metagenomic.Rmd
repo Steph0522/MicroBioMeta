@@ -98,19 +98,6 @@ metadata_meta <- metadata_meta %>%
   dplyr::mutate(Sitio = as.character(Sitio))
 ```
 
-`alpha_decay_plot()` needs a single continuous covariate rather than a pair of coordinates, so we derive one: distance from `Pol1` (the transect's westernmost/lowest-elevation block), using `geosphere::distHaversine()` on each sample's coordinates against `Pol1`'s mean position:
-
-```{r}
-pol1_ref <- metadata_meta %>%
-  dplyr::filter(Poligono_num == 1) %>%
-  dplyr::summarise(lat = mean(Latitude), lon = mean(Longitude))
-
-metadata_meta$dist_km <- geosphere::distHaversine(
-  cbind(metadata_meta$Longitude, metadata_meta$Latitude),
-  c(pol1_ref$lon, pol1_ref$lat)
-) / 1000
-```
-
 ## 📊 Composition exploration
 ### 📊 Abundance barplot
 Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
@@ -147,6 +134,8 @@ alpha_hill_corr_plot(table = table_meta)
 ```
 
 ### 📊 Alpha diversity visualization
+`fill_col` is the same as `x_col` here, so the legend would just repeat the x-axis tick labels - `show_legend = FALSE` drops it.
+
 ```{r, warning=FALSE, fig.width=9, fig.height=5}
 alpha_hill_plot(table = table_meta,
                 metadata = metadata_meta,
@@ -154,7 +143,7 @@ alpha_hill_plot(table = table_meta,
                 fill_col = "Poligono",
                 facet_by = "Sitio",
                 facet_orientation = "horizontal",
-                legend_position = "top",
+                show_legend = FALSE,
                 save_table = FALSE)
 ```
 
@@ -170,17 +159,6 @@ alpha_decay_plot(table = table_meta,
 ```
 
 Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't, for the same ceiling-effect reason as above.
-
-The same regression can be run against `dist_km` (real geographic distance from `Pol1`, computed above) instead of a soil chemistry variable:
-
-```{r, warning=FALSE, fig.height=4, fig.width=10}
-alpha_decay_plot(table = table_meta,
-                 metadata = metadata_meta,
-                 cont_var = "dist_km",
-                 x_axis_title = "Distance from Pol1 (km)")
-```
-
-Unlike pH, geographic distance alone doesn't predict alpha diversity here (*p* > 0.1 at every *q*) — the blocks vary in diversity, but not simply as a function of how far apart they are.
 
 ## Beta diversity
 
@@ -217,7 +195,7 @@ There's intentionally no figure in this section. `beta_partition_ord_plot()` wor
 
 `beta_decay_plot()` tests whether communities that are geographically closer are also more similar in composition — see the metabarcoding vignette for the function's parameters. That example had to fabricate coordinates; here `Latitude`/`Longitude` (joined in above) are the real GPS positions of each sampling point.
 
-```{r, warning=FALSE, fig.width=8, fig.height=6}
+```{r, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
 beta_decay_plot(
   table    = table_meta,
   metadata = metadata_meta,
@@ -240,7 +218,7 @@ metadata_meta_compar <- metadata_meta %>%
 table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SAMPLEID, colnames(table_meta)), ncol(table_meta))]
 ```
 
-```{r, fig.width=7, fig.height=6, message=FALSE, warning=FALSE}
+```{r, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 aldex_heatmap_plot(table = table_meta_compar,
                    metadata = metadata_meta_compar,
                    col_cond = "Poligono")

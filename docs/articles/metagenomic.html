@@ -120,8 +120,6 @@ e18323.</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/Steph0522/MicroBioMeta" class="external-link">"MicroBioMeta"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: package 'dplyr' was built under R version 4.3.2</span></span></code></pre>
-<pre><code><span><span class="co">## Warning: package 'lubridate' was built under R version 4.3.3</span></span></code></pre>
 <p>Unlike the QIIME2 workflow in the metabarcoding vignette, there’s no
 <code>.qza</code> import step here — Kraken2/Bracken output is plain
 text. Each sample was processed separately, so
@@ -130,7 +128,7 @@ beforehand (one column per sample, named
 <code>kraken_pluspfp_&lt;id_metagenome&gt;_report_bracken_species</code>)
 with a <strong><code>taxonomy</code></strong> column already attached as
 the last column:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">table_kraken</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="st">"articles/data/table_kraken.txt"</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_kraken</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">table_kraken</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
@@ -164,7 +162,7 @@ from the <strong>dry-season</strong> sampling — so that’s the metadata
 to use here; the rainy-season file records the same sites’ soil
 chemistry at a different time of year and doesn’t correspond to a
 separate set of metagenomes.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="st">"articles/data/metadata_metagenomic.txt"</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -187,7 +185,7 @@ separate set of metagenomes.</p>
 than the sample’s actual ID, so we recover it with a regular expression
 and use <code>metadata_meta$id_metagenome</code> to rename each column
 to its <code>SampleID</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sample_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_kraken</span><span class="op">)</span>, <span class="st">"taxonomy"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">id_metagenome</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"kraken_pluspfp_|_report_bracken_species"</span>, <span class="st">""</span>, <span class="va">sample_cols</span><span class="op">)</span><span class="op">)</span></span>
@@ -203,7 +201,7 @@ to <code>"Pol1"</code>…<code>"Pol6"</code> with explicit,
 numerically-sorted factor levels, so every plot below lists/facets the
 blocks in that order instead of whatever order they happen to first
 appear in the data:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">Poligono</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pol"</span>, <span class="va">metadata_meta</span><span class="op">$</span><span class="va">Poligono</span><span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pol"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">Sitio</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">Sitio</span><span class="op">)</span></span></code></pre></div>
 <p><code>table_meta</code>’s sample columns are also reordered to match
@@ -211,7 +209,7 @@ appear in the data:</p>
 <code>id_metagenome</code> order they came in), for the same reason —
 several plotting functions derive their group order from column/row
 appearance order:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">table_meta</span> <span class="op">&lt;-</span> <span class="va">table_kraken</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="st">"taxonomy"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p><code>table_meta</code> is now in the same
 <code>taxonomy</code>-as-last-column format used throughout the package,
@@ -225,7 +223,7 @@ includes <strong>real GPS coordinates</strong> for each sampling point.
 Joining them in by
 <code>Poligono</code>/<code>Sitio</code>/<code>Transecto</code> lets us
 use actual, not simulated, spatial distances below:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coord_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"articles/data/coord_metagenomic.csv"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>Poligono_num <span class="op">=</span> <span class="va">pol</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Poligono_num</span>, <span class="va">Sitio</span>, <span class="va">Transecto</span>, <span class="va">Latitude</span>, <span class="va">Longitude</span><span class="op">)</span></span>
@@ -234,20 +232,6 @@ use actual, not simulated, spatial distances below:</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Poligono_num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"Pol"</span>, <span class="st">""</span>, <span class="va">Poligono</span><span class="op">)</span><span class="op">)</span>, Sitio <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Sitio</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">coord_meta</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Poligono_num"</span>, <span class="st">"Sitio"</span>, <span class="st">"Transecto"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Sitio <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Sitio</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="../reference/alpha_decay_plot.html">alpha_decay_plot()</a></code> needs a single continuous covariate
-rather than a pair of coordinates, so we derive one: distance from
-<code>Pol1</code> (the transect’s westernmost/lowest-elevation block),
-using <code><a href="https://rdrr.io/pkg/geosphere/man/distHaversine.html" class="external-link">geosphere::distHaversine()</a></code> on each sample’s
-coordinates against <code>Pol1</code>’s mean position:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pol1_ref</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Poligono_num</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Latitude</span><span class="op">)</span>, lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Longitude</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">dist_km</span> <span class="op">&lt;-</span> <span class="fu">geosphere</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/geosphere/man/distHaversine.html" class="external-link">distHaversine</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">Longitude</span>, <span class="va">metadata_meta</span><span class="op">$</span><span class="va">Latitude</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pol1_ref</span><span class="op">$</span><span class="va">lon</span>, <span class="va">pol1_ref</span><span class="op">$</span><span class="va">lat</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">/</span> <span class="fl">1000</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="composition-exploration">📊 Composition exploration<a class="anchor" aria-label="anchor" href="#composition-exploration"></a>
@@ -258,7 +242,7 @@ coordinates against <code>Pol1</code>’s mean position:</p>
 <p>Same function as in the metabarcoding vignette; the only difference
 is <code>taxonomy_db = "Kraken2"</code>, which tells the
 taxonomy-parsing logic to expect Kraken2/Bracken-style strings.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                  taxonomy_db <span class="op">=</span> <span class="st">"Kraken2"</span>,</span>
@@ -269,7 +253,7 @@ taxonomy-parsing logic to expect Kraken2/Bracken-style strings.</p>
 <span>                  add_remained <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                  label <span class="op">=</span> <span class="st">"Genus"</span>,</span>
 <span>                  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="abundance-heatmap">🖥️ Abundance heatmap<a class="anchor" aria-label="anchor" href="#abundance-heatmap"></a>
@@ -278,14 +262,14 @@ taxonomy-parsing logic to expect Kraken2/Bracken-style strings.</p>
 denoising step in a shotgun metagenomic workflow), so
 <code>feature_prefix = "Taxon"</code> is used here instead of the
 default <code>"ASV"</code> row-label prefix.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                  condition1 <span class="op">=</span> <span class="st">"Poligono"</span>,</span>
 <span>                  feature_prefix <span class="op">=</span> <span class="st">"Taxon"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -294,23 +278,26 @@ default <code>"ASV"</code> row-label prefix.</p>
 <div class="section level3">
 <h3 id="correlation-among-hill-numbers">📈 Correlation among Hill numbers<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="alpha-diversity-visualization">📊 Alpha diversity visualization<a class="anchor" aria-label="anchor" href="#alpha-diversity-visualization"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p><code>fill_col</code> is the same as <code>x_col</code> here, so the
+legend would just repeat the x-axis tick labels -
+<code>show_legend = FALSE</code> drops it.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                x_col <span class="op">=</span> <span class="st">"Poligono"</span>,</span>
 <span>                fill_col <span class="op">=</span> <span class="st">"Poligono"</span>,</span>
 <span>                facet_by <span class="op">=</span> <span class="st">"Sitio"</span>,</span>
 <span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>                legend_position <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>                show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Richness (<em>q</em>=0) is nearly saturated and flat across blocks
 here — this genus-level Bracken table simply doesn’t have much room left
 to vary at <em>q</em>=0 — while <em>q</em>=1 and <em>q</em>=2 (which
@@ -319,27 +306,15 @@ weight by relative abundance) do pick up differences between blocks.</p>
 <div class="section level3">
 <h3 id="alpha-diversity-along-a-continuous-gradient">Alpha diversity along a continuous gradient<a class="anchor" aria-label="anchor" href="#alpha-diversity-along-a-continuous-gradient"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_decay_plot.html">alpha_decay_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                 metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                 cont_var <span class="op">=</span> <span class="st">"pH"</span>,</span>
 <span>                 x_axis_title <span class="op">=</span> <span class="st">"Soil pH"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Diversity at <em>q</em>=1 and <em>q</em>=2 increases significantly
 with soil pH; <em>q</em>=0 doesn’t, for the same ceiling-effect reason
 as above.</p>
-<p>The same regression can be run against <code>dist_km</code> (real
-geographic distance from <code>Pol1</code>, computed above) instead of a
-soil chemistry variable:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_decay_plot.html">alpha_decay_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
-<span>                 metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
-<span>                 cont_var <span class="op">=</span> <span class="st">"dist_km"</span>,</span>
-<span>                 x_axis_title <span class="op">=</span> <span class="st">"Distance from Pol1 (km)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>Unlike pH, geographic distance alone doesn’t predict alpha diversity
-here (<em>p</em> &gt; 0.1 at every <em>q</em>) — the blocks vary in
-diversity, but not simply as a function of how far apart they are.</p>
 </div>
 </div>
 <div class="section level2">
@@ -353,7 +328,7 @@ in the metabarcoding vignette) is dominated here by a single
 compositionally extreme sample, which stretches the plot and squashes
 everything else into one corner. NMDS on Aitchison distance is far less
 sensitive to that one sample, so it’s used instead.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>              metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>              distance <span class="op">=</span> <span class="st">"aitchison"</span>,</span>
@@ -404,7 +379,7 @@ sensitive to that one sample, so it’s used instead.</p>
 <span><span class="co">## ... Procrustes: rmse 0.0004912186  max resid 0.002367038 </span></span>
 <span><span class="co">## ... Similar to previous best</span></span>
 <span><span class="co">## *** Best solution repeated 1 times</span></span></code></pre>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="statistical-tests-for-beta-diversity">Statistical tests for beta diversity<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
@@ -414,14 +389,14 @@ sensitive to that one sample, so it’s used instead.</p>
 ordination and the significance test are evaluating the same notion of
 dissimilarity. <code>Poligono</code> comes out significant (R² =
 0.24).</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                formula_str <span class="op">=</span> <span class="st">"Poligono*Sitio"</span>,</span>
 <span>                method <span class="op">=</span> <span class="st">"aitchison"</span>,</span>
 <span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
 <span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="beta-diversity-partitioning">Beta diversity partitioning<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
@@ -448,7 +423,7 @@ metabarcoding vignette for the function’s parameters. That example had
 to fabricate coordinates; here
 <code>Latitude</code>/<code>Longitude</code> (joined in above) are the
 real GPS positions of each sampling point.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_decay_plot.html">beta_decay_plot</a></span><span class="op">(</span></span>
 <span>  table    <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -456,7 +431,7 @@ real GPS positions of each sampling point.</p>
 <span>  lon_col  <span class="op">=</span> <span class="st">"Longitude"</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"bray"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="70%" style="display: block; margin: auto;"></p>
 <p>Communities that are geographically closer are significantly more
 similar (Mantel <em>r</em> ≈ 0.2, <em>p</em> &lt; 0.01 — the exact value
 jitters slightly between runs since the Mantel test is
@@ -475,17 +450,17 @@ table without an explicit pseudocount.</p>
 filters <code>Type_of_soil</code> down to two levels — blocks
 <code>2</code> and <code>5</code> are used here as they show a clear
 compositional difference:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_meta_compar</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Poligono</span> <span class="op">==</span> <span class="st">"Pol2"</span> <span class="op">|</span> <span class="va">Poligono</span> <span class="op">==</span> <span class="st">"Pol5"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_meta_compar</span> <span class="op">&lt;-</span> <span class="va">table_meta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_meta_compar</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_meta</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">table_meta</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>                   metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
 <span>                   col_cond <span class="op">=</span> <span class="st">"Poligono"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
 <span>  table        <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>  metadata     <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
@@ -494,21 +469,21 @@ compositional difference:</p>
 <span>  prv_cut      <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="section level3">
 <h3 id="identifying-important-taxa">Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
 </h3>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>, metadata <span class="op">=</span> <span class="va">metadata_meta</span>, top_n <span class="op">=</span> <span class="fl">10</span>, variable_to_predict <span class="op">=</span> <span class="st">"Poligono"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>           metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
 <span>           condition_col <span class="op">=</span> <span class="st">"Poligono"</span>,</span>
 <span>           top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>           condition_A <span class="op">=</span> <span class="st">"Pol2"</span>,</span>
 <span>           condition_B <span class="op">=</span> <span class="st">"Pol5"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -517,7 +492,7 @@ compositional difference:</p>
 <p>The metadata already carries the soil physicochemical variables
 measured for these samples, so the environmental table is built the same
 way as in the metabarcoding vignette:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">env_table_meta</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">SAMPLEID</span>, <span class="va">pH</span><span class="op">:</span><span class="va">ARENA</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">remove_rownames</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -526,7 +501,7 @@ way as in the metabarcoding vignette:</p>
 <h3 id="correlation-between-environmental-variables-and-taxonomic-abundance">Correlation between environmental variables and taxonomic
 abundance<a class="anchor" aria-label="anchor" href="#correlation-between-environmental-variables-and-taxonomic-abundance"></a>
 </h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                    env_table <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -535,15 +510,15 @@ abundance<a class="anchor" aria-label="anchor" href="#correlation-between-enviro
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in corr_env_abund_plot(table = table_meta, env_table = env_table_meta,</span></span>
 <span><span class="co">## : Dropping non-numeric columns from `env_table`: type, type2</span></span></code></pre>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="constrained-ordination-cca">Constrained ordination (CCA)<a class="anchor" aria-label="anchor" href="#constrained-ordination-cca"></a>
 </h3>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">env_table_meta</span> <span class="op">&lt;-</span> <span class="va">env_table_meta</span><span class="op">[</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_table_meta</span><span class="op">)</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>               env_data <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>               metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -552,7 +527,7 @@ abundance<a class="anchor" aria-label="anchor" href="#correlation-between-enviro
 <span>               show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>               group_col <span class="op">=</span> <span class="st">"Poligono"</span>,</span>
 <span>               scale_arrows <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </div>

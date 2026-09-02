@@ -427,8 +427,11 @@ alpha_diversity_plot <- function(
     has_legend <- show_legend
     if (has_legend) {
       leg <- cowplot::get_legend(build_cell(1, 1) + ggplot2::theme(legend.position = legend_position))
-      plots <- lapply(plots, function(pl) pl + ggplot2::theme(legend.position = "none"))
     }
+    # Strip each panel's own legend unconditionally - not just when
+    # consolidating into one shared legend above - so show_legend = FALSE
+    # actually removes it instead of leaving it on every panel.
+    plots <- lapply(plots, function(pl) pl + ggplot2::theme(legend.position = "none"))
 
     panel_grid <- cowplot::plot_grid(
       plotlist         = plots,
