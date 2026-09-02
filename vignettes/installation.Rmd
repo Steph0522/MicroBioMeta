@@ -1,0 +1,64 @@
+---
+title: "Installation"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Installation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+`MicroBioMeta` requires **R >= 4.1**.
+
+## Installing MicroBioMeta
+
+While the package is in review for Bioconductor, install it from GitHub:
+
+```{r}
+if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+devtools::install_github("Steph0522/MicroBioMeta")
+```
+
+Once accepted, it will also be installable the standard Bioconductor way:
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+BiocManager::install("MicroBioMeta")
+```
+
+## Dependencies
+
+Every package `MicroBioMeta` needs for its core functions (CRAN and Bioconductor packages: `vegan`, `hillR`, `betapart`, `ALDEx2`, `ANCOMBC`, `phyloseq`, `ComplexHeatmap`, `ggplot2`, and others) installs automatically with either method above — no extra steps needed for regular use.
+
+## Additional packages for the tutorials
+
+A couple of examples in the **Tutorials** use packages that aren't required by the package itself, only by that specific example:
+
+- **[`qiime2R`](https://github.com/jbisanz/qiime2R)** (GitHub-only) — used in the Metabarcoding/Amplicón tutorial to import `.qza` artifacts exported from QIIME2:
+
+  ```{r}
+  devtools::install_github("jbisanz/qiime2R")
+  ```
+
+  This is only needed if your own data comes from QIIME2 as `.qza` files. If you already have plain `.txt`/`.csv` tables, you can skip it entirely and read those directly with `read.delim()`/`read.csv()`.
+
+- **[`networkD3`](https://CRAN.R-project.org/package=networkD3)** (CRAN) — used by `abundance_sankey_plot()` for the interactive Sankey diagram:
+
+  ```{r}
+  install.packages("networkD3")
+  ```
+
+## Troubleshooting Bioconductor packages
+
+If `BiocManager::install()` isn't already set up, run this once first:
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+BiocManager::install(version = "3.19")
+```

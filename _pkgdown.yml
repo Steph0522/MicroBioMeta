@@ -11,8 +11,30 @@ navbar:
   logo:
     src: man/figures/logo.png
   structure:
-    left: [intro, reference, articles, news]
-    right: [search, github]
+    left: [intro, tutorials, reference, installation, news]
+    right: [search, issues, github]
+  components:
+    tutorials:
+      text: Tutorials
+      menu:
+      - text: English
+      - text: Metabarcoding
+        href: articles/metabarcoding.html
+      - text: Metagenomic
+        href: articles/metagenomic.html
+      - text: -------
+      - text: Español
+      - text: Amplicón
+        href: articles/metabarcoding_es.html
+      - text: Metagenómica
+        href: articles/metagenomic_es.html
+    installation:
+      text: Installation
+      href: articles/installation.html
+    issues:
+      icon: fa-exclamation-circle
+      href: https://github.com/Steph0522/MicroBioMeta/issues
+      aria-label: Issues
 
 
 reference:

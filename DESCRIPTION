@@ -67,13 +67,7 @@ Suggests:
     testthat,
     magick,
     BiocManager,
-    qiime2R,
-    sankeyD3,
-    ggordiplots
-Remotes:
-    jbisanz/qiime2R,
-    fbreitwieser/sankeyD3,
-    jfq3/ggordiplots
+    networkD3
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
