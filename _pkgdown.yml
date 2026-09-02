@@ -11,7 +11,7 @@ navbar:
   logo:
     src: man/figures/logo.png
   structure:
-    left: [intro, tutorials, reference, installation, news]
+    left: [intro, installation, tutorials, reference, news]
     right: [search, issues, github]
   components:
     tutorials:
