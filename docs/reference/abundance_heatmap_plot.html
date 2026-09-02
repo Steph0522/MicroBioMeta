@@ -90,7 +90,8 @@
 <span>  show_column_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  annotation_height <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"abundance_heatmap_table.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"abundance_heatmap_table.txt"</span>,</span>
+<span>  feature_prefix <span class="op">=</span> <span class="st">""</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -180,6 +181,16 @@ table to disk. Default <code>FALSE</code>.</p></dd>
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. File path/name for the saved table (used
 when <code>save_table = TRUE</code>). Default <code>"abundance_heatmap_table.txt"</code>.</p></dd>
+
+
+<dt id="arg-feature-prefix">feature_prefix<a class="anchor" aria-label="anchor" href="#arg-feature-prefix"></a></dt>
+<dd><p>Character. Prefix used to label each row in the
+heatmap, immediately before the row number (e.g. <code>feature_prefix =
+  "ASV"</code> labels rows <code>"ASV1"</code>, <code>"ASV2"</code>...). Default <code>""</code>
+(rows are labeled just <code>"1"</code>, <code>"2"</code>...) since the right label
+depends on how <code>table</code>'s features were generated - set it to
+whatever fits (<code>"ASV"</code>, <code>"OTU"</code>, <code>"Taxon"</code>,
+<code>"Species"</code>...).</p></dd>
 
 </dl></div>
     <div id="value">

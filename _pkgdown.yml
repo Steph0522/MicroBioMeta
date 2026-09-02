@@ -13,16 +13,6 @@ navbar:
   structure:
     left: [intro, reference, articles, news]
     right: [search, github]
-  components:
-    vignettes:
-     text: articles
-     menu:
-     - text: Metabarcoding
-       href: articles/Metabarcoding.html
-     - text: Metagenomic
-       href: articles/Metagenomic.html
-
-    
 
 
 reference:
