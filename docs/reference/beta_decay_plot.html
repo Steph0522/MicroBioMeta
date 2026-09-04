@@ -236,8 +236,7 @@ e.g. <code>"Jaccard similarity (1 − dissimilarity)"</code>.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
@@ -263,6 +262,7 @@ e.g. <code>"Jaccard similarity (1 − dissimilarity)"</code>.</p></dd>
 <span class="r-in"><span>  lat_col  <span class="op">=</span> <span class="st">"lat"</span>,</span></span>
 <span class="r-in"><span>  lon_col  <span class="op">=</span> <span class="st">"lon"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="beta_decay_plot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Horn dissimilarity + Spearman Mantel</span></span></span>
 <span class="r-in"><span><span class="fu">beta_decay_plot</span><span class="op">(</span></span></span>
@@ -273,6 +273,7 @@ e.g. <code>"Jaccard similarity (1 − dissimilarity)"</code>.</p></dd>
 <span class="r-in"><span>  distance <span class="op">=</span> <span class="st">"horn"</span>,</span></span>
 <span class="r-in"><span>  method   <span class="op">=</span> <span class="st">"spearman"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="beta_decay_plot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Separate Mantel test per location</span></span></span>
 <span class="r-in"><span><span class="fu">beta_decay_plot</span><span class="op">(</span></span></span>
@@ -282,7 +283,7 @@ e.g. <code>"Jaccard similarity (1 − dissimilarity)"</code>.</p></dd>
 <span class="r-in"><span>  lon_col   <span class="op">=</span> <span class="st">"lon"</span>,</span></span>
 <span class="r-in"><span>  group_col <span class="op">=</span> <span class="st">"Location"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-plt img"><img src="beta_decay_plot-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </div>

@@ -22,7 +22,6 @@
 #' @importFrom ggVennDiagram ggVennDiagram
 #' @export
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -53,7 +52,6 @@
 #'   min_prevalence = 0,
 #'   group_colors   = c("#1B9E77", "#D95F02")
 #' )
-#' }
 venn_plot <- function(table, metadata, merge_by = NULL,
                               selected_samples = NULL, min_prevalence = 0,
                               title = NULL, method = "ggvenn",
@@ -80,7 +78,7 @@ venn_plot <- function(table, metadata, merge_by = NULL,
   }
   
   metadata_split <- split(metadata[[1]], metadata[[merge_by]])
-  metadata_split <- metadata_split[sapply(metadata_split, length) > 0]
+  metadata_split <- metadata_split[vapply(metadata_split, length, integer(1)) > 0]
   num_groups <- length(metadata_split)
   
   # Default palette - Okabe-Ito (colorblind-friendly)

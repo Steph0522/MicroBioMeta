@@ -44,7 +44,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -65,7 +64,6 @@
 #'   name_legend_condition2 = "Treatment",
 #'   name_legend_condition3 = "Plot"
 #' )
-#' }
 
 abundance_heatmap_plot <- function(table,
                                    metadata,
@@ -128,7 +126,7 @@ abundance_heatmap_plot <- function(table,
     # wasting slots on ones that get dropped anyway.
     { if (exclude_unclassified) dplyr::filter(., taxonomy != "Unclassified") else . } %>%
     dplyr::arrange(-abun) %>%  # Esto ordena por abundancia descendente
-    dplyr::slice(1:top_n) %>%
+    dplyr::slice(seq_len(top_n)) %>%
     dplyr::mutate(asv=paste0(feature_prefix, dplyr::row_number())) %>%
     tidyr::unite("taxa", asv, taxonomy, remove = FALSE) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%

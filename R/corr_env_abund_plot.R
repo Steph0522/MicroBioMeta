@@ -55,7 +55,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -82,7 +81,6 @@
 #'   taxonomy_db    = "silva",
 #'   pval_threshold = 0.05
 #' )
-#' }
 
 corr_env_abund_plot <- function(table,
                                 env_table,
@@ -163,17 +161,17 @@ corr_env_abund_plot <- function(table,
     levels <- unlist(strsplit(tax, ";"))
     sum(grepl("__", levels))
   }
-  table$depth <- sapply(table$taxonomy, get_depth)
-  
+  table$depth <- vapply(table$taxonomy, get_depth, integer(1))
+
   # --- Split rows by taxonomic resolution ---
   lowres <- table[table$depth < level_idx, ]    
   highres <- table[table$depth >= level_idx, ]  
   
   # --- Trim and collapse taxonomies with sufficient resolution ---
-  highres$taxonomy <- sapply(highres$taxonomy, function(tax) {
+  highres$taxonomy <- vapply(highres$taxonomy, function(tax) {
     levels <- unlist(strsplit(tax, ";"))
-    paste(levels[1:level_idx], collapse = ";")
-  })
+    paste(levels[seq_len(level_idx)], collapse = ";")
+  }, character(1))
   
   # --- Colapsar correctamente taxones repetidos ---
   highres <- highres %>%

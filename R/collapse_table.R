@@ -24,7 +24,6 @@
 #'   pivoted to one row per taxon/sample combination).
 #' @export
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -39,7 +38,6 @@
 #'   rel_abun   = FALSE,
 #'   save_table = FALSE
 #' )
-#' }
 
 collapse_table <- function(table,
                           metadata,
@@ -79,7 +77,7 @@ collapse_table <- function(table,
     levels <- unlist(strsplit(tax, ";"))
     sum(grepl("__", levels))
   }
-  table$depth <- sapply(table$taxonomy, get_depth)
+  table$depth <- vapply(table$taxonomy, get_depth, integer(1))
 
   # --- Split rows by resolution depth ---
   lowres <-
@@ -88,10 +86,10 @@ collapse_table <- function(table,
     table[table$depth >= level_idx,]  # resolved enough to collapse
 
   # --- Collapse highres rows down to the requested level ---
-  highres$taxonomy <- sapply(highres$taxonomy, function(tax) {
+  highres$taxonomy <- vapply(highres$taxonomy, function(tax) {
     levels <- unlist(strsplit(tax, ";"))
-    paste(levels[1:level_idx], collapse = ";")
-  })
+    paste(levels[seq_len(level_idx)], collapse = ";")
+  }, character(1))
 
   # --- Group and sum, keeping one original ID ---
   highres <- highres %>%

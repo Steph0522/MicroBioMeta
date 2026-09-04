@@ -71,7 +71,6 @@ needs to specify the metadata column(s) to be used for comparisons; the function
 constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -89,5 +88,4 @@ beta_dissimilarity_plot(
   partition            = "shared",
   family               = "sorensen"
 )
-}
 }

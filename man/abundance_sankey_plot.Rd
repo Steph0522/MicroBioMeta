@@ -39,7 +39,6 @@ Invisibly returns the Sankey diagram object and saves an HTML file.
 Generate a Sankey diagram from an OTU table with taxonomic information
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -50,5 +49,4 @@ abundance_sankey_plot(
   taxRanks     = c("P", "C", "G", "S"),
   taxonomy_db  = "silva"
 )
-}
 }

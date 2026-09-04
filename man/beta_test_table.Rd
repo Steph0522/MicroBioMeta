@@ -14,7 +14,8 @@ beta_test_table(
   strata_var = NULL,
   decimales = 3,
   save_table = FALSE,
-  table_filename = "beta_test_results.txt"
+  table_filename = "beta_test_results.txt",
+  seed = 123
 )
 }
 \arguments{
@@ -49,6 +50,10 @@ Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
+
+\item{seed}{Numeric. Random seed used for \code{method = "compositional"}'s
+Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
+results are reproducible by default. Default \code{123}.}
 }
 \value{
 A table with the results of R2, F and p value
@@ -57,7 +62,6 @@ A table with the results of R2, F and p value
 This function create a table with the results of permanova or betadisper
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -97,5 +101,4 @@ beta_test_table(
   test        = "permanova",
   permutations = 999
 )
-}
 }

@@ -104,7 +104,6 @@ geographic distance, fits a linear regression, and returns a scatter plot
 annotated with the Mantel statistic, p-value, and regression slope.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -150,5 +149,4 @@ beta_decay_plot(
   lon_col   = "lon",
   group_col = "Location"
 )
-}
 }

@@ -25,12 +25,14 @@
 #'   Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.
+#' @param seed Numeric. Random seed used for \code{method = "compositional"}'s
+#'   Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
+#'   results are reproducible by default. Default \code{123}.
 #'
 #' @return A table with the results of R2, F and p value 
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -70,7 +72,6 @@
 #'   test        = "permanova",
 #'   permutations = 999
 #' )
-#' }
 beta_test_table <- function(table,
                             metadata,
                             formula_str,
@@ -80,7 +81,8 @@ beta_test_table <- function(table,
                             strata_var = NULL,
                             decimales = 3,
                             save_table = FALSE,
-                            table_filename = "beta_test_results.txt") {
+                            table_filename = "beta_test_results.txt",
+                            seed = 123) {
   
   test <- match.arg(test)
   raw_input <- is.data.frame(table)
@@ -96,7 +98,7 @@ beta_test_table <- function(table,
     }
 
     # Convertir solo columnas numericas
-    num_cols <- sapply(table, is.numeric)
+    num_cols <- vapply(table, is.numeric, logical(1))
     if (!all(num_cols)) {
     }
     table <- as.matrix(table[, num_cols, drop = FALSE])
@@ -116,14 +118,14 @@ beta_test_table <- function(table,
     vars <- all.vars(as.formula(paste("~", formula_str)))
     vars_in_metadata <- vars %in% colnames(metadata)
     if (!all(vars_in_metadata)) {
-      stop(paste("Variables", paste(vars[!vars_in_metadata], collapse=", "), "are not in metadata"))
+      stop("Variables ", paste(vars[!vars_in_metadata], collapse = ", "), " are not in metadata")
     }
   }
   
   strata <- NULL
   if (!is.null(strata_var)) {
     if (!strata_var %in% colnames(metadata)) {
-      stop(paste("Strata variable", strata_var, "is not in metadata"))
+      stop("Strata variable ", strata_var, " is not in metadata")
     }
     strata <- metadata[[strata_var]]
   }
@@ -134,7 +136,7 @@ beta_test_table <- function(table,
       stop("method = 'compositional' requires a raw abundance table ",
            "(data frame with a taxonomy column), not a precomputed distance matrix.")
     }
-    set.seed(123)
+    set.seed(seed)
     aldex_obj   <- ALDEx2::aldex.clr(t(table), mc.samples = 128,
                                      denom = "all", verbose = FALSE, useMC = FALSE)
     clr_samples <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))

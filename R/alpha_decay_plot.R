@@ -60,7 +60,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -95,7 +94,6 @@
 #'   x_axis_title = "Distance (km)",
 #'   group_col    = "Location"
 #' )
-#' }
 alpha_decay_plot <- function(
     table,
     metadata,

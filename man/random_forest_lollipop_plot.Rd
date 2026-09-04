@@ -44,7 +44,6 @@ A lollipop plot showing top important features from random forest analysis.
 Generate a Lollipop plot from random forest results
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -59,5 +58,4 @@ random_forest_lollipop_plot(
   top_n               = 20,
   size                = 6
 )
-}
 }

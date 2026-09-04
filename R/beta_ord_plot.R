@@ -46,11 +46,15 @@
 #'   \code{"loading"}). Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.
+#' @param seed Numeric. Random seed used for \code{distance = "compositional"}'s
+#'   Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
+#'   results are reproducible by default; set to a different value (or wrap
+#'   the call in your own \code{set.seed()} and leave this at its default) to
+#'   get a different random draw. Default \code{123}.
 #'
 #' @return A `ggplot2` object.
 #' @export
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -66,7 +70,6 @@
 #'   group_col  = "Location",
 #'   top_n      = 5
 #' )
-#' }
 
 
 beta_ord_plot <- function(table, metadata,
@@ -81,7 +84,8 @@ beta_ord_plot <- function(table, metadata,
                           top_n = 5,
                           title = "auto",
                           save_table = FALSE,
-                          table_filename = "ordination_scores.txt") {
+                          table_filename = "ordination_scores.txt",
+                          seed = 123) {
   
   requireNamespace("vegan")
   requireNamespace("ggplot2")
@@ -129,7 +133,7 @@ beta_ord_plot <- function(table, metadata,
   metadata <- metadata[metadata_ids %in% common_samples, ]
   
   if (distance == "compositional") {
-    set.seed(123)
+    set.seed(seed)
     aldex_obj <- ALDEx2::aldex.clr(otu_table, mc.samples = 128,
                                    denom = "all", verbose = FALSE, useMC = FALSE)
     otu_trans <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))
@@ -278,7 +282,7 @@ beta_ord_plot <- function(table, metadata,
     rot_df <- as.data.frame(ord_res$rotation)
     rot_df$Feature.ID <- rownames(rot_df)
     rot_df$mag <- sqrt(rot_df$PC1^2 + rot_df$PC2^2)
-    rot_df <- rot_df[order(rot_df$mag, decreasing = TRUE), ][1:top_n, ]
+    rot_df <- rot_df[order(rot_df$mag, decreasing = TRUE), ][seq_len(top_n), ]
     rot_df$PC1 <- rot_df$PC1 * arrows_size
     rot_df$PC2 <- rot_df$PC2 * arrows_size
     rot_df$Taxon <- taxonomy[match(rot_df$Feature.ID, feature_ids)]
@@ -366,7 +370,7 @@ beta_ord_plot <- function(table, metadata,
     
     
     
-    rot_df$label <- sapply(rot_df$Taxon, extract_clean_label, taxonomy_db = taxonomy_db)
+    rot_df$label <- vapply(rot_df$Taxon, extract_clean_label, character(1), taxonomy_db = taxonomy_db)
     # Taxonomy strings use "_" as an internal word separator (e.g.
     # "uncultured_Acidobacteriaceae"), which left as-is renders as one long
     # unbroken label. Normalize it to a space before wrapping onto multiple

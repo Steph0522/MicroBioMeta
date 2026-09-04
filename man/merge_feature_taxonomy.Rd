@@ -32,7 +32,6 @@ it will be renamed to 'taxonomy'.
 This function joins a feature table (counts per sample) with the corresponding taxonomy data.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 full_table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -45,5 +44,4 @@ merged <- merge_feature_taxonomy(
   table    = feature_table,
   taxonomy = taxonomy_df
 )
-}
 }

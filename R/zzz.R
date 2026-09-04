@@ -1,3 +1,23 @@
+#' Pipe operator
+#'
+#' See \code{magrittr::\link[magrittr:pipe]{\%>\%}} for details. Re-exported
+#' here so every function's \code{@examples} (most of which chain steps with
+#' \code{\%>\%}) work with just \code{library(MicroBioMeta)}, without also
+#' requiring \code{library(dplyr)}.
+#'
+#' @param lhs A value.
+#' @param rhs A function call using the magrittr semantics.
+#' @return \code{rhs(lhs)}, i.e. \code{lhs} piped into \code{rhs}.
+#' @importFrom dplyr %>%
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @usage lhs \%>\% rhs
+#' @examples
+#' c(1, 2, 3) %>% sum()
+NULL
+
 # --- Taxonomy string parser -------------------------------------------------
 # Splits a QIIME2-style Feature.ID/Taxon table into one column per rank
 # (Kingdom..Species). Adapted from qiime2R::parse_taxonomy() (MIT License,

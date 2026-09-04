@@ -90,7 +90,6 @@ A plot with the fifty (XX) taxonomic groups most abundant.
 This function create a heatmap to visualize the relative abundance of ASV's, features o bacterial groups.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -111,5 +110,4 @@ abundance_heatmap_plot(
   name_legend_condition2 = "Treatment",
   name_legend_condition3 = "Plot"
 )
-}
 }

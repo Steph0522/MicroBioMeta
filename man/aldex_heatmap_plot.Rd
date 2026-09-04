@@ -84,7 +84,6 @@ showing differentially abundant taxa, their effect size, p-value, and
 difference between groups.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -103,6 +102,5 @@ aldex_heatmap_plot(
   col_cond         = "Location",
   effect_threshold = 0.5
 )
-}
 
 }

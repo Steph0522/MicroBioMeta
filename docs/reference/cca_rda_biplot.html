@@ -107,7 +107,7 @@ sample scores and environmental vectors.</p>
 <span>  pval_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  show_all_env_vectors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  analysis <span class="op">=</span> <span class="st">"CCA"</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">126</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">123</span>,</span>
 <span>  scale_arrows <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -172,7 +172,7 @@ matching the sample names in <code>table</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed for reproducibility (default is <code>126</code>).</p></dd>
+<dd><p>Random seed for reproducibility (default is <code>123</code>).</p></dd>
 
 
 <dt id="arg-scale-arrows">scale_arrows<a class="anchor" aria-label="anchor" href="#arg-scale-arrows"></a></dt>
@@ -202,8 +202,7 @@ when <code>save_table = TRUE</code>). Default <code>"cca_rda_scores.txt"</code>.
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
@@ -223,7 +222,7 @@ when <code>save_table = TRUE</code>). Default <code>"cca_rda_scores.txt"</code>.
 <span class="r-in"><span>  show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  group_col            <span class="op">=</span> <span class="st">"Location"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-plt img"><img src="cca_rda_biplot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </div>

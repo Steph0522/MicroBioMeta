@@ -54,7 +54,6 @@
 #' @return A ggplot object showing alpha diversity with Hill numbers.
 #' @export
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -78,7 +77,6 @@
 #'   stat             = "t.test",
 #'   panel_label_case = "upper"
 #' )
-#' }
 
 alpha_diversity_plot <- function(
     table,

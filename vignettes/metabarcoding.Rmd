@@ -817,3 +817,10 @@ This analysis produces a **biplot** where:
 -   **Arrows** represent environmental variables and their direction of influence on community structure.
 
 -   Environmental vectors pointing in similar directions indicate **positive associations**, while vectors pointing in opposite directions suggest **negative relationships**
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```

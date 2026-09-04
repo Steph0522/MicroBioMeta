@@ -60,7 +60,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -68,14 +67,18 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # p_adj_method = "BH" (less strict than the "holm" default), and a lower
-#' # prv_cut than the 0.1 default so rare-but-compartment-specific taxa
-#' # (e.g. taxa found almost only in roots) aren't excluded before testing
+#' # Not run automatically because ANCOMBC2's internal bias-correction step
+#' # can intermittently error on some random bootstrap draws (a known
+#' # ANCOMBC2 edge case, not specific to this dataset), which would make an
+#' # always-run example a flaky check. p_adj_method = "BH" is less strict
+#' # than the "holm" default; prv_cut is raised above the 0.1 default to
+#' # filter out rare/sparse taxa before testing.
+#' \donttest{
 #' ancombc_plot(
 #'   table        = table,
 #'   metadata     = metadata,
 #'   col_cond     = "Location",
-#'   prv_cut      = 0.01,
+#'   prv_cut      = 0.3,
 #'   p_adj_method = "BH"
 #' )
 #' }
@@ -110,11 +113,11 @@ ancombc_plot <- function(table,
   }
   # --- 1. validate inputs --------------------------------------------------
   if (!col_cond %in% colnames(metadata))
-    stop(paste("Column", col_cond, "not found in metadata."))
+    stop("Column ", col_cond, " not found in metadata.")
 
   if (!is.null(ref_level)) {
     if (!ref_level %in% metadata[[col_cond]])
-      stop(paste("ref_level '", ref_level, "' not found in column '", col_cond, "'.", sep = ""))
+      stop("ref_level '", ref_level, "' not found in column '", col_cond, "'.")
     metadata[[col_cond]] <- relevel(factor(metadata[[col_cond]]), ref = ref_level)
   }
 

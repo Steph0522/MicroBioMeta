@@ -72,7 +72,7 @@ bar plot (2-group or continuous \code{col_cond}). First color is the
 "positive" direction (the non-reference group / increases with the
 variable); second color is the "negative" direction (the reference
 group / decreases with the variable). Default \code{c("#56B4E9",
-"#E69F00")} (the same colorblind-friendly blue/orange pairing used as
+  "#E69F00")} (the same colorblind-friendly blue/orange pairing used as
 the 2-group default throughout the package). Ignored for the
 3+-group heatmap, which uses \code{diverging_palette} instead.}
 
@@ -94,7 +94,6 @@ returned; for three or more groups a heatmap is returned; for a continuous
 unit increase is returned instead, colored by the direction of the effect.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -102,14 +101,18 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# p_adj_method = "BH" (less strict than the "holm" default), and a lower
-# prv_cut than the 0.1 default so rare-but-compartment-specific taxa
-# (e.g. taxa found almost only in roots) aren't excluded before testing
+# Not run automatically because ANCOMBC2's internal bias-correction step
+# can intermittently error on some random bootstrap draws (a known
+# ANCOMBC2 edge case, not specific to this dataset), which would make an
+# always-run example a flaky check. p_adj_method = "BH" is less strict
+# than the "holm" default; prv_cut is raised above the 0.1 default to
+# filter out rare/sparse taxa before testing.
+\donttest{
 ancombc_plot(
   table        = table,
   metadata     = metadata,
   col_cond     = "Location",
-  prv_cut      = 0.01,
+  prv_cut      = 0.3,
   p_adj_method = "BH"
 )
 }

@@ -70,7 +70,6 @@ plot, where bubble size represents mean relative abundance and color indicates
 the dominant condition.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -88,5 +87,4 @@ ratios_bubble_plot(
   level         = "genus",
   top_n         = 20
 )
-}
 }

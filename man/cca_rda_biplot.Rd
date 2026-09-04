@@ -17,7 +17,7 @@ cca_rda_biplot(
   pval_threshold = 0.05,
   show_all_env_vectors = FALSE,
   analysis = "CCA",
-  seed = 126,
+  seed = 123,
   scale_arrows = 1,
   title = "auto",
   save_table = FALSE,
@@ -53,7 +53,7 @@ matching the sample names in \code{table}.}
 
 \item{analysis}{Either \code{"CCA"} or \code{"RDA"} (default is \code{"CCA"}).}
 
-\item{seed}{Random seed for reproducibility (default is \code{126}).}
+\item{seed}{Random seed for reproducibility (default is \code{123}).}
 
 \item{scale_arrows}{Numeric value to scale environmental vectors in the plot.}
 
@@ -76,7 +76,6 @@ and selected environmental variables, returning a biplot with ggplot2 that visua
 sample scores and environmental vectors.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -97,5 +96,4 @@ cca_rda_biplot(
   show_all_env_vectors = TRUE,
   group_col            = "Location"
 )
-}
 }

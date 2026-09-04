@@ -16,7 +16,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' full_table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -29,7 +28,6 @@
 #'   table    = feature_table,
 #'   taxonomy = taxonomy_df
 #' )
-#' }
 
 merge_feature_taxonomy <- function(table, taxonomy,
                                    save_table = FALSE,

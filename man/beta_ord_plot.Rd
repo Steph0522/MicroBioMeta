@@ -18,7 +18,8 @@ beta_ord_plot(
   top_n = 5,
   title = "auto",
   save_table = FALSE,
-  table_filename = "ordination_scores.txt"
+  table_filename = "ordination_scores.txt",
+  seed = 123
 )
 }
 \arguments{
@@ -77,6 +78,12 @@ disk, distinguished by a \code{type} column (\code{"site"} or
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.}
+
+\item{seed}{Numeric. Random seed used for \code{distance = "compositional"}'s
+Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
+results are reproducible by default; set to a different value (or wrap
+the call in your own \code{set.seed()} and leave this at its default) to
+get a different random draw. Default \code{123}.}
 }
 \value{
 A \code{ggplot2} object.
@@ -87,7 +94,6 @@ This function computes beta diversity using several distance metrics and ordinat
 of color and shape aesthetics. It also supports compositional transformation via ALDEx2.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -103,5 +109,4 @@ beta_ord_plot(
   group_col  = "Location",
   top_n      = 5
 )
-}
 }

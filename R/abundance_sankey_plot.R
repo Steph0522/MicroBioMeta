@@ -15,7 +15,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -26,7 +25,6 @@
 #'   taxRanks     = c("P", "C", "G", "S"),
 #'   taxonomy_db  = "silva"
 #' )
-#' }
 
 
 abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
@@ -104,7 +102,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
       tidyr::unite(col = !!level, all_of(unite_cols), remove = FALSE) %>%
       dplyr::mutate(!!level := ifelse(grepl("_+$", .data[[level]]) | .data[[level]] == "", NA, .data[[level]])) %>%
       tidyr::drop_na(all_of(level)) %>%
-      dplyr::select(c(all_of(level), names(df)[sapply(df,is.numeric)])) %>%
+      dplyr::select(c(all_of(level), names(df)[vapply(df, is.numeric, logical(1))])) %>%
       dplyr::group_by(across(all_of(level))) %>%
       dplyr::summarise(dplyr::across(where(is.numeric), sum), .groups = "drop") %>%
       tibble::column_to_rownames(var = level) %>%
@@ -145,7 +143,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   
   # Construct nodes and links for Sankey
   splits <- strsplit(my_report$ids,"_")
-  sel <- sapply(splits,length) >= 3
+  sel <- vapply(splits, length, integer(1)) >= 3
   splits <- splits[sel]
   
   links <- data.frame(do.call(rbind,
@@ -153,10 +151,10 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                       stringsAsFactors = FALSE)
   colnames(links) <- c("source","target")
   
-  links$value <- sapply(seq_len(nrow(links)), function(i) {
+  links$value <- vapply(seq_len(nrow(links)), function(i) {
     val <- my_report$abund[my_report$name == links$target[i]]
     if(length(val) == 1) val else NA_real_
-  })
+  }, numeric(1))
   
   links <- links[!is.na(links$value) & links$value>0, ]
   

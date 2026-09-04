@@ -818,3 +818,10 @@ Este análisis produce un **biplot** donde:
 -   Las **flechas** representan las variables ambientales y su dirección de influencia sobre la estructura de la comunidad.
 
 -   Los vectores ambientales que apuntan en direcciones similares indican **asociaciones positivas**, mientras que los vectores que apuntan en direcciones opuestas sugieren **relaciones negativas**
+
+
+## Información de la sesión
+
+```{r}
+sessionInfo()
+```

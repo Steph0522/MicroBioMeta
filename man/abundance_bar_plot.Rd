@@ -77,7 +77,6 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 }
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -96,5 +95,4 @@ abundance_bar_plot(
   top_n        = 30,
   add_remained = TRUE
 )
-}
 }

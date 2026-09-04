@@ -34,7 +34,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -56,7 +55,6 @@
 #'   color_facets_x        = c("#5D478B", "#8B668B"),
 #'   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 #' )
-#' }
 
 beta_turnover_plot <- function(table, 
                       metadata, 
@@ -89,7 +87,7 @@ beta_turnover_plot <- function(table,
   otu_filter <- table %>%
     dplyr::filter(rowSums(dplyr::across(dplyr::where(is.numeric))) != 0)
   
-  if (nrow(otu_filter) == 0) stop("Error: OTU table is empty after filtering rows with sum=0.")
+  if (nrow(otu_filter) == 0) stop("OTU table is empty after filtering rows with sum=0.")
 
   otu_filter_t <- as.data.frame(t(otu_filter))
 
@@ -108,7 +106,7 @@ beta_turnover_plot <- function(table,
       result %>%
         dplyr::mutate(Recambio = TD_beta - 1, q = q)
     }, error = function(e) {
-      warning(paste("WARNING: Error computing hill_taxa_parti_pairwise with q =", q, ":", e$message))
+      warning("Error computing hill_taxa_parti_pairwise with q = ", q, ": ", e$message)
       NULL
     })
     if (!is.null(beta_res)) beta_q_list[[as.character(q)]] <- beta_res
@@ -116,7 +114,7 @@ beta_turnover_plot <- function(table,
   
   beta_total <- dplyr::bind_rows(beta_q_list)
   
-  if (nrow(beta_total) == 0) stop("Error: Could not compute beta partitions (empty table).")
+  if (nrow(beta_total) == 0) stop("Could not compute beta partitions (empty table).")
 
 
   # Paso 3: Unir con metadata
@@ -124,7 +122,7 @@ beta_turnover_plot <- function(table,
     dplyr::inner_join(metadata, by = c("site1" = "OTUID")) %>%
     dplyr::inner_join(metadata, by = c("site2" = "OTUID"))
   
-  if (nrow(beta_formato) == 0) stop("Error: Could not join beta_total with metadata (empty table).")
+  if (nrow(beta_formato) == 0) stop("Could not join beta_total with metadata (empty table).")
 
 
   # Paso 4: Crear comparaciones y filtrar
@@ -137,7 +135,7 @@ beta_turnover_plot <- function(table,
       q == 0 ~ "q0", q == 1 ~ "q1", q == 2 ~ "q2", TRUE ~ as.character(q)
     ))
   
-  if (nrow(beta_final) == 0) stop("Error: After filtering comparisons, the table is empty.")
+  if (nrow(beta_final) == 0) stop("After filtering comparisons, the table is empty.")
 
   if (save_table) {
     utils::write.table(beta_final, file = table_filename, sep = "\t",
@@ -230,8 +228,8 @@ shared_plot <- function(table,
 
   #Obtener base de datos sin singletons por muestra
   asv_table <- table
-  asv_table[asv_table>0]=1
-  asv_no_single<-asv_table %>% 
+  asv_table[asv_table > 0] <- 1
+  asv_no_single <- asv_table %>%
     dplyr::filter(rowSums(dplyr::across(dplyr::where(is.numeric)))>1) %>%
     t() %>%
     as.data.frame() 

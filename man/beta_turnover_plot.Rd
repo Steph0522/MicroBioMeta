@@ -82,7 +82,6 @@ A ggplot2 figure with beta diversity partitions across conditions.
 Box plot of beta diversity
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -104,5 +103,4 @@ beta_turnover_plot(
   color_facets_x        = c("#5D478B", "#8B668B"),
   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 )
-}
 }

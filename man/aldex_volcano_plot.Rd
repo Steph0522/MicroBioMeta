@@ -59,7 +59,6 @@ A \code{ggplot} object with the selected plot.
 This function generates either an effect size plot or a volcano plot based on ALDEx2 results.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -81,5 +80,4 @@ aldex_volcano_plot(
   cond            = "Rhizosphere",
   show_labels     = TRUE
 )
-}
 }

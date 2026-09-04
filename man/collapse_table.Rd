@@ -46,7 +46,6 @@ unchanged. Optionally converts counts to relative abundance and exports the
 collapsed table to a tab-delimited file.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -61,5 +60,4 @@ collapse_table(
   rel_abun   = FALSE,
   save_table = FALSE
 )
-}
 }

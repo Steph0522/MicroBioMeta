@@ -31,7 +31,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -46,7 +45,6 @@
 #'   group_col  = "Location",
 #'   point_size = 4
 #' )
-#' }
 
 
 beta_partition_ord_plot <- function(table, metadata, 
@@ -75,7 +73,7 @@ beta_partition_ord_plot <- function(table, metadata,
       }
 
       # keep only numeric columns
-      table <- table[, sapply(table, is.numeric), drop = FALSE]
+      table <- table[, vapply(table, is.numeric, logical(1)), drop = FALSE]
       
       # convertir a matriz
       table <- as.matrix(table)

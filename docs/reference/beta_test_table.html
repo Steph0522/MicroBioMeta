@@ -100,7 +100,8 @@
 <span>  strata_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  decimales <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"beta_test_results.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"beta_test_results.txt"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">123</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -159,6 +160,12 @@ Default <code>FALSE</code>.</p></dd>
 <dd><p>Character. File path/name for the saved table (used
 when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</code>.</p></dd>
 
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Numeric. Random seed used for <code>method = "compositional"</code>'s
+Monte Carlo Dirichlet sampling (via <code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>), so
+results are reproducible by default. Default <code>123</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -167,8 +174,7 @@ when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</cod
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
@@ -185,6 +191,7 @@ when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</cod
 <span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
 <span class="r-in"><span>  strata_var  <span class="op">=</span> <span class="st">"Plot"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="beta_test_table-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example using a distance matrix</span></span></span>
 <span class="r-in"><span><span class="va">dist_matrix</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span></span></span>
@@ -197,6 +204,7 @@ when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</cod
 <span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
 <span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"betadisper"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="beta_test_table-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compositional PERMANOVA (CLR via ALDEx2, then Euclidean)</span></span></span>
 <span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
@@ -207,7 +215,12 @@ when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</cod
 <span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
 <span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> no conditions provided: forcing denom = 'all'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> no conditions provided: forcing conds = 'NA'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> conditions vector supplied</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> operating in serial mode</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> computing center with all features</span>
+<span class="r-plt img"><img src="beta_test_table-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </div>

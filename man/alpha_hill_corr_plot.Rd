@@ -62,7 +62,6 @@ line and correlation coefficient, combining the three plots (q0,
 q1, q2) into a single figure via \code{cowplot}.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -77,5 +76,4 @@ alpha_hill_corr_plot(
   table  = table,
   method = "pearson"
 )
-}
 }

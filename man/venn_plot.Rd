@@ -49,7 +49,6 @@ based on the user's preference. It includes additional customization options lik
 minimum prevalence filtering and custom group color scales (manual).
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -80,5 +79,4 @@ venn_plot(
   min_prevalence = 0,
   group_colors   = c("#1B9E77", "#D95F02")
 )
-}
 }

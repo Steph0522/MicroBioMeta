@@ -123,7 +123,6 @@ for a given dataset, faceted by one or two categorical variables (e.g., sample t
 It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -146,5 +145,4 @@ alpha_diversity_plot(
   stat             = "t.test",
   panel_label_case = "upper"
 )
-}
 }

@@ -65,7 +65,6 @@ This function computes beta diversity partition (Jaccard or Sorensen)
 using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -80,5 +79,4 @@ beta_partition_ord_plot(
   group_col  = "Location",
   point_size = 4
 )
-}
 }

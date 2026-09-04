@@ -285,3 +285,10 @@ cca_rda_biplot(table = table_meta,
                group_col = "Polygon",
                scale_arrows = 3)
 ```
+
+
+## Información de la sesión
+
+```{r}
+sessionInfo()
+```

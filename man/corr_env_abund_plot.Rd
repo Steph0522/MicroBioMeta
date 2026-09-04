@@ -93,7 +93,6 @@ abundances and environmental variables, and visualizes the results as either a h
 (tile) or a bubble plot (circle).
 }
 \examples{
-\dontrun{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
@@ -120,5 +119,4 @@ corr_env_abund_plot(
   taxonomy_db    = "silva",
   pval_threshold = 0.05
 )
-}
 }

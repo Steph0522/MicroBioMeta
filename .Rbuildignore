@@ -10,3 +10,5 @@
 ^pkgdown$
 ^\.claude$
 ^vignettes/articles$
+^MicroBioMeta\.BiocCheck$
+^MicroBioMeta_.*\.tar\.gz$

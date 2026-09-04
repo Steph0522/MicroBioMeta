@@ -49,7 +49,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -68,7 +67,6 @@
 #'   col_cond         = "Location",
 #'   effect_threshold = 0.5
 #' )
-#' }
 #'
 
 aldex_heatmap_plot <- function(table,
@@ -106,7 +104,7 @@ aldex_heatmap_plot <- function(table,
 
   # Verify condition column
   if (!col_cond %in% colnames(metadata))
-    stop(paste("Column", col_cond, "not found in metadata."))
+    stop("Column ", col_cond, " not found in metadata.")
 
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table),
                   ignore.case = TRUE)

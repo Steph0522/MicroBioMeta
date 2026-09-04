@@ -17,7 +17,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -32,7 +31,6 @@
 #'   top_n               = 20,
 #'   size                = 6
 #' )
-#' }
 random_forest_lollipop_plot <- function(table,
                                   metadata,
                                   top_n = 15,

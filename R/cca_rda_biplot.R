@@ -20,7 +20,7 @@
 #' @param pval_threshold P-value threshold for selecting significant environmental variables (default is `0.05`).
 #' @param show_all_env_vectors Logical; if TRUE, plot all environmental vectors regardless of significance.
 #' @param analysis Either `"CCA"` or `"RDA"` (default is `"CCA"`).
-#' @param seed Random seed for reproducibility (default is `126`).
+#' @param seed Random seed for reproducibility (default is `123`).
 #' @param scale_arrows Numeric value to scale environmental vectors in the plot.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
 #'   \code{NULL} shows no title; any other string is used as-is.
@@ -34,7 +34,6 @@
 #' @export
 #' 
 #' @examples
-#' \dontrun{
 #' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
@@ -55,7 +54,6 @@
 #'   show_all_env_vectors = TRUE,
 #'   group_col            = "Location"
 #' )
-#' }
 cca_rda_biplot <- function(table,
                        env_data,
                        env_vars,
@@ -68,7 +66,7 @@ cca_rda_biplot <- function(table,
                        pval_threshold = 0.05,
                        show_all_env_vectors = FALSE,
                        analysis = "CCA",
-                       seed = 126,
+                       seed = 123,
                        scale_arrows = 1,
                        title = "auto",
                        save_table = FALSE,

@@ -191,7 +191,7 @@ bar plot (2-group or continuous <code>col_cond</code>). First color is the
 "positive" direction (the non-reference group / increases with the
 variable); second color is the "negative" direction (the reference
 group / decreases with the variable). Default <code>c("#56B4E9",
-"#E69F00")</code> (the same colorblind-friendly blue/orange pairing used as
+  "#E69F00")</code> (the same colorblind-friendly blue/orange pairing used as
 the 2-group default throughout the package). Ignored for the
 3+-group heatmap, which uses <code>diverging_palette</code> instead.</p></dd>
 
@@ -214,25 +214,73 @@ when <code>save_table = TRUE</code>). Default <code>"ancombc_results.txt"</code>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># p_adj_method = "BH" (less strict than the "holm" default), and a lower</span></span></span>
-<span class="r-in"><span><span class="co"># prv_cut than the 0.1 default so rare-but-compartment-specific taxa</span></span></span>
-<span class="r-in"><span><span class="co"># (e.g. taxa found almost only in roots) aren't excluded before testing</span></span></span>
+<span class="r-in"><span><span class="co"># Not run automatically because ANCOMBC2's internal bias-correction step</span></span></span>
+<span class="r-in"><span><span class="co"># can intermittently error on some random bootstrap draws (a known</span></span></span>
+<span class="r-in"><span><span class="co"># ANCOMBC2 edge case, not specific to this dataset), which would make an</span></span></span>
+<span class="r-in"><span><span class="co"># always-run example a flaky check. p_adj_method = "BH" is less strict</span></span></span>
+<span class="r-in"><span><span class="co"># than the "holm" default; prv_cut is raised above the 0.1 default to</span></span></span>
+<span class="r-in"><span><span class="co"># filter out rare/sparse taxa before testing.</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu">ancombc_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table        <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata     <span class="op">=</span> <span class="va">metadata</span>,</span></span>
 <span class="r-in"><span>  col_cond     <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  prv_cut      <span class="op">=</span> <span class="fl">0.01</span>,</span></span>
+<span class="r-in"><span>  prv_cut      <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
 <span class="r-in"><span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 methods overwritten by 'treeio':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   method              from    </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   MRCA.phylo          tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   MRCA.treedata       tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Nnode.treedata      tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Ntip.treedata       tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ancestor.phylo      tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ancestor.treedata   tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   child.phylo         tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   child.treedata      tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   full_join.phylo     tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   full_join.treedata  tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupClade.phylo    tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupClade.treedata tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupOTU.phylo      tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupOTU.treedata   tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   inner_join.phylo    tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   inner_join.treedata tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   is.rooted.treedata  tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodeid.phylo        tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodeid.treedata     tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodelab.phylo       tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodelab.treedata    tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   offspring.phylo     tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   offspring.treedata  tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   parent.phylo        tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   parent.treedata     tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   root.treedata       tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   rootnode.phylo      tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   rootnode.treedata   tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   sibling.phylo       tidytree</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'lme4':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   method           from</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   na.action.merMod car </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The group variable has &lt; 3 categories </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> The multi-group comparisons (global/pairwise/dunnet/trend) will be deactivated</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: foreach</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: 'foreach'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from 'package:purrr':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     accumulate, when</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: rngtools</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Term 'Location': 1 significant taxa</span>
+<span class="r-plt img"><img src="ancombc_plot-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
