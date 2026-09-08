@@ -142,11 +142,12 @@ conditions in Ricinus communis. Fungal Ecology, 63, 101225.</a></p>
 <p><a href="https://tidyverse.org/" class="external-link"><code>tidyverse</code></a> se usa
 para todo el manejo de datos y las visualizaciones.</p>
 <p>Ahora cargamos los datos y los reformateamos. Este conjunto de datos
-fue procesado en <a href="https://qiime2.org/" class="external-link"><code>QIIME2</code></a>,
-así que sus artefactos <code>.qza</code> deben importarse a R.
-Alternativamente, podrías exportar los mismos datos desde
-<code>QIIME2</code> como archivos <code>.txt</code> planos y leerlos
-directamente.</p>
+fue procesado en <a href="https://qiime2.org/" class="external-link"><code>QIIME2</code></a>
+<span class="citation">(<a href="#ref-bolyen2019qiime2">Bolyen et al.
+2019</a>)</span>, así que sus artefactos <code>.qza</code> deben
+importarse a R. Alternativamente, podrías exportar los mismos datos
+desde <code>QIIME2</code> como archivos <code>.txt</code> planos y
+leerlos directamente.</p>
 <p>En este ejemplo usamos el paquete <a href="https://github.com/jbisanz/qiime2R" class="external-link"><code>qiime2R</code></a>, del
 cual <code><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza()</a></code> está adaptada (Licencia MIT, © 2018 Jordan
 Bisanz). Para instalarlo:</p>
@@ -388,7 +389,7 @@ archivo HTML</strong> con un diagrama de Sankey interactivo.</p>
 individual. Con <code>MicroBioMeta</code>, la diversidad alfa se puede
 explorar con varias métricas distintas, como métricas clásicas tipo Chao
 y Simpson. Además, el paquete implementa funciones basadas en el
-<strong>marco de números de Hill</strong>, que ofrece una forma
+<strong>marco de números de Hill</strong> <span class="citation">(<a href="#ref-chao2014hill">Chao et al. 2014</a>; <a href="#ref-li2018hillr">Li 2018</a>)</span>, que ofrece una forma
 unificada de representar distintas unidades. Los números de Hill se
 parametrizan mediante el orden <em>q</em>, que regula el peso que se le
 da a la abundancia. Por ejemplo, <em>q</em>=0 corresponde a la riqueza
@@ -693,10 +694,11 @@ estadísticas para evaluar si la composición de la comunidad difiere
 entre grupos experimentales.</p>
 <p>El argumento <code>formula_str</code> especifica el diseño
 experimental usando una sintaxis de fórmula similar a la de los modelos
-lineales en R, o como se usa en el paquete <code>vegan</code>. El
-parámetro <code>method</code> define la métrica de distancia usada para
-calcular las disimilitudes, y el argumento <code>test</code> especifica
-la prueba estadística (opciones: <strong>PERMANOVA</strong> o
+lineales en R, o como se usa en el paquete <code>vegan</code> <span class="citation">(<a href="#ref-oksanen2024vegan">Oksanen et al.
+2024</a>)</span>. El parámetro <code>method</code> define la métrica de
+distancia usada para calcular las disimilitudes, y el argumento
+<code>test</code> especifica la prueba estadística (opciones:
+<strong>PERMANOVA</strong> <span class="citation">(<a href="#ref-anderson2001permanova">Anderson 2001</a>)</span> o
 <strong>BETADISPER</strong>).</p>
 <p>El parámetro <code>permutations</code> determina el número de
 permutaciones usadas para estimar la significancia estadística.
@@ -742,7 +744,7 @@ disimilitud que se muestra en el gráfico.</p>
 componentes. La función <code><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot()</a></code> divide la
 diversidad beta en los componentes de recambio (<em>turnover</em>) y
 anidamiento (<em>nestedness</em>) según índices de disimilitud
-seleccionados.</p>
+seleccionados <span class="citation">(<a href="#ref-baselga2012betapart">Baselga and Orme 2012</a>)</span>.</p>
 <p>El argumento <code>index</code> especifica la familia de índices de
 disimilitud usada para la partición (por ejemplo, Jaccard o Sørensen).
 Los parámetros <code>group_col</code> y <code>shape_col</code> definen
@@ -900,9 +902,9 @@ geográficamente más cercanas también son más similares en composición.
 Calcula la disimilitud comunitaria pareada (<code>distance</code>, por
 ejemplo <code>"jaccard"</code>, <code>"bray"</code>,
 <code>"horn"</code>) y las distancias geográficas pareadas a partir de
-las coordenadas de las muestras, corre una prueba de Mantel entre ambas,
-y grafica la similitud (1 − disimilitud) contra la distancia con una
-línea de regresión ajustada.</p>
+las coordenadas de las muestras, corre una prueba de Mantel <span class="citation">(<a href="#ref-mantel1967test">Mantel 1967</a>)</span>
+entre ambas, y grafica la similitud (1 − disimilitud) contra la
+distancia con una línea de regresión ajustada.</p>
 <p><code>lat_col</code>/<code>lon_col</code> nombran las columnas de
 latitud/longitud en <code>metadata</code> (en grados decimales), y el
 argumento opcional <code>group_col</code> corre una prueba de Mantel y
@@ -941,12 +943,15 @@ global.</p>
 ayudan a identificar features microbianos que varían significativamente
 entre grupos experimentales.</p>
 <p>Dos funciones se apoyan en un <strong>marco de análisis de datos
-composicionales implementado en el paquete</strong> <a href="https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html" class="external-link">ALDEx2</a>.
-Este enfoque tiene en cuenta la naturaleza composicional de los datos de
-secuenciación usando instancias de Monte Carlo Dirichlet y
-transformaciones log-razón centradas, y en el paquete <a href="https://bioconductor.org/packages/ANCOMBC/" class="external-link">ANCOMBC2</a>, un
-método alternativo de abundancia diferencial que modela explícitamente
-el sesgo composicional y los ceros estructurales.</p>
+composicionales implementado en el paquete</strong> <a href="https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html" class="external-link">ALDEx2</a>
+<span class="citation">(<a href="#ref-fernandes2014aldex2">Fernandes et
+al. 2014</a>)</span>. Este enfoque tiene en cuenta la naturaleza
+composicional de los datos de secuenciación <span class="citation">(<a href="#ref-gloor2017compositional">Gloor et al. 2017</a>)</span> usando
+instancias de Monte Carlo Dirichlet y transformaciones log-razón
+centradas, y en el paquete <a href="https://bioconductor.org/packages/ANCOMBC/" class="external-link">ANCOMBC2</a> <span class="citation">(<a href="#ref-lin2020ancombc">Lin and Peddada
+2020</a>)</span>, un método alternativo de abundancia diferencial que
+modela explícitamente el sesgo composicional y los ceros
+estructurales.</p>
 <p>Las funciones:</p>
 <ul>
 <li><p><code><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot()</a></code> visualiza los resultados de
@@ -962,9 +967,10 @@ hay 2 grupos) y un heatmap (cuando hay 3 o más grupos).</p></li>
 <li><p><code><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot()</a></code> visualiza taxones basándose en
 <strong>diferencias log-razón entre condiciones</strong>.</p></li>
 <li><p><code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> usa un <strong>modelo
-Random Forest</strong> para identificar los features que mejor predicen
-una variable o condición dada, visualizado como un <strong>gráfico de
-lollipop de importancia de features</strong>.</p></li>
+Random Forest</strong> <span class="citation">(<a href="#ref-breiman2001randomforest">Breiman 2001</a>)</span> para
+identificar los features que mejor predicen una variable o condición
+dada, visualizado como un <strong>gráfico de lollipop de importancia de
+features</strong>.</p></li>
 </ul>
 <div class="section level3">
 <h3 id="ejemplo-datos-de-bacterias">📊 Ejemplo: datos de bacterias<a class="anchor" aria-label="anchor" href="#ejemplo-datos-de-bacterias"></a>
@@ -1179,6 +1185,72 @@ indican <strong>asociaciones positivas</strong>, mientras que los
 vectores que apuntan en direcciones opuestas sugieren <strong>relaciones
 negativas</strong></p></li>
 </ul>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="referencias">Referencias<a class="anchor" aria-label="anchor" href="#referencias"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-anderson2001permanova" class="csl-entry">
+Anderson, Marti J. 2001. <span>“A New Method for Non-Parametric
+Multivariate Analysis of Variance.”</span> <em>Austral Ecology</em> 26
+(1): 32–46. <a href="https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x" class="external-link">https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x</a>.
+</div>
+<div id="ref-baselga2012betapart" class="csl-entry">
+Baselga, Andrés, and C. David L. Orme. 2012. <span>“<span class="nocase">betapart</span>: An <span>R</span> Package for the Study
+of Beta Diversity.”</span> <em>Methods in Ecology and Evolution</em> 3
+(5): 808–12. <a href="https://doi.org/10.1111/j.2041-210X.2012.00224.x" class="external-link">https://doi.org/10.1111/j.2041-210X.2012.00224.x</a>.
+</div>
+<div id="ref-bolyen2019qiime2" class="csl-entry">
+Bolyen, Evan, Jai Ram Rideout, Matthew R. Dillon, et al. 2019.
+<span>“Reproducible, Interactive, Scalable and Extensible Microbiome
+Data Science Using <span>QIIME</span> 2.”</span> <em>Nature
+Biotechnology</em> 37 (8): 852–57. <a href="https://doi.org/10.1038/s41587-019-0209-9" class="external-link">https://doi.org/10.1038/s41587-019-0209-9</a>.
+</div>
+<div id="ref-breiman2001randomforest" class="csl-entry">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine
+Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="external-link">https://doi.org/10.1023/A:1010933404324</a>.
+</div>
+<div id="ref-chao2014hill" class="csl-entry">
+Chao, Anne, Nicholas J. Gotelli, T. C. Hsieh, Elizabeth L. Sander, K. H.
+Ma, Robert K. Colwell, and Aaron M. Ellison. 2014. <span>“Rarefaction
+and Extrapolation with <span>Hill</span> Numbers: A Framework for
+Sampling and Estimation in Species Diversity Studies.”</span>
+<em>Ecological Monographs</em> 84 (1): 45–67. <a href="https://doi.org/10.1890/13-0133.1" class="external-link">https://doi.org/10.1890/13-0133.1</a>.
+</div>
+<div id="ref-fernandes2014aldex2" class="csl-entry">
+Fernandes, Andrew D., Jennifer N. S. Reid, Jean M. Macklaim, Thomas A.
+McMurrough, David R. Edgell, and Gregory B. Gloor. 2014. <span>“Unifying
+the Analysis of High-Throughput Sequencing Datasets: Characterizing
+<span>RNA</span>-Seq, 16<span>S</span> <span class="nocase">rRNA</span>
+Gene Sequencing and Selective Growth Experiments by Compositional Data
+Analysis.”</span> <em>Microbiome</em> 2: 15. <a href="https://doi.org/10.1186/2049-2618-2-15" class="external-link">https://doi.org/10.1186/2049-2618-2-15</a>.
+</div>
+<div id="ref-gloor2017compositional" class="csl-entry">
+Gloor, Gregory B., Jean M. Macklaim, Vera Pawlowsky-Glahn, and Juan J.
+Egozcue. 2017. <span>“Microbiome Datasets Are Compositional: And This Is
+Not Optional.”</span> <em>Frontiers in Microbiology</em> 8: 2224. <a href="https://doi.org/10.3389/fmicb.2017.02224" class="external-link">https://doi.org/10.3389/fmicb.2017.02224</a>.
+</div>
+<div id="ref-li2018hillr" class="csl-entry">
+Li, Daijiang. 2018. <span>“<span class="nocase">hillR</span>: Taxonomic,
+Functional, and Phylogenetic Diversity and Similarity Through
+<span>Hill</span> Numbers.”</span> <em>Journal of Open Source
+Software</em> 3 (31): 1041. <a href="https://doi.org/10.21105/joss.01041" class="external-link">https://doi.org/10.21105/joss.01041</a>.
+</div>
+<div id="ref-lin2020ancombc" class="csl-entry">
+Lin, Huang, and Shyamal Das Peddada. 2020. <span>“Analysis of
+Compositions of Microbiomes with Bias Correction.”</span> <em>Nature
+Communications</em> 11: 3514. <a href="https://doi.org/10.1038/s41467-020-17041-7" class="external-link">https://doi.org/10.1038/s41467-020-17041-7</a>.
+</div>
+<div id="ref-mantel1967test" class="csl-entry">
+Mantel, Nathan. 1967. <span>“The Detection of Disease Clustering and a
+Generalized Regression Approach.”</span> <em>Cancer Research</em> 27
+(2): 209–20.
+</div>
+<div id="ref-oksanen2024vegan" class="csl-entry">
+Oksanen, Jari, Gavin L. Simpson, F. Guillaume Blanchet, et al. 2024.
+<em>Vegan: Community Ecology Package</em>. <a href="https://CRAN.R-project.org/package=vegan" class="external-link">https://CRAN.R-project.org/package=vegan</a>.
 </div>
 </div>
 </div>

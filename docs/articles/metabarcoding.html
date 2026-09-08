@@ -142,13 +142,15 @@ conditions in Ricinus communis. Fungal Ecology, 63, 101225.</a></p>
 <p><a href="https://tidyverse.org/" class="external-link"><code>tidyverse</code></a> is used
 for all the data wrangling and visualizations.</p>
 <p>Next, we load the data and reformat it. This dataset was processed in
-<a href="https://qiime2.org/" class="external-link"><code>QIIME2</code></a>, so its
-<code>.qza</code> artifacts need to be imported into R. Alternatively,
-you could export the same data from <code>QIIME2</code> as plain
-<code>.txt</code> files and read them directly.</p>
+<a href="https://qiime2.org/" class="external-link"><code>QIIME2</code></a> <span class="citation">(<a href="#ref-bolyen2019qiime2">Bolyen et al.
+2019</a>)</span>, so its <code>.qza</code> artifacts need to be imported
+into R. Alternatively, you could export the same data from
+<code>QIIME2</code> as plain <code>.txt</code> files and read them
+directly.</p>
 <p>We use in this example: <a href="https://github.com/jbisanz/qiime2R" class="external-link"><code>qiime2R</code></a>
-package, whose <code><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza()</a></code> this is adapted from (MIT
-License, © 2018 Jordan Bisanz). For installing:</p>
+package <span class="citation">(<a href="#ref-bisanz2018qiime2r">Bisanz
+2018</a>)</span>, whose <code><a href="https://rdrr.io/pkg/qiime2R/man/read_qza.html" class="external-link">read_qza()</a></code> this is adapted from
+(MIT License, © 2018 Jordan Bisanz). For installing:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span><span class="op">}</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jbisanz/qiime2R"</span><span class="op">)</span></span></code></pre></div>
@@ -384,12 +386,12 @@ diafgram.</p>
 With <code>MicroBioMeta</code>, alpha diversity can be explored using
 several different metrics, like classic metrcis as Chao and Simpson.
 Also, the package implements functions based on the <strong>Hill numbers
-framework</strong>, which provides a unified way to represent different
-units. Hill numbers are parameterized by the order <em>q</em>, which
-regulates the weight given to the abundance. For example, <em>q</em>=0
-corresponds to species richness (total species), <em>q</em>=1 to the
-exponential of Shannon entropy (frequent species), and <em>q</em>=2 to
-the inverse Simpson index (dominant species).</p>
+framework</strong> <span class="citation">(<a href="#ref-chao2014hill">Chao et al. 2014</a>; <a href="#ref-li2018hillr">Li 2018</a>)</span>, which provides a unified
+way to represent different units. Hill numbers are parameterized by the
+order <em>q</em>, which regulates the weight given to the abundance. For
+example, <em>q</em>=0 corresponds to species richness (total species),
+<em>q</em>=1 to the exponential of Shannon entropy (frequent species),
+and <em>q</em>=2 to the inverse Simpson index (dominant species).</p>
 <div class="section level3">
 <h3 id="correlation-among-hill-numbers">📈 Correlation among Hill numbers<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
 </h3>
@@ -677,10 +679,11 @@ tests to evaluate whether community composition differs among
 experimental groups.</p>
 <p>The <code>formula_str</code> argument specifies the experimental
 design using a formula syntax similar to linear models in R or as it is
-used for <code>vegan</code> package. The <code>method</code> parameter
-defines the distance metric used to calculate dissimilarities, and the
-<code>test</code> argument specifies the statistical test (options:
-<strong>PERMANOVA</strong> or <strong>BETADISPER</strong>).</p>
+used for the <code>vegan</code> package <span class="citation">(<a href="#ref-oksanen2024vegan">Oksanen et al. 2024</a>)</span>. The
+<code>method</code> parameter defines the distance metric used to
+calculate dissimilarities, and the <code>test</code> argument specifies
+the statistical test (options: <strong>PERMANOVA</strong> <span class="citation">(<a href="#ref-anderson2001permanova">Anderson
+2001</a>)</span> or <strong>BETADISPER</strong>).</p>
 <p>The <code>permutations</code> parameter determines the number of
 permutations used to estimate statistical significance. The
 <code>strata_var</code> is used as in <code>vegan</code> package to
@@ -723,7 +726,7 @@ evaluates the same notion of dissimilarity shown in the plot.</p>
 <p>Beta diversity can also be decomposed into different components. The
 <code><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot()</a></code> function partitions beta
 diversity into the turnover and nestedness components based on selected
-dissimilarity indices.</p>
+dissimilarity indices <span class="citation">(<a href="#ref-baselga2012betapart">Baselga and Orme 2012</a>)</span>.</p>
 <p>The <code>index</code> argument specifies the dissimilarity family
 used for the partition (e.g., Jaccard or Sørensen). The
 <code>group_col</code> and <code>shape_col</code> parameters define how
@@ -874,8 +877,9 @@ that are geographically closer are also more similar in composition. It
 computes pairwise community dissimilarity (<code>distance</code>,
 e.g. <code>"jaccard"</code>, <code>"bray"</code>, <code>"horn"</code>)
 and pairwise geographic distances from sample coordinates, runs a Mantel
-test between them, and plots similarity (1 − dissimilarity) against
-distance with a fitted regression line.</p>
+test <span class="citation">(<a href="#ref-mantel1967test">Mantel
+1967</a>)</span> between them, and plots similarity (1 − dissimilarity)
+against distance with a fitted regression line.</p>
 <p><code>lat_col</code>/<code>lon_col</code> name the latitude/longitude
 columns in <code>metadata</code> (decimal degrees), and the optional
 <code>group_col</code> runs a separate Mantel test and regression line
@@ -913,12 +917,14 @@ per group instead of one global test.</p>
 identify microbial features that vary significantly across experimental
 groups.</p>
 <p>Two functions rely on a <strong>compositional data analysis framework
-implemented in the package</strong> <a href="https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html" class="external-link">ALDEx2</a>.
-This approach accounts for the compositional nature of sequencing data
-by using Monte Carlo Dirichlet instances and centered log-ratio
-transformations and in the package <a href="https://bioconductor.org/packages/ANCOMBC/" class="external-link">ANCOMBC2</a> an
-alternative differential abundance method that explicitly models
-compositional bias and structural zeros.</p>
+implemented in the package</strong> <a href="https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html" class="external-link">ALDEx2</a>
+<span class="citation">(<a href="#ref-fernandes2014aldex2">Fernandes et
+al. 2014</a>)</span>. This approach accounts for the compositional
+nature of sequencing data <span class="citation">(<a href="#ref-gloor2017compositional">Gloor et al. 2017</a>)</span> by
+using Monte Carlo Dirichlet instances and centered log-ratio
+transformations and in the package <a href="https://bioconductor.org/packages/ANCOMBC/" class="external-link">ANCOMBC2</a> <span class="citation">(<a href="#ref-lin2020ancombc">Lin and Peddada
+2020</a>)</span> an alternative differential abundance method that
+explicitly models compositional bias and structural zeros.</p>
 <p>The functions:</p>
 <ul>
 <li><p><code><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot()</a></code> visualizes differential
@@ -934,9 +940,9 @@ and a heatmap (when 3+ groups).</p></li>
 <li><p><code><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot()</a></code> visualizes taxa based on
 <strong>log-ratio differences between conditions</strong>.</p></li>
 <li><p><code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> uses a <strong>Random
-Forest model</strong> to identify features that best predict a given
-variable or condition, visualized as a <strong>lollipop plot of feature
-importance</strong>.</p></li>
+Forest model</strong> <span class="citation">(<a href="#ref-breiman2001randomforest">Breiman 2001</a>)</span> to identify
+features that best predict a given variable or condition, visualized as
+a <strong>lollipop plot of feature importance</strong>.</p></li>
 </ul>
 <div class="section level3">
 <h3 id="example-bacterial-data">📊 Example: Bacterial data<a class="anchor" aria-label="anchor" href="#example-bacterial-data"></a>
@@ -1145,6 +1151,77 @@ their direction of influence on community structure.</p></li>
 opposite directions suggest <strong>negative
 relationships</strong></p></li>
 </ul>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-anderson2001permanova" class="csl-entry">
+Anderson, Marti J. 2001. <span>“A New Method for Non-Parametric
+Multivariate Analysis of Variance.”</span> <em>Austral Ecology</em> 26
+(1): 32–46. <a href="https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x" class="external-link">https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x</a>.
+</div>
+<div id="ref-baselga2012betapart" class="csl-entry">
+Baselga, Andrés, and C. David L. Orme. 2012. <span>“<span class="nocase">betapart</span>: An <span>R</span> Package for the Study
+of Beta Diversity.”</span> <em>Methods in Ecology and Evolution</em> 3
+(5): 808–12. <a href="https://doi.org/10.1111/j.2041-210X.2012.00224.x" class="external-link">https://doi.org/10.1111/j.2041-210X.2012.00224.x</a>.
+</div>
+<div id="ref-bisanz2018qiime2r" class="csl-entry">
+Bisanz, Jordan E. 2018. <em><span class="nocase">qiime2R</span>:
+Importing <span>QIIME2</span> Artifacts and Associated Data into
+<span>R</span> Sessions</em>. <a href="https://github.com/jbisanz/qiime2R" class="external-link">https://github.com/jbisanz/qiime2R</a>.
+</div>
+<div id="ref-bolyen2019qiime2" class="csl-entry">
+Bolyen, Evan, Jai Ram Rideout, Matthew R. Dillon, et al. 2019.
+<span>“Reproducible, Interactive, Scalable and Extensible Microbiome
+Data Science Using <span>QIIME</span> 2.”</span> <em>Nature
+Biotechnology</em> 37 (8): 852–57. <a href="https://doi.org/10.1038/s41587-019-0209-9" class="external-link">https://doi.org/10.1038/s41587-019-0209-9</a>.
+</div>
+<div id="ref-breiman2001randomforest" class="csl-entry">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine
+Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="external-link">https://doi.org/10.1023/A:1010933404324</a>.
+</div>
+<div id="ref-chao2014hill" class="csl-entry">
+Chao, Anne, Nicholas J. Gotelli, T. C. Hsieh, Elizabeth L. Sander, K. H.
+Ma, Robert K. Colwell, and Aaron M. Ellison. 2014. <span>“Rarefaction
+and Extrapolation with <span>Hill</span> Numbers: A Framework for
+Sampling and Estimation in Species Diversity Studies.”</span>
+<em>Ecological Monographs</em> 84 (1): 45–67. <a href="https://doi.org/10.1890/13-0133.1" class="external-link">https://doi.org/10.1890/13-0133.1</a>.
+</div>
+<div id="ref-fernandes2014aldex2" class="csl-entry">
+Fernandes, Andrew D., Jennifer N. S. Reid, Jean M. Macklaim, Thomas A.
+McMurrough, David R. Edgell, and Gregory B. Gloor. 2014. <span>“Unifying
+the Analysis of High-Throughput Sequencing Datasets: Characterizing
+<span>RNA</span>-Seq, 16<span>S</span> <span class="nocase">rRNA</span>
+Gene Sequencing and Selective Growth Experiments by Compositional Data
+Analysis.”</span> <em>Microbiome</em> 2: 15. <a href="https://doi.org/10.1186/2049-2618-2-15" class="external-link">https://doi.org/10.1186/2049-2618-2-15</a>.
+</div>
+<div id="ref-gloor2017compositional" class="csl-entry">
+Gloor, Gregory B., Jean M. Macklaim, Vera Pawlowsky-Glahn, and Juan J.
+Egozcue. 2017. <span>“Microbiome Datasets Are Compositional: And This Is
+Not Optional.”</span> <em>Frontiers in Microbiology</em> 8: 2224. <a href="https://doi.org/10.3389/fmicb.2017.02224" class="external-link">https://doi.org/10.3389/fmicb.2017.02224</a>.
+</div>
+<div id="ref-li2018hillr" class="csl-entry">
+Li, Daijiang. 2018. <span>“<span class="nocase">hillR</span>: Taxonomic,
+Functional, and Phylogenetic Diversity and Similarity Through
+<span>Hill</span> Numbers.”</span> <em>Journal of Open Source
+Software</em> 3 (31): 1041. <a href="https://doi.org/10.21105/joss.01041" class="external-link">https://doi.org/10.21105/joss.01041</a>.
+</div>
+<div id="ref-lin2020ancombc" class="csl-entry">
+Lin, Huang, and Shyamal Das Peddada. 2020. <span>“Analysis of
+Compositions of Microbiomes with Bias Correction.”</span> <em>Nature
+Communications</em> 11: 3514. <a href="https://doi.org/10.1038/s41467-020-17041-7" class="external-link">https://doi.org/10.1038/s41467-020-17041-7</a>.
+</div>
+<div id="ref-mantel1967test" class="csl-entry">
+Mantel, Nathan. 1967. <span>“The Detection of Disease Clustering and a
+Generalized Regression Approach.”</span> <em>Cancer Research</em> 27
+(2): 209–20.
+</div>
+<div id="ref-oksanen2024vegan" class="csl-entry">
+Oksanen, Jari, Gavin L. Simpson, F. Guillaume Blanchet, et al. 2024.
+<em>Vegan: Community Ecology Package</em>. <a href="https://CRAN.R-project.org/package=vegan" class="external-link">https://CRAN.R-project.org/package=vegan</a>.
 </div>
 </div>
 </div>

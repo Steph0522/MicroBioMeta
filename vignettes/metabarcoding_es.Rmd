@@ -5,6 +5,8 @@ output:
     toc: true
     toc_depth: 3
     fig_caption: true
+bibliography: references.bib
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Amplicón}
   %\VignetteEngine{knitr::rmarkdown}
@@ -46,7 +48,7 @@ library(tidyverse)
 
 [`tidyverse`](https://tidyverse.org/) se usa para todo el manejo de datos y las visualizaciones.
 
-Ahora cargamos los datos y los reformateamos. Este conjunto de datos fue procesado en [`QIIME2`](https://qiime2.org/), así que sus artefactos `.qza` deben importarse a R. Alternativamente, podrías exportar los mismos datos desde `QIIME2` como archivos `.txt` planos y leerlos directamente.
+Ahora cargamos los datos y los reformateamos. Este conjunto de datos fue procesado en [`QIIME2`](https://qiime2.org/) [@bolyen2019qiime2], así que sus artefactos `.qza` deben importarse a R. Alternativamente, podrías exportar los mismos datos desde `QIIME2` como archivos `.txt` planos y leerlos directamente.
 
 En este ejemplo usamos el paquete [`qiime2R`](https://github.com/jbisanz/qiime2R), del cual `read_qza()` está adaptada (Licencia MIT, © 2018 Jordan Bisanz). Para instalarlo:
 
@@ -249,7 +251,7 @@ sankey_bacteria
 ```
 
 ## 📊 Diversidad alfa
-La diversidad alfa describe la diversidad dentro de cada muestra individual. Con `MicroBioMeta`, la diversidad alfa se puede explorar con varias métricas distintas, como métricas clásicas tipo Chao y Simpson. Además, el paquete implementa funciones basadas en el **marco de números de Hill**, que ofrece una forma unificada de representar distintas unidades. Los números de Hill se parametrizan mediante el orden *q*, que regula el peso que se le da a la abundancia. Por ejemplo, *q*=0 corresponde a la riqueza de especies (número total de especies), *q*=1 al exponencial de la entropía de Shannon (especies frecuentes), y *q*=2 al inverso del índice de Simpson (especies dominantes).
+La diversidad alfa describe la diversidad dentro de cada muestra individual. Con `MicroBioMeta`, la diversidad alfa se puede explorar con varias métricas distintas, como métricas clásicas tipo Chao y Simpson. Además, el paquete implementa funciones basadas en el **marco de números de Hill** [@chao2014hill; @li2018hillr], que ofrece una forma unificada de representar distintas unidades. Los números de Hill se parametrizan mediante el orden *q*, que regula el peso que se le da a la abundancia. Por ejemplo, *q*=0 corresponde a la riqueza de especies (número total de especies), *q*=1 al exponencial de la entropía de Shannon (especies frecuentes), y *q*=2 al inverso del índice de Simpson (especies dominantes).
 
 ### 📈 Correlación entre números de Hill
 La función `alpha_hill_corr_plot()` calcula los números de Hill para distintos órdenes (típicamente, 𝑞=0,1,2) y visualiza las correlaciones entre ellos mediante un gráfico de correlación, evaluando qué tan fuertemente se relacionan las métricas de diversidad de distintos órdenes con la profundidad de secuenciación.
@@ -461,7 +463,7 @@ beta_ord_plot(table = table_fung,
 ### 🖥️ Pruebas estadísticas para diversidad beta
 La función `beta_test_table()` realiza pruebas estadísticas para evaluar si la composición de la comunidad difiere entre grupos experimentales.
 
-El argumento `formula_str` especifica el diseño experimental usando una sintaxis de fórmula similar a la de los modelos lineales en R, o como se usa en el paquete `vegan`. El parámetro `method` define la métrica de distancia usada para calcular las disimilitudes, y el argumento `test` especifica la prueba estadística (opciones: **PERMANOVA** o **BETADISPER**).
+El argumento `formula_str` especifica el diseño experimental usando una sintaxis de fórmula similar a la de los modelos lineales en R, o como se usa en el paquete `vegan` [@oksanen2024vegan]. El parámetro `method` define la métrica de distancia usada para calcular las disimilitudes, y el argumento `test` especifica la prueba estadística (opciones: **PERMANOVA** [@anderson2001permanova] o **BETADISPER**).
 
 El parámetro `permutations` determina el número de permutaciones usadas para estimar la significancia estadística. `strata_var` se usa, como en el paquete `vegan`, para bloquear un parámetro.
 
@@ -488,7 +490,7 @@ beta_test_table(table = table_fung,
 ```
 
 ### 💻 Partición de la diversidad beta
-La diversidad beta también puede descomponerse en distintos componentes. La función `beta_partition_ord_plot()` divide la diversidad beta en los componentes de recambio (*turnover*) y anidamiento (*nestedness*) según índices de disimilitud seleccionados.
+La diversidad beta también puede descomponerse en distintos componentes. La función `beta_partition_ord_plot()` divide la diversidad beta en los componentes de recambio (*turnover*) y anidamiento (*nestedness*) según índices de disimilitud seleccionados [@baselga2012betapart].
 
 El argumento `index` especifica la familia de índices de disimilitud usada para la partición (por ejemplo, Jaccard o Sørensen). Los parámetros `group_col` y `shape_col` definen cómo se visualizan las muestras según variables de metadatos.
 
@@ -592,7 +594,7 @@ beta_turnover_plot(
 ```
 
 ### 💻 Decaimiento de la similitud comunitaria con la distancia
-La función `beta_decay_plot()` evalúa si las comunidades geográficamente más cercanas también son más similares en composición. Calcula la disimilitud comunitaria pareada (`distance`, por ejemplo `"jaccard"`, `"bray"`, `"horn"`) y las distancias geográficas pareadas a partir de las coordenadas de las muestras, corre una prueba de Mantel entre ambas, y grafica la similitud (1 − disimilitud) contra la distancia con una línea de regresión ajustada.
+La función `beta_decay_plot()` evalúa si las comunidades geográficamente más cercanas también son más similares en composición. Calcula la disimilitud comunitaria pareada (`distance`, por ejemplo `"jaccard"`, `"bray"`, `"horn"`) y las distancias geográficas pareadas a partir de las coordenadas de las muestras, corre una prueba de Mantel [@mantel1967test] entre ambas, y grafica la similitud (1 − disimilitud) contra la distancia con una línea de regresión ajustada.
 
 `lat_col`/`lon_col` nombran las columnas de latitud/longitud en `metadata` (en grados decimales), y el argumento opcional `group_col` corre una prueba de Mantel y una línea de regresión separadas por grupo, en vez de una sola prueba global.
 
@@ -627,7 +629,7 @@ beta_decay_plot(
 ## 📊 Análisis de abundancia diferencial
 `MicroBioMeta` tiene varias funciones para explorar **taxones diferencialmente abundantes**. Estos análisis ayudan a identificar features microbianos que varían significativamente entre grupos experimentales.
 
-Dos funciones se apoyan en un **marco de análisis de datos composicionales implementado en el paquete** [ALDEx2](https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html). Este enfoque tiene en cuenta la naturaleza composicional de los datos de secuenciación usando instancias de Monte Carlo Dirichlet y transformaciones log-razón centradas, y en el paquete [ANCOMBC2](https://bioconductor.org/packages/ANCOMBC/), un método alternativo de abundancia diferencial que modela explícitamente el sesgo composicional y los ceros estructurales.
+Dos funciones se apoyan en un **marco de análisis de datos composicionales implementado en el paquete** [ALDEx2](https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html) [@fernandes2014aldex2]. Este enfoque tiene en cuenta la naturaleza composicional de los datos de secuenciación [@gloor2017compositional] usando instancias de Monte Carlo Dirichlet y transformaciones log-razón centradas, y en el paquete [ANCOMBC2](https://bioconductor.org/packages/ANCOMBC/) [@lin2020ancombc], un método alternativo de abundancia diferencial que modela explícitamente el sesgo composicional y los ceros estructurales.
 
 Las funciones:
 
@@ -642,7 +644,7 @@ Adicionalmente, dos enfoques complementarios ayudan a identificar **taxones impo
 
 -   `ratios_bubble_plot()` visualiza taxones basándose en **diferencias log-razón entre condiciones**.
 
--   `random_forest_lollipop_plot()` usa un **modelo Random Forest** para identificar los features que mejor predicen una variable o condición dada, visualizado como un **gráfico de lollipop de importancia de features**.
+-   `random_forest_lollipop_plot()` usa un **modelo Random Forest** [@breiman2001randomforest] para identificar los features que mejor predicen una variable o condición dada, visualizado como un **gráfico de lollipop de importancia de features**.
 
 
 
@@ -819,6 +821,10 @@ Este análisis produce un **biplot** donde:
 
 -   Los vectores ambientales que apuntan en direcciones similares indican **asociaciones positivas**, mientras que los vectores que apuntan en direcciones opuestas sugieren **relaciones negativas**
 
+
+## Referencias
+
+<div id="refs"></div>
 
 ## Información de la sesión
 

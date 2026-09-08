@@ -122,7 +122,11 @@ most of their parameters are exactly the same across both workflows, so
 they aren’t re-explained here only what’s specific to metagenomic data
 is.</p>
 <p>For this example, reads were taxonomically classified with <a href="https://ccb.jhu.edu/software/kraken2/" class="external-link"><code>Kraken2</code></a>
-and abundance-corrected at the species level with <a href="https://ccb.jhu.edu/software/bracken/" class="external-link"><code>Bracken</code></a>.</p>
+<span class="citation">(<a href="#ref-wood2019kraken2">Wood, Lu, and
+Langmead 2019</a>)</span> and abundance-corrected at the species level
+with <a href="https://ccb.jhu.edu/software/bracken/" class="external-link"><code>Bracken</code></a>
+<span class="citation">(<a href="#ref-lu2017bracken">Lu et al.
+2017</a>)</span>.</p>
 <p>The data comes from forest soils along the Iztaccíhuatl-Popocatépetl
 (PNIP) and La Malinche (PNML) transects, Central Mexico:</p>
 <p><a href="https://peerj.com/articles/18323/" class="external-link">Hereira-Pacheco, S. E. et
@@ -326,8 +330,10 @@ as above.</p>
 <h3 id="statistical-tests-for-beta-diversity">Statistical tests for beta diversity<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
 </h3>
 <p><code>method = "jaccard"</code> matches with the one used for the
-ordinatrion above, so the ordination and the significance test are
-evaluating the same notion of dissimilarity.</p>
+ordinatrion above, so the ordination (via the <code>vegan</code> package
+<span class="citation">(<a href="#ref-oksanen2024vegan">Oksanen et al.
+2024</a>)</span>) and the PERMANOVA significance test <span class="citation">(<a href="#ref-anderson2001permanova">Anderson
+2001</a>)</span> are evaluating the same notion of dissimilarity.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -341,7 +347,9 @@ evaluating the same notion of dissimilarity.</p>
 <h3 id="distance-decay-of-community-similarity">Distance-decay of community similarity<a class="anchor" aria-label="anchor" href="#distance-decay-of-community-similarity"></a>
 </h3>
 <p><code><a href="../reference/beta_decay_plot.html">beta_decay_plot()</a></code> tests whether communities that are
-geographically closer are also more similar in composition:</p>
+geographically closer are also more similar in composition, via a Mantel
+test <span class="citation">(<a href="#ref-mantel1967test">Mantel
+1967</a>)</span>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_decay_plot.html">beta_decay_plot</a></span><span class="op">(</span></span>
 <span>  table    <span class="op">=</span> <span class="va">table_meta</span>,</span>
@@ -362,7 +370,9 @@ above.</p>
 <div class="section level2">
 <h2 id="differential-abundant-analysis">Differential abundant analysis<a class="anchor" aria-label="anchor" href="#differential-abundant-analysis"></a>
 </h2>
-<p>For the heatmap and ANCOMBC2 versions we need a 2-group subset of the
+<p>For the heatmap (ALDEx2 <span class="citation">(<a href="#ref-fernandes2014aldex2">Fernandes et al. 2014</a>)</span>) and
+ANCOMBC2 <span class="citation">(<a href="#ref-lin2020ancombc">Lin and
+Peddada 2020</a>)</span> versions we need a 2-group subset of the
 6-level <code>Polygon</code>, in this part we will compare Polygon 2 and
 5:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -388,6 +398,9 @@ above.</p>
 <div class="section level3">
 <h3 id="identifying-important-taxa">Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
 </h3>
+<p><code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> uses a Random Forest model
+<span class="citation">(<a href="#ref-breiman2001randomforest">Breiman
+2001</a>)</span> to find the taxa that best predict the polygon:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>, metadata <span class="op">=</span> <span class="va">metadata_meta</span>, top_n <span class="op">=</span> <span class="fl">10</span>, variable_to_predict <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
@@ -443,6 +456,54 @@ abundance<a class="anchor" aria-label="anchor" href="#correlation-between-enviro
 <span>               group_col <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
 <span>               scale_arrows <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-anderson2001permanova" class="csl-entry">
+Anderson, Marti J. 2001. <span>“A New Method for Non-Parametric
+Multivariate Analysis of Variance.”</span> <em>Austral Ecology</em> 26
+(1): 32–46. <a href="https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x" class="external-link">https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x</a>.
+</div>
+<div id="ref-breiman2001randomforest" class="csl-entry">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine
+Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="external-link">https://doi.org/10.1023/A:1010933404324</a>.
+</div>
+<div id="ref-fernandes2014aldex2" class="csl-entry">
+Fernandes, Andrew D., Jennifer N. S. Reid, Jean M. Macklaim, Thomas A.
+McMurrough, David R. Edgell, and Gregory B. Gloor. 2014. <span>“Unifying
+the Analysis of High-Throughput Sequencing Datasets: Characterizing
+<span>RNA</span>-Seq, 16<span>S</span> <span class="nocase">rRNA</span>
+Gene Sequencing and Selective Growth Experiments by Compositional Data
+Analysis.”</span> <em>Microbiome</em> 2: 15. <a href="https://doi.org/10.1186/2049-2618-2-15" class="external-link">https://doi.org/10.1186/2049-2618-2-15</a>.
+</div>
+<div id="ref-lin2020ancombc" class="csl-entry">
+Lin, Huang, and Shyamal Das Peddada. 2020. <span>“Analysis of
+Compositions of Microbiomes with Bias Correction.”</span> <em>Nature
+Communications</em> 11: 3514. <a href="https://doi.org/10.1038/s41467-020-17041-7" class="external-link">https://doi.org/10.1038/s41467-020-17041-7</a>.
+</div>
+<div id="ref-lu2017bracken" class="csl-entry">
+Lu, Jennifer, Florian P. Breitwieser, Peter Thielen, and Steven L.
+Salzberg. 2017. <span>“<span>Bracken</span>: Estimating Species
+Abundance in Metagenomics Data.”</span> <em>PeerJ Computer Science</em>
+3: e104. <a href="https://doi.org/10.7717/peerj-cs.104" class="external-link">https://doi.org/10.7717/peerj-cs.104</a>.
+</div>
+<div id="ref-mantel1967test" class="csl-entry">
+Mantel, Nathan. 1967. <span>“The Detection of Disease Clustering and a
+Generalized Regression Approach.”</span> <em>Cancer Research</em> 27
+(2): 209–20.
+</div>
+<div id="ref-oksanen2024vegan" class="csl-entry">
+Oksanen, Jari, Gavin L. Simpson, F. Guillaume Blanchet, et al. 2024.
+<em>Vegan: Community Ecology Package</em>. <a href="https://CRAN.R-project.org/package=vegan" class="external-link">https://CRAN.R-project.org/package=vegan</a>.
+</div>
+<div id="ref-wood2019kraken2" class="csl-entry">
+Wood, Derrick E., Jennifer Lu, and Ben Langmead. 2019. <span>“Improved
+Metagenomic Analysis with <span>Kraken</span> 2.”</span> <em>Genome
+Biology</em> 20: 257. <a href="https://doi.org/10.1186/s13059-019-1891-0" class="external-link">https://doi.org/10.1186/s13059-019-1891-0</a>.
+</div>
 </div>
 </div>
 <div class="section level2">

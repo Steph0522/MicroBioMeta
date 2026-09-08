@@ -5,6 +5,8 @@ output:
     toc: true
     toc_depth: 3
     fig_caption: true
+bibliography: references.bib
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Metagenómica}
   %\VignetteEngine{knitr::rmarkdown}
@@ -23,7 +25,7 @@ knitr::opts_chunk$set(
 
 🍄 Este tutorial muestra cómo usar `MicroBioMeta` con datos de **metagenómica shotgun**, como alternativa al flujo de trabajo de amplicón (metabarcoding) cubierto en la [viñeta de Amplicón](metabarcoding_es.html). Las funciones y la mayoría de sus parámetros son exactamente los mismos en ambos flujos de trabajo, así que no se vuelven a explicar aquí, solo lo que es específico de los datos metagenómicos.
 
-Para este ejemplo, las lecturas fueron clasificadas taxonómicamente con [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) y corregidas en abundancia a nivel de especie con [`Bracken`](https://ccb.jhu.edu/software/bracken/).
+Para este ejemplo, las lecturas fueron clasificadas taxonómicamente con [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) [@wood2019kraken2] y corregidas en abundancia a nivel de especie con [`Bracken`](https://ccb.jhu.edu/software/bracken/) [@lu2017bracken].
 
 Los datos provienen de suelos forestales a lo largo de los transectos Iztaccíhuatl-Popocatépetl (PNIP) y La Malinche (PNML), en el centro de México:
 
@@ -175,7 +177,7 @@ beta_ord_plot(table = table_meta,
 
 ### Pruebas estadísticas para diversidad beta
 
-`method = "jaccard"` coincide con el usado en la ordenación de arriba, de modo que la ordenación y la prueba de significancia evalúan la misma noción de disimilitud.
+`method = "jaccard"` coincide con el usado en la ordenación de arriba, de modo que la ordenación (vía el paquete `vegan` [@oksanen2024vegan]) y la prueba PERMANOVA [@anderson2001permanova] evalúan la misma noción de disimilitud.
 
 ```{r, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
@@ -189,7 +191,7 @@ beta_test_table(table = table_meta,
 
 ### Decaimiento de la similitud comunitaria con la distancia
 
-`beta_decay_plot()` evalúa si las comunidades geográficamente más cercanas también son más similares en composición:
+`beta_decay_plot()` evalúa si las comunidades geográficamente más cercanas también son más similares en composición, mediante una prueba de Mantel [@mantel1967test]:
 
 ```{r, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
 beta_decay_plot(
@@ -205,7 +207,7 @@ Las comunidades geográficamente más cercanas son significativamente más simil
 
 ## Análisis de abundancia diferencial
 
-Para las versiones de heatmap y ANCOMBC2 necesitamos un subconjunto de 2 grupos del `Polygon` de 6 niveles; en esta parte compararemos Polygon 2 y 5:
+Para las versiones de heatmap (ALDEx2 [@fernandes2014aldex2]) y ANCOMBC2 [@lin2020ancombc] necesitamos un subconjunto de 2 grupos del `Polygon` de 6 niveles; en esta parte compararemos Polygon 2 y 5:
 
 ```{r}
 metadata_meta_compar <- metadata_meta %>%
@@ -232,6 +234,8 @@ ancombc_plot(
 ```
 
 ### Identificando taxones importantes
+
+`random_forest_lollipop_plot()` usa un modelo Random Forest [@breiman2001randomforest] para encontrar los taxones que mejor predicen el polígono:
 
 ```{r, fig.width=7, fig.height=6, out.width="60%"}
 random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n = 10, variable_to_predict = "Polygon")
@@ -286,6 +290,10 @@ cca_rda_biplot(table = table_meta,
                scale_arrows = 3)
 ```
 
+
+## Referencias
+
+<div id="refs"></div>
 
 ## Información de la sesión
 
