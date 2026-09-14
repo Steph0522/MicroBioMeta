@@ -101,8 +101,9 @@ ancombc_plot <- function(table,
     stop("`bar_colors` must have at least 2 colors.")
 
   # --- 0. package checks ---------------------------------------------------
-  # ANCOMBC and phyloseq are on Bioconductor.
-  for (pkg in c("ANCOMBC", "phyloseq")) {
+  # ANCOMBC, phyloseq, and microbiome (a transitive dependency ancombc2()
+  # needs internally for its data_sanity_check() step) are on Bioconductor.
+  for (pkg in c("ANCOMBC", "phyloseq", "microbiome")) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       stop(
         "Package '", pkg, "' is required but not installed.\n",
@@ -118,7 +119,7 @@ ancombc_plot <- function(table,
   if (!is.null(ref_level)) {
     if (!ref_level %in% metadata[[col_cond]])
       stop("ref_level '", ref_level, "' not found in column '", col_cond, "'.")
-    metadata[[col_cond]] <- relevel(factor(metadata[[col_cond]]), ref = ref_level)
+    metadata[[col_cond]] <- stats::relevel(factor(metadata[[col_cond]]), ref = ref_level)
   }
 
   tax_col <- grep("taxonomy|taxon|taxa", names(table), ignore.case = TRUE)
@@ -187,7 +188,7 @@ ancombc_plot <- function(table,
   if (save_table) {
     utils::write.table(res_prim, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   # --- 4. parse formula terms to plot ----------------------------------------
@@ -234,7 +235,7 @@ ancombc_plot <- function(table,
 
     if (nrow(df) == 0) return(NULL)
 
-    fill_colors <- stats::setNames(bar_colors[1:2], c(cmp_group, ref_group))
+    fill_colors <- stats::setNames(bar_colors[seq_len(2)], c(cmp_group, ref_group))
     legend_labs <- stats::setNames(
       paste0("Higher in ", c(cmp_group, ref_group)),
       c(cmp_group, ref_group)
@@ -411,10 +412,10 @@ ancombc_plot <- function(table,
   }
 
   if (length(plots) == 0)
-    stop(paste0(
+    stop(
       "No significantly different taxa found for any term.\n",
       "Try p_adj_method = 'BH' or lower prv_cut (current = ", prv_cut, ")."
-    ))
+    )
 
   # return single plot directly, or named list if multiple terms
   if (length(plots) == 1) return(plots[[1]])

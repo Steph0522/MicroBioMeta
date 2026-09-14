@@ -12,6 +12,11 @@
 #' @param cutoff.pval p-value cutoff for significance (default = 0.05).
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
+#' @param label_size Numeric. Font size for the taxon-name labels drawn on
+#'   significant points. Default \code{3.5}.
+#' @param filter_uncultured Logical. If \code{TRUE}, taxa whose name matches
+#'   "uncultured"/"unculture" are excluded from the point labels (they are
+#'   still plotted, just not labeled). Default \code{FALSE}.
 #' @param save_table Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.
 #'
@@ -74,11 +79,8 @@ aldex_volcano_plot <- function(table,
   # Verify that the condition column exists
   if (!col_cond %in% colnames(metadata)) {
     stop(
-      paste(
-        "The column",
-        col_cond,
-        "does not exist in the object 'metadata'. Check the name is written correctly."
-      )
+      "The column ", col_cond,
+      " does not exist in the object 'metadata'. Check the name is written correctly."
     )
   }
   
@@ -141,7 +143,7 @@ aldex_volcano_plot <- function(table,
       quote = FALSE,
       row.names = FALSE
     ) 
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   

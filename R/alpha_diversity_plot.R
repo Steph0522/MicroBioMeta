@@ -159,7 +159,7 @@ alpha_diversity_plot <- function(
       quote = FALSE,
       row.names = FALSE
     )
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   results[[fill_col]] <- factor(results[[fill_col]], levels = unique(results[[fill_col]]))
@@ -190,7 +190,7 @@ alpha_diversity_plot <- function(
   # Panel tags (A/B/C) are always added. When there's no nested double facet,
   # build the grid as separate cowplot-composed subplots instead of a single
   # faceted ggplot, so the tags land truly outside each panel - the same
-  # mechanism already used by alpha_hill_corrplot and beta_partition_plot -
+  # mechanism already used by alpha_hill_corr_plot and beta_partition_ord_plot -
   # instead of trying to carve out space inside one shared facet gtable.
   use_grid_compose <- is.null(facet_by2) &&
     identical(facet_orientation, "horizontal")
@@ -283,7 +283,7 @@ alpha_diversity_plot <- function(
   if (use_grid_compose) {
     # Build each panel as its own small ggplot and combine with cowplot, so
     # the A/B/C tags land in cowplot's own outside-the-panel margin - the
-    # same mechanism alpha_hill_corrplot/beta_partition_plot already use -
+    # same mechanism alpha_hill_corr_plot/beta_partition_ord_plot already use -
     # instead of carving space out of one shared facet gtable.
     index_levels <- unique(results_largo$Index)
     has_facet_by <- !is.null(facet_by)

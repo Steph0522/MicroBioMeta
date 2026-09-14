@@ -186,7 +186,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     combined_table <- dplyr::bind_rows(nodes_out, links_out)
     utils::write.table(combined_table, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   sankey <- networkD3::sankeyNetwork(

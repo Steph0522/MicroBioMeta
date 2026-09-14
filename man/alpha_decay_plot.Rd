@@ -46,7 +46,7 @@ per group (e.g. \code{"estado2"}).}
 \item{method}{Character. Correlation method for the statistic annotation.
 One of \code{"spearman"} (default) or \code{"pearson"}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R² and slope
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R-squared and slope
 from the linear model to the annotation label.}
 
 \item{facet_orientation}{Character. \code{"horizontal"} (default) places
@@ -78,7 +78,7 @@ Default \code{TRUE}.}
 
 \item{line_width}{Numeric. Width of regression lines. Default \code{0.9}.}
 
-\item{point_alpha}{Numeric (0–1). Transparency of points. Default \code{0.8}.}
+\item{point_alpha}{Numeric (0-1). Transparency of points. Default \code{0.8}.}
 
 \item{annotation_size}{Numeric. Font size for the stats annotation.
 Default \code{3.5}.}
@@ -89,7 +89,7 @@ tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
 
 \item{panel_labels}{Optional character vector of 3 custom panel tags (one
 per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
-\code{c("a.", "b.", "c.")}) — for journal styles that
+\code{c("a.", "b.", "c.")}) - for journal styles that
 \code{panel_label_case} alone can't produce. Overrides
 \code{panel_label_case} when provided.}
 
@@ -107,7 +107,7 @@ against a continuous metadata variable (e.g. distance to urban center,
 elevation, pH). Each Hill order is shown in its own facet panel with an
 ordinary least-squares regression line and an annotation reporting the
 Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-and optionally the linear regression R² and slope.
+and optionally the linear regression R-squared and slope.
 An optional grouping variable adds per-group coloring and separate
 regression lines.
 }

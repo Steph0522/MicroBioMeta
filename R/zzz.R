@@ -112,6 +112,30 @@ NULL
   scales::label_pvalue(accuracy = accuracy)(p)
 }
 
+# --- Local RNG state helper --------------------------------------------------
+# set.seed() run inside a function changes the *caller's* global RNG state
+# too, since R's RNG state is a single session-wide object - left as-is that
+# leaks into whatever random draws the caller makes next, e.g. after calling
+# beta_ord_plot()/beta_test_table()/cca_rda_biplot() (each uses set.seed()
+# for reproducible Monte Carlo Dirichlet sampling / ordination).
+# Usage inside a function: capture the closure, then register it with
+# on.exit() from your OWN function body (not from in here) right after
+# receiving it, so the restore actually happens in your function's frame:
+#   restore_seed <- .mbm_save_seed()
+#   on.exit(restore_seed(), add = TRUE)
+#   set.seed(seed)
+.mbm_save_seed <- function() {
+  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  old_seed <- if (had_seed) get(".Random.seed", envir = .GlobalEnv) else NULL
+  function() {
+    if (had_seed) {
+      assign(".Random.seed", old_seed, envir = .GlobalEnv)
+    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    }
+  }
+}
+
 # --- Shared theme -----------------------------------------------------------
 # Internal helper: unified ggplot2 theme for all MicroBioMeta plots.
 # legend_position: passed through from each function's parameter.
@@ -328,5 +352,23 @@ utils::globalVariables(c(
   "dist",
   "prcomp",
   "sd",
-  "var"
+  "var",
+  # alpha_decay_plot / beta_decay_plot corner-annotation layout columns
+  ".grp_idx",
+  "side",
+  "slot",
+  "hill",
+  "x_pos",
+  "y_pos",
+  "hjust",
+  "vjust",
+  "geo_km",
+  "similarity",
+  "group",
+  # alpha_diversity_plot facet formula
+  "Index",
+  # cca_rda_biplot vector labels
+  "Variable",
+  # random_forest_lollipop_plot row ids
+  "row_id"
 ))

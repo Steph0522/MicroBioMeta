@@ -72,7 +72,7 @@ bar plot (2-group or continuous \code{col_cond}). First color is the
 "positive" direction (the non-reference group / increases with the
 variable); second color is the "negative" direction (the reference
 group / decreases with the variable). Default \code{c("#56B4E9",
-  "#E69F00")} (the same colorblind-friendly blue/orange pairing used as
+"#E69F00")} (the same colorblind-friendly blue/orange pairing used as
 the 2-group default throughout the package). Ignored for the
 3+-group heatmap, which uses \code{diverging_palette} instead.}
 

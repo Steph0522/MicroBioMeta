@@ -43,7 +43,7 @@ library(tidyverse)
 
 Each sample was processed separately, so `bracken_species` reports were merged into a single table beforehand (one column per sample, named `kraken_pluspfp_<id_metagenome>_report_bracken_species`) with a **`taxonomy`** column already attached as the last column:
 
-```{r}
+```{r loading-data-1}
 table_kraken <- read.delim("articles/data/table_kraken.txt", row.names = 1, check.names = FALSE)
 
 table_kraken[1:3, c(1:2, ncol(table_kraken))]
@@ -55,7 +55,7 @@ Taxonomy is already in the table  so, there is no need to use  `merge_feature_ta
 
 Now, let's load the metadata:
 
-```{r}
+```{r loading-data-2}
 metadata_meta <- read.delim("articles/data/metadata_metagenomic.txt", check.names = FALSE)
 
 head(metadata_meta[, 1:10])
@@ -63,7 +63,7 @@ head(metadata_meta[, 1:10])
 
 Kraken column names encode a `id_metagenome` number (e.g. `kraken_pluspfp_100_report_bracken_species`) rather than the sample's actual ID, so we recover it with a regular expression and use `metadata_meta$id_metagenome` to rename each column to its `SampleID`:
 
-```{r}
+```{r loading-data-3}
 sample_cols <- setdiff(colnames(table_kraken), "taxonomy")
 
 id_metagenome <- as.integer(gsub("kraken_pluspfp_|_report_bracken_species", "", sample_cols))
@@ -74,18 +74,18 @@ colnames(table_kraken)[match(sample_cols, colnames(table_kraken))] <-
 
 Let's rename and format the metadata:
 
-```{r}
+```{r loading-data-4}
 metadata_meta$Polygon <- factor(paste0("Pol", metadata_meta$Poligono), levels = paste0("Pol", 1:6))
 metadata_meta$Site <- as.character(metadata_meta$Sitio)
 ```
 
-```{r}
+```{r loading-data-5}
 table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 ```
 
 Coordinates were taken and loaded:
 
-```{r}
+```{r loading-data-6}
 coord_meta <- read.csv("articles/data/coord_metagenomic.csv") %>%
   dplyr::select(-Site) %>% # drop the CSV's own overall site index (1-12); we want `Sitio` (1-2) instead
   dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
@@ -101,7 +101,7 @@ metadata_meta <- metadata_meta %>%
 ### 📊 Abundance barplot
 Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
 
-```{r, fig.width=9, fig.height=6}
+```{r abundance-barplot-7, fig.width=9, fig.height=6}
 abundance_bar_plot(table = table_meta,
                   metadata = metadata_meta,
                   taxonomy_db = "Kraken2",
@@ -117,7 +117,7 @@ abundance_bar_plot(table = table_meta,
 ### 🖥️ Abundance heatmap
 Kraken2/Bracken taxa aren't ASVs, so `feature_prefix = "Taxon"` is used here instead of the default `"ASV"` row-label prefix.
 
-```{r, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
+```{r abundance-heatmap-8, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
 abundance_heatmap_plot(table = table_meta,
                   metadata = metadata_meta,
                   top_n = 20,
@@ -128,14 +128,14 @@ abundance_heatmap_plot(table = table_meta,
 
 ## 📊 Alpha diversity
 ### 📈 Correlation among Hill numbers
-```{r, warning=FALSE, fig.width=12, fig.height=4.5}
+```{r correlation-among-hill-numbers-9, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_meta)
 ```
 
 ### 📊 Alpha diversity visualization
 `fill_col` is the same as `x_col` here, so the legend would just repeat the x-axis tick labels - `show_legend = FALSE` drops it.
 
-```{r, warning=FALSE, fig.width=9, fig.height=5}
+```{r alpha-diversity-visualization-10, warning=FALSE, fig.width=9, fig.height=5}
 alpha_hill_plot(table = table_meta,
                 metadata = metadata_meta,
                 x_col = "Polygon",
@@ -152,7 +152,7 @@ Richness (*q*=0) is nearly saturated and flat across blocks here — this genus-
 
 ### Alpha diversity along a continuous gradient
 
-```{r, warning=FALSE, fig.height=4, fig.width=10}
+```{r alpha-diversity-along-a-continuous-gradient-11, warning=FALSE, fig.height=4, fig.width=10}
 alpha_decay_plot(table = table_meta,
                  metadata = metadata_meta,
                  cont_var = "pH",
@@ -167,7 +167,7 @@ Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't
 
 We can use metrics that consider only presence/absence like **jaccard**:
 
-```{r, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+```{r ordination-of-community-composition-12, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 beta_ord_plot(table = table_meta,
               metadata = metadata_meta,
               distance = "jaccard",
@@ -179,7 +179,7 @@ beta_ord_plot(table = table_meta,
 
 `method = "jaccard"` matches with the one used for the ordinatrion above, so the ordination (via the `vegan` package [@oksanen2024vegan]) and the PERMANOVA significance test [@anderson2001permanova] are evaluating the same notion of dissimilarity.
 
-```{r, fig.width=8, fig.height=4}
+```{r statistical-tests-for-beta-diversity-13, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
                 metadata = metadata_meta,
                 formula_str = "Polygon*Site",
@@ -193,7 +193,7 @@ beta_test_table(table = table_meta,
 
 `beta_decay_plot()` tests whether communities that are geographically closer are also more similar in composition, via a Mantel test [@mantel1967test]:
 
-```{r, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
+```{r distance-decay-of-community-similarity-14, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
 beta_decay_plot(
   table    = table_meta,
   metadata = metadata_meta,
@@ -209,20 +209,20 @@ Communities that are geographically closer are significantly more similar (Mante
 
 For the heatmap (ALDEx2 [@fernandes2014aldex2]) and ANCOMBC2 [@lin2020ancombc] versions we need a 2-group subset of the 6-level `Polygon`, in this part we will compare Polygon 2 and 5:
 
-```{r}
+```{r differential-abundant-analysis-15}
 metadata_meta_compar <- metadata_meta %>%
   filter(Polygon == "Pol2" | Polygon == "Pol5")
 
 table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SAMPLEID, colnames(table_meta)), ncol(table_meta))]
 ```
 
-```{r, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
+```{r differential-abundant-analysis-16, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
 aldex_heatmap_plot(table = table_meta_compar,
                    metadata = metadata_meta_compar,
                    col_cond = "Polygon")
 ```
 
-```{r, fig.width=8, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
+```{r differential-abundant-analysis-17, fig.width=8, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
 ancombc_plot(
   table        = table_meta_compar,
   metadata     = metadata_meta_compar,
@@ -237,11 +237,11 @@ ancombc_plot(
 
 `random_forest_lollipop_plot()` uses a Random Forest model [@breiman2001randomforest] to find the taxa that best predict the polygon:
 
-```{r, fig.width=7, fig.height=6, out.width="60%"}
+```{r identifying-important-taxa-18, fig.width=7, fig.height=6, out.width="60%"}
 random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n = 10, variable_to_predict = "Polygon")
 ```
 
-```{r, fig.width=8, fig.height=9, out.width="60%"}
+```{r identifying-important-taxa-19, fig.width=8, fig.height=9, out.width="60%"}
 ratios_bubble_plot(table = table_meta_compar,
            metadata = metadata_meta_compar,
            condition_col = "Polygon",
@@ -254,7 +254,7 @@ ratios_bubble_plot(table = table_meta_compar,
 
 The metadata already carries the soil physicochemical variables measured for these samples, so the environmental table is built the same way as in the metabarcoding vignette:
 
-```{r}
+```{r environmental-analyses-20}
 env_table_meta <- metadata_meta %>%
   dplyr::select(SAMPLEID, pH:ARENA) %>%
   remove_rownames() %>%
@@ -263,7 +263,7 @@ env_table_meta <- metadata_meta %>%
 
 ### Correlation between environmental variables and taxonomic abundance
 
-```{r, fig.width=9, fig.height=3.2}
+```{r correlation-between-environmental-variables-and-taxonomic-abundance-21, fig.width=9, fig.height=3.2}
 corr_env_abund_plot(table = table_meta,
                     env_table = env_table_meta,
                     metadata = metadata_meta,
@@ -274,12 +274,12 @@ corr_env_abund_plot(table = table_meta,
 
 ### Constrained ordination (CCA)
 
-```{r}
+```{r constrained-ordination-cca-22}
 env_table_meta <- env_table_meta[
   match(metadata_meta$SAMPLEID, rownames(env_table_meta)), , drop = FALSE]
 ```
 
-```{r, fig.width=8, fig.height=6}
+```{r constrained-ordination-cca-23, fig.width=8, fig.height=6}
 cca_rda_biplot(table = table_meta,
                env_data = env_table_meta,
                metadata = metadata_meta,
@@ -297,6 +297,6 @@ cca_rda_biplot(table = table_meta,
 
 ## Session info
 
-```{r}
+```{r session-info-24}
 sessionInfo()
 ```

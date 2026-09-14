@@ -62,20 +62,20 @@ palette name (\code{"colorb"} default, \code{"grey"}, \code{"viridis"},
 \item{permutations}{Integer. Number of permutations for the Mantel test.
 Default \code{999}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R² to the
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R-squared to the
 annotation label in addition to the Mantel r, p-value, and slope.}
 
 \item{point_color}{Character. Color of scatter points. Default
-\code{"black"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}.}
+\code{"black"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}.}
 
 \item{line_color}{Character. Color of the regression line. Default
-\code{"#D55E00"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}'s
+\code{"#D55E00"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}'s
 ungrouped color scheme. The confidence-interval ribbon uses that same
 scheme's fill, \code{"#56B4E9"}.}
 
 \item{point_size}{Numeric. Size of scatter points. Default \code{1}.}
 
-\item{point_alpha}{Numeric (0–1). Transparency of scatter points.
+\item{point_alpha}{Numeric (0-1). Transparency of scatter points.
 Default \code{0.5}.}
 
 \item{annotation_size}{Numeric. Font size for the stats annotation.
@@ -86,7 +86,7 @@ Default \code{"Spatial distance (km)"}.}
 
 \item{y_axis_title}{Character or \code{NULL}. Y-axis label. If \code{NULL}
 (default), it is built automatically from the \code{distance} method,
-e.g. \code{"Jaccard similarity (1 − dissimilarity)"}.}
+e.g. \code{"Jaccard similarity (1 - dissimilarity)"}.}
 
 \item{title}{Character or \code{NULL}. Plot title. Default
 \code{NULL} (no title).}
@@ -99,7 +99,7 @@ Computes pairwise community dissimilarity (Jaccard, Horn/Morisita-Horn,
 Bray-Curtis, or other \code{vegan::vegdist} methods) and pairwise
 geographic distances (Haversine formula, km) from sample coordinates
 stored in \code{metadata}. It runs a Mantel test to evaluate the
-relationship between community similarity (1 − dissimilarity) and
+relationship between community similarity (1 - dissimilarity) and
 geographic distance, fits a linear regression, and returns a scatter plot
 annotated with the Mantel statistic, p-value, and regression slope.
 }

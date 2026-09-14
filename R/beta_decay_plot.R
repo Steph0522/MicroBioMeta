@@ -4,7 +4,7 @@
 #' Bray-Curtis, or other \code{vegan::vegdist} methods) and pairwise
 #' geographic distances (Haversine formula, km) from sample coordinates
 #' stored in \code{metadata}. It runs a Mantel test to evaluate the
-#' relationship between community similarity (1 − dissimilarity) and
+#' relationship between community similarity (1 - dissimilarity) and
 #' geographic distance, fits a linear regression, and returns a scatter plot
 #' annotated with the Mantel statistic, p-value, and regression slope.
 #'
@@ -35,16 +35,16 @@
 #'   \code{"spearman"} (default) or \code{"pearson"}.
 #' @param permutations Integer. Number of permutations for the Mantel test.
 #'   Default \code{999}.
-#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R² to the
+#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R-squared to the
 #'   annotation label in addition to the Mantel r, p-value, and slope.
 #' @param point_color Character. Color of scatter points. Default
-#'   \code{"black"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}.
+#'   \code{"black"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}.
 #' @param line_color Character. Color of the regression line. Default
-#'   \code{"#D55E00"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}'s
+#'   \code{"#D55E00"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}'s
 #'   ungrouped color scheme. The confidence-interval ribbon uses that same
 #'   scheme's fill, \code{"#56B4E9"}.
 #' @param point_size Numeric. Size of scatter points. Default \code{1}.
-#' @param point_alpha Numeric (0–1). Transparency of scatter points.
+#' @param point_alpha Numeric (0-1). Transparency of scatter points.
 #'   Default \code{0.5}.
 #' @param annotation_size Numeric. Font size for the stats annotation.
 #'   Default \code{3.5}.
@@ -52,7 +52,7 @@
 #'   Default \code{"Spatial distance (km)"}.
 #' @param y_axis_title Character or \code{NULL}. Y-axis label. If \code{NULL}
 #'   (default), it is built automatically from the \code{distance} method,
-#'   e.g. \code{"Jaccard similarity (1 − dissimilarity)"}.
+#'   e.g. \code{"Jaccard similarity (1 - dissimilarity)"}.
 #' @param title Character or \code{NULL}. Plot title. Default
 #'   \code{NULL} (no title).
 #'
@@ -152,7 +152,7 @@ beta_decay_plot <- function(
   if (length(common) == 0)
     stop("No matching sample names between table and metadata.")
 
-  # samples × taxa  (vegan expects rows = samples)
+  # samples x taxa  (vegan expects rows = samples)
   otu_t        <- t(as.matrix(table[, common, drop = FALSE]))
   mode(otu_t)  <- "numeric"
 
@@ -174,7 +174,7 @@ beta_decay_plot <- function(
     as.numeric(meta_sub[[lon_col]]),
     as.numeric(meta_sub[[lat_col]])
   )
-  geo_mat <- geosphere::distm(coords) / 1000   # metres → km
+  geo_mat <- geosphere::distm(coords) / 1000   # metres -> km
   rownames(geo_mat) <- rownames(otu_t)
   colnames(geo_mat) <- rownames(otu_t)
 
@@ -210,7 +210,7 @@ beta_decay_plot <- function(
   .fmt_label <- function(mantel_res, slope, r2) {
     if (show_lm_stats) {
       sprintf(
-        "Mantel %s = %.3f\np = %s\nslope = %.4f\nR² = %.3f",
+        "Mantel %s = %.3f\np = %s\nslope = %.4f\nR2 = %.3f",
         method_sym, mantel_res$statistic, .mbm_format_pval(mantel_res$signif), slope, r2
       )
     } else {
@@ -292,7 +292,7 @@ beta_decay_plot <- function(
   )
   dist_name <- if (distance %in% names(dist_labels)) dist_labels[distance] else distance
   y_lab     <- if (!is.null(y_axis_title)) y_axis_title else
-    paste0(dist_name, " similarity (1 − dissimilarity)")
+    paste0(dist_name, " similarity (1 - dissimilarity)")
 
   # ---- 7. Build ggplot ----
   aes_pts <- if (is.null(group_col)) {

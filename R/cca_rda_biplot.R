@@ -148,6 +148,8 @@ cca_rda_biplot <- function(table,
   stopifnot(identical(rownames(spp_table), rownames(env_data)))
   
   # 4. Run CCA or RDA depending on the requested analysis
+  restore_seed <- .mbm_save_seed()
+  on.exit(restore_seed(), add = TRUE)
   set.seed(seed)
   if (toupper(analysis) == "RDA") {
     ord_result <- vegan::rda(spp_hell ~ ., data = env_scaled)
@@ -178,7 +180,7 @@ cca_rda_biplot <- function(table,
 
   # 7. Coordenadas de sitios
   site_scores <- vegan::scores(ord_result, display = "sites") %>% as.data.frame()
-  colnames(site_scores)[1:2] <- axis_names
+  colnames(site_scores)[seq_len(2)] <- axis_names
   site_scores$SampleID <- rownames(site_scores)
 
   if (save_table) {
@@ -191,7 +193,7 @@ cca_rda_biplot <- function(table,
     combined_table <- dplyr::bind_rows(site_out, vec_out)
     utils::write.table(combined_table, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   # 8. Agregar metadata

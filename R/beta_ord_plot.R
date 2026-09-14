@@ -133,6 +133,8 @@ beta_ord_plot <- function(table, metadata,
   metadata <- metadata[metadata_ids %in% common_samples, ]
   
   if (distance == "compositional") {
+    restore_seed <- .mbm_save_seed()
+    on.exit(restore_seed(), add = TRUE)
     set.seed(seed)
     aldex_obj <- ALDEx2::aldex.clr(otu_table, mc.samples = 128,
                                    denom = "all", verbose = FALSE, useMC = FALSE)
@@ -157,12 +159,12 @@ beta_ord_plot <- function(table, metadata,
                 "PCA" = {
                   pca_input <- if (!is.null(otu_trans)) otu_trans else t(otu_table)
                   pca <- prcomp(pca_input)
-                  list(ord = pca, expl_var = round(100 * summary(pca)$importance[2, 1:2], 1))
+                  list(ord = pca, expl_var = round(100 * summary(pca)$importance[2, seq_len(2)], 1))
                 },
                 "PCoA" = {
                   pcoa <- cmdscale(dist_matrix, eig = TRUE, k = 2)
                   eigs <- pcoa$eig
-                  list(ord = pcoa, expl_var = round(100 * eigs[1:2] / sum(eigs[eigs > 0]), 1))
+                  list(ord = pcoa, expl_var = round(100 * eigs[seq_len(2)] / sum(eigs[eigs > 0]), 1))
                 },
                 "NMDS" = list(ord = vegan::metaMDS(dist_matrix, k = 2, trymax = 100), expl_var = NULL),
                 stop("Invalid ordination method.")
@@ -406,7 +408,7 @@ beta_ord_plot <- function(table, metadata,
 
   if (save_table) {
     site_out <- merged
-    colnames(site_out)[colnames(site_out) %in% names(ord_df)[1:2]] <- c("Axis1", "Axis2")
+    colnames(site_out)[colnames(site_out) %in% names(ord_df)[seq_len(2)]] <- c("Axis1", "Axis2")
     site_out$type <- "site"
     if (!is.null(rot_df_out)) {
       loading_out <- rot_df_out
@@ -418,7 +420,7 @@ beta_ord_plot <- function(table, metadata,
     }
     utils::write.table(combined_table, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   return(p)

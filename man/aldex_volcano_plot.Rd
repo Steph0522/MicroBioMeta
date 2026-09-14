@@ -48,6 +48,13 @@ aldex_volcano_plot(
 
 \item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
 
+\item{label_size}{Numeric. Font size for the taxon-name labels drawn on
+significant points. Default \code{3.5}.}
+
+\item{filter_uncultured}{Logical. If \code{TRUE}, taxa whose name matches
+"uncultured"/"unculture" are excluded from the point labels (they are
+still plotted, just not labeled). Default \code{FALSE}.}
+
 \item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.}

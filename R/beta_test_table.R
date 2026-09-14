@@ -136,6 +136,8 @@ beta_test_table <- function(table,
       stop("method = 'compositional' requires a raw abundance table ",
            "(data frame with a taxonomy column), not a precomputed distance matrix.")
     }
+    restore_seed <- .mbm_save_seed()
+    on.exit(restore_seed(), add = TRUE)
     set.seed(seed)
     aldex_obj   <- ALDEx2::aldex.clr(t(table), mc.samples = 128,
                                      denom = "all", verbose = FALSE, useMC = FALSE)
@@ -187,7 +189,7 @@ beta_test_table <- function(table,
   if (save_table) {
     utils::write.table(tabla, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   # --- Crear tabla visual ---
