@@ -4,8 +4,14 @@
 #'
 #' @param table A data frame with taxa in rows and samples in columns. The first column must be named `taxonomy`, containing full taxonomic strings.
 #' @param metadata A data frame containing sample metadata. Must include a `SAMPLEID` column matching sample names in `table`.
-#' @param taxonomy_db Character. Reference taxonomy database: `"silva"` (default). Affects how taxonomic names are simplified in the plot.
-#' @param level Character. Taxonomic level to collapse: `"genus"` (default) or `"phylum"`.
+#' @param taxonomy_db Character. Reference taxonomy database whose prefix style
+#'   is used to simplify the taxonomic names shown in the plot. One of
+#'   `"silva"` (default), `"gg2"` (Greengenes2; also accepts `"gg"` /
+#'   `"greengenes2"`), `"unite"` (fungal ITS), or `"Kraken2"` (also accepts
+#'   `"kraken"`). Case-insensitive.
+#' @param level Character. Taxonomic level to collapse to. One of `"kingdom"`,
+#'   `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
+#'   `"species"`. Case-insensitive.
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
 #' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
@@ -72,6 +78,24 @@ abundance_bar_plot <- function(table,
                               add_remained = FALSE,
                               save_table = FALSE,
                               table_filename = "relative_abundance.txt") {
+
+  # Accept taxonomy_db / level case-insensitively (and a few common spellings),
+  # mapping each to the exact value the rest of the function expects, so users
+  # don't have to remember that e.g. Kraken2 is capitalised internally.
+  taxonomy_db <- switch(
+    tolower(taxonomy_db),
+    "silva"       = "silva",
+    "gg"          = ,
+    "gg2"         = ,
+    "greengenes2" = "gg2",
+    "unite"       = "unite",
+    "kraken"      = ,
+    "kraken2"     = "Kraken2",
+    stop("Invalid `taxonomy_db`: '", taxonomy_db,
+         "'. Choose one of: \"silva\", \"gg2\", \"unite\", \"Kraken2\" ",
+         "(case-insensitive).", call. = FALSE)
+  )
+  level <- tolower(level)
 
   # Treat metadata's first column as the sample ID regardless of its original name
   colnames(metadata)[1] <- "SAMPLEID"

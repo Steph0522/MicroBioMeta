@@ -21,8 +21,9 @@ a column with OTUID, one with taxonomy and sample columns with numeric counts.}
 \item{metadata}{A data frame containing sample metadata. The first column is
 used to define the order of samples in the output table.}
 
-\item{level}{Character string specifying the taxonomic level to collapse to.
-("kingdom","phylum","class","order","family","genus" or"species".}
+\item{level}{Character. Taxonomic level to collapse to. One of
+\code{"kingdom"}, \code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"}
+(default), or \code{"species"}. Case-insensitive.}
 
 \item{rel_abun}{Logical. If TRUE, converts counts to relative abundance
 (\%) per sample.}

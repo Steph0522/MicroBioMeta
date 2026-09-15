@@ -4,7 +4,10 @@
 #' @param output_file Output HTML file name (default: "sankey.html").
 #' @param maxn Maximum number of taxa per level to include in the diagram (default: 25).
 #' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
-#' @param taxonomy_db Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").
+#' @param taxonomy_db Reference taxonomy database whose prefix style the
+#'   taxonomy strings follow. One of `"gg"` (default; Greengenes, also accepts
+#'   `"gg2"` / `"greengenes2"`), `"silva"`, `"unite"`, or `"kraken2"`.
+#'   Case-insensitive.
 #' @param save_table Logical. If \code{TRUE}, saves a combined table of the
 #'   Sankey nodes and links to disk, distinguished by a \code{table_type}
 #'   column (\code{"node"} or \code{"link"}). Default \code{FALSE}.

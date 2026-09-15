@@ -11,8 +11,9 @@
 #'   a column with OTUID, one with taxonomy and sample columns with numeric counts.
 #' @param metadata A data frame containing sample metadata. The first column is
 #'   used to define the order of samples in the output table.
-#' @param level Character string specifying the taxonomic level to collapse to.
-#'   ("kingdom","phylum","class","order","family","genus" or"species".
+#' @param level Character. Taxonomic level to collapse to. One of
+#'   `"kingdom"`, `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"`
+#'   (default), or `"species"`. Case-insensitive.
 #' @param rel_abun Logical. If TRUE, converts counts to relative abundance
 #'   (%) per sample.
 #' @param save_table Logical. If \code{TRUE}, saves the collapsed table to
@@ -45,6 +46,8 @@ collapse_table <- function(table,
                           rel_abun = FALSE,
                           save_table = FALSE,
                           table_filename = "collapsed_table.txt") {
+  level <- tolower(level)  # accept "Genus"/"GENUS"/... as well
+
   # --- Order columns ---
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   ordered_samples <- intersect(metadata[, 1], colnames(table)[-1])

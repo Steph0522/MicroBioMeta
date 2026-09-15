@@ -123,11 +123,17 @@
 
 
 <dt id="arg-taxonomy-db">taxonomy_db<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db"></a></dt>
-<dd><p>Character. Reference taxonomy database: <code>"silva"</code> (default). Affects how taxonomic names are simplified in the plot.</p></dd>
+<dd><p>Character. Reference taxonomy database whose prefix style
+is used to simplify the taxonomic names shown in the plot. One of
+<code>"silva"</code> (default), <code>"gg2"</code> (Greengenes2; also accepts <code>"gg"</code> /
+<code>"greengenes2"</code>), <code>"unite"</code> (fungal ITS), or <code>"Kraken2"</code> (also accepts
+<code>"kraken"</code>). Case-insensitive.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
-<dd><p>Character. Taxonomic level to collapse: <code>"genus"</code> (default) or <code>"phylum"</code>.</p></dd>
+<dd><p>Character. Taxonomic level to collapse to. One of <code>"kingdom"</code>,
+<code>"phylum"</code>, <code>"class"</code>, <code>"order"</code>, <code>"family"</code>, <code>"genus"</code> (default), or
+<code>"species"</code>. Case-insensitive.</p></dd>
 
 
 <dt id="arg-x-col">x_col<a class="anchor" aria-label="anchor" href="#arg-x-col"></a></dt>

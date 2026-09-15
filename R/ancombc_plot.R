@@ -118,7 +118,7 @@ ancombc_plot <- function(table,
   if (!is.null(ref_level)) {
     if (!ref_level %in% metadata[[col_cond]])
       stop("ref_level '", ref_level, "' not found in column '", col_cond, "'.")
-    metadata[[col_cond]] <- relevel(factor(metadata[[col_cond]]), ref = ref_level)
+    metadata[[col_cond]] <- stats::relevel(factor(metadata[[col_cond]]), ref = ref_level)
   }
 
   tax_col <- grep("taxonomy|taxon|taxa", names(table), ignore.case = TRUE)

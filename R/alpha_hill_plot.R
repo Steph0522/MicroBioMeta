@@ -7,7 +7,7 @@
 #' @param table A data frame or matrix with samples as columns and taxa as rows.
 #'              The first column must contain the OTUID, ASV, or species name.
 #' @param metadata A data frame with metadata. The first column must match sample names in `table`.
-#' @param type Type of plot: either "boxplot" or "barplot". Default is "boxplot".
+#' @param type Type of plot: `"boxplot"` (default) or `"barplot"`. Case-insensitive.
 #' @param stat Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
 #'   Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
 #'   \code{stat} only adds the p-value annotations on top of them.
@@ -15,8 +15,10 @@
 #' @param fill_col Column in `metadata` to define fill color.
 #' @param facet_by Optional. A metadata column to facet (e.g., Treatment, Site).
 #' @param facet_by2 Optional. A metadata column to double facet (e.g., Treatment, Site).
-#' @param facet_orientation Whether `facet_by` appears in columns ("horizontal", default) or rows ("vertical").
-#' @param palette Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".
+#' @param facet_orientation Whether `facet_by` appears in columns
+#'   (`"horizontal"`, default) or rows (`"vertical"`). Case-insensitive.
+#' @param palette Color palette to use: `"colorb"` (default, colorblind-friendly
+#'   Okabe-Ito), `"grey"`, `"viridis"`, or `"brewer"`. Case-insensitive.
 #' @param group_colors A vector of custom colors. Overrides `palette` if provided.
 #' @param n_cols Number of columns in facet wrap (optional).
 #' @param n_rows Number of rows in facet wrap (optional).
@@ -105,7 +107,13 @@ alpha_hill_plot <- function(
     aspect_ratio = NULL,
     save_table = FALSE,
     table_filename = "hill.txt") {
-  
+
+  # Accept the fixed-choice arguments case-insensitively.
+  type              <- tolower(type)
+  facet_orientation <- tolower(facet_orientation)
+  palette           <- tolower(palette)
+  panel_label_case  <- tolower(panel_label_case)
+
   sample_order <- metadata[[1]]
   common_samples <- intersect(colnames(table), sample_order)
   if (length(common_samples) == 0) stop("No matching sample names between table and metadata.")

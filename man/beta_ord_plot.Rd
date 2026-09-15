@@ -27,10 +27,13 @@ beta_ord_plot(
 
 \item{metadata}{A data frame with sample metadata. The first column must contain the sample IDs.}
 
-\item{distance}{Distance method: one of "euclidean", "bray", "jaccard", "sorensen",
-"compositional" (default), "aitchison", or "robust.aitchison".}
+\item{distance}{Distance method: one of \code{"euclidean"}, \code{"bray"},
+\code{"jaccard"}, \code{"sorensen"}, \code{"compositional"} (default; CLR/Aitchison via
+ALDEx2), \code{"aitchison"}, or \code{"robust.aitchison"}. Case-insensitive.
+Note: \code{ordination = "PCA"} requires \code{distance = "compositional"}.}
 
-\item{ordination}{Ordination method: one of "PCA" (default), "PCoA", or "NMDS".}
+\item{ordination}{Ordination method: one of \code{"PCA"} (default), \code{"PCoA"}, or
+\code{"NMDS"}. Case-insensitive.}
 
 \item{group_col}{Column in \code{metadata} to fill/color points. Its type
 decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
@@ -60,9 +63,10 @@ stops (\code{scale_*_gradientn}).
 
 \item{taxonomy_db}{Character. Reference taxonomy database used to clean up
 the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
-\code{"unite"}, or \code{"Kraken2"}. \code{"Kraken2"} additionally
-concatenates genus + species (e.g. \code{"Aspergillus flavus"}) instead of
-showing the species epithet alone. Ignored when \code{ordination != "PCA"}.}
+\code{"unite"}, or \code{"Kraken2"} (case-insensitive). \code{"Kraken2"}
+additionally concatenates genus + species (e.g. \code{"Aspergillus
+  flavus"}) instead of showing the species epithet alone. Ignored when
+\code{ordination != "PCA"}.}
 
 \item{arrows_size}{Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.}
 

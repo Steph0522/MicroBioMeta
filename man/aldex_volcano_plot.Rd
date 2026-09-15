@@ -30,7 +30,8 @@ aldex_volcano_plot(
 
 \item{col_cond}{Name of the column in \code{metadata} that contains the experimental conditions.}
 
-\item{type}{Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.}
+\item{type}{Type of plot to generate: \code{"volcano"} (default, volcano plot)
+or \code{"effect"} (effect-size plot). Case-insensitive.}
 
 \item{col_inf}{Color for points lower than threshold. Default \code{'#56B4E9'} (Okabe-Ito blue, matching the package's 2-group default).}
 
@@ -47,6 +48,14 @@ aldex_volcano_plot(
 \item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).}
 
 \item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
+
+\item{label_size}{Numeric. Font size of the taxon labels drawn on
+significant points in the "volcano" plot. Default \code{3.5}.}
+
+\item{filter_uncultured}{Logical. If \code{TRUE}, taxa whose name contains
+"uncultured"/"unculture" are still plotted as points but not labelled,
+keeping the volcano plot's text annotations to named taxa. Default
+\code{FALSE}.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.}
 

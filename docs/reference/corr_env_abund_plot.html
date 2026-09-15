@@ -151,8 +151,8 @@ reorder taxa and environmental variables in the plot.</p></dd>
 
 
 <dt id="arg-geom">geom<a class="anchor" aria-label="anchor" href="#arg-geom"></a></dt>
-<dd><p>Character. Type of visualization to generate: "tile"
-(heatmap) or "circle" (bubble plot).</p></dd>
+<dd><p>Character. Type of visualization to generate: <code>"tile"</code>
+(heatmap, default) or <code>"circle"</code> (bubble plot). Case-insensitive.</p></dd>
 
 
 <dt id="arg-show-labels">show_labels<a class="anchor" aria-label="anchor" href="#arg-show-labels"></a></dt>
@@ -186,13 +186,16 @@ extreme). All presets have a true white midpoint at 0 except
 
 
 <dt id="arg-taxonomy-db">taxonomy_db<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db"></a></dt>
-<dd><p>Character. Taxonomic database used for annotation and
-parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").</p></dd>
+<dd><p>Character. Taxonomic database whose prefix style is used
+for parsing/annotation. One of <code>"silva"</code> (default), <code>"gg2"</code> (also accepts
+<code>"gg"</code> / <code>"greengenes2"</code>), <code>"unite"</code>, or <code>"Kraken2"</code> (also accepts
+<code>"kraken"</code>). Case-insensitive.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
 <dd><p>Character. Taxonomic level to collapse taxa to. One of
-("kingdom", "phylum", "class", "order", "family", "genus", "species").</p></dd>
+<code>"kingdom"</code>, <code>"phylum"</code>, <code>"class"</code>, <code>"order"</code>, <code>"family"</code>, <code>"genus"</code>
+(default), or <code>"species"</code>. Case-insensitive.</p></dd>
 
 
 <dt id="arg-pval-threshold">pval_threshold<a class="anchor" aria-label="anchor" href="#arg-pval-threshold"></a></dt>

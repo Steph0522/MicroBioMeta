@@ -54,15 +54,16 @@ palette name (\code{"colorb"} default, \code{"grey"}, \code{"viridis"},
 \item{distance}{Character. Dissimilarity metric passed to
 \code{vegan::vegdist}. Common options: \code{"jaccard"} (default),
 \code{"horn"} (Morisita-Horn / Hill q = 1 analogue), \code{"bray"}
-(Bray-Curtis). Any method accepted by \code{vegdist} is valid.}
+(Bray-Curtis). Any method accepted by \code{vegdist} is valid.
+Case-insensitive.}
 
-\item{method}{Character. Correlation method for the Mantel test.
-\code{"spearman"} (default) or \code{"pearson"}.}
+\item{method}{Character. Correlation method for the Mantel test:
+\code{"spearman"} (default) or \code{"pearson"}. Case-insensitive.}
 
 \item{permutations}{Integer. Number of permutations for the Mantel test.
 Default \code{999}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R² to the
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R2 to the
 annotation label in addition to the Mantel r, p-value, and slope.}
 
 \item{point_color}{Character. Color of scatter points. Default
@@ -75,7 +76,7 @@ scheme's fill, \code{"#56B4E9"}.}
 
 \item{point_size}{Numeric. Size of scatter points. Default \code{1}.}
 
-\item{point_alpha}{Numeric (0–1). Transparency of scatter points.
+\item{point_alpha}{Numeric (0-1). Transparency of scatter points.
 Default \code{0.5}.}
 
 \item{annotation_size}{Numeric. Font size for the stats annotation.
@@ -86,7 +87,7 @@ Default \code{"Spatial distance (km)"}.}
 
 \item{y_axis_title}{Character or \code{NULL}. Y-axis label. If \code{NULL}
 (default), it is built automatically from the \code{distance} method,
-e.g. \code{"Jaccard similarity (1 − dissimilarity)"}.}
+e.g. \code{"Jaccard similarity (1 - dissimilarity)"}.}
 
 \item{title}{Character or \code{NULL}. Plot title. Default
 \code{NULL} (no title).}
@@ -99,7 +100,7 @@ Computes pairwise community dissimilarity (Jaccard, Horn/Morisita-Horn,
 Bray-Curtis, or other \code{vegan::vegdist} methods) and pairwise
 geographic distances (Haversine formula, km) from sample coordinates
 stored in \code{metadata}. It runs a Mantel test to evaluate the
-relationship between community similarity (1 − dissimilarity) and
+relationship between community similarity (1 - dissimilarity) and
 geographic distance, fits a linear regression, and returns a scatter plot
 annotated with the Mantel statistic, p-value, and regression slope.
 }

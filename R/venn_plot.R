@@ -10,7 +10,8 @@
 #' @param selected_samples Optional character vector specifying a subset of sample IDs to include in the analysis.
 #' @param min_prevalence Optional numeric value (0-1) to filter taxa based on minimum prevalence across groups.
 #' @param title Optional character string for the title of the plot.
-#' @param method Character string: `ggvenn` (default) or `ggVennDiagram`, specifying the package to use for Venn diagram generation.
+#' @param method Character. Package used to draw the Venn diagram: `"ggvenn"`
+#'   (default) or `"ggVennDiagram"`. Case-insensitive.
 #' @param group_colors Optional vector of colors for the groups. If NULL, a default `distiller` scale with `Set3` palette will be used.
 #' @param save_table Logical. If \code{TRUE}, saves a long-format table of taxa
 #'   membership per group to disk. Default \code{FALSE}.

@@ -41,9 +41,11 @@ colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
 
 \item{x_axis_title}{Title for the x-axis.}
 
-\item{partition}{Type of beta diversity to compute: "shared", "turnover", or "nestedness".}
+\item{partition}{Type of beta diversity to compute: \code{"shared"} (default),
+\code{"turnover"}, or \code{"nestedness"}. Case-insensitive.}
 
-\item{family}{Family for turnover/nestedness calculation: "sorensen" or "jaccard".}
+\item{family}{Dissimilarity family for the turnover/nestedness partition:
+\code{"sorensen"} (default) or \code{"jaccard"}. Case-insensitive.}
 
 \item{stat}{Character or \code{NULL}. Statistical test to compare groups,
 passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},

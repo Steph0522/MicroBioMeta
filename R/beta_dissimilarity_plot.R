@@ -14,8 +14,10 @@
 #' @param group_colors Optional named vector of colors for x-axis groups. Defaults to the package's
 #'   colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).
 #' @param x_axis_title Title for the x-axis.
-#' @param partition Type of beta diversity to compute: "shared", "turnover", or "nestedness".
-#' @param family Family for turnover/nestedness calculation: "sorensen" or "jaccard".
+#' @param partition Type of beta diversity to compute: `"shared"` (default),
+#'   `"turnover"`, or `"nestedness"`. Case-insensitive.
+#' @param family Dissimilarity family for the turnover/nestedness partition:
+#'   `"sorensen"` (default) or `"jaccard"`. Case-insensitive.
 #' @param stat Character or \code{NULL}. Statistical test to compare groups,
 #'   passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
 #'   \code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).
@@ -71,8 +73,8 @@ beta_dissimilarity_plot <- function(
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) == 1) table <- table[ , -tax_col]
   
-  partition <- match.arg(partition)
-  family <- match.arg(family)
+  partition <- match.arg(tolower(partition), c("shared", "turnover", "nestedness"))
+  family <- match.arg(tolower(family), c("sorensen", "jaccard"))
   
   table[table>0] <- 1
   table_filtered <- table[rowSums(table)>1,]
