@@ -113,7 +113,7 @@ venn_plot <- function(table, metadata, merge_by = NULL,
     colnames(venn_table) <- c("taxon_id", "group")
     utils::write.table(venn_table, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   # Method selection

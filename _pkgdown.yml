@@ -43,7 +43,6 @@ reference:
     contents:
       - collapse_table
       - merge_feature_taxonomy
-  - title: Alpha diversity
   - title: Abundance visualizations
     desc: Functions used for abundance visualizations.
     contents:

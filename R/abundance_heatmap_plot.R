@@ -147,7 +147,7 @@ abundance_heatmap_plot <- function(table,
   if (save_table) {
     utils::write.table(table_abundance, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   ordered_taxa <- table_abundance$taxa
@@ -290,7 +290,7 @@ abundance_heatmap_plot <- function(table,
     
     if (is.null(colors_condition2)) {
       # Okabe-Ito shifted by 2: green, yellow, blue, vermillion...
-      mbm_shift2 <- c(.mbm_colors[3:8], .mbm_colors[1:2])
+      mbm_shift2 <- c(.mbm_colors[3:8], .mbm_colors[seq_len(2)])
       colors_condition2 <- rep_len(mbm_shift2, length(unique_vals))
     } else if (length(colors_condition2) < length(unique_vals)) {
       colors_condition2 <- rep_len(colors_condition2, length(unique_vals))
@@ -323,7 +323,7 @@ abundance_heatmap_plot <- function(table,
     
     if (is.null(colors_condition3)) {
       # Okabe-Ito shifted by 4: blue, vermillion, pink, black...
-      mbm_shift3 <- c(.mbm_colors[5:8], .mbm_colors[1:4])
+      mbm_shift3 <- c(.mbm_colors[5:8], .mbm_colors[seq_len(4)])
       colors_condition3 <- rep_len(mbm_shift3, length(unique_vals))
     } else if (length(colors_condition3) < length(unique_vals)) {
       colors_condition3 <- rep_len(colors_condition3, length(unique_vals))

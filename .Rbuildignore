@@ -9,6 +9,7 @@
 ^docs$
 ^pkgdown$
 ^\.claude$
-^vignettes/articles$
+^vignettes/articles/installation\.Rmd$
 ^MicroBioMeta\.BiocCheck$
 ^MicroBioMeta_.*\.tar\.gz$
+^Rplots\.pdf$

@@ -163,12 +163,13 @@ aldex_heatmap_plot <- function(table,
   }
 
   if (nrow(aldex_filtered) == 0)
-    stop(paste0(
+    stop(
       "No taxa passed the filtering thresholds ",
       "(effect_threshold = ", effect_threshold,
-      if (!is.null(pvalue_BH)) paste0(", pvalue_BH = ", pvalue_BH) else "",
+      if (!is.null(pvalue_BH)) ", pvalue_BH = " else "",
+      if (!is.null(pvalue_BH)) pvalue_BH else "",
       ").\nTry lowering effect_threshold and/or raising pvalue_BH."
-    ))
+    )
 
   # Prepare plot data
   aldex_plot <- aldex_filtered %>%
@@ -207,7 +208,7 @@ aldex_heatmap_plot <- function(table,
   if (save_table) {
     utils::write.table(aldex_plot, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   rab_cols <- paste0("rab.win.", unique_conditions)

@@ -82,11 +82,8 @@ aldex_volcano_plot <- function(table,
   # Verify that the condition column exists
   if (!col_cond %in% colnames(metadata)) {
     stop(
-      paste(
-        "The column",
-        col_cond,
-        "does not exist in the object 'metadata'. Check the name is written correctly."
-      )
+      "The column ", col_cond,
+      " does not exist in the object 'metadata'. Check the name is written correctly."
     )
   }
   
@@ -149,7 +146,7 @@ aldex_volcano_plot <- function(table,
       quote = FALSE,
       row.names = FALSE
     ) 
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   

@@ -204,7 +204,7 @@ abundance_bar_plot <- function(table,
       quote = FALSE,
       row.names = FALSE
     ) 
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   # Convert to long format
@@ -451,7 +451,10 @@ abundance_bar_plot <- function(table,
       values = cbPalette,
       labels = function(taxa) {
         if (level %in% c("genus", "species")) {
-          sapply(taxa, function(x) {
+          # lapply(), not sapply()/vapply(): each element is either a plain
+          # string or a bquote() expression (for italics), so the result is
+          # never a homogeneous vector vapply() could type-check.
+          lapply(taxa, function(x) {
             if (x %in% c("Other", "Unclassified") || grepl("^other ", x)) {
               x   # texto plano
             } else {

@@ -438,7 +438,7 @@ corr_env_abund_plot <- function(table,
       row.names = FALSE
     )
     
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   # --- Calcular p-values si se indica pval_threshold

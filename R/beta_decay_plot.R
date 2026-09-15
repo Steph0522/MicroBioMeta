@@ -39,9 +39,9 @@
 #' @param show_lm_stats Logical. If \code{TRUE} (default), adds R2 to the
 #'   annotation label in addition to the Mantel r, p-value, and slope.
 #' @param point_color Character. Color of scatter points. Default
-#'   \code{"black"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}.
+#'   \code{"black"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}.
 #' @param line_color Character. Color of the regression line. Default
-#'   \code{"#D55E00"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}'s
+#'   \code{"#D55E00"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}'s
 #'   ungrouped color scheme. The confidence-interval ribbon uses that same
 #'   scheme's fill, \code{"#56B4E9"}.
 #' @param point_size Numeric. Size of scatter points. Default \code{1}.

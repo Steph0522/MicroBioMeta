@@ -141,12 +141,12 @@ alpha_hill_plot <- function(
       quote = FALSE,
       row.names = FALSE
     )
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   
   
-  results[[fill_col]] <- factor(results[[fill_col]], levels = unique(results[[fill_col]]))
-  results[[x_col]] <- factor(results[[x_col]], levels = unique(results[[x_col]]))
+  #results[[fill_col]] <- factor(results[[fill_col]], levels = unique(results[[fill_col]]))
+  #results[[x_col]] <- factor(results[[x_col]], levels = unique(results[[x_col]]))
   
   results_largo <- tidyr::pivot_longer(
     results,
@@ -174,7 +174,7 @@ alpha_hill_plot <- function(
   # Panel tags (A/B/C) are always added. When there's no nested double facet,
   # build the grid as separate cowplot-composed subplots instead of a single
   # faceted ggplot, so the tags land truly outside each panel - the same
-  # mechanism already used by alpha_hill_corrplot and beta_partition_plot -
+  # mechanism already used by alpha_hill_corr_plot and beta_partition_ord_plot -
   # instead of trying to carve out space inside one shared facet gtable.
   use_grid_compose <- is.null(facet_by2) &&
     identical(facet_orientation, "horizontal")
@@ -271,7 +271,7 @@ alpha_hill_plot <- function(
   if (use_grid_compose) {
     # Build each panel as its own small ggplot and combine with cowplot, so
     # the A/B/C tags land in cowplot's own outside-the-panel margin - the
-    # same mechanism alpha_hill_corrplot/beta_partition_plot already use -
+    # same mechanism alpha_hill_corr_plot/beta_partition_ord_plot already use -
     # instead of carving space out of one shared facet gtable.
     q_levels <- intersect(c("q0", "q1", "q2"), unique(results_largo$q))
     has_facet_by <- !is.null(facet_by)
@@ -516,43 +516,69 @@ alpha_hill_plot <- function(
   }
 
   {
-    # Add A, B, C... style labels to the panels, regardless of whether a
-    # statistical comparison (`stat`) was requested. Rather than reusing an
-    # existing gtable row (which may not exist, e.g. the 2nd/3rd row of a
-    # facet_by grid has no strip above it, only panel.spacing), a brand new,
-    # dedicated, guaranteed-empty row is inserted directly above every
-    # panel, so the tag never overlaps the strip text or the plotted data.
-    panel_letters <- if (!is.null(panel_labels)) {
-      panel_labels
-    } else if (identical(panel_label_case, "lower")) letters else LETTERS
-    gb <- ggplot2::ggplot_build(p)
-    lay <- gb$layout$layout
-    panel_names <- sprintf("panel-%d-%d", lay$ROW, lay$COL)
-
-    g <- ggplot2::ggplotGrob(p)
-    tag_height <- grid::unit(10, "mm")
-
-    # Panels sharing the same facet row (e.g. q0/q1/q2 side by side) share
-    # the same gtable row index, so insert exactly one tag-row per unique
-    # row - not one per panel, which would stack up redundant blank rows.
-    # Process bottom-to-top so inserting above a lower row never shifts the
-    # row index of rows still to be processed further up.
-    orig_row_of_panel <- vapply(panel_names, function(nm) g$layout$t[g$layout$name == nm][1], numeric(1))
-    unique_rows <- sort(unique(orig_row_of_panel), decreasing = TRUE)
-    row_reps <- panel_names[match(unique_rows, orig_row_of_panel)]
-    for (nm in row_reps) {
-      t_now <- g$layout$t[g$layout$name == nm][1]
-      g <- gtable::gtable_add_rows(g, tag_height, pos = t_now - 1)
-    }
-
-    for (i in seq_len(nrow(lay))) {
-      panel_cell <- g$layout[g$layout$name == panel_names[i], ]
-      if (nrow(panel_cell) == 1) {
+    {
+      # Add A, B, C... labels to the panels
+      panel_letters <- if (!is.null(panel_labels)) {
+        panel_labels
+      } else if (identical(panel_label_case, "lower")) {
+        letters
+      } else {
+        LETTERS
+      }
+      
+      gb <- ggplot2::ggplot_build(p)
+      lay <- gb$layout$layout
+      g <- ggplot2::ggplotGrob(p)
+      
+      tag_height <- grid::unit(10, "mm")
+      
+      # Identify the rows occupied by panels
+      panel_names <- paste0("panel-", lay$PANEL)
+      
+      panel_rows <- vapply(
+        panel_names,
+        function(nm) {
+          idx <- which(g$layout$name == nm)
+          if (length(idx) == 0) NA_real_ else g$layout$t[idx[1]]
+        },
+        numeric(1)
+      )
+      
+      valid <- !is.na(panel_rows)
+      
+      panel_names <- panel_names[valid]
+      panel_rows <- panel_rows[valid]
+      
+      # Add one row above each panel row
+      unique_rows <- sort(unique(panel_rows), decreasing = TRUE)
+      
+      for (r in unique_rows) {
+        g <- gtable::gtable_add_rows(
+          g,
+          tag_height,
+          pos = r - 1
+        )
+      }
+      
+      # Add the panel letters
+      for (i in seq_along(panel_names)) {
+        
+        nm <- panel_names[i]
+        
+        idx <- which(g$layout$name == nm)
+        
+        if (length(idx) == 0) next
+        
+        panel_cell <- g$layout[idx[1], ]
+        
         tag_row <- panel_cell$t - 1
+        
+        label <- panel_letters[i]
+        
         g <- gtable::gtable_add_grob(
           g,
           grid::textGrob(
-            panel_letters[lay$PANEL[i]],
+            label,
             x = grid::unit(2, "mm"),
             y = grid::unit(0.5, "npc"),
             hjust = 0,
@@ -563,13 +589,18 @@ alpha_hill_plot <- function(
               fontsize = 13
             )
           ),
-          t = tag_row, l = max(1, panel_cell$l - 1), b = tag_row, r = panel_cell$r,
+          t = tag_row,
+          l = max(1, panel_cell$l - 1),
+          b = tag_row,
+          r = panel_cell$r,
           z = Inf,
           name = paste0("panel-tag-", i)
         )
       }
+      
+      p <- cowplot::ggdraw() +
+        cowplot::draw_grob(g)
     }
-    p <- cowplot::ggdraw() + cowplot::draw_grob(g)
   }
 
   return(p)

@@ -76,7 +76,7 @@ merge_feature_taxonomy <- function(table, taxonomy,
   if (save_table) {
     utils::write.table(joined, file = table_filename, sep = "\t",
                        quote = FALSE, col.names = NA)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   return(joined)

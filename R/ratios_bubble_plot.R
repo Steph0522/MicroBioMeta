@@ -214,7 +214,7 @@ ratios_bubble_plot <- function(table,
   if (save_table) {
     utils::write.table(top_taxa, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   # Bubble plot

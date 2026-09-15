@@ -279,7 +279,7 @@ alpha_decay_plot <- function(
   facet_ncol <- if (facet_orientation == "horizontal") 3L else 1L
   q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
 
-  # When ungrouped, match alpha_hill_corrplot's fixed reg.line/CI colors;
+  # When ungrouped, match alpha_hill_corr_plot's fixed reg.line/CI colors;
   # when grouped, let each group keep its own palette color.
   smooth_layer <- if (is.null(group_col)) {
     ggplot2::geom_smooth(
@@ -303,7 +303,7 @@ alpha_decay_plot <- function(
   y_range <- if (!free_y) range(hills_long$hill, na.rm = TRUE) else NULL
 
   # ---- 7. Build one panel per q level, then combine with cowplot so the
-  # A/B/C tags land outside each panel (matching alpha_hill_corrplot) ----
+  # A/B/C tags land outside each panel (matching alpha_hill_corr_plot) ----
   q_levels <- intersect(c("q0", "q1", "q2"), unique(hills_long$q))
 
   build_q_panel <- function(q_level) {

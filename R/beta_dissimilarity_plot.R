@@ -121,7 +121,7 @@ beta_dissimilarity_plot <- function(
       quote = FALSE,
       row.names = FALSE
     )
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
   # --- Default palettes if missing ---
   n_groups <- length(unique(beta_df$condition1_group))

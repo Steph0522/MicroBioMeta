@@ -16,11 +16,11 @@ Description: The goal of MicroBioMeta is to support beginners in microbiome
     on scripting, while still producing statistically robust results and
     publication-ready figures in an intuitive and accessible way.
 License: Artistic-2.0
-Depends: R (>= 4.3.0)
+Depends: R (>= 4.5.0)
 URL: https://github.com/Steph0522/MicroBioMeta
 BugReports: https://github.com/Steph0522/MicroBioMeta/issues
 biocViews: Software, Microbiome, Metagenomics, Visualization,
-    DifferentialExpression, MultipleComparison
+    DifferentialExpression, MultipleComparison, LongRead
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:
@@ -67,7 +67,12 @@ Suggests:
     testthat,
     magick,
     BiocManager,
-    networkD3
+    networkD3,
+    tidyverse,
+    qiime2R,
+    microbiome
+Remotes:
+    jbisanz/qiime2R
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0

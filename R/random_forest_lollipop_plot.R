@@ -175,7 +175,7 @@ random_forest_lollipop_plot <- function(table,
   if (save_table) {
     utils::write.table(top_asvs.modified, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   # Create lollipop plot

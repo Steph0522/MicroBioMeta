@@ -67,10 +67,10 @@ Default \code{999}.}
 annotation label in addition to the Mantel r, p-value, and slope.}
 
 \item{point_color}{Character. Color of scatter points. Default
-\code{"black"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}.}
+\code{"black"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}.}
 
 \item{line_color}{Character. Color of the regression line. Default
-\code{"#D55E00"}, matching \code{alpha_hill_corrplot}/\code{alpha_decay_plot}'s
+\code{"#D55E00"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}'s
 ungrouped color scheme. The confidence-interval ribbon uses that same
 scheme's fill, \code{"#56B4E9"}.}
 

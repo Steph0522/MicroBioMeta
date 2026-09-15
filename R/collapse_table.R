@@ -138,7 +138,7 @@ collapse_table <- function(table,
       quote = FALSE,
       col.names = NA
     )
-    message(paste("Table saved as:", table_filename))
+    message("Table saved as: ", table_filename)
   }
 
   return(list(collapsed_table = table_final,
