@@ -99,10 +99,12 @@ beta_dissimilarity_plot <- function(
     dplyr::left_join(metadata, by=c("site2"=names(metadata)[1]))
   
   # --- Construct comparison labels ---
+  c1_x <- as.character(beta_df[[paste0(condition1_col,".x")]])
+  c1_y <- as.character(beta_df[[paste0(condition1_col,".y")]])
   beta_df <- dplyr::mutate(beta_df,
-                           condition1_group = paste0(pmin(.data[[paste0(condition1_col,".x")]], .data[[paste0(condition1_col,".y")]]),
+                           condition1_group = paste0(pmin(c1_x, c1_y),
                                                      "_vs_",
-                                                     pmax(.data[[paste0(condition1_col,".x")]], .data[[paste0(condition1_col,".y")]])))
+                                                     pmax(c1_x, c1_y)))
   beta_df <- dplyr::distinct(beta_df, site1, site2, .keep_all = TRUE) # remove duplicates
   
   # Filter if comparison_condition1 specified
