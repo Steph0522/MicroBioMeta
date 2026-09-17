@@ -3,7 +3,7 @@
 Bray-Curtis, or other vegan::vegdist methods) and pairwise
 geographic distances (Haversine formula, km) from sample coordinates
 stored in metadata. It runs a Mantel test to evaluate the
-relationship between community similarity (1 − dissimilarity) and
+relationship between community similarity (1 - dissimilarity) and
 geographic distance, fits a linear regression, and returns a scatter plot
 annotated with the Mantel statistic, p-value, and regression slope."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@Steph0522"><meta name="twitter:site" content="@Steph0522"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -96,7 +96,7 @@ annotated with the Mantel statistic, p-value, and regression slope."><meta name=
 Bray-Curtis, or other <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code> methods) and pairwise
 geographic distances (Haversine formula, km) from sample coordinates
 stored in <code>metadata</code>. It runs a Mantel test to evaluate the
-relationship between community similarity (1 − dissimilarity) and
+relationship between community similarity (1 - dissimilarity) and
 geographic distance, fits a linear regression, and returns a scatter plot
 annotated with the Mantel statistic, p-value, and regression slope.</p>
     </div>
@@ -169,12 +169,13 @@ palette name (<code>"colorb"</code> default, <code>"grey"</code>, <code>"viridis
 <dd><p>Character. Dissimilarity metric passed to
 <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code>. Common options: <code>"jaccard"</code> (default),
 <code>"horn"</code> (Morisita-Horn / Hill q = 1 analogue), <code>"bray"</code>
-(Bray-Curtis). Any method accepted by <code>vegdist</code> is valid.</p></dd>
+(Bray-Curtis). Any method accepted by <code>vegdist</code> is valid.
+Case-insensitive.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Character. Correlation method for the Mantel test.
-<code>"spearman"</code> (default) or <code>"pearson"</code>.</p></dd>
+<dd><p>Character. Correlation method for the Mantel test:
+<code>"spearman"</code> (default) or <code>"pearson"</code>. Case-insensitive.</p></dd>
 
 
 <dt id="arg-permutations">permutations<a class="anchor" aria-label="anchor" href="#arg-permutations"></a></dt>
@@ -183,7 +184,7 @@ Default <code>999</code>.</p></dd>
 
 
 <dt id="arg-show-lm-stats">show_lm_stats<a class="anchor" aria-label="anchor" href="#arg-show-lm-stats"></a></dt>
-<dd><p>Logical. If <code>TRUE</code> (default), adds R² to the
+<dd><p>Logical. If <code>TRUE</code> (default), adds R2 to the
 annotation label in addition to the Mantel r, p-value, and slope.</p></dd>
 
 
@@ -204,7 +205,7 @@ scheme's fill, <code>"#56B4E9"</code>.</p></dd>
 
 
 <dt id="arg-point-alpha">point_alpha<a class="anchor" aria-label="anchor" href="#arg-point-alpha"></a></dt>
-<dd><p>Numeric (0–1). Transparency of scatter points.
+<dd><p>Numeric (0-1). Transparency of scatter points.
 Default <code>0.5</code>.</p></dd>
 
 
@@ -221,7 +222,7 @@ Default <code>"Spatial distance (km)"</code>.</p></dd>
 <dt id="arg-y-axis-title">y_axis_title<a class="anchor" aria-label="anchor" href="#arg-y-axis-title"></a></dt>
 <dd><p>Character or <code>NULL</code>. Y-axis label. If <code>NULL</code>
 (default), it is built automatically from the <code>distance</code> method,
-e.g. <code>"Jaccard similarity (1 − dissimilarity)"</code>.</p></dd>
+e.g. <code>"Jaccard similarity (1 - dissimilarity)"</code>.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>

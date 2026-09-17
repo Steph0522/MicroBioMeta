@@ -23,7 +23,10 @@ abundance_sankey_plot(
 
 \item{taxRanks}{Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).}
 
-\item{taxonomy_db}{Database to which the taxonomy in the table corresponds, e.g., "gg" or "kraken2" (default: "gg").}
+\item{taxonomy_db}{Reference taxonomy database whose prefix style the
+taxonomy strings follow. One of \code{"gg"} (default; Greengenes, also accepts
+\code{"gg2"} / \code{"greengenes2"}), \code{"silva"}, \code{"unite"}, or \code{"kraken2"}.
+Case-insensitive.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves a combined table of the
 Sankey nodes and links to disk, distinguished by a \code{table_type}

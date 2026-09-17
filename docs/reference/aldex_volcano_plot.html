@@ -127,7 +127,8 @@
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.</p></dd>
+<dd><p>Type of plot to generate: <code>"volcano"</code> (default, volcano plot)
+or <code>"effect"</code> (effect-size plot). Case-insensitive.</p></dd>
 
 
 <dt id="arg-col-inf">col_inf<a class="anchor" aria-label="anchor" href="#arg-col-inf"></a></dt>
@@ -160,6 +161,18 @@
 
 <dt id="arg-taxa">taxa<a class="anchor" aria-label="anchor" href="#arg-taxa"></a></dt>
 <dd><p>Data frame with taxonomic information (required for "volcano" plot only).</p></dd>
+
+
+<dt id="arg-label-size">label_size<a class="anchor" aria-label="anchor" href="#arg-label-size"></a></dt>
+<dd><p>Numeric. Font size of the taxon labels drawn on
+significant points in the "volcano" plot. Default <code>3.5</code>.</p></dd>
+
+
+<dt id="arg-filter-uncultured">filter_uncultured<a class="anchor" aria-label="anchor" href="#arg-filter-uncultured"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, taxa whose name contains
+"uncultured"/"unculture" are still plotted as points but not labelled,
+keeping the volcano plot's text annotations to named taxa. Default
+<code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>

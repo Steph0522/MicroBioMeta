@@ -51,7 +51,8 @@ matching the sample names in \code{table}.}
 
 \item{show_all_env_vectors}{Logical; if TRUE, plot all environmental vectors regardless of significance.}
 
-\item{analysis}{Either \code{"CCA"} or \code{"RDA"} (default is \code{"CCA"}).}
+\item{analysis}{Constrained ordination method: \code{"CCA"} (default, Canonical
+Correspondence Analysis) or \code{"RDA"} (Redundancy Analysis). Case-insensitive.}
 
 \item{seed}{Random seed for reproducibility (default is \code{123}).}
 

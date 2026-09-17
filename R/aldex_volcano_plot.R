@@ -3,7 +3,8 @@
 #' @param table Data frame with count data; columns represent samples, rows represent features.
 #' @param metadata Data frame containing metadata for the samples.
 #' @param col_cond Name of the column in `metadata` that contains the experimental conditions.
-#' @param type Type of plot to generate: "effect" for effect size plot or "volcano" for volcano plot.
+#' @param type Type of plot to generate: `"volcano"` (default, volcano plot)
+#'   or `"effect"` (effect-size plot). Case-insensitive.
 #' @param col_inf Color for points lower than threshold. Default `'#56B4E9'` (Okabe-Ito blue, matching the package's 2-group default).
 #' @param col_sup Color for points higher than threshold. Default `'#E69F00'` (Okabe-Ito orange).
 #' @param threshold_lower Lower threshold for effect size/difference (x-axis).
@@ -12,11 +13,12 @@
 #' @param cutoff.pval p-value cutoff for significance (default = 0.05).
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
-#' @param label_size Numeric. Font size for the taxon-name labels drawn on
-#'   significant points. Default \code{3.5}.
-#' @param filter_uncultured Logical. If \code{TRUE}, taxa whose name matches
-#'   "uncultured"/"unculture" are excluded from the point labels (they are
-#'   still plotted, just not labeled). Default \code{FALSE}.
+#' @param label_size Numeric. Font size of the taxon labels drawn on
+#'   significant points in the "volcano" plot. Default \code{3.5}.
+#' @param filter_uncultured Logical. If \code{TRUE}, taxa whose name contains
+#'   "uncultured"/"unculture" are still plotted as points but not labelled,
+#'   keeping the volcano plot's text annotations to named taxa. Default
+#'   \code{FALSE}.
 #' @param save_table Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.
 #'
@@ -63,9 +65,10 @@ aldex_volcano_plot <- function(table,
                                save_table = FALSE,
                                table_filename = "aldex_pval_effect.txt") {
   
-  # Verify that type has a valid value
+  # Verify that type has a valid value (case-insensitive)
+  type <- tolower(type)
   if (!type %in% c("effect", "volcano")) {
-    stop("type must be either 'effect' or 'volcano'")
+    stop("`type` must be either \"effect\" or \"volcano\".", call. = FALSE)
   }
   
   if (!requireNamespace("ALDEx2", quietly = TRUE)) {

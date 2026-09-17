@@ -16,8 +16,10 @@
 #'   distance matrix); \code{"aitchison"}/\code{"robust.aitchison"} use
 #'   vegan's built-in Aitchison distance (\code{vegan::vegdist} with a
 #'   pseudocount); any other value (e.g. \code{"euclidean"}, \code{"bray"})
-#'   is passed straight to \code{vegan::vegdist} on the raw values.
-#' @param test Permanova or betadisper 
+#'   is passed straight to \code{vegan::vegdist} on the raw values
+#'   (\code{"euclidean"} default; case-insensitive).
+#' @param test Statistical test to run: one of \code{"permanova"} (default) or
+#'   \code{"betadisper"}. Case-insensitive.
 #' @param permutations Number of permutations required
 #' @param strata_var Group or variable within which permutations are restricted
 #' @param decimales Number of decimales required
@@ -83,8 +85,12 @@ beta_test_table <- function(table,
                             save_table = FALSE,
                             table_filename = "beta_test_results.txt",
                             seed = 123) {
-  
-  test <- match.arg(test)
+
+  # Accept `test` and `method` case-insensitively (distance names are matched
+  # case-sensitively by vegan::vegdist, so normalising here avoids a cryptic
+  # "invalid distance method" error from e.g. method = "Bray").
+  test   <- match.arg(tolower(test), c("permanova", "betadisper"))
+  method <- tolower(method)
   raw_input <- is.data.frame(table)
 
   # --- Aceptar tambien data.frame o un objeto dist (p.ej. de vegan::vegdist) como matriz ---

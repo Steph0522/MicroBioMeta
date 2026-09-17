@@ -18,6 +18,14 @@
 #' c(1, 2, 3) %>% sum()
 NULL
 
+# Column/aesthetic names used inside dplyr and ggplot2 non-standard evaluation
+# (data-masked expressions) that R's static checker can't see as bound. Declared
+# here so `R CMD check` doesn't flag them as undefined global variables.
+utils::globalVariables(c(
+  ".grp_idx", "Index", "Variable", "geo_km", "group", "hill", "hjust",
+  "row_id", "side", "similarity", "slot", "vjust", "x_pos", "y_pos"
+))
+
 # --- Taxonomy string parser -------------------------------------------------
 # Splits a QIIME2-style Feature.ID/Taxon table into one column per rank
 # (Kingdom..Species). Adapted from qiime2R::parse_taxonomy() (MIT License,

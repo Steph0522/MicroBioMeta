@@ -42,7 +42,7 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{metadata}{A data frame with metadata. The first column must match sample names in \code{table}.}
 
-\item{type}{Type of plot: either "boxplot" or "barplot". Default is "boxplot".}
+\item{type}{Type of plot: \code{"boxplot"} (default) or \code{"barplot"}. Case-insensitive.}
 
 \item{stat}{Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
 Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
@@ -56,9 +56,11 @@ Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
 
 \item{facet_by2}{Optional. A metadata column to double facet (e.g., Treatment, Site).}
 
-\item{facet_orientation}{Whether \code{facet_by} appears in columns ("horizontal", default) or rows ("vertical").}
+\item{facet_orientation}{Whether \code{facet_by} appears in columns
+(\code{"horizontal"}, default) or rows (\code{"vertical"}). Case-insensitive.}
 
-\item{palette}{Color palette to use: "colorb", "grey", "viridis", or "brewer". Default: "colorb".}
+\item{palette}{Color palette to use: \code{"colorb"} (default, colorblind-friendly
+Okabe-Ito), \code{"grey"}, \code{"viridis"}, or \code{"brewer"}. Case-insensitive.}
 
 \item{group_colors}{A vector of custom colors. Overrides \code{palette} if provided.}
 

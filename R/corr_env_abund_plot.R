@@ -19,8 +19,8 @@
 #'   stats::cor.test. Supported options include ("spearman", "pearson", "kendall").
 #' @param hc.order Logical. If TRUE, applies hierarchical clustering to
 #'   reorder taxa and environmental variables in the plot.
-#' @param geom Character. Type of visualization to generate: "tile"
-#'   (heatmap) or "circle" (bubble plot).
+#' @param geom Character. Type of visualization to generate: `"tile"`
+#'   (heatmap, default) or `"circle"` (bubble plot). Case-insensitive.
 #' @param show_labels Logical. If TRUE, displays correlation values on
 #'   the plot.
 #' @param col_palette Character vector defining the color palette for correlation
@@ -39,10 +39,13 @@
 #'   extreme). All presets have a true white midpoint at 0 except
 #'   \code{"viridis"}.
 #' @param invert_axes Logical. If TRUE, swaps x and y axes in the plot.
-#' @param taxonomy_db Character. Taxonomic database used for annotation and
-#'   parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").
+#' @param taxonomy_db Character. Taxonomic database whose prefix style is used
+#'   for parsing/annotation. One of `"silva"` (default), `"gg2"` (also accepts
+#'   `"gg"` / `"greengenes2"`), `"unite"`, or `"Kraken2"` (also accepts
+#'   `"kraken"`). Case-insensitive.
 #' @param level Character. Taxonomic level to collapse taxa to. One of
-#'   ("kingdom", "phylum", "class", "order", "family", "genus", "species").
+#'   `"kingdom"`, `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"`
+#'   (default), or `"species"`. Case-insensitive.
 #' @param pval_threshold Numeric. Optional p-value threshold to retain only taxa
 #'   showing significant correlations with at least one environmental variable.
 #'   If \code{NULL}, no significance filtering is applied.
@@ -98,7 +101,25 @@ corr_env_abund_plot <- function(table,
                                 pval_threshold = NULL,
                                 save_table = FALSE,
                                 table_filename = "corr.txt") {
-  geom <- match.arg(geom)
+  geom <- match.arg(tolower(geom), c("tile", "circle"))
+
+  # Accept taxonomy_db / level case-insensitively (mapping to the exact value
+  # the rest of the function expects), so users don't have to remember the
+  # internal capitalisation (e.g. Kraken2).
+  taxonomy_db <- switch(
+    tolower(taxonomy_db),
+    "silva"       = "silva",
+    "gg"          = ,
+    "gg2"         = ,
+    "greengenes2" = "gg2",
+    "unite"       = "unite",
+    "kraken"      = ,
+    "kraken2"     = "Kraken2",
+    stop("Invalid `taxonomy_db`: '", taxonomy_db,
+         "'. Choose one of: \"silva\", \"gg2\", \"unite\", \"Kraken2\" ",
+         "(case-insensitive).", call. = FALSE)
+  )
+  level <- tolower(level)
   rownames(table) <- NULL
   
   

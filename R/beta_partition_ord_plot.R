@@ -7,7 +7,8 @@
 #'   samples as columns (same orientation as the rest of the package). If a
 #'   taxonomy column is present it is detected and removed automatically.
 #' @param metadata Data frame with sample metadata. First column must be SampleID.
-#' @param index Family of dissimilarity: "jaccard" (default) or "sorensen".
+#' @param index Dissimilarity family for the partition: `"jaccard"` (default)
+#'   or `"sorensen"`. Case-insensitive.
 #' @param group_col Column in metadata to use as color grouping.
 #' @param shape_col Optional column in metadata for point shapes.
 #' @param legend_title Optional custom legend title.
@@ -59,6 +60,9 @@ beta_partition_ord_plot <- function(table, metadata,
                                 panel_label_bold = TRUE,
                                 save_table = FALSE,
                                 table_filename = "SAMPLE1") {
+
+  index <- tolower(index)               # accept "Jaccard"/"Sorensen" too
+  panel_label_case <- tolower(panel_label_case)
 
   suppressWarnings({
 

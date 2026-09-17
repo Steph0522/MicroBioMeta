@@ -42,8 +42,8 @@ stats::cor.test. Supported options include ("spearman", "pearson", "kendall").}
 \item{hc.order}{Logical. If TRUE, applies hierarchical clustering to
 reorder taxa and environmental variables in the plot.}
 
-\item{geom}{Character. Type of visualization to generate: "tile"
-(heatmap) or "circle" (bubble plot).}
+\item{geom}{Character. Type of visualization to generate: \code{"tile"}
+(heatmap, default) or \code{"circle"} (bubble plot). Case-insensitive.}
 
 \item{show_labels}{Logical. If TRUE, displays correlation values on
 the plot.}
@@ -67,11 +67,14 @@ extreme). All presets have a true white midpoint at 0 except
 
 \item{invert_axes}{Logical. If TRUE, swaps x and y axes in the plot.}
 
-\item{taxonomy_db}{Character. Taxonomic database used for annotation and
-parsing. Supported options include ("silva", "unite","Kraken2" and "gg2").}
+\item{taxonomy_db}{Character. Taxonomic database whose prefix style is used
+for parsing/annotation. One of \code{"silva"} (default), \code{"gg2"} (also accepts
+\code{"gg"} / \code{"greengenes2"}), \code{"unite"}, or \code{"Kraken2"} (also accepts
+\code{"kraken"}). Case-insensitive.}
 
 \item{level}{Character. Taxonomic level to collapse taxa to. One of
-("kingdom", "phylum", "class", "order", "family", "genus", "species").}
+\code{"kingdom"}, \code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"}
+(default), or \code{"species"}. Case-insensitive.}
 
 \item{pval_threshold}{Numeric. Optional p-value threshold to retain only taxa
 showing significant correlations with at least one environmental variable.

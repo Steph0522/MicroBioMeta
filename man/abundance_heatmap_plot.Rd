@@ -77,7 +77,7 @@ when \code{save_table = TRUE}). Default \code{"abundance_heatmap_table.txt"}.}
 
 \item{feature_prefix}{Character. Prefix used to label each row in the
 heatmap, immediately before the row number (e.g. \code{feature_prefix =
-"ASV"} labels rows \code{"ASV1"}, \code{"ASV2"}...). Default \code{""}
+  "ASV"} labels rows \code{"ASV1"}, \code{"ASV2"}...). Default \code{""}
 (rows are labeled just \code{"1"}, \code{"2"}...) since the right label
 depends on how \code{table}'s features were generated - set it to
 whatever fits (\code{"ASV"}, \code{"OTU"}, \code{"Taxon"},

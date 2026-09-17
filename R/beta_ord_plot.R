@@ -6,9 +6,12 @@
 #'
 #' @param table A data frame with abundances. The last column must contain taxonomy information.
 #' @param metadata A data frame with sample metadata. The first column must contain the sample IDs.
-#' @param distance Distance method: one of "euclidean", "bray", "jaccard", "sorensen",
-#'  "compositional" (default), "aitchison", or "robust.aitchison".
-#' @param ordination Ordination method: one of "PCA" (default), "PCoA", or "NMDS".
+#' @param distance Distance method: one of `"euclidean"`, `"bray"`,
+#'   `"jaccard"`, `"sorensen"`, `"compositional"` (default; CLR/Aitchison via
+#'   ALDEx2), `"aitchison"`, or `"robust.aitchison"`. Case-insensitive.
+#'   Note: `ordination = "PCA"` requires `distance = "compositional"`.
+#' @param ordination Ordination method: one of `"PCA"` (default), `"PCoA"`, or
+#'   `"NMDS"`. Case-insensitive.
 #' @param group_col Column in `metadata` to fill/color points. Its type
 #'   decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
 #'   get a continuous scale; character/factor columns (e.g. \code{"estado2"})
@@ -33,9 +36,10 @@
 #' @param legend_title Optional legend title.
 #' @param taxonomy_db Character. Reference taxonomy database used to clean up
 #'   the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
-#'   \code{"unite"}, or \code{"Kraken2"}. \code{"Kraken2"} additionally
-#'   concatenates genus + species (e.g. \code{"Aspergillus flavus"}) instead of
-#'   showing the species epithet alone. Ignored when \code{ordination != "PCA"}.
+#'   \code{"unite"}, or \code{"Kraken2"} (case-insensitive). \code{"Kraken2"}
+#'   additionally concatenates genus + species (e.g. \code{"Aspergillus
+#'   flavus"}) instead of showing the species epithet alone. Ignored when
+#'   \code{ordination != "PCA"}.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
 #' @param arrows_size Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
@@ -99,6 +103,18 @@ beta_ord_plot <- function(table, metadata,
   # which isn't obvious from the outside since every method name documented
   # here happens to be lowercase - normalize case so any capitalization works.
   distance <- tolower(distance)
+
+  # Accept ordination case-insensitively, mapping to the exact spelling the
+  # code below switches on ("PCA"/"PCoA"/"NMDS").
+  ordination <- switch(
+    toupper(ordination),
+    "PCA"  = "PCA",
+    "PCOA" = "PCoA",
+    "NMDS" = "NMDS",
+    stop("Invalid `ordination`: '", ordination,
+         "'. Choose one of: \"PCA\", \"PCoA\", \"NMDS\" (case-insensitive).",
+         call. = FALSE)
+  )
 
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")

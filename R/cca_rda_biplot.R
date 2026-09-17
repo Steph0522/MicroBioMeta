@@ -19,7 +19,8 @@
 #' @param scale_env Logical; whether to scale environmental variables (default is `TRUE`).
 #' @param pval_threshold P-value threshold for selecting significant environmental variables (default is `0.05`).
 #' @param show_all_env_vectors Logical; if TRUE, plot all environmental vectors regardless of significance.
-#' @param analysis Either `"CCA"` or `"RDA"` (default is `"CCA"`).
+#' @param analysis Constrained ordination method: `"CCA"` (default, Canonical
+#'   Correspondence Analysis) or `"RDA"` (Redundancy Analysis). Case-insensitive.
 #' @param seed Random seed for reproducibility (default is `123`).
 #' @param scale_arrows Numeric value to scale environmental vectors in the plot.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
@@ -71,6 +72,10 @@ cca_rda_biplot <- function(table,
                        title = "auto",
                        save_table = FALSE,
                        table_filename = "cca_rda_scores.txt") {
+  # Accept analysis case-insensitively and validate (the code below uses
+  # toupper(analysis), so "cca"/"rda"/"Rda" all work).
+  analysis <- match.arg(toupper(analysis), c("CCA", "RDA"))
+
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   

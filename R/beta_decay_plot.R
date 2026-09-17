@@ -31,11 +31,12 @@
 #'   \code{vegan::vegdist}. Common options: \code{"jaccard"} (default),
 #'   \code{"horn"} (Morisita-Horn / Hill q = 1 analogue), \code{"bray"}
 #'   (Bray-Curtis). Any method accepted by \code{vegdist} is valid.
-#' @param method Character. Correlation method for the Mantel test.
-#'   \code{"spearman"} (default) or \code{"pearson"}.
+#'   Case-insensitive.
+#' @param method Character. Correlation method for the Mantel test:
+#'   \code{"spearman"} (default) or \code{"pearson"}. Case-insensitive.
 #' @param permutations Integer. Number of permutations for the Mantel test.
 #'   Default \code{999}.
-#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R-squared to the
+#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R2 to the
 #'   annotation label in addition to the Mantel r, p-value, and slope.
 #' @param point_color Character. Color of scatter points. Default
 #'   \code{"black"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}.
@@ -127,7 +128,8 @@ beta_decay_plot <- function(
 ) {
 
   # ---- 0. Validate inputs ----
-  method <- match.arg(method, c("spearman", "pearson"))
+  method   <- match.arg(tolower(method), c("spearman", "pearson"))
+  distance <- tolower(distance)  # vegan::vegdist matches names case-sensitively
 
   if (!lat_col %in% colnames(metadata))
     stop("`lat_col` '", lat_col, "' not found in metadata.")

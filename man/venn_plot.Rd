@@ -30,7 +30,8 @@ venn_plot(
 
 \item{title}{Optional character string for the title of the plot.}
 
-\item{method}{Character string: \code{ggvenn} (default) or \code{ggVennDiagram}, specifying the package to use for Venn diagram generation.}
+\item{method}{Character. Package used to draw the Venn diagram: \code{"ggvenn"}
+(default) or \code{"ggVennDiagram"}. Case-insensitive.}
 
 \item{group_colors}{Optional vector of colors for the groups. If NULL, a default \code{distiller} scale with \code{Set3} palette will be used.}
 

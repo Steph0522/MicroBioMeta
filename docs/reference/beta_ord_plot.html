@@ -126,12 +126,15 @@ of color and shape aesthetics. It also supports compositional transformation via
 
 
 <dt id="arg-distance">distance<a class="anchor" aria-label="anchor" href="#arg-distance"></a></dt>
-<dd><p>Distance method: one of "euclidean", "bray", "jaccard", "sorensen",
-"compositional" (default), "aitchison", or "robust.aitchison".</p></dd>
+<dd><p>Distance method: one of <code>"euclidean"</code>, <code>"bray"</code>,
+<code>"jaccard"</code>, <code>"sorensen"</code>, <code>"compositional"</code> (default; CLR/Aitchison via
+ALDEx2), <code>"aitchison"</code>, or <code>"robust.aitchison"</code>. Case-insensitive.
+Note: <code>ordination = "PCA"</code> requires <code>distance = "compositional"</code>.</p></dd>
 
 
 <dt id="arg-ordination">ordination<a class="anchor" aria-label="anchor" href="#arg-ordination"></a></dt>
-<dd><p>Ordination method: one of "PCA" (default), "PCoA", or "NMDS".</p></dd>
+<dd><p>Ordination method: one of <code>"PCA"</code> (default), <code>"PCoA"</code>, or
+<code>"NMDS"</code>. Case-insensitive.</p></dd>
 
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
@@ -169,9 +172,10 @@ stops (<code>scale_*_gradientn</code>).</p></li>
 <dt id="arg-taxonomy-db">taxonomy_db<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db"></a></dt>
 <dd><p>Character. Reference taxonomy database used to clean up
 the PCA loading-arrow labels: one of <code>"silva"</code> (default), <code>"gg"</code>,
-<code>"unite"</code>, or <code>"Kraken2"</code>. <code>"Kraken2"</code> additionally
-concatenates genus + species (e.g. <code>"Aspergillus flavus"</code>) instead of
-showing the species epithet alone. Ignored when <code>ordination != "PCA"</code>.</p></dd>
+<code>"unite"</code>, or <code>"Kraken2"</code> (case-insensitive). <code>"Kraken2"</code>
+additionally concatenates genus + species (e.g. <code>"Aspergillus
+  flavus"</code>) instead of showing the species epithet alone. Ignored when
+<code>ordination != "PCA"</code>.</p></dd>
 
 
 <dt id="arg-arrows-size">arrows_size<a class="anchor" aria-label="anchor" href="#arg-arrows-size"></a></dt>

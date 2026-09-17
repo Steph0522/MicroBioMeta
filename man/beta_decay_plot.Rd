@@ -54,15 +54,16 @@ palette name (\code{"colorb"} default, \code{"grey"}, \code{"viridis"},
 \item{distance}{Character. Dissimilarity metric passed to
 \code{vegan::vegdist}. Common options: \code{"jaccard"} (default),
 \code{"horn"} (Morisita-Horn / Hill q = 1 analogue), \code{"bray"}
-(Bray-Curtis). Any method accepted by \code{vegdist} is valid.}
+(Bray-Curtis). Any method accepted by \code{vegdist} is valid.
+Case-insensitive.}
 
-\item{method}{Character. Correlation method for the Mantel test.
-\code{"spearman"} (default) or \code{"pearson"}.}
+\item{method}{Character. Correlation method for the Mantel test:
+\code{"spearman"} (default) or \code{"pearson"}. Case-insensitive.}
 
 \item{permutations}{Integer. Number of permutations for the Mantel test.
 Default \code{999}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R-squared to the
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R2 to the
 annotation label in addition to the Mantel r, p-value, and slope.}
 
 \item{point_color}{Character. Color of scatter points. Default

@@ -35,9 +35,11 @@ be a raw abundance data frame with a taxonomy column, not a precomputed
 distance matrix); \code{"aitchison"}/\code{"robust.aitchison"} use
 vegan's built-in Aitchison distance (\code{vegan::vegdist} with a
 pseudocount); any other value (e.g. \code{"euclidean"}, \code{"bray"})
-is passed straight to \code{vegan::vegdist} on the raw values.}
+is passed straight to \code{vegan::vegdist} on the raw values
+(\code{"euclidean"} default; case-insensitive).}
 
-\item{test}{Permanova or betadisper}
+\item{test}{Statistical test to run: one of \code{"permanova"} (default) or
+\code{"betadisper"}. Case-insensitive.}
 
 \item{permutations}{Number of permutations required}
 

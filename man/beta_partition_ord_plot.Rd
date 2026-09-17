@@ -27,7 +27,8 @@ taxonomy column is present it is detected and removed automatically.}
 
 \item{metadata}{Data frame with sample metadata. First column must be SampleID.}
 
-\item{index}{Family of dissimilarity: "jaccard" (default) or "sorensen".}
+\item{index}{Dissimilarity family for the partition: \code{"jaccard"} (default)
+or \code{"sorensen"}. Case-insensitive.}
 
 \item{group_col}{Column in metadata to use as color grouping.}
 

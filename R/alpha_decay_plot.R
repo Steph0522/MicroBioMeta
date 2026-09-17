@@ -5,7 +5,7 @@
 #' elevation, pH). Each Hill order is shown in its own facet panel with an
 #' ordinary least-squares regression line and an annotation reporting the
 #' Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-#' and optionally the linear regression R-squared and slope.
+#' and optionally the linear regression R2 and slope.
 #' An optional grouping variable adds per-group coloring and separate
 #' regression lines.
 #'
@@ -20,7 +20,7 @@
 #'   per group (e.g. \code{"estado2"}).
 #' @param method Character. Correlation method for the statistic annotation.
 #'   One of \code{"spearman"} (default) or \code{"pearson"}.
-#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R-squared and slope
+#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R2 and slope
 #'   from the linear model to the annotation label.
 #' @param facet_orientation Character. \code{"horizontal"} (default) places
 #'   q-panels in a single row; \code{"vertical"} stacks them in one column.
@@ -48,7 +48,7 @@
 #'   ("a", "b", "c"). Ignored if \code{panel_labels} is supplied.
 #' @param panel_labels Optional character vector of 3 custom panel tags (one
 #'   per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
-#'   \code{c("a.", "b.", "c.")}) - for journal styles that
+#'   \code{c("a.", "b.", "c.")}) -- for journal styles that
 #'   \code{panel_label_case} alone can't produce. Overrides
 #'   \code{panel_label_case} when provided.
 #' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are

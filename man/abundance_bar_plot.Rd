@@ -28,9 +28,15 @@ abundance_bar_plot(
 
 \item{metadata}{A data frame containing sample metadata. Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
-\item{taxonomy_db}{Character. Reference taxonomy database: \code{"silva"} (default). Affects how taxonomic names are simplified in the plot.}
+\item{taxonomy_db}{Character. Reference taxonomy database whose prefix style
+is used to simplify the taxonomic names shown in the plot. One of
+\code{"silva"} (default), \code{"gg2"} (Greengenes2; also accepts \code{"gg"} /
+\code{"greengenes2"}), \code{"unite"} (fungal ITS), or \code{"Kraken2"} (also accepts
+\code{"kraken"}). Case-insensitive.}
 
-\item{level}{Character. Taxonomic level to collapse: \code{"genus"} (default) or \code{"phylum"}.}
+\item{level}{Character. Taxonomic level to collapse to. One of \code{"kingdom"},
+\code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default), or
+\code{"species"}. Case-insensitive.}
 
 \item{x_col}{Character. Column name in \code{metadata} to use for the x-axis (e.g., environment, condition).}
 

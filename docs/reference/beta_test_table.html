@@ -132,11 +132,13 @@ be a raw abundance data frame with a taxonomy column, not a precomputed
 distance matrix); <code>"aitchison"</code>/<code>"robust.aitchison"</code> use
 vegan's built-in Aitchison distance (<code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code> with a
 pseudocount); any other value (e.g. <code>"euclidean"</code>, <code>"bray"</code>)
-is passed straight to <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code> on the raw values.</p></dd>
+is passed straight to <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist</a></code> on the raw values
+(<code>"euclidean"</code> default; case-insensitive).</p></dd>
 
 
 <dt id="arg-test">test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
-<dd><p>Permanova or betadisper</p></dd>
+<dd><p>Statistical test to run: one of <code>"permanova"</code> (default) or
+<code>"betadisper"</code>. Case-insensitive.</p></dd>
 
 
 <dt id="arg-permutations">permutations<a class="anchor" aria-label="anchor" href="#arg-permutations"></a></dt>
