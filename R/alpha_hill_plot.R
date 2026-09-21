@@ -229,13 +229,13 @@ alpha_hill_plot <- function(
         NULL
       },
       scales = if (free_y) "free_y" else "fixed",
-      labeller = q_labeller,
-      # Interior panels (e.g. q0/q1 stacked above q2 in a single column when
-      # facet_orientation = "vertical") otherwise only get x-axis text on the
-      # bottom-most panel - ggplot2's default for shared/fixed x scales -
-      # unlike the horizontal layout where every panel already sits at the
-      # bottom of its own column.
-      axes = "all_x"
+      labeller = q_labeller
+      # Default axes ("margins"): x-axis text only on the bottom-most panel
+      # of each column - already true for the horizontal layout (every panel
+      # sits at the bottom of its own column) and, for vertical, matches the
+      # use_grid_compose look (facet_by rows only labelled on the last row)
+      # instead of repeating the x categories on every stacked panel, which
+      # was inflating the visual gap between q0/q1/q2.
     )
   }
   
@@ -483,7 +483,7 @@ alpha_hill_plot <- function(
       legend_position = if (show_legend) legend_position else "none",
       extra = ggplot2::theme(
         panel.grid       = ggplot2::element_blank(),
-        panel.spacing    = grid::unit(1, "lines"),
+        panel.spacing    = grid::unit(0.15, "lines"),
         axis.text.x      = .mbm_x_text(x_label_angle),
         strip.text       = .mbm_strip_text(strip_text_bold),
         strip.background = ggplot2::element_rect(fill = strip_color, color = "black")
