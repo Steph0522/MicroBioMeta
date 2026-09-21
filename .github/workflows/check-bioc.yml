@@ -179,6 +179,21 @@ jobs:
         continue-on-error: true
         shell: Rscript {0}
 
+      ## ALDEx2 depends on Rfast, which links against Intel TBB. The
+      ## precompiled Rfast binary from the CRAN/RSPM mirror is built against
+      ## a different TBB ABI than what's actually present in the
+      ## bioconductor_docker image, so loading it fails with "undefined
+      ## symbol: _ZTIN3tbb4taskE" (vignettes that use aldex_heatmap_plot()/
+      ## beta_ord_plot() error out while re-building). Rebuilding Rfast from
+      ## source links it against the container's own TBB instead - remotes'
+      ## later `upgrade = TRUE` calls won't touch it again since the version
+      ## number is unchanged, only how it was built.
+      - name: Rebuild Rfast from source on Linux (TBB ABI mismatch workaround)
+        if: runner.os == 'Linux'
+        run: |
+          install.packages("Rfast", type = "source", repos = BiocManager::repositories())
+        shell: Rscript {0}
+
       - name: Install dependencies pass 2
         run: |
           ## Pass #2 at installing dependencies
