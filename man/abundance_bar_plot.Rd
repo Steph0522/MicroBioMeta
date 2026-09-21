@@ -17,6 +17,7 @@ abundance_bar_plot(
   x_axis_title = "Samples",
   x_label_angle = 0,
   strip_text_bold = FALSE,
+  strip_color = "grey",
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
@@ -56,6 +57,9 @@ sample names are long enough to overlap.}
 
 \item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold.
 Default \code{FALSE} (plain).}
+
+\item{strip_color}{Background color of facet strips (only used when
+\code{facet_col} is set). Default: \code{"grey"}.}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of the panel.
 Default \code{NULL} (automatic).}

@@ -5,7 +5,7 @@
 #' elevation, pH). Each Hill order is shown in its own facet panel with an
 #' ordinary least-squares regression line and an annotation reporting the
 #' Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-#' and optionally the linear regression R2 and slope.
+#' and optionally the linear regression R-squared and slope.
 #' An optional grouping variable adds per-group coloring and separate
 #' regression lines.
 #'
@@ -20,7 +20,7 @@
 #'   per group (e.g. \code{"estado2"}).
 #' @param method Character. Correlation method for the statistic annotation.
 #'   One of \code{"spearman"} (default) or \code{"pearson"}.
-#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R2 and slope
+#' @param show_lm_stats Logical. If \code{TRUE} (default), adds R-squared and slope
 #'   from the linear model to the annotation label.
 #' @param facet_orientation Character. \code{"horizontal"} (default) places
 #'   q-panels in a single row; \code{"vertical"} stacks them in one column.
@@ -190,7 +190,7 @@ alpha_decay_plot <- function(
     slope <- if (is.null(m))  NA_real_ else unname(stats::coef(m)[2])
 
     label <- if (show_lm_stats) {
-      sprintf("%s = %.3f\np = %s\nR2 = %.3f\nslope = %.3f",
+      sprintf("%s = %.3f\np = %s\nR\u00b2 = %.3f\nslope = %.3f",
               rho_sym, rho, .mbm_format_pval(pval), r2, slope)
     } else {
       sprintf("%s = %.3f\np = %s", rho_sym, rho, .mbm_format_pval(pval))

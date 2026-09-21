@@ -22,6 +22,8 @@
 #'   sample names are long enough to overlap.
 #' @param strip_text_bold Logical. If \code{TRUE}, facet strip labels are bold.
 #'   Default \code{FALSE} (plain).
+#' @param strip_color Background color of facet strips (only used when
+#'   \code{facet_col} is set). Default: \code{"grey"}.
 #' @param aspect_ratio Numeric. Aspect ratio (height/width) of the panel.
 #'   Default \code{NULL} (automatic).
 #' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
@@ -74,6 +76,7 @@ abundance_bar_plot <- function(table,
                               x_axis_title = "Samples",
                               x_label_angle = 0,
                               strip_text_bold = FALSE,
+                              strip_color = "grey",
                               aspect_ratio = NULL,
                               add_remained = FALSE,
                               save_table = FALSE,
@@ -470,9 +473,10 @@ abundance_bar_plot <- function(table,
     .mbm_theme(
       legend_position = "right",
       extra = ggplot2::theme(
-        panel.grid  = ggplot2::element_blank(),
-        axis.text.x = .mbm_x_text(x_label_angle),
-        strip.text  = .mbm_strip_text(strip_text_bold)
+        panel.grid        = ggplot2::element_blank(),
+        axis.text.x       = .mbm_x_text(x_label_angle),
+        strip.text        = .mbm_strip_text(strip_text_bold),
+        strip.background  = ggplot2::element_rect(fill = strip_color, color = "black")
       )
     ) +
     ggplot2::coord_cartesian(ylim = c(0, 100)) +

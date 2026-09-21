@@ -31,7 +31,7 @@
 #'   Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
 #'   results are reproducible by default. Default \code{123}.
 #'
-#' @return A table with the results of R2, F and p value 
+#' @return A table with the results of R-squared, F and p value
 #' @export
 #'
 #' @examples
@@ -199,7 +199,14 @@ beta_test_table <- function(table,
   }
 
   # --- Crear tabla visual ---
-  tab <- ggpubr::ggtexttable(tabla,
+  # vegan::adonis2()'s own column is literally named "R2"; only the
+  # displayed table gets the proper R-squared (superscript 2) - the saved
+  # table (save_table = TRUE) and the `tabla` data itself keep the plain
+  # "R2" name for compatibility with scripts that read it back in.
+  tabla_display <- tabla
+  names(tabla_display)[names(tabla_display) == "R2"] <- "R\u00b2"
+
+  tab <- ggpubr::ggtexttable(tabla_display,
                              rows = NULL,
                              theme = ggpubr::ttheme(
                                colnames = ggpubr::colnames_style(

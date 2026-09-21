@@ -62,6 +62,6 @@ test_that("aldex_volcano_plot rejects an invalid type", {
       col_cond = "Group",
       type     = "not-a-type"
     ),
-    "type must be either"
+    "`type` must be either"
   )
 })

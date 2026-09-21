@@ -65,7 +65,7 @@ stops (\code{scale_*_gradientn}).
 the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
 \code{"unite"}, or \code{"Kraken2"} (case-insensitive). \code{"Kraken2"}
 additionally concatenates genus + species (e.g. \code{"Aspergillus
-  flavus"}) instead of showing the species epithet alone. Ignored when
+flavus"}) instead of showing the species epithet alone. Ignored when
 \code{ordination != "PCA"}.}
 
 \item{arrows_size}{Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.}

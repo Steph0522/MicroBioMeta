@@ -189,7 +189,8 @@ alpha_hill_plot <- function(
       formula_facet,
       nest_line = ggplot2::element_line(colour = "black"),
       scales = facet_scales,
-      labeller = ggplot2::labeller(q = q_labeller)
+      labeller = ggplot2::labeller(q = q_labeller),
+      axes = "x"
     )
   } else if (!is.null(facet_by)) {
     formula_facet <- if (facet_orientation == "horizontal") {
@@ -203,13 +204,15 @@ alpha_hill_plot <- function(
         formula_facet,
         scales = "free_y",
         independent = "y",
-        labeller = ggplot2::labeller(q = q_labeller)
+        labeller = ggplot2::labeller(q = q_labeller),
+        axes = "x"
       )
     } else {
       ggh4x::facet_grid2(
         formula_facet,
         scales = "fixed",
-        labeller = ggplot2::labeller(q = q_labeller)
+        labeller = ggplot2::labeller(q = q_labeller),
+        axes = "x"
       )
     }
   } else {
@@ -226,7 +229,13 @@ alpha_hill_plot <- function(
         NULL
       },
       scales = if (free_y) "free_y" else "fixed",
-      labeller = q_labeller
+      labeller = q_labeller,
+      # Interior panels (e.g. q0/q1 stacked above q2 in a single column when
+      # facet_orientation = "vertical") otherwise only get x-axis text on the
+      # bottom-most panel - ggplot2's default for shared/fixed x scales -
+      # unlike the horizontal layout where every panel already sits at the
+      # bottom of its own column.
+      axes = "all_x"
     )
   }
   
@@ -516,69 +525,56 @@ alpha_hill_plot <- function(
   }
 
   {
-    {
-      # Add A, B, C... labels to the panels
-      panel_letters <- if (!is.null(panel_labels)) {
-        panel_labels
-      } else if (identical(panel_label_case, "lower")) {
-        letters
-      } else {
-        LETTERS
-      }
-      
-      gb <- ggplot2::ggplot_build(p)
-      lay <- gb$layout$layout
-      g <- ggplot2::ggplotGrob(p)
-      
-      tag_height <- grid::unit(10, "mm")
-      
-      # Identify the rows occupied by panels
-      panel_names <- paste0("panel-", lay$PANEL)
-      
-      panel_rows <- vapply(
-        panel_names,
-        function(nm) {
-          idx <- which(g$layout$name == nm)
-          if (length(idx) == 0) NA_real_ else g$layout$t[idx[1]]
-        },
-        numeric(1)
-      )
-      
-      valid <- !is.na(panel_rows)
-      
-      panel_names <- panel_names[valid]
-      panel_rows <- panel_rows[valid]
-      
-      # Add one row above each panel row
-      unique_rows <- sort(unique(panel_rows), decreasing = TRUE)
-      
-      for (r in unique_rows) {
-        g <- gtable::gtable_add_rows(
-          g,
-          tag_height,
-          pos = r - 1
-        )
-      }
-      
-      # Add the panel letters
-      for (i in seq_along(panel_names)) {
-        
-        nm <- panel_names[i]
-        
-        idx <- which(g$layout$name == nm)
-        
-        if (length(idx) == 0) next
-        
-        panel_cell <- g$layout[idx[1], ]
-        
+    # Add A, B, C... style labels to the panels. Rather than reusing an
+    # existing gtable row (which may not exist, e.g. the 2nd/3rd row of a
+    # facet_by grid has no strip above it, only panel.spacing), a brand new,
+    # dedicated, guaranteed-empty row is inserted directly above every
+    # panel, so the tag never overlaps the strip text or the plotted data.
+    panel_letters <- if (!is.null(panel_labels)) {
+      panel_labels
+    } else if (identical(panel_label_case, "lower")) {
+      letters
+    } else {
+      LETTERS
+    }
+
+    g <- ggplot2::ggplotGrob(p)
+    tag_height <- grid::unit(10, "mm")
+
+    # Panel grobs are matched by their on-page reading-order position (top-
+    # to-bottom, left-to-right - i.e. sorted by gtable row `t` then column
+    # `l`), not by reconstructing their grob name. ggplot2's facet_wrap
+    # names panel grobs "panel-<COL>-<ROW>" while ggh4x's facet_grid2/
+    # facet_nested use "panel-<ROW>-<COL>" - guessing a single fixed pattern
+    # (as this used to) matches the wrong panels for one of the two facet
+    # types, silently dropping every tag whose constructed name doesn't
+    # exist in the gtable, which left every facet_orientation = "vertical"
+    # plot with at most one A/B/C tag instead of one per panel.
+    panel_layout <- g$layout[grepl("^panel-", g$layout$name), ]
+    panel_layout <- panel_layout[order(panel_layout$t, panel_layout$l), ]
+    panel_names <- panel_layout$name
+
+    # Panels sharing the same facet row share the same gtable row index, so
+    # insert exactly one tag-row per unique row - not one per panel, which
+    # would stack up redundant blank rows. Process bottom-to-top so
+    # inserting above a lower row never shifts the row index of rows still
+    # to be processed further up.
+    orig_row_of_panel <- vapply(panel_names, function(nm) g$layout$t[g$layout$name == nm][1], numeric(1))
+    unique_rows <- sort(unique(orig_row_of_panel), decreasing = TRUE)
+    row_reps <- panel_names[match(unique_rows, orig_row_of_panel)]
+    for (nm in row_reps) {
+      t_now <- g$layout$t[g$layout$name == nm][1]
+      g <- gtable::gtable_add_rows(g, tag_height, pos = t_now - 1)
+    }
+
+    for (i in seq_along(panel_names)) {
+      panel_cell <- g$layout[g$layout$name == panel_names[i], ]
+      if (nrow(panel_cell) == 1) {
         tag_row <- panel_cell$t - 1
-        
-        label <- panel_letters[i]
-        
         g <- gtable::gtable_add_grob(
           g,
           grid::textGrob(
-            label,
+            panel_letters[i],
             x = grid::unit(2, "mm"),
             y = grid::unit(0.5, "npc"),
             hjust = 0,
@@ -597,10 +593,10 @@ alpha_hill_plot <- function(
           name = paste0("panel-tag-", i)
         )
       }
-      
-      p <- cowplot::ggdraw() +
-        cowplot::draw_grob(g)
     }
+
+    p <- cowplot::ggdraw() +
+      cowplot::draw_grob(g)
   }
 
   return(p)

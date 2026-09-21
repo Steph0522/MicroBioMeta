@@ -58,7 +58,7 @@ Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
 results are reproducible by default. Default \code{123}.}
 }
 \value{
-A table with the results of R2, F and p value
+A table with the results of R-squared, F and p value
 }
 \description{
 This function create a table with the results of permanova or betadisper

@@ -27,5 +27,7 @@ export(venn_plot)
 importFrom(dplyr,"%>%")
 importFrom(ggVennDiagram,ggVennDiagram)
 importFrom(ggvenn,ggvenn)
-importFrom(randomForest,importance)
-importFrom(randomForest,randomForest)
+importFrom(randomForest,
+  importance,
+  randomForest
+)

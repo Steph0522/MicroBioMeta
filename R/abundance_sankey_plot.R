@@ -60,8 +60,16 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   
   otu_rel_parse <- otu_rel %>%
     tibble::rownames_to_column("Feature.ID") %>%
-    tidyr::separate(taxonomy, into = c("k","p","c","o","f","g","s"), sep = ";", fill = "right")
-  
+    tidyr::separate(taxonomy, into = c("k","p","c","o","f","g","s"), sep = ";", fill = "right") %>%
+    # QIIME2/SILVA/UNITE/GreenGenes2 taxonomy strings use "; " (semicolon +
+    # space) between ranks, but the separate() above only splits on ";", so
+    # every rank after the first keeps a leading space (e.g. " p__Mucoromycota").
+    # That space breaks the "^[a-zA-Z]+__" prefix-removal regexes below (they
+    # require the string to start with a letter), leaving stray "p__"/"c__"
+    # prefixes stuck onto the label. Trimming here fixes it for every
+    # `taxonomy_db` branch, not just the one where it was first noticed.
+    dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_trim(.)))
+
   # Cleanup according to database
   if(tolower(taxonomy_db) == "silva") {
     otu_rel_parse <- otu_rel_parse %>%
@@ -98,7 +106,34 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
       dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_extract(., "[^_]+$")),
                     s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g,s,sep=" "), s))
   }
-  
+
+  # "Incertae Sedis" ("of uncertain systematic placement") is a real,
+  # standard placeholder rank used across UNITE/SILVA/GreenGenes2 - not an
+  # actual taxon name. Left as-is, every lineage that hits it at some rank
+  # collapses onto the SAME node below (only the deepest rank's label is
+  # kept as the node name), so e.g. Mucoromycota's class and Zoopagomycota's
+  # class would incorrectly render as one shared "Incertae Sedis" node.
+  # Replace it with "other <parent rank>" instead - the same fallback used
+  # for an unresolved ("uncultured"/empty, and in some cases already
+  # "Incertae_Sedis") rank in abundance_bar_plot()/corr_env_abund_plot()/
+  # abundance_heatmap_plot()/aldex_heatmap_plot()/random_forest_lollipop_plot()
+  # - so each lineage keeps its own, identifiable, still-short node (e.g.
+  # "other Mucoromycota" rather than the much longer "Mucoromycota Incertae
+  # Sedis" or the ambiguous bare "Incertae Sedis").
+  is_incertae_sedis <- function(x) !is.na(x) & grepl("^incertae\\s+sedis$", x, ignore.case = TRUE)
+  rank_cols <- c("k","p","c","o","f","g","s")
+  for (i in seq(2, length(rank_cols))) {
+    this_col <- rank_cols[i]
+    parent_col <- rank_cols[i - 1]
+    hit <- is_incertae_sedis(otu_rel_parse[[this_col]])
+    parent_val <- otu_rel_parse[[parent_col]][hit]
+    # A parent that's already "other X" (itself a run of consecutive
+    # Incertae Sedis ranks) is reused as-is rather than chained into
+    # "other other X".
+    already_other <- grepl("^other ", parent_val)
+    otu_rel_parse[[this_col]][hit] <- ifelse(already_other, parent_val, paste("other", parent_val))
+  }
+
   # Internal function to summarize by level and drop empty ones
   get_level_data <- function(df, level, unite_cols) {
     df %>%

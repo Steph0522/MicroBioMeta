@@ -212,7 +212,8 @@ alpha_diversity_plot <- function(
     ggh4x::facet_nested(
       formula_facet,
       nest_line = ggplot2::element_line(colour = "black"),
-      scales = facet_scales
+      scales = facet_scales,
+      axes = "x"
     )
   } else if (!is.null(facet_by)) {
     formula_facet <- if (facet_orientation == "horizontal") {
@@ -220,17 +221,19 @@ alpha_diversity_plot <- function(
     } else {
       stats::as.formula(paste("Index ~", facet_by))
     }
-    
+
     if (free_y) {
       ggh4x::facet_grid2(
         formula_facet,
         scales = "free_y",
-        independent = "y"
+        independent = "y",
+        axes = "x"
       )
     } else {
       ggh4x::facet_grid2(
         formula_facet,
-        scales = "fixed"
+        scales = "fixed",
+        axes = "x"
       )
     }
   } else {
@@ -246,7 +249,13 @@ alpha_diversity_plot <- function(
       } else {
         NULL
       },
-      scales = if (free_y) "free_y" else "fixed"
+      scales = if (free_y) "free_y" else "fixed",
+      # Interior panels (e.g. Chao1/Shannon stacked above Simpson in a single
+      # column when facet_orientation = "vertical") otherwise only get
+      # x-axis text on the bottom-most panel - ggplot2's default for
+      # shared/fixed x scales - unlike the horizontal layout where every
+      # panel already sits at the bottom of its own column.
+      axes = "all_x"
     )
   }
   
@@ -542,12 +551,22 @@ alpha_diversity_plot <- function(
     panel_letters <- if (!is.null(panel_labels)) {
       panel_labels
     } else if (identical(panel_label_case, "lower")) letters else LETTERS
-    gb <- ggplot2::ggplot_build(p)
-    lay <- gb$layout$layout
-    panel_names <- sprintf("panel-%d-%d", lay$ROW, lay$COL)
-
     g <- ggplot2::ggplotGrob(p)
     tag_height <- grid::unit(10, "mm")
+
+    # Panel grobs are matched by their on-page reading-order position (top-
+    # to-bottom, left-to-right - i.e. sorted by gtable row `t` then column
+    # `l`), not by reconstructing their grob name. ggplot2's facet_wrap
+    # names panel grobs "panel-<COL>-<ROW>" while ggh4x's facet_grid2/
+    # facet_nested use "panel-<ROW>-<COL>" - guessing a single fixed pattern
+    # (as this used to) matches the wrong panels for one of the two facet
+    # types, silently dropping every tag whose constructed name doesn't
+    # exist in the gtable (e.g. every facet_orientation = "vertical" plot
+    # with no facet_by, which goes through facet_wrap, used to end up with
+    # at most one A/B/C tag instead of one per panel).
+    panel_layout <- g$layout[grepl("^panel-", g$layout$name), ]
+    panel_layout <- panel_layout[order(panel_layout$t, panel_layout$l), ]
+    panel_names <- panel_layout$name
 
     # Panels sharing the same facet row (e.g. Chao1/Shannon/Simpson side by
     # side) share the same gtable row index, so insert exactly one tag-row
@@ -562,14 +581,14 @@ alpha_diversity_plot <- function(
       g <- gtable::gtable_add_rows(g, tag_height, pos = t_now - 1)
     }
 
-    for (i in seq_len(nrow(lay))) {
+    for (i in seq_along(panel_names)) {
       panel_cell <- g$layout[g$layout$name == panel_names[i], ]
       if (nrow(panel_cell) == 1) {
         tag_row <- panel_cell$t - 1
         g <- gtable::gtable_add_grob(
           g,
           grid::textGrob(
-            panel_letters[lay$PANEL[i]],
+            panel_letters[i],
             x = grid::unit(2, "mm"),
             y = grid::unit(0.5, "npc"),
             hjust = 0,

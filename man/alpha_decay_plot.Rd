@@ -46,7 +46,7 @@ per group (e.g. \code{"estado2"}).}
 \item{method}{Character. Correlation method for the statistic annotation.
 One of \code{"spearman"} (default) or \code{"pearson"}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R2 and slope
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R-squared and slope
 from the linear model to the annotation label.}
 
 \item{facet_orientation}{Character. \code{"horizontal"} (default) places
@@ -107,7 +107,7 @@ against a continuous metadata variable (e.g. distance to urban center,
 elevation, pH). Each Hill order is shown in its own facet panel with an
 ordinary least-squares regression line and an annotation reporting the
 Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-and optionally the linear regression R2 and slope.
+and optionally the linear regression R-squared and slope.
 An optional grouping variable adds per-group coloring and separate
 regression lines.
 }

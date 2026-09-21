@@ -44,7 +44,10 @@ library(tidyverse)
 Cada muestra se procesó por separado, así que los reportes `bracken_species` se combinaron de antemano en una sola tabla (una columna por muestra, llamada `kraken_pluspfp_<id_metagenome>_report_bracken_species`) con una columna **`taxonomy`** ya agregada como última columna:
 
 ```{r cargar-los-datos-1}
-table_kraken <- read.delim("articles/data/table_kraken.txt", row.names = 1, check.names = FALSE)
+table_kraken <- read.delim(
+  system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
+  row.names = 1, check.names = FALSE
+)
 
 table_kraken[1:3, c(1:2, ncol(table_kraken))]
 ```
@@ -56,7 +59,10 @@ La taxonomía ya está en la tabla, así que no hace falta usar la función `mer
 Ahora, carguemos los metadatos:
 
 ```{r cargar-los-datos-2}
-metadata_meta <- read.delim("articles/data/metadata_metagenomic.txt", check.names = FALSE)
+metadata_meta <- read.delim(
+  system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
+  check.names = FALSE
+)
 
 head(metadata_meta[, 1:10])
 ```
@@ -86,7 +92,9 @@ table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 Las coordenadas se tomaron y cargaron así:
 
 ```{r cargar-los-datos-6}
-coord_meta <- read.csv("articles/data/coord_metagenomic.csv") %>%
+coord_meta <- read.csv(
+  system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
+) %>%
   dplyr::select(-Site) %>% # descartamos el índice de sitio general propio del CSV (1-12); queremos `Sitio` (1-2) en su lugar
   dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
   dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)

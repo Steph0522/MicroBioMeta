@@ -170,7 +170,10 @@ beta_turnover_plot <- function(table,
                                              margin = ggplot2::margin(t = 0, r = 0.5, b = 0, l = 0, "cm")),
         # x strips sit on the user-supplied `color_facets_x` backgrounds (often
         # dark), so their text color is exposed separately from the y strips,
-        # which keep the package's plain black-on-white look.
+        # which keep the package's plain grey-strip look (matching the
+        # q0/q1/q2 strips in alpha_hill_plot/alpha_diversity_plot) instead of
+        # `.mbm_theme()`'s white default.
+        strip.background.y = ggplot2::element_rect(fill = "grey", color = "black"),
         strip.text.x = .mbm_strip_text(strip_text_bold, colour = strip_text_color),
         strip.text.y = .mbm_strip_text(strip_text_bold),
         legend.title = ggplot2::element_blank(),

@@ -48,34 +48,35 @@ library(tidyverse)
 
 [`tidyverse`](https://tidyverse.org/) se usa para todo el manejo de datos y las visualizaciones.
 
-Ahora cargamos los datos y los reformateamos. Este conjunto de datos fue procesado en [`QIIME2`](https://qiime2.org/) [@bolyen2019qiime2], así que sus artefactos `.qza` deben importarse a R. Alternativamente, podrías exportar los mismos datos desde `QIIME2` como archivos `.txt` planos y leerlos directamente.
+Ahora cargamos los datos y los reformateamos. Este conjunto de datos fue procesado en [`QIIME2`](https://qiime2.org/) [@bolyen2019qiime2], así que sus artefactos `.qza` se importaron originalmente a R con el paquete [`qiime2R`](https://github.com/jbisanz/qiime2R) [@bisanz2018qiime2r] (Licencia MIT, © 2018 Jordan Bisanz), del cual `read_qza()` el parser de taxonomía propio de `MicroBioMeta` está adaptado. Si tienes tus propios artefactos `.qza`, `qiime2R::read_qza()` (`devtools::install_github("jbisanz/qiime2R")`) es la forma de importarlos a R.
 
-En este ejemplo usamos el paquete [`qiime2R`](https://github.com/jbisanz/qiime2R), del cual `read_qza()` está adaptada (Licencia MIT, © 2018 Jordan Bisanz). Para instalarlo:
-
-```{r cargar-los-datos-2, eval=FALSE}
-if (!requireNamespace("devtools", quietly = TRUE)){install.packages("devtools")}
-devtools::install_github("jbisanz/qiime2R")
-```
-
-Lo cargamos:
-```{r cargar-los-datos-3}
-library(qiime2R)
-```
+Para esta viñeta, esos mismos datos vienen incluidos en el paquete ya exportados como archivos `.txt` planos (en `inst/extdata/`), así que construirla no requiere tener instalado `qiime2R` (un paquete que solo está en GitHub):
 
 Primero, carguemos las tablas y la taxonomía de cada conjunto de datos:
 
 ```{r cargar-los-datos-4}
-bacteria_table <- read_qza("articles/data/table_bacteria.qza")$data %>% as.data.frame()
+bacteria_table <- read.delim(
+  system.file("extdata", "table_bacteria.txt", package = "MicroBioMeta"),
+  row.names = 1, check.names = FALSE
+)
 
-fungi_table <- read_qza("articles/data/table_fungi.qza")$data %>%
-  as.data.frame()
+fungi_table <- read.delim(
+  system.file("extdata", "table_fungi.txt", package = "MicroBioMeta"),
+  row.names = 1, check.names = FALSE
+)
 
-taxonomy_bacteria <- read_qza("articles/data/taxonomy_bacteria.qza")$data %>%
-  as.data.frame() %>% rename(taxonomy = Taxon) %>%
+taxonomy_bacteria <- read.delim(
+  system.file("extdata", "taxonomy_bacteria.txt", package = "MicroBioMeta"),
+  check.names = FALSE
+) %>%
+  rename(taxonomy = Taxon) %>%
   dplyr::select(-Confidence) %>%
   column_to_rownames(var = "Feature.ID")
 
-taxonomy_fungi <- read_qza("articles/data/taxonomy_fungi.qza")$data %>% as.data.frame() %>%
+taxonomy_fungi <- read.delim(
+  system.file("extdata", "taxonomy_fungi.txt", package = "MicroBioMeta"),
+  check.names = FALSE
+) %>%
   rename(taxonomy = Taxon) %>%
   dplyr::select(-Consensus) %>%
   column_to_rownames(var = "Feature.ID")
@@ -92,10 +93,16 @@ colnames(taxonomy_bacteria)
 Ahora, carguemos los metadatos de cada conjunto de datos:
 
 ```{r cargar-los-datos-6}
-bacteria_metadata <- read.delim("articles/data/metadata_bacterias.txt", check.names = FALSE) %>%
+bacteria_metadata <- read.delim(
+  system.file("extdata", "metadata_bacterias.txt", package = "MicroBioMeta"),
+  check.names = FALSE
+) %>%
   filter(Month == "2")
 
-fungi_metadata <- read.delim("articles/data/metadata_fungis.txt", check.names = FALSE)
+fungi_metadata <- read.delim(
+  system.file("extdata", "metadata_fungis.txt", package = "MicroBioMeta"),
+  check.names = FALSE
+)
 
 ```
 

@@ -176,7 +176,15 @@ beta_partition_ord_plot <- function(table, metadata,
     
     z <- ggplot2::ggplot() + 
       ggplot2::geom_point(
-        data = y$df_ord %>% tibble::rownames_to_column(var = "SampleID") %>% 
+        # df_ord's own "Group" column (set by .mbm_betadisper_spider_df, only
+        # needed internally to compute the centroids below) is dropped before
+        # the join: when the user's own `group_col` happens to be named
+        # "Group" too (as in the example above), inner_join() would otherwise
+        # rename both to "Group.x"/"Group.y" to avoid the clash, so a plain
+        # "Group" column - the one `color = .data[[group_col]]` below looks
+        # for - would no longer exist in the joined data.
+        data = y$df_ord %>% dplyr::select(-Group) %>%
+          tibble::rownames_to_column(var = "SampleID") %>%
           dplyr::inner_join(env, by = "SampleID"),
         ggplot2::aes(
           x = x, y = y,

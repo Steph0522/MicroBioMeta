@@ -44,7 +44,10 @@ library(tidyverse)
 Each sample was processed separately, so `bracken_species` reports were merged into a single table beforehand (one column per sample, named `kraken_pluspfp_<id_metagenome>_report_bracken_species`) with a **`taxonomy`** column already attached as the last column:
 
 ```{r loading-data-1}
-table_kraken <- read.delim("articles/data/table_kraken.txt", row.names = 1, check.names = FALSE)
+table_kraken <- read.delim(
+  system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
+  row.names = 1, check.names = FALSE
+)
 
 table_kraken[1:3, c(1:2, ncol(table_kraken))]
 ```
@@ -56,7 +59,10 @@ Taxonomy is already in the table  so, there is no need to use  `merge_feature_ta
 Now, let's load the metadata:
 
 ```{r loading-data-2}
-metadata_meta <- read.delim("articles/data/metadata_metagenomic.txt", check.names = FALSE)
+metadata_meta <- read.delim(
+  system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
+  check.names = FALSE
+)
 
 head(metadata_meta[, 1:10])
 ```
@@ -86,7 +92,9 @@ table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 Coordinates were taken and loaded:
 
 ```{r loading-data-6}
-coord_meta <- read.csv("articles/data/coord_metagenomic.csv") %>%
+coord_meta <- read.csv(
+  system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
+) %>%
   dplyr::select(-Site) %>% # drop the CSV's own overall site index (1-12); we want `Sitio` (1-2) instead
   dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
   dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)

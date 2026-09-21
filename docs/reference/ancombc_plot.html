@@ -191,7 +191,7 @@ bar plot (2-group or continuous <code>col_cond</code>). First color is the
 "positive" direction (the non-reference group / increases with the
 variable); second color is the "negative" direction (the reference
 group / decreases with the variable). Default <code>c("#56B4E9",
-  "#E69F00")</code> (the same colorblind-friendly blue/orange pairing used as
+"#E69F00")</code> (the same colorblind-friendly blue/orange pairing used as
 the 2-group default throughout the package). Ignored for the
 3+-group heatmap, which uses <code>diverging_palette</code> instead.</p></dd>
 
@@ -235,44 +235,31 @@ when <code>save_table = TRUE</code>). Default <code>"ancombc_results.txt"</code>
 <span class="r-in"><span>  prv_cut      <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
 <span class="r-in"><span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 methods overwritten by 'treeio':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   method              from    </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   MRCA.phylo          tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   MRCA.treedata       tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Nnode.treedata      tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   Ntip.treedata       tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   ancestor.phylo      tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   ancestor.treedata   tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   child.phylo         tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   child.treedata      tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   full_join.phylo     tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   full_join.treedata  tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupClade.phylo    tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupClade.treedata tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupOTU.phylo      tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   groupOTU.treedata   tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   inner_join.phylo    tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   inner_join.treedata tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   is.rooted.treedata  tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodeid.phylo        tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodeid.treedata     tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodelab.phylo       tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   nodelab.treedata    tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   offspring.phylo     tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   offspring.treedata  tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   parent.phylo        tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   parent.treedata     tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   root.treedata       tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   rootnode.phylo      tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   rootnode.treedata   tidytree</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   sibling.phylo       tidytree</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'lme4':</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   method           from</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   na.action.merMod car </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking the input data type ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The input data is of type: phyloseq</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PASS</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking the sample metadata ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The specified variables in the formula: Location</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The available variables in the sample metadata: BarcodeSequence, LinkerPrimerSequence, Loc, FW, Location, Root_L, Stem_L, Root_DW, Treatment, TOC, Root_FW, ReversePrimer, Leaves_No, SMC, pH, Silt, WHC, TN, Plot, EC, DW, Sand, Clay, Arbus_per, Cod_No, Code, Month, Description</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PASS</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Checking other arguments ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The number of groups of interest is: 2</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The group variable has &lt; 3 categories </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> The multi-group comparisons (global/pairwise/dunnet/trend) will be deactivated</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The sample size per group is: Rhizosphere = 24, Roots = 22</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> PASS</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Obtaining initial estimates ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimating sample-specific biases ...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: foreach</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: rngtools</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ANCOM-BC2 primary results ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Conducting sensitivity analysis for pseudo-count addition to 0s ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> For taxa that are significant but do not pass the sensitivity analysis,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Term 'Location': 1 significant taxa</span>
 <span class="r-plt img"><img src="ancombc_plot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
@@ -290,7 +277,7 @@ when <code>save_table = TRUE</code>). Default <code>"ancombc_results.txt"</code>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>
