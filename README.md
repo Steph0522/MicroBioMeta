@@ -1,4 +1,4 @@
-# 🧬 MicroBioMeta <img src="man/figures/logo.jpg" alt="MicroBioMeta logo" width="80" align="right"/>
+# 🧬 MicroBioMeta <img src="man/figures/logo.jpg" alt="MicroBioMeta logo" width="90" align="right"/>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
