@@ -176,8 +176,12 @@ alpha_hill_plot <- function(
   # faceted ggplot, so the tags land truly outside each panel - the same
   # mechanism already used by alpha_hill_corr_plot and beta_partition_ord_plot -
   # instead of trying to carve out space inside one shared facet gtable.
+  # Also used (with q stacked in rows instead of columns) for the vertical
+  # orientation when there's no facet_by - the plain facet_wrap() version of
+  # that case could never get closer than a small panel.spacing gap between
+  # q's stacked strip+panel units, unlike this grid's seamless cowplot look.
   use_grid_compose <- is.null(facet_by2) &&
-    identical(facet_orientation, "horizontal")
+    (identical(facet_orientation, "horizontal") || is.null(facet_by))
 
   facet_config <- if (!is.null(facet_by) && !is.null(facet_by2)) {
     formula_facet <- if (facet_orientation == "horizontal") {
@@ -284,11 +288,20 @@ alpha_hill_plot <- function(
     # instead of carving space out of one shared facet gtable.
     q_levels <- intersect(c("q0", "q1", "q2"), unique(results_largo$q))
     has_facet_by <- !is.null(facet_by)
-    col_levels <- q_levels
+    # q goes in rows only for the no-facet_by + vertical case; otherwise it
+    # stays in columns (facet_by, when present, always takes the rows).
+    q_in_rows <- !has_facet_by && identical(facet_orientation, "vertical")
+    col_levels <- if (q_in_rows) "__all__" else q_levels
     # Alphabetical order (matching ggplot2's default factor-level order,
     # i.e. what facet_grid2 used before) - not unique()'s first-appearance
     # order, which follows the row order of the input data instead.
-    row_levels <- if (has_facet_by) sort(unique(as.character(results_largo[[facet_by]]))) else "__all__"
+    row_levels <- if (has_facet_by) {
+      sort(unique(as.character(results_largo[[facet_by]])))
+    } else if (q_in_rows) {
+      q_levels
+    } else {
+      "__all__"
+    }
     n_rows_grid <- length(row_levels)
     n_cols_grid <- length(col_levels)
     # Shared y-axis range across all panels when scales aren't free (the
@@ -304,8 +317,8 @@ alpha_hill_plot <- function(
     }
 
     build_cell <- function(row_idx, col_idx) {
-      q_val  <- col_levels[col_idx]
-      fb_val <- row_levels[row_idx]
+      q_val  <- if (q_in_rows) row_levels[row_idx] else col_levels[col_idx]
+      fb_val <- if (has_facet_by) row_levels[row_idx] else NULL
       cell_data <- results_largo[results_largo$q == q_val, ]
       if (has_facet_by) cell_data <- cell_data[cell_data[[facet_by]] == fb_val, ]
 
@@ -315,7 +328,17 @@ alpha_hill_plot <- function(
       ) +
         capa_geom + capa_error + fill_scale +
         { if (!is.null(y_range)) ggplot2::coord_cartesian(ylim = y_range) } +
-        ggplot2::labs(x = NULL, y = NULL, fill = legend_title) +
+        # q in rows (a2-style, no facet_by): every panel is one of only 3
+        # total, so the title repeats on all of them. q in columns (a1-style,
+        # facet_by present): only the first (leftmost) column shows it -
+        # same column whose axis.text.y ticks are the only ones left visible
+        # below, since every facet_by row down that column reads the same
+        # units/legend as the row above it.
+        ggplot2::labs(
+          x = NULL,
+          y = if (q_in_rows || col_idx == 1) y_axis_title else NULL,
+          fill = legend_title
+        ) +
         .mbm_theme(
           legend_position = legend_position,
           extra = ggplot2::theme(
@@ -357,7 +380,10 @@ alpha_hill_plot <- function(
           )
       }
 
-      show_top_strip   <- row_idx == 1
+      # Every row needs its own q strip when q is stacked in rows (each row
+      # is a different q, unlike the facet_by case where only row 1 sits
+      # under the shared q header row).
+      show_top_strip   <- if (q_in_rows) TRUE else row_idx == 1
       show_right_strip <- has_facet_by && col_idx == n_cols_grid
 
       if (show_top_strip && show_right_strip) {
@@ -483,7 +509,12 @@ alpha_hill_plot <- function(
       legend_position = if (show_legend) legend_position else "none",
       extra = ggplot2::theme(
         panel.grid       = ggplot2::element_blank(),
-        panel.spacing    = grid::unit(0.15, "lines"),
+        # The strip is always fused to its own panel below (ggplot never
+        # inserts a gap there); this is the only gap ggplot has, and it sits
+        # between a panel and the NEXT facet's strip above it. Too small
+        # (e.g. 0.15) and that gap reads as "attached on both sides" instead
+        # of only to the panel below.
+        panel.spacing    = grid::unit(0.5, "lines"),
         axis.text.x      = .mbm_x_text(x_label_angle),
         strip.text       = .mbm_strip_text(strip_text_bold),
         strip.background = ggplot2::element_rect(fill = strip_color, color = "black")
