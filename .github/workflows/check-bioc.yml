@@ -196,6 +196,16 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           install.packages(c("RcppParallel", "Rfast"), type = "source", repos = BiocManager::repositories())
+          ## Diagnostics: rebuilding from source alone hasn't fixed the
+          ## "undefined symbol: _ZTIN3tbb4taskE" error so far, meaning the
+          ## container's own system TBB (not a stale cached binary) may be
+          ## the actual mismatch. Print what's linked and what TBB libraries
+          ## actually exist so the next run's log shows the real cause
+          ## instead of guessing again.
+          so <- Sys.glob(file.path(.libPaths(), "Rfast", "libs", "Rfast.so"))
+          message("Rfast.so path(s): ", paste(so, collapse = ", "))
+          for (f in so) system(paste("ldd", shQuote(f)))
+          system("find / -xdev -iname 'libtbb*' 2>/dev/null | xargs -I{} sh -c 'echo {}; nm -D {} 2>/dev/null | grep -c tbb4task || true'")
         shell: Rscript {0}
 
       - name: Install dependencies pass 2
