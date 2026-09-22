@@ -143,6 +143,10 @@ jobs:
           ## Required for tcltk
           brew install xquartz --cask
 
+          ## Required to rebuild OpenMP-linked packages (e.g. stringdist,
+          ## needed by BiocCheck) from source against a compatible libomp
+          brew install libomp
+
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
@@ -179,33 +183,43 @@ jobs:
         continue-on-error: true
         shell: Rscript {0}
 
-      ## ALDEx2 depends on Rfast, which links against Intel TBB via
-      ## RcppParallel (RcppParallel is what actually bundles/provides the
-      ## TBB headers and library Rfast compiles against). The precompiled
-      ## binaries from the CRAN/RSPM mirror are built against a different
-      ## TBB ABI than what's actually present in the bioconductor_docker
-      ## image, so loading Rfast fails with "undefined symbol:
-      ## _ZTIN3tbb4taskE" (vignettes using aldex_heatmap_plot()/
-      ## beta_ord_plot() error out while re-building). Recompiling Rfast
-      ## alone isn't enough - it still links against RcppParallel's own
-      ## (mismatched) prebuilt TBB unless RcppParallel is rebuilt first too.
-      ## remotes' later `upgrade = TRUE` calls won't touch either package
-      ## again since their version numbers are unchanged, only how they
-      ## were built.
+      ## ALDEx2 depends on Rfast, which (via RcppParallel) needs Intel TBB
+      ## at runtime. The bioconductor_docker image ships its own
+      ## "container-binaries" repo (included in BiocManager::repositories())
+      ## which serves precompiled binaries from a "src/contrib"-shaped URL -
+      ## so passing type = "source" with that repos list was silently
+      ## ignored (`install.packages()` logged "installing *binary* package"
+      ## for both RcppParallel and Rfast even though source was requested),
+      ## and we kept re-downloading the same mismatched binary every time.
+      ## Pointing at a plain CRAN mirror instead - no Bioconductor repos at
+      ## all - forces a genuine source build against the container's own
+      ## libraries. remotes' later `upgrade = TRUE` calls won't touch either
+      ## package again since their version numbers are unchanged, only how
+      ## they were built.
       - name: Rebuild RcppParallel and Rfast from source on Linux (TBB ABI mismatch workaround)
         if: runner.os == 'Linux'
         run: |
-          install.packages(c("RcppParallel", "Rfast"), type = "source", repos = BiocManager::repositories())
-          ## Diagnostics: rebuilding from source alone hasn't fixed the
-          ## "undefined symbol: _ZTIN3tbb4taskE" error so far, meaning the
-          ## container's own system TBB (not a stale cached binary) may be
-          ## the actual mismatch. Print what's linked and what TBB libraries
-          ## actually exist so the next run's log shows the real cause
-          ## instead of guessing again.
+          install.packages(c("RcppParallel", "Rfast"), type = "source", repos = "https://cloud.r-project.org")
+          ## Diagnostics: kept in case this still doesn't resolve it - shows
+          ## what's linked and what TBB libraries actually exist.
           so <- Sys.glob(file.path(.libPaths(), "Rfast", "libs", "Rfast.so"))
           message("Rfast.so path(s): ", paste(so, collapse = ", "))
           for (f in so) system(paste("ldd", shQuote(f)))
           system("find / -xdev -iname 'libtbb*' 2>/dev/null | xargs -I{} sh -c 'echo {}; nm -D {} 2>/dev/null | grep -c tbb4task || true'")
+        shell: Rscript {0}
+
+      ## BiocCheck (run near the end of this workflow) depends on
+      ## stringdist, which is compiled with OpenMP support. The precompiled
+      ## binary from CRAN is linked against a newer/different libomp than
+      ## what's on the macOS runner, so loading it fails with "symbol not
+      ## found in flat namespace '___kmpc_barrier'" - same family of binary
+      ## ABI mismatch as the Linux TBB issue above, just OpenMP on macOS
+      ## instead of TBB on Linux. Rebuilding from source links it against
+      ## the runner's own libomp instead.
+      - name: Rebuild stringdist from source on macOS (OpenMP ABI mismatch workaround)
+        if: runner.os == 'macOS'
+        run: |
+          install.packages("stringdist", type = "source", repos = BiocManager::repositories())
         shell: Rscript {0}
 
       - name: Install dependencies pass 2
