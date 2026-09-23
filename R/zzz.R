@@ -243,6 +243,17 @@ utils::globalVariables(c(
   )
 }
 
+# Re-sorts each "A_vs_B" string alphabetically (pmin/pmax, like the
+# condition1_group/compar_condition1/2 columns built internally in
+# beta_dissimilarity_plot()/beta_turnover_plot()), so a comparison_condition
+# vector the caller wrote in whichever order ("Rhizosphere_vs_Bulk soil")
+# still matches the internally-normalized column ("Bulk soil_vs_Rhizosphere")
+# instead of requiring the caller to already know that internal convention.
+.mbm_normalize_pair <- function(x) {
+  parts <- strsplit(x, "_vs_", fixed = TRUE)
+  vapply(parts, function(p) paste0(pmin(p[1], p[2]), "_vs_", pmax(p[1], p[2])), character(1))
+}
+
 # --- Colorblind-friendly palette (Okabe-Ito, 8 colors) ----------------------
 # Safe for deuteranopia, protanopia and tritanopia.
 # Used as the default qualitative palette across all functions except
