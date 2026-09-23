@@ -52,9 +52,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, r: 'devel', bioc: 'devel', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
-          - { os: macOS-latest, r: 'devel', bioc: 'devel'}
-          - { os: windows-latest, r: 'devel', bioc: 'devel'}
+          - { os: ubuntu-latest, r: 'release', bioc: '3.23', cont: "bioconductor/bioconductor_docker:RELEASE_3_23", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
+          - { os: macOS-latest, r: 'release', bioc: '3.23'}
+          - { os: windows-latest, r: 'release', bioc: '3.23'}
           ## Check https://github.com/r-lib/actions/tree/master/examples
           ## for examples using the http-user-agent
     env:
@@ -105,16 +105,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-
+          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-RELEASE_3_23-r-4.6-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-RELEASE_3_23-r-4.6-
 
       - name: Cache R packages on Linux
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
         uses: actions/cache@v3
         with:
           path: /home/runner/work/_temp/Library
-          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-devel-
+          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-RELEASE_3_23-r-4.6-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-RELEASE_3_23-r-4.6-
 
       # - name: Install Linux system dependencies
       #   if: runner.os == 'Linux'
@@ -142,6 +142,10 @@ jobs:
 
           ## Required for tcltk
           brew install xquartz --cask
+
+          ## Required to rebuild OpenMP-linked packages (e.g. stringdist,
+          ## needed by BiocCheck) from source against a compatible libomp
+          brew install libomp
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
@@ -177,6 +181,45 @@ jobs:
           message(paste('****', Sys.time(), 'pass number 1 at installing dependencies: local dependencies ****'))
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = FALSE, upgrade = TRUE)
         continue-on-error: true
+        shell: Rscript {0}
+
+      ## ALDEx2 depends on Rfast, which (via RcppParallel) needs Intel TBB
+      ## at runtime. The bioconductor_docker image ships its own
+      ## "container-binaries" repo (included in BiocManager::repositories())
+      ## which serves precompiled binaries from a "src/contrib"-shaped URL -
+      ## so passing type = "source" with that repos list was silently
+      ## ignored (`install.packages()` logged "installing *binary* package"
+      ## for both RcppParallel and Rfast even though source was requested),
+      ## and we kept re-downloading the same mismatched binary every time.
+      ## Pointing at a plain CRAN mirror instead - no Bioconductor repos at
+      ## all - forces a genuine source build against the container's own
+      ## libraries. remotes' later `upgrade = TRUE` calls won't touch either
+      ## package again since their version numbers are unchanged, only how
+      ## they were built.
+      - name: Rebuild RcppParallel and Rfast from source on Linux (TBB ABI mismatch workaround)
+        if: runner.os == 'Linux'
+        run: |
+          install.packages(c("RcppParallel", "Rfast"), type = "source", repos = "https://cloud.r-project.org")
+          ## Diagnostics: kept in case this still doesn't resolve it - shows
+          ## what's linked and what TBB libraries actually exist.
+          so <- Sys.glob(file.path(.libPaths(), "Rfast", "libs", "Rfast.so"))
+          message("Rfast.so path(s): ", paste(so, collapse = ", "))
+          for (f in so) system(paste("ldd", shQuote(f)))
+          system("find / -xdev -iname 'libtbb*' 2>/dev/null | xargs -I{} sh -c 'echo {}; nm -D {} 2>/dev/null | grep -c tbb4task || true'")
+        shell: Rscript {0}
+
+      ## BiocCheck (run near the end of this workflow) depends on
+      ## stringdist, which is compiled with OpenMP support. The precompiled
+      ## binary from CRAN is linked against a newer/different libomp than
+      ## what's on the macOS runner, so loading it fails with "symbol not
+      ## found in flat namespace '___kmpc_barrier'" - same family of binary
+      ## ABI mismatch as the Linux TBB issue above, just OpenMP on macOS
+      ## instead of TBB on Linux. Rebuilding from source links it against
+      ## the runner's own libomp instead.
+      - name: Rebuild stringdist from source on macOS (OpenMP ABI mismatch workaround)
+        if: runner.os == 'macOS'
+        run: |
+          install.packages("stringdist", type = "source", repos = BiocManager::repositories())
         shell: Rscript {0}
 
       - name: Install dependencies pass 2
@@ -285,7 +328,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@master
         with:
-          name: ${{ runner.os }}-biocversion-devel-r-devel-results
+          name: ${{ runner.os }}-biocversion-RELEASE_3_23-r-4.6-results
           path: check
 
 
