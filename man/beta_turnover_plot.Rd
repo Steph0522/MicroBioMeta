@@ -8,13 +8,13 @@ beta_turnover_plot(
   table,
   metadata,
   comparison_condition1,
-  comparison_condition2,
+  comparison_condition2 = NULL,
   condition1.x,
   condition1.y,
-  condition2.x,
-  condition2.y,
-  color_facets_x,
-  color_axis_x,
+  condition2.x = NULL,
+  condition2.y = NULL,
+  color_facets_x = NULL,
+  color_axis_x = NULL,
   x_axis_title = "Section",
   show_x_labels = FALSE,
   x_label_angle = 0,
@@ -31,21 +31,47 @@ beta_turnover_plot(
 
 \item{metadata}{A data frame with sample metadata. The first column must match sample names in "table".}
 
-\item{comparison_condition1}{Vector of comparisons 1}
+\item{comparison_condition1}{Vector of \code{"A_vs_B"} group-pair labels to
+keep (matched against \code{condition1.x}/\code{condition1.y}). Matching
+ignores order - listing \code{"A_vs_B"} also matches pairs the pairwise
+self-join happened to record as \code{"B_vs_A"}, so each pair only needs
+to be listed once. Each matched pair becomes one x-axis/fill group,
+labelled exactly as written (e.g. \code{"Rhizosphere_vs_Roots"}), same
+as \code{condition1_group} in \code{beta_dissimilarity_plot()}.}
 
-\item{comparison_condition2}{Vector of comparisons 2}
+\item{comparison_condition2}{Optional. Same as \code{comparison_condition1},
+for the \code{condition2.x}/\code{condition2.y} pair (e.g. \code{"TC_vs_TC"}
+to keep only within-group pairs of a given treatment). condition1 stays
+the main comparison (x-axis/legend); condition2 is the secondary one -
+supplying it both filters to the named pairs \emph{and} facets the plot
+by them (one panel per pair, e.g. \code{"TC_vs_TC"}, \code{"TD_vs_TD"}),
+the same role \code{condition2_col} plays in \code{beta_dissimilarity_plot()}.
+Default \code{NULL}: every pair matching \code{comparison_condition1} is
+kept and the plot only facets by q.}
 
-\item{condition1.x}{Condition 1 of axis-x}
+\item{condition1.x}{Metadata column (as it reads after the pairwise
+self-join, e.g. \code{"Type_of_soil.x"}) used - together with
+\code{condition1.y} - to build \code{comparison_condition1}'s group
+pairs.}
 
-\item{condition1.y}{Condition 1 of axis-y}
+\item{condition1.y}{Metadata column (self-join suffix \code{.y}) paired
+with \code{condition1.x}.}
 
-\item{condition2.x}{Condition 2 of axis-x}
+\item{condition2.x}{Optional. Metadata column (self-join suffix \code{.x})
+used with \code{condition2.y} to build \code{comparison_condition2}'s
+group pairs. Only needed when \code{comparison_condition2} is set.}
 
-\item{condition2.y}{Condition 2 of axis-y}
+\item{condition2.y}{Optional. Metadata column (self-join suffix \code{.y})
+paired with \code{condition2.x}.}
 
-\item{color_facets_x}{Color vector for facet strips.}
+\item{color_facets_x}{Optional color vector for facet strips. Defaults to
+a neutral \code{"grey85"} background for each facet, like
+\code{beta_dissimilarity_plot()}'s \code{facet_colors}.}
 
-\item{color_axis_x}{Named color vector for x-axis groups.}
+\item{color_axis_x}{Optional named color vector for x-axis groups.
+Defaults to the package's colorblind-friendly Okabe-Ito palette
+(\code{.mbm_colors}, orange/blue first), like
+\code{beta_dissimilarity_plot()}'s \code{group_colors}.}
 
 \item{x_axis_title}{Title for the x-axis. Default \code{"Section"}.}
 
@@ -59,7 +85,9 @@ when \code{show_x_labels = TRUE}. Default \code{0} (horizontal).}
 Default \code{FALSE} (plain).}
 
 \item{strip_text_color}{Color of the top (x) facet strip labels, which sit on
-the \code{color_facets_x} backgrounds. Default \code{"white"}.}
+the \code{color_facets_x} backgrounds. Default \code{"white"}, unless
+\code{color_facets_x} is left at its own light \code{"grey85"} default,
+in which case this defaults to \code{"black"} instead so it stays legible.}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}
@@ -89,8 +117,9 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "OTUID"
 
-# comparison_condition1/2 match "value.x_vs_value.y" pairs created by the
-# pairwise self-join (condition.x = site1's value, condition.y = site2's value)
+# comparison_condition1/2 match group pairs regardless of order, so listing
+# "Rhizosphere_vs_Roots" also catches pairs the self-join recorded the
+# other way around ("Roots_vs_Rhizosphere") - no need to list both.
 beta_turnover_plot(
   table                 = table,
   metadata              = metadata,

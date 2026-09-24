@@ -11,10 +11,13 @@
 #'   as \code{condition1_group} in \code{beta_dissimilarity_plot()}.
 #' @param comparison_condition2 Optional. Same as \code{comparison_condition1},
 #'   for the \code{condition2.x}/\code{condition2.y} pair (e.g. \code{"TC_vs_TC"}
-#'   to keep only within-group pairs of a given treatment). Only used to filter
-#'   which pairs are kept - not shown on the plot, so term order doesn't
-#'   matter here. Default \code{NULL}: every pair matching
-#'   \code{comparison_condition1} is kept regardless of this second condition.
+#'   to keep only within-group pairs of a given treatment). condition1 stays
+#'   the main comparison (x-axis/legend); condition2 is the secondary one -
+#'   supplying it both filters to the named pairs \emph{and} facets the plot
+#'   by them (one panel per pair, e.g. \code{"TC_vs_TC"}, \code{"TD_vs_TD"}),
+#'   the same role \code{condition2_col} plays in \code{beta_dissimilarity_plot()}.
+#'   Default \code{NULL}: every pair matching \code{comparison_condition1} is
+#'   kept and the plot only facets by q.
 #' @param condition1.x Metadata column (as it reads after the pairwise
 #'   self-join, e.g. \code{"Type_of_soil.x"}) used - together with
 #'   \code{condition1.y} - to build \code{comparison_condition1}'s group
@@ -26,13 +29,6 @@
 #'   group pairs. Only needed when \code{comparison_condition2} is set.
 #' @param condition2.y Optional. Metadata column (self-join suffix \code{.y})
 #'   paired with \code{condition2.x}.
-#' @param facet_by Optional. A metadata column (as it reads after the
-#'   pairwise self-join, e.g. \code{"Treatment.x"}) to facet the plot by -
-#'   purely visual, like \code{beta_dissimilarity_plot()}'s
-#'   \code{condition2_col}: every pair is shown, faceted by this column's
-#'   value, with no filtering. Unrelated to \code{comparison_condition2},
-#'   which filters instead of faceting and doesn't require picking a side
-#'   (\code{.x} vs \code{.y}) since it compares both.
 #' @param color_facets_x Optional color vector for facet strips. Defaults to
 #'   a neutral \code{"grey85"} background for each facet, like
 #'   \code{beta_dissimilarity_plot()}'s \code{facet_colors}.
@@ -97,7 +93,6 @@ beta_turnover_plot <- function(table,
                       condition1.y,
                       condition2.x = NULL,
                       condition2.y = NULL,
-                      facet_by = NULL,
                       color_facets_x = NULL,
                       color_axis_x = NULL,
                       x_axis_title = "Section",
@@ -219,13 +214,19 @@ beta_turnover_plot <- function(table,
     levels = unique(comparison_condition1)
   )
 
-  # facet_by is purely visual (no filtering) - every pair is kept and simply
-  # faceted by this column's value, same role as condition2_col in
-  # beta_dissimilarity_plot().
-  has_facet_by <- !is.null(facet_by)
-  if (has_facet_by) {
-    beta_formato$.facet2_col <- as.character(beta_formato[[facet_by]])
+  # condition2 is now the sole second dimension, same role as condition2_col
+  # in beta_dissimilarity_plot(): comparison_condition2 both filters to the
+  # named pairs AND is what the plot facets by - there's no separate,
+  # unrelated facet_by parameter to keep in sync with it anymore.
+  if (has_condition2) {
+    pair_norm2     <- .mbm_normalize_pair(comparison_condition2)
+    label_by_norm2 <- stats::setNames(comparison_condition2, pair_norm2)
+    beta_formato$.facet2_col <- factor(
+      unname(label_by_norm2[beta_formato$compar_condition2]),
+      levels = unique(comparison_condition2)
+    )
   }
+  has_facet_by <- has_condition2
 
   beta_final <- beta_formato %>%
     dplyr::filter(compar_condition1 %in% pair_norm)
@@ -272,9 +273,8 @@ beta_turnover_plot <- function(table,
   x_text  <- if (show_x_labels) .mbm_x_text(x_label_angle) else ggplot2::element_blank()
   x_ticks <- if (show_x_labels) ggplot2::element_line(colour = "black") else ggplot2::element_blank()
 
-  # facet_by (purely visual - see its docs) adds a facet column, e.g.
-  # Treatment; unrelated to comparison_condition2, which only filters and
-  # stays invisible here. Without it, the only facet dimension is q (orden).
+  # condition2 (when supplied) adds a facet column - a plot with only
+  # comparison_condition1 facets on q (orden) alone.
   facet_spec <- if (has_facet_by) {
     ggh4x::facet_grid2(orden ~ .facet2_col,
                        scales = "free_x",

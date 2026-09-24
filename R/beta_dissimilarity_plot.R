@@ -202,6 +202,7 @@ beta_dissimilarity_plot <- function(
     ) +
       ggplot2::ylab(y_lab) +
       ggplot2::scale_fill_manual(values=group_colors) +
+      ggplot2::labs(fill = "Comparison") +
       ggplot2::xlab(x_axis_title) +
       base_theme
   }

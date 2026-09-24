@@ -16,8 +16,10 @@ beta_dissimilarity_plot(
   partition = c("shared", "turnover", "nestedness"),
   family = c("sorensen", "jaccard"),
   stat = NULL,
+  show_x_labels = TRUE,
   x_label_angle = 0,
   strip_text_bold = FALSE,
+  strip_text_color = "black",
   aspect_ratio = NULL,
   save_table = FALSE,
   table_filename = "betadiv_table.txt"
@@ -51,11 +53,21 @@ colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
 passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
 \code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).}
 
+\item{show_x_labels}{Logical. If \code{TRUE} (default), x-axis tick labels
+are shown. The comparison groups are also in the legend, so set to
+\code{FALSE} to hide the (often long) tick labels when that's redundant.}
+
 \item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
-labels. Default \code{0} (horizontal); use e.g. \code{45} or \code{90} when
-comparison names are long enough to overlap.}
+labels when \code{show_x_labels = TRUE}. Default \code{0} (horizontal);
+use e.g. \code{45} or \code{90} when comparison names are long enough to
+overlap.}
 
 \item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold. Default \code{FALSE}.}
+
+\item{strip_text_color}{Color of the facet strip labels, which sit on the
+\code{facet_colors} backgrounds. Default \code{"black"} (the default
+\code{facet_colors} is a light \code{"grey85"}; pass \code{"white"} if
+you supply darker \code{facet_colors}).}
 
 \item{aspect_ratio}{Numeric. Sets the aspect ratio (height/width) of each panel. Default \code{NULL} (automatic).}
 
