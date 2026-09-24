@@ -88,7 +88,12 @@ alpha_hill_corr_plot <- function(table,
   )
   
   # --- Aspect ratio ---
-  aspect_ratio_theme <- if (facet_orientation == "horizontal") NULL else 0.5
+  # NULL in both orientations - a fixed ratio (e.g. 0.5) shrinks the panel to
+  # a thin strip inside whatever (often much taller) cell the caller's own
+  # grid gives it, leaving large empty margins and pushing the y-axis title
+  # into the panel letter. Left NULL, the panel fills its cell like the
+  # horizontal layout already does.
+  aspect_ratio_theme <- NULL
   
   # --- q0 plot ---
   q0_vs_depth <- ggpubr::ggscatter(

@@ -527,12 +527,26 @@ corr_env_abund_plot <- function(table,
     ggplot2::scale_fill_gradientn(colours = col_palette,
                                   limits = c(-1, 1),
                                   name = "Correlation") +
+    # Taxon names are italicized, matching every other function that labels
+    # an axis with taxa (ancombc_plot, abundance_heatmap_plot,
+    # ratios_bubble_plot, random_forest_lollipop_plot) - Taxon sits on
+    # whichever axis invert_axes puts it on, so the 45deg/italic styling
+    # (meant for the often-long taxon names) follows it there instead of
+    # always defaulting to axis.text.x.
     .mbm_theme(
       legend_position = "right",
       extra = ggplot2::theme(
-        axis.text.x = ggplot2::element_text(angle = 45, vjust = 1,
-                                            hjust = 1, size = 12,
-                                            color = "black"),
+        axis.text.x = ggplot2::element_text(
+          angle = if (invert_axes) 0 else 45,
+          vjust = if (invert_axes) 0.5 else 1,
+          hjust = if (invert_axes) 0.5 else 1,
+          size  = 12, color = "black",
+          face  = if (invert_axes) "plain" else "italic"
+        ),
+        axis.text.y = ggplot2::element_text(
+          size = 12, color = "black",
+          face = if (invert_axes) "italic" else "plain"
+        ),
         panel.grid.major = ggplot2::element_blank()
       )
     ) +

@@ -10,6 +10,8 @@ issues](https://img.shields.io/github/issues/Steph0522/MicroBioMeta)](https://gi
 pulls](https://img.shields.io/github/issues-pr/Steph0522/MicroBioMeta)](https://github.com/Steph0522/MicroBioMeta/pulls)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check-bioc](https://github.com/Steph0522/MicroBioMeta/actions/workflows/check-bioc.yml/badge.svg)](https://github.com/Steph0522/MicroBioMeta/actions/workflows/check-bioc.yml)
+[![Last commit](https://img.shields.io/github/last-commit/Steph0522/MicroBioMeta)](https://github.com/Steph0522/MicroBioMeta/commits/devel)
 
 <!-- badges: end -->
 

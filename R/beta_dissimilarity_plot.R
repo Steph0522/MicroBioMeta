@@ -21,10 +21,18 @@
 #' @param stat Character or \code{NULL}. Statistical test to compare groups,
 #'   passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
 #'   \code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).
+#' @param show_x_labels Logical. If \code{TRUE} (default), x-axis tick labels
+#'   are shown. The comparison groups are also in the legend, so set to
+#'   \code{FALSE} to hide the (often long) tick labels when that's redundant.
 #' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis tick
-#'   labels. Default \code{0} (horizontal); use e.g. \code{45} or \code{90} when
-#'   comparison names are long enough to overlap.
+#'   labels when \code{show_x_labels = TRUE}. Default \code{0} (horizontal);
+#'   use e.g. \code{45} or \code{90} when comparison names are long enough to
+#'   overlap.
 #' @param strip_text_bold Logical. If \code{TRUE}, facet strip labels are bold. Default \code{FALSE}.
+#' @param strip_text_color Color of the facet strip labels, which sit on the
+#'   \code{facet_colors} backgrounds. Default \code{"black"} (the default
+#'   \code{facet_colors} is a light \code{"grey85"}; pass \code{"white"} if
+#'   you supply darker \code{facet_colors}).
 #' @param aspect_ratio Numeric. Sets the aspect ratio (height/width) of each panel. Default \code{NULL} (automatic).
 #' @param save_table Logical. If \code{TRUE}, saves the beta diversity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"betadiv_table.txt"}.
@@ -62,8 +70,10 @@ beta_dissimilarity_plot <- function(
     partition = c("shared","turnover","nestedness"),
     family = c("sorensen","jaccard"),
     stat = NULL,
+    show_x_labels = TRUE,
     x_label_angle = 0,
     strip_text_bold = FALSE,
+    strip_text_color = "black",
     aspect_ratio = NULL,
     save_table = FALSE,
     table_filename = "betadiv_table.txt"
@@ -109,9 +119,18 @@ beta_dissimilarity_plot <- function(
                                                      pmax(c1_x, c1_y)))
   beta_df <- dplyr::distinct(beta_df, site1, site2, .keep_all = TRUE) # remove duplicates
   
-  # Filter if comparison_condition1 specified
+  # Filter if comparison_condition1 specified. Normalized the same way
+  # condition1_group was built above (pmin/pmax), so comparison_condition1
+  # matches regardless of which order the caller wrote each pair in - e.g.
+  # "Rhizosphere_vs_Bulk soil" still matches even though "Bulk soil" sorts
+  # first alphabetically and so is what condition1_group actually holds.
   if(!is.null(comparison_condition1)) {
-    beta_df <- dplyr::filter(beta_df, condition1_group %in% comparison_condition1)
+    norm1 <- .mbm_normalize_pair(comparison_condition1)
+    beta_df <- dplyr::filter(beta_df, condition1_group %in% norm1)
+    # Legend/x-axis order follows the order comparison_condition1 was
+    # written in, instead of first-appearance in the data (essentially
+    # arbitrary) - same ordering behavior as beta_turnover_plot().
+    beta_df$condition1_group <- factor(beta_df$condition1_group, levels = unique(norm1))
   }
   
   
@@ -138,12 +157,18 @@ beta_dissimilarity_plot <- function(
   }
   
 
+  # The comparison groups are already named in the legend, so their tick
+  # labels are hidden when show_x_labels = FALSE (as in beta_turnover_plot).
+  x_text  <- if (show_x_labels) .mbm_x_text(x_label_angle) else ggplot2::element_blank()
+  x_ticks <- if (show_x_labels) ggplot2::element_line(colour = "black") else ggplot2::element_blank()
+
   base_theme <- .mbm_theme(
     legend_position = "right",
     extra = ggplot2::theme(
-      panel.grid  = ggplot2::element_blank(),
-      strip.text  = .mbm_strip_text(strip_text_bold),
-      axis.text.x = .mbm_x_text(x_label_angle)
+      panel.grid   = ggplot2::element_blank(),
+      strip.text   = .mbm_strip_text(strip_text_bold, colour = strip_text_color),
+      axis.text.x  = x_text,
+      axis.ticks.x = x_ticks
     )
   )
   if (!is.null(aspect_ratio)) {
@@ -151,11 +176,17 @@ beta_dissimilarity_plot <- function(
   }
 
   # --- Create figure ---
+  # "shared" alone doesn't say shared *what* (samples could be ASVs, OTUs,
+  # species...); "turnover"/"nestedness" are already standard beta-diversity
+  # terms on their own, so only "shared" needs the extra word.
+  partition_label <- if (partition == "shared") "shared features" else partition
+  y_lab <- paste0("Beta diversity (", partition_label, ")")
+
   if(!is.null(condition2_col)) {
     figura <- ggpubr::ggboxplot(
       beta_df, x="condition1_group", y="value", fill="condition1_group"
     ) +
-      ggplot2::ylab(paste0("Beta diversity (",partition,")")) +
+      ggplot2::ylab(y_lab) +
       ggplot2::scale_fill_manual(values=group_colors) +
       ggplot2::labs(fill = "Comparison") +
       base_theme +
@@ -169,7 +200,7 @@ beta_dissimilarity_plot <- function(
     figura <- ggpubr::ggboxplot(
       beta_df, x="condition1_group", y="value", fill="condition1_group"
     ) +
-      ggplot2::ylab(paste0("Beta diversity (",partition,")")) +
+      ggplot2::ylab(y_lab) +
       ggplot2::scale_fill_manual(values=group_colors) +
       ggplot2::xlab(x_axis_title) +
       base_theme
