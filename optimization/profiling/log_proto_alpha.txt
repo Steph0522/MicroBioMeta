@@ -1,0 +1,30 @@
+Avisos:
+1: In merge_feature_taxonomy(table = table_bacteria, taxonomy = taxonomy_bacteria) :
+  83 taxonomy IDs are not present in the table and will be excluded from the result.
+2: ℹ Ignoring taxonomy for 2400 OTUs not currently in biom object:
+  "f73f1e72cb227429158dea0257514d8c", "8372cccf035addf04760a48b3e858a93",
+  "cd836bc75e3b0d4abdea21bb4096802e", "ad2badfd28b25eb70d3cda15078fd828",
+  "466b0f79c5a8eac247a68ebcbbe0cd2f", "5e8701b151604b81b4ec1f0a73709643",
+  "950ff9ceb264498fb928e46ae28cc6df", "10d1fab6231d16bab3ad2a20042cf141",
+  "ef2a7f99b70476e00a48c74e70cb745b", "3b97ce5ee833d13ccb636816293169f7",
+  "7155cd9f5e94d88965474933726f5ad4", "00e59c93f76026e033c50eeef7f99068",
+  "ef6420e1875db89d24a4f09f18a5c9e9", "c5da3b3e6be51936a8b0c6a72a37ee55",
+  "808f4338889a3207df86ea1e644c28c6", "8e0ce76aba391108d479b6438fc3105a",
+  "d084f5c5367f9692a47de1c828f85dbb", "17ac42f2fbea215666fae3542b1599c4", …,
+  "a284ed81146f8f73b4c34b8f974760ff", and "5f1a166e761abac52e03b045204021f3". 
+Pixeles identicos paquete vs copia patch_fun sin cambios: TRUE 
+Pixeles identicos original vs A (leyenda reutilizada):   TRUE 
+Pixeles identicos original vs C (A + matriz en #138):   TRUE 
+Fraccion de pixeles distintos original vs B:             0.09176452 (esperado: distinto layout)
+                                   build_first build_med render_med total_med
+original (paquete)                        3.44      3.06       0.36      3.44
+A: leyenda de plots[[1]]                  3.16      3.21       0.38      3.59
+C: A + matriz en #138                     3.12      2.91       0.39      3.33
+B: un solo ggplot facetado                1.42      1.16       0.20      1.36
+solo calculo diversidad (#145-148)        0.35      0.31         NA      0.31
+phyloseq plot_richness (ref.)             0.23      0.19       0.49      0.69
+
+Diversidad data.frame vs matriz, all.equal: TRUE 
+                                      [,1]
+data.frame(t(table)) + vegan (actual) 0.34
+t(as.matrix(table)) + vegan           0.14

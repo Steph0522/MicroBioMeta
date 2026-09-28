@@ -50,11 +50,9 @@
 #'   \code{"loading"}). Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.
-#' @param seed Numeric. Random seed used for \code{distance = "compositional"}'s
-#'   Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
-#'   results are reproducible by default; set to a different value (or wrap
-#'   the call in your own \code{set.seed()} and leave this at its default) to
-#'   get a different random draw. Default \code{123}.
+#' @details \code{distance = "compositional"} draws a random Monte Carlo
+#'   instance from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before
+#'   the function to make the result reproducible.
 #'
 #' @return A `ggplot2` object.
 #' @export
@@ -88,8 +86,7 @@ beta_ord_plot <- function(table, metadata,
                           top_n = 5,
                           title = "auto",
                           save_table = FALSE,
-                          table_filename = "ordination_scores.txt",
-                          seed = 123) {
+                          table_filename = "ordination_scores.txt") {
   
   requireNamespace("vegan")
   requireNamespace("ggplot2")
@@ -143,15 +140,10 @@ beta_ord_plot <- function(table, metadata,
   colnames(otu_table) <- sample_ids
   metadata[[1]] <- metadata_ids
   
-  common_samples <- intersect(sample_ids, metadata_ids)
-  if (length(common_samples) == 0) stop("No matching samples between table and metadata.")
-  otu_table <- otu_table[, common_samples, drop = FALSE]
-  metadata <- metadata[metadata_ids %in% common_samples, ]
+  metadata <- .mbm_align_metadata(sample_ids, metadata)
+  otu_table <- otu_table[, metadata[[1]], drop = FALSE]
   
   if (distance == "compositional") {
-    restore_seed <- .mbm_save_seed()
-    on.exit(restore_seed(), add = TRUE)
-    set.seed(seed)
     aldex_obj <- ALDEx2::aldex.clr(otu_table, mc.samples = 128,
                                    denom = "all", verbose = FALSE, useMC = FALSE)
     otu_trans <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))

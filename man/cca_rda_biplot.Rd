@@ -9,7 +9,7 @@ cca_rda_biplot(
   env_data,
   env_vars,
   method = "hell",
-  metadata = NULL,
+  metadata,
   group_col = NULL,
   group_colors = NULL,
   legend_title = NULL,
@@ -17,7 +17,6 @@ cca_rda_biplot(
   pval_threshold = 0.05,
   show_all_env_vectors = FALSE,
   analysis = "CCA",
-  seed = 123,
   scale_arrows = 1,
   title = "auto",
   save_table = FALSE,
@@ -37,7 +36,7 @@ matching the sample names in \code{table}.}
 
 \item{method}{Transformation method passed to \code{decostand} (default is \code{"hell"} for Hellinger).}
 
-\item{metadata}{Optional data frame with sample metadata for grouping in the plot.}
+\item{metadata}{Data frame with sample metadata; its first column must hold the sample IDs.}
 
 \item{group_col}{Optional name of the column in \code{metadata} used to define sample groups.}
 
@@ -53,8 +52,6 @@ matching the sample names in \code{table}.}
 
 \item{analysis}{Constrained ordination method: \code{"CCA"} (default, Canonical
 Correspondence Analysis) or \code{"RDA"} (Redundancy Analysis). Case-insensitive.}
-
-\item{seed}{Random seed for reproducibility (default is \code{123}).}
 
 \item{scale_arrows}{Numeric value to scale environmental vectors in the plot.}
 
@@ -75,6 +72,11 @@ A \code{ggplot} object displaying the biplot with sample scores and environmenta
 Performs Canonical Correspondence Analysis (CCA) or Redundancy Analysis (RDA) based on a species abundance table
 and selected environmental variables, returning a biplot with ggplot2 that visualizes
 sample scores and environmental vectors.
+}
+\details{
+The p-values of the environmental vectors come from
+\code{vegan::envfit()} permutations; call \code{set.seed()} before the
+function to make them reproducible.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

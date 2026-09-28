@@ -41,7 +41,9 @@ or \code{"effect"} (effect-size plot). Case-insensitive.}
 
 \item{threshold_upper}{Upper threshold for effect size/difference (x-axis).}
 
-\item{cond}{Name of the condition that appears first in \code{table} (used in plot labels).}
+\item{cond}{Name of the reference condition for the plot labels: positive
+values on the x-axis mean higher in \code{cond}. Default \code{NULL}, the
+condition of the first sample in \code{table}.}
 
 \item{cutoff.pval}{p-value cutoff for significance (default = 0.05).}
 

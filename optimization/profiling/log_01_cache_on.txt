@@ -1,0 +1,54 @@
+Avisos:
+1: In merge_feature_taxonomy(table = table_bacteria, taxonomy = taxonomy_bacteria) :
+  83 taxonomy IDs are not present in the table and will be excluded from the result.
+2: ℹ Ignoring taxonomy for 2400 OTUs not currently in biom object:
+  "f73f1e72cb227429158dea0257514d8c", "8372cccf035addf04760a48b3e858a93",
+  "cd836bc75e3b0d4abdea21bb4096802e", "ad2badfd28b25eb70d3cda15078fd828",
+  "466b0f79c5a8eac247a68ebcbbe0cd2f", "5e8701b151604b81b4ec1f0a73709643",
+  "950ff9ceb264498fb928e46ae28cc6df", "10d1fab6231d16bab3ad2a20042cf141",
+  "ef2a7f99b70476e00a48c74e70cb745b", "3b97ce5ee833d13ccb636816293169f7",
+  "7155cd9f5e94d88965474933726f5ad4", "00e59c93f76026e033c50eeef7f99068",
+  "ef6420e1875db89d24a4f09f18a5c9e9", "c5da3b3e6be51936a8b0c6a72a37ee55",
+  "808f4338889a3207df86ea1e644c28c6", "8e0ce76aba391108d479b6438fc3105a",
+  "d084f5c5367f9692a47de1c828f85dbb", "17ac42f2fbea215666fae3542b1599c4", …,
+  "a284ed81146f8f73b4c34b8f974760ff", and "5f1a166e761abac52e03b045204021f3". 
+Tiempo setup (load_all + librerias + datos): 12.72 s
+Dimensiones table_bac: 6045 features x 79 muestras
+Muestras metadata: 79 
+Niveles Treatment: TD,TED,TC | Type_of_soil: Rhizosphere,Roots,Bulk soil,Uncultivated 
+Features con conteo > 0: 3645 
+mbm_abundance_bar_plot       first=  0.23  median=  0.19
+phyloseq_plot_bar            first=  2.23  median=  2.52
+rbiom_taxa_stacked           first=  2.20  median=  0.18
+mbm_abundance_heatmap_plot   first=  1.42  median=  0.81
+phyloseq_plot_heatmap        first=  1.49  median=  2.08
+rbiom_taxa_heatmap           first=  1.40  median=  0.12
+mbm_alpha_diversity_plot     first=  4.23  median=  3.35
+phyloseq_plot_richness       first=  0.20  median=  0.25
+rbiom_adiv_boxplot           first=  0.97  median=  0.15
+mbm_beta_ord_plot            first=  0.20  median=  0.19
+phyloseq_ordinate_plot       first=  0.59  median=  0.58
+rbiom_bdiv_ord_plot          first=  0.98  median=  0.14
+mbm_beta_test_table          first= 16.90  median= 13.08
+rbiom_bdiv_stats             first=  1.55  median=  0.02
+rbiom_distmat_stats          first=  0.11  median=  0.01
+mbm_cca_rda_biplot           first=  0.33  median=  0.32
+phyloseq_cca                 first=  0.17  median=  0.17
+                       call first median_rest   min   max
+     mbm_abundance_bar_plot  0.23        0.19  0.17  0.36
+          phyloseq_plot_bar  2.23        2.52  2.16  5.48
+         rbiom_taxa_stacked  2.20        0.18  0.15  0.37
+ mbm_abundance_heatmap_plot  1.42        0.81  0.76  3.14
+      phyloseq_plot_heatmap  1.49        2.08  1.64  2.08
+         rbiom_taxa_heatmap  1.40        0.12  0.12  0.14
+   mbm_alpha_diversity_plot  4.23        3.35  3.23  3.81
+     phyloseq_plot_richness  0.20        0.25  0.20  0.41
+         rbiom_adiv_boxplot  0.97        0.15  0.14  0.16
+          mbm_beta_ord_plot  0.20        0.19  0.19  0.32
+     phyloseq_ordinate_plot  0.59        0.58  0.56  0.58
+        rbiom_bdiv_ord_plot  0.98        0.14  0.14  0.20
+        mbm_beta_test_table 16.90       13.08 12.28 13.70
+           rbiom_bdiv_stats  1.55        0.02  0.01  0.02
+        rbiom_distmat_stats  0.11        0.01  0.00  0.02
+         mbm_cca_rda_biplot  0.33        0.32  0.31  0.41
+               phyloseq_cca  0.17        0.17  0.17  0.19

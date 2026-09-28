@@ -1,0 +1,23 @@
+Avisos:
+1: In merge_feature_taxonomy(table = table_bacteria, taxonomy = taxonomy_bacteria) :
+  83 taxonomy IDs are not present in the table and will be excluded from the result.
+2: ℹ Ignoring taxonomy for 2400 OTUs not currently in biom object:
+  "f73f1e72cb227429158dea0257514d8c", "8372cccf035addf04760a48b3e858a93",
+  "cd836bc75e3b0d4abdea21bb4096802e", "ad2badfd28b25eb70d3cda15078fd828",
+  "466b0f79c5a8eac247a68ebcbbe0cd2f", "5e8701b151604b81b4ec1f0a73709643",
+  "950ff9ceb264498fb928e46ae28cc6df", "10d1fab6231d16bab3ad2a20042cf141",
+  "ef2a7f99b70476e00a48c74e70cb745b", "3b97ce5ee833d13ccb636816293169f7",
+  "7155cd9f5e94d88965474933726f5ad4", "00e59c93f76026e033c50eeef7f99068",
+  "ef6420e1875db89d24a4f09f18a5c9e9", "c5da3b3e6be51936a8b0c6a72a37ee55",
+  "808f4338889a3207df86ea1e644c28c6", "8e0ce76aba391108d479b6438fc3105a",
+  "d084f5c5367f9692a47de1c828f85dbb", "17ac42f2fbea215666fae3542b1599c4", …,
+  "a284ed81146f8f73b4c34b8f974760ff", and "5f1a166e761abac52e03b045204021f3". 
+B1: p$data identico: TRUE | PNG identico: TRUE 
+B2: p$data identico: TRUE | all.equal: TRUE | PNG identico: TRUE 
+  level = genus B2 all.equal p$data: TRUE 
+  level = family B2 all.equal p$data: TRUE 
+  level = species B2 all.equal p$data: TRUE 
+                   first build_med render_med
+original (paquete)  0.20      0.19      0.310
+B1 filtro unico     0.30      0.16      0.315
+B2 B1 + rowsum      0.18      0.14      0.315

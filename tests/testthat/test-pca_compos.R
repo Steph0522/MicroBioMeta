@@ -5,8 +5,7 @@ test_that("beta_ord_plot returns a ggplot for PCA on compositional (Aitchison) d
     toy$table, toy$metadata,
     distance   = "compositional",
     ordination = "PCA",
-    group_col  = "Group",
-    seed       = 1
+    group_col  = "Group"
   )
 
   expect_s3_class(p, "ggplot")
@@ -29,13 +28,15 @@ test_that("beta_ord_plot rejects PCA combined with a non-compositional distance"
   )
 })
 
-test_that("beta_ord_plot is reproducible across runs with the same seed", {
+test_that("beta_ord_plot is reproducible across runs with the same set.seed()", {
   toy <- make_toy_community()
 
+  set.seed(42)
   p1 <- beta_ord_plot(toy$table, toy$metadata, distance = "compositional",
-                      ordination = "PCA", group_col = "Group", seed = 42)
+                      ordination = "PCA", group_col = "Group")
+  set.seed(42)
   p2 <- beta_ord_plot(toy$table, toy$metadata, distance = "compositional",
-                      ordination = "PCA", group_col = "Group", seed = 42)
+                      ordination = "PCA", group_col = "Group")
 
   # Same seed -> the CLR Monte-Carlo draw (and thus the plotted coordinates)
   # must match exactly.

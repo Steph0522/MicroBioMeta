@@ -1,0 +1,9 @@
+"call","build_first","render_first","build_med","render_med","total_med"
+"MBM beta_test_table compositional ~Treatment*Type_of_soil 999 (original)",15.32,0.09,12.92,0.12,13.05
+"MBM beta_test_table compositional ~Treatment 999",13.24,0.08,12.7,0.09,12.79
+"MBM beta_test_table bray ~Treatment*Type_of_soil 999",0.59,0.12,0.59,0.1,0.69
+"MBM beta_test_table bray ~Treatment 999 (= trabajo rbiom)",0.29,0.09,0.3,0.08,0.38
+"solo ALDEx2::aldex.clr(mc.samples=128)",12.53,NA,10.91,NA,NA
+"solo vegan::adonis2 bray ~Treatment*Type_of_soil 999 by=terms",0.34,NA,0.32,NA,NA
+"solo vegan::adonis2 bray ~Treatment 999",0.06,NA,0.07,NA,NA
+"rbiom distmat_stats (bdiv_distmat bray + adonis2 ~Treatment 999)",0.11,NA,0.1,NA,NA

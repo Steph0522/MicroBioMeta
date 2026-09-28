@@ -120,11 +120,8 @@ aldex_heatmap_plot <- function(table,
   # Align samples between table and metadata (first column = sample ID,
   # regardless of its original name), so callers don't have to pre-filter
   # metadata to exactly match table's columns/order themselves.
-  common_samples <- intersect(colnames(table_counts), metadata[[1]])
-  if (length(common_samples) == 0)
-    stop("No matching samples found between 'table' and 'metadata'.")
-  table_counts <- table_counts[, common_samples, drop = FALSE]
-  metadata     <- metadata[match(common_samples, metadata[[1]]), , drop = FALSE]
+  metadata     <- .mbm_align_metadata(colnames(table_counts), metadata)
+  table_counts <- table_counts[, metadata[[1]], drop = FALSE]
 
   conditions       <- as.character(metadata[[col_cond]])
   unique_conditions <- unique(conditions)
@@ -148,6 +145,15 @@ aldex_heatmap_plot <- function(table,
 
   if (!all(c("effect", "wi.eBH") %in% colnames(aldex_results)))
     stop("Columns 'effect' or 'wi.eBH' missing in ALDEx2 results.")
+
+  # ALDEx2 computes diff.btw/effect as the alphabetically second group minus
+  # the first. Flip the sign when needed so that a positive value always
+  # means higher in unique_conditions[1], which is what the labels and bar
+  # colors below assume.
+  if (unique_conditions[1] == sort(unique_conditions)[1]) {
+    aldex_results$diff.btw <- -aldex_results$diff.btw
+    aldex_results$effect   <- -aldex_results$effect
+  }
 
   # Filter by thresholds
   aldex_filtered <- aldex_results
@@ -177,7 +183,7 @@ aldex_heatmap_plot <- function(table,
     dplyr::left_join(table %>% dplyr::select(OTUID, taxonomy), by = "OTUID") %>%
     dplyr::mutate(
       seccion = dplyr::case_when(
-        diff.btw < 0 ~ paste("Lower in",  unique_conditions[2]),
+        diff.btw < 0 ~ paste("Higher in", unique_conditions[2]),
         diff.btw > 0 ~ paste("Higher in", unique_conditions[1]),
         TRUE         ~ "No Change"
       ),

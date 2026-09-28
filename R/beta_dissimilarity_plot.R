@@ -104,8 +104,17 @@ beta_dissimilarity_plot <- function(
   }
   
   # --- Convert to long format ---
-  beta_df <- reshape2::melt(as.matrix(beta_mat), varnames=c("site1","site2"))
-  beta_df <- dplyr::filter(beta_df, !is.na(value) & value != 0)
+  # Both betapart.core()$shared and as.matrix(beta.pair()) are full symmetric
+  # n x n matrices: keep only the lower triangle, so each pair of samples
+  # appears once and the diagonal (a sample against itself; its richness in
+  # `shared`) is left out. Pairs with a value of 0 are real and are kept.
+  beta_mat <- as.matrix(beta_mat)
+  idx <- which(lower.tri(beta_mat), arr.ind = TRUE)
+  beta_df <- data.frame(site1 = rownames(beta_mat)[idx[, "row"]],
+                        site2 = colnames(beta_mat)[idx[, "col"]],
+                        value = beta_mat[idx],
+                        stringsAsFactors = FALSE)
+  beta_df <- dplyr::filter(beta_df, !is.na(value))
   
   beta_df <- dplyr::left_join(beta_df, metadata, by=c("site1"=names(metadata)[1])) %>%
     dplyr::left_join(metadata, by=c("site2"=names(metadata)[1]))
@@ -117,7 +126,6 @@ beta_dissimilarity_plot <- function(
                            condition1_group = paste0(pmin(c1_x, c1_y),
                                                      "_vs_",
                                                      pmax(c1_x, c1_y)))
-  beta_df <- dplyr::distinct(beta_df, site1, site2, .keep_all = TRUE) # remove duplicates
   
   # Filter if comparison_condition1 specified. Normalized the same way
   # condition1_group was built above (pmin/pmax), so comparison_condition1
@@ -149,7 +157,7 @@ beta_dissimilarity_plot <- function(
   if(is.null(group_colors)) {
     group_colors <- if (n_groups == 2) .mbm_colors_2group else rep_len(.mbm_colors, n_groups)
   }
-  if(!is.null(names(group_colors)==FALSE)) names(group_colors) <- unique(beta_df$condition1_group)
+  if(is.null(names(group_colors))) names(group_colors) <- unique(beta_df$condition1_group)
 
   if(!is.null(condition2_col)) {
     n_facets <- length(unique(beta_df[[paste0(condition2_col,".x")]]))

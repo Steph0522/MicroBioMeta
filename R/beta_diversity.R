@@ -3,14 +3,14 @@
 #' @param table table Data frame where columns are samples and rows are ASVs or taxa.
 #' @param metadata  A data frame with sample metadata. The first column must match sample names in "table".
 #' @param comparison_condition1 Vector of \code{"A_vs_B"} group-pair labels to
-#'   keep (matched against \code{condition1.x}/\code{condition1.y}). Matching
+#'   keep (matched against the values of \code{condition1_col}). Matching
 #'   ignores order - listing \code{"A_vs_B"} also matches pairs the pairwise
 #'   self-join happened to record as \code{"B_vs_A"}, so each pair only needs
 #'   to be listed once. Each matched pair becomes one x-axis/fill group,
 #'   labelled exactly as written (e.g. \code{"Rhizosphere_vs_Roots"}), same
 #'   as \code{condition1_group} in \code{beta_dissimilarity_plot()}.
 #' @param comparison_condition2 Optional. Same as \code{comparison_condition1},
-#'   for the \code{condition2.x}/\code{condition2.y} pair (e.g. \code{"TC_vs_TC"}
+#'   for the values of \code{condition2_col} (e.g. \code{"TC_vs_TC"}
 #'   to keep only within-group pairs of a given treatment). condition1 stays
 #'   the main comparison (x-axis/legend); condition2 is the secondary one -
 #'   supplying it both filters to the named pairs \emph{and} facets the plot
@@ -18,17 +18,15 @@
 #'   the same role \code{condition2_col} plays in \code{beta_dissimilarity_plot()}.
 #'   Default \code{NULL}: every pair matching \code{comparison_condition1} is
 #'   kept and the plot only facets by q.
-#' @param condition1.x Metadata column (as it reads after the pairwise
-#'   self-join, e.g. \code{"Type_of_soil.x"}) used - together with
-#'   \code{condition1.y} - to build \code{comparison_condition1}'s group
-#'   pairs.
-#' @param condition1.y Metadata column (self-join suffix \code{.y}) paired
-#'   with \code{condition1.x}.
-#' @param condition2.x Optional. Metadata column (self-join suffix \code{.x})
-#'   used with \code{condition2.y} to build \code{comparison_condition2}'s
-#'   group pairs. Only needed when \code{comparison_condition2} is set.
-#' @param condition2.y Optional. Metadata column (self-join suffix \code{.y})
-#'   paired with \code{condition2.x}.
+#' @param condition1_col Metadata column (e.g. \code{"Type_of_soil"}) used to
+#'   build \code{comparison_condition1}'s group pairs, same as
+#'   \code{condition1_col} in \code{beta_dissimilarity_plot()}.
+#' @param condition2_col Optional. Metadata column used to build
+#'   \code{comparison_condition2}'s group pairs, and to facet the plot.
+#'   Required when \code{comparison_condition2} is set. If given without
+#'   \code{comparison_condition2}, the plot is faceted by it keeping only
+#'   pairs of samples with the same value (e.g. \code{"TC_vs_TC"},
+#'   \code{"TD_vs_TD"}).
 #' @param color_facets_x Optional color vector for facet strips. Defaults to
 #'   a neutral \code{"grey85"} background for each facet, like
 #'   \code{beta_dissimilarity_plot()}'s \code{facet_colors}.
@@ -77,10 +75,8 @@
 #'   metadata              = metadata,
 #'   comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
 #'   comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
-#'   condition1.x          = "Location.x",
-#'   condition1.y          = "Location.y",
-#'   condition2.x          = "Treatment.x",
-#'   condition2.y          = "Treatment.y",
+#'   condition1_col        = "Location",
+#'   condition2_col        = "Treatment",
 #'   color_facets_x        = c("#5D478B", "#8B668B"),
 #'   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 #' )
@@ -89,10 +85,8 @@ beta_turnover_plot <- function(table,
                       metadata, 
                       comparison_condition1,
                       comparison_condition2 = NULL,
-                      condition1.x,
-                      condition1.y,
-                      condition2.x = NULL,
-                      condition2.y = NULL,
+                      condition1_col,
+                      condition2_col = NULL,
                       color_facets_x = NULL,
                       color_axis_x = NULL,
                       x_axis_title = "Section",
@@ -126,14 +120,35 @@ beta_turnover_plot <- function(table,
   # named in comparison_condition1/2 before that, instead of computing pairs
   # for every sample in the table and discarding most of them afterwards in
   # the compar_condition1/2 filter below.
-  raw_col1 <- sub("\\.[xy]$", "", condition1.x)
+  if (!condition1_col %in% names(metadata)) {
+    stop("condition1_col '", condition1_col, "' is not a column of metadata.")
+  }
+  # condition2_col alone facets by it, keeping only pairs of samples that
+  # share the same value (e.g. TC_vs_TC, TD_vs_TD), so the comparison isn't
+  # confounded by comparing samples from different treatments.
+  if (!is.null(condition2_col) && is.null(comparison_condition2)) {
+    if (!condition2_col %in% names(metadata)) {
+      stop("condition2_col '", condition2_col, "' is not a column of metadata.")
+    }
+    col2 <- metadata[[condition2_col]]
+    lv2  <- if (is.factor(col2)) levels(droplevels(col2)) else sort(unique(as.character(col2)))
+    comparison_condition2 <- paste0(lv2, "_vs_", lv2)
+  }
+  if (!is.null(comparison_condition2)) {
+    if (is.null(condition2_col)) {
+      stop("condition2_col is required when comparison_condition2 is set.")
+    }
+    if (!condition2_col %in% names(metadata)) {
+      stop("condition2_col '", condition2_col, "' is not a column of metadata.")
+    }
+  }
+
   groups1_needed <- unique(unlist(strsplit(comparison_condition1, "_vs_")))
-  keep_samples <- metadata$OTUID[metadata[[raw_col1]] %in% groups1_needed]
+  keep_samples <- metadata$OTUID[metadata[[condition1_col]] %in% groups1_needed]
 
   if (!is.null(comparison_condition2)) {
-    raw_col2 <- sub("\\.[xy]$", "", condition2.x)
     groups2_needed <- unique(unlist(strsplit(comparison_condition2, "_vs_")))
-    keep_samples <- intersect(keep_samples, metadata$OTUID[metadata[[raw_col2]] %in% groups2_needed])
+    keep_samples <- intersect(keep_samples, metadata$OTUID[metadata[[condition2_col]] %in% groups2_needed])
   }
 
   otu_filter_t <- otu_filter_t[rownames(otu_filter_t) %in% keep_samples, , drop = FALSE]
@@ -183,17 +198,19 @@ beta_turnover_plot <- function(table,
   # beta_dissimilarity_plot). This means the caller only has to list a pair
   # once (e.g. "A_vs_B", not also "B_vs_A"), matched regardless of which
   # sample happened to land as site1 vs site2 in the pairwise self-join.
-  c1_x <- as.character(beta_formato[[condition1.x]])
-  c1_y <- as.character(beta_formato[[condition1.y]])
+  # The metadata self-join above suffixes each column with .x (site1) and
+  # .y (site2), same as in beta_dissimilarity_plot().
+  c1_x <- as.character(beta_formato[[paste0(condition1_col, ".x")]])
+  c1_y <- as.character(beta_formato[[paste0(condition1_col, ".y")]])
   beta_formato$compar_condition1 <- paste0(pmin(c1_x, c1_y), "_vs_", pmax(c1_x, c1_y))
 
-  # comparison_condition2/condition2.x/condition2.y are optional - when left
+  # comparison_condition2/condition2_col are optional - when left
   # NULL, every pair matching comparison_condition1 is kept regardless of
   # the second condition (e.g. Treatment), instead of requiring one.
   has_condition2 <- !is.null(comparison_condition2)
   if (has_condition2) {
-    c2_x <- as.character(beta_formato[[condition2.x]])
-    c2_y <- as.character(beta_formato[[condition2.y]])
+    c2_x <- as.character(beta_formato[[paste0(condition2_col, ".x")]])
+    c2_y <- as.character(beta_formato[[paste0(condition2_col, ".y")]])
     beta_formato$compar_condition2 <- paste0(pmin(c2_x, c2_y), "_vs_", pmax(c2_x, c2_y))
   }
 

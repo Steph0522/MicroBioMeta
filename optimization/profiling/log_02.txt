@@ -1,0 +1,46 @@
+Avisos:
+1: In merge_feature_taxonomy(table = table_bacteria, taxonomy = taxonomy_bacteria) :
+  83 taxonomy IDs are not present in the table and will be excluded from the result.
+2: ℹ Ignoring taxonomy for 2400 OTUs not currently in biom object:
+  "f73f1e72cb227429158dea0257514d8c", "8372cccf035addf04760a48b3e858a93",
+  "cd836bc75e3b0d4abdea21bb4096802e", "ad2badfd28b25eb70d3cda15078fd828",
+  "466b0f79c5a8eac247a68ebcbbe0cd2f", "5e8701b151604b81b4ec1f0a73709643",
+  "950ff9ceb264498fb928e46ae28cc6df", "10d1fab6231d16bab3ad2a20042cf141",
+  "ef2a7f99b70476e00a48c74e70cb745b", "3b97ce5ee833d13ccb636816293169f7",
+  "7155cd9f5e94d88965474933726f5ad4", "00e59c93f76026e033c50eeef7f99068",
+  "ef6420e1875db89d24a4f09f18a5c9e9", "c5da3b3e6be51936a8b0c6a72a37ee55",
+  "808f4338889a3207df86ea1e644c28c6", "8e0ce76aba391108d479b6438fc3105a",
+  "d084f5c5367f9692a47de1c828f85dbb", "17ac42f2fbea215666fae3542b1599c4", …,
+  "a284ed81146f8f73b4c34b8f974760ff", and "5f1a166e761abac52e03b045204021f3". 
+bar | MicroBioMeta abundance_bar_plot                          build= 0.22 render= 0.30 total= 0.52
+bar | phyloseq plot_bar (+prep)                                build= 1.54 render= 0.25 total= 1.78
+bar | rbiom taxa_stacked                                       build= 1.21 render= 0.33 total= 1.54
+heatmap | MicroBioMeta abundance_heatmap_plot (dibuja DENTRO)  build= 0.70 render= 0.03 total= 0.73
+heatmap | phyloseq plot_heatmap (+prune/glom)                  build= 1.23 render= 0.14 total= 1.37
+heatmap | rbiom taxa_heatmap                                   build= 1.22 render= 0.29 total= 1.52
+alpha | MicroBioMeta alpha_diversity_plot                      build= 2.92 render= 0.36 total= 3.28
+alpha | phyloseq plot_richness                                 build= 0.19 render= 0.45 total= 0.64
+alpha | rbiom adiv_boxplot                                     build= 0.87 render= 0.81 total= 1.67
+ord | MicroBioMeta beta_ord_plot                               build= 0.18 render= 0.17 total= 0.36
+ord | phyloseq ordinate+plot_ordination (sin print)            build= 0.44 render= 0.18 total= 0.62
+ord | rbiom bdiv_ord_plot (adonis2 999)                        build= 1.30 render= 0.25 total= 1.55
+cca | MicroBioMeta cca_rda_biplot                              build= 0.43 render= 0.20 total= 0.63
+cca | phyloseq ordinate CCA + plot                             build= 0.19 render= 0.16 total= 0.35
+Avisos:
+1: In scale_fill_gradient(low = low, high = high, trans = trans, na.value = na.value) :
+  log-4 transformation introduced infinite values.
+2: In scale_fill_gradient(low = low, high = high, trans = trans, na.value = na.value) :
+  log-4 transformation introduced infinite values.
+3: In scale_fill_gradient(low = low, high = high, trans = trans, na.value = na.value) :
+  log-4 transformation introduced infinite values.
+4: In scale_fill_gradient(low = low, high = high, trans = trans, na.value = na.value) :
+  log-4 transformation introduced infinite values.
+Heatmap MBM con dispositivo png activo: first= 0.81  median= 0.82 
+MBM beta_test_table compositional ~Treatment*Type_of_soil 999 (original)    build= 12.92 render= 0.12
+MBM beta_test_table compositional ~Treatment 999                            build= 12.70 render= 0.09
+MBM beta_test_table bray ~Treatment*Type_of_soil 999                        build=  0.59 render= 0.10
+MBM beta_test_table bray ~Treatment 999 (= trabajo rbiom)                   build=  0.30 render= 0.08
+solo ALDEx2::aldex.clr(mc.samples=128)                                      build= 10.91 render=   NA
+solo vegan::adonis2 bray ~Treatment*Type_of_soil 999 by=terms               build=  0.32 render=   NA
+solo vegan::adonis2 bray ~Treatment 999                                     build=  0.07 render=   NA
+rbiom distmat_stats (bdiv_distmat bray + adonis2 ~Treatment 999)            build=  0.10 render=   NA

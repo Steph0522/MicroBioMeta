@@ -1,0 +1,10 @@
+"variant","first","median"
+"beta_test_table() publica (original)",12.72,12.32
+"nucleo original (aldex.clr 128 MC)",11.75,11.72
+"P1 exacto (misma RNG, solo 1a CLR)",6.32,6.32
+"P2 1 instancia MC (no identico)",0.52,0.5
+"P3 = P1 + adonis2(parallel = 4)",7.61,8.35
+"P4 CLR esperada digamma (determinista)",0.47,0.46
+"solo aldex.clr 128 MC",11.07,11.02
+"solo rgamma(l*128) por muestra",6.05,5.82
+"solo adonis2 ~T*S 999 by=terms",0.33,0.34

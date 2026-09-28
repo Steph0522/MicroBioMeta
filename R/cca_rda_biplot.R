@@ -12,7 +12,7 @@
 #'   matching the sample names in \code{table}.
 #' @param env_vars A character vector with the names of environmental variables to include in the analysis.
 #' @param method Transformation method passed to `decostand` (default is `"hell"` for Hellinger).
-#' @param metadata Optional data frame with sample metadata for grouping in the plot.
+#' @param metadata Data frame with sample metadata; its first column must hold the sample IDs.
 #' @param group_col Optional name of the column in `metadata` used to define sample groups.
 #' @param group_colors Optional named vector of colors to use for each group.
 #' @param legend_title Optional custom title for the group legend.
@@ -21,7 +21,6 @@
 #' @param show_all_env_vectors Logical; if TRUE, plot all environmental vectors regardless of significance.
 #' @param analysis Constrained ordination method: `"CCA"` (default, Canonical
 #'   Correspondence Analysis) or `"RDA"` (Redundancy Analysis). Case-insensitive.
-#' @param seed Random seed for reproducibility (default is `123`).
 #' @param scale_arrows Numeric value to scale environmental vectors in the plot.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
 #'   \code{NULL} shows no title; any other string is used as-is.
@@ -30,6 +29,10 @@
 #'   \code{type} column (\code{"site"} or \code{"vector"}). Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"cca_rda_scores.txt"}.
+#'
+#' @details The p-values of the environmental vectors come from
+#'   \code{vegan::envfit()} permutations; call \code{set.seed()} before the
+#'   function to make them reproducible.
 #'
 #' @return A `ggplot` object displaying the biplot with sample scores and environmental vectors.
 #' @export
@@ -59,7 +62,7 @@ cca_rda_biplot <- function(table,
                        env_data,
                        env_vars,
                        method = "hell",
-                       metadata = NULL,
+                       metadata,
                        group_col = NULL,
                        group_colors = NULL,
                        legend_title = NULL,
@@ -67,7 +70,6 @@ cca_rda_biplot <- function(table,
                        pval_threshold = 0.05,
                        show_all_env_vectors = FALSE,
                        analysis = "CCA",
-                       seed = 123,
                        scale_arrows = 1,
                        title = "auto",
                        save_table = FALSE,
@@ -89,49 +91,23 @@ cca_rda_biplot <- function(table,
   
   # 2. Process metadata and handle hash IDs
   # Treat the first column as the sample ID regardless of its original name
-  if (!is.null(metadata)) colnames(metadata)[1] <- "SampleID"
+  colnames(metadata)[1] <- "SampleID"
+  metadata <- as.data.frame(metadata)
+  # Match metadata rows to the table's samples by ID (checked row by row)
+  metadata <- .mbm_align_metadata(rownames(spp_table), metadata)
+  spp_table <- spp_table[metadata$SampleID, , drop = FALSE]
   rownames(metadata) <- metadata$SampleID
-  if (!is.null(metadata)) {
-    metadata <- as.data.frame(metadata)
-    
-    # Store original IDs for error messages
-    original_table_ids <- rownames(spp_table)
-    original_meta_ids <- if(all(rownames(metadata) == as.character(seq_len(nrow(metadata))))) {
-      metadata[[1]]
-    } else {
-      rownames(metadata)
-    }
-    
-    # Case 1: Exact matching possible
-    common_samples <- intersect(rownames(spp_table), original_meta_ids)
-    
-    # Case 2: No exact matches but same number of samples -> match by position
-    if (length(common_samples) == 0 && nrow(spp_table) == length(original_meta_ids)) {
-      warning("No exact ID matches found. Matching samples by position.", call. = FALSE)
-      rownames(spp_table) <- original_meta_ids
-      common_samples <- original_meta_ids
-    }
-    
-    if (length(common_samples) == 0) {
-      stop("No matching samples found.\n",
-           "Table samples (first 6): ", paste(head(original_table_ids), collapse = ", "), "\n",
-           "Metadata samples (first 6): ", paste(head(original_meta_ids), collapse = ", "), "\n\n",
-           "Solutions:\n",
-           "1. Ensure metadata has a column with matching sample IDs\n",
-           "2. Provide metadata in the same order as the table\n")
-    }
-    
-    # Apply the matching
-    spp_table <- spp_table[common_samples, , drop = FALSE]
-    metadata <- metadata[match(common_samples, original_meta_ids), , drop = FALSE]
-    rownames(metadata) <- common_samples
+
+  # env_data is matched to the samples by its row names, also by ID
+  missing_env <- setdiff(rownames(spp_table), rownames(env_data))
+  if (length(missing_env) > 0) {
+    stop("Samples missing from the row names of env_data: ",
+         paste(head(missing_env), collapse = ", "))
   }
-  
+  env_data <- env_data[rownames(spp_table), , drop = FALSE]
 
   # 4. Transform species data
   spp_hell <- vegan::decostand(spp_table, method = method)
-  # Align environmental data with species table
-  env_data <- env_data[rownames(spp_table), , drop = FALSE]
   
   # 2. Scale env data
   if (scale_env) {
@@ -139,23 +115,11 @@ cca_rda_biplot <- function(table,
   } else {
     env_scaled <- env_data[, env_vars, drop = FALSE]
   }
-  
-  
-  # Align environmental data with species table
-  if (!all(rownames(spp_table) %in% rownames(env_data))) {
-    stop("Some samples in the species table are missing in env_data")
-  }
-  
-  env_data <- env_data[rownames(spp_table), , drop = FALSE]
-  
- 
+
   # 3. Verificar correspondencia de filas
   stopifnot(identical(rownames(spp_table), rownames(env_data)))
   
   # 4. Run CCA or RDA depending on the requested analysis
-  restore_seed <- .mbm_save_seed()
-  on.exit(restore_seed(), add = TRUE)
-  set.seed(seed)
   if (toupper(analysis) == "RDA") {
     ord_result <- vegan::rda(spp_hell ~ ., data = env_scaled)
     axis_names <- c("RDA1", "RDA2")

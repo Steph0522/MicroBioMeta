@@ -1,0 +1,37 @@
+"case","median_s","min_s","n_namespaces","minus_baseline"
+"R vacio (baseline)",0,0,8,0
+"library(MicroBioMeta) [instalado]",0.78,0.77,33,0.78
+"loadNamespace('devtools')",0.52,0.52,26,0.52
+"devtools::load_all() [como la colaboradora]",8.75,8.63,198,8.75
+"todos los Imports (loadNamespace)",8.44,8.11,185,8.44
+"  import: phyloseq",10.5,7.37,75,10.5
+"library(phyloseq) [competidor]",7.48,7.15,75,7.48
+"  import: ALDEx2",5.35,5.34,50,5.35
+"  import: ANCOMBC",2.81,2.79,107,2.81
+"library(rbiom) [competidor]",2.22,2.16,77,2.22
+"  import: ggrepel",1.58,0.94,32,1.58
+"  import: ComplexHeatmap",1.54,1.54,33,1.54
+"  import: ggplot2",1.5,1.48,29,1.5
+"  import: vegan",1.47,1.3,19,1.47
+"  import: cowplot",1.19,0.96,30,1.19
+"  import: betapart",1.05,1.04,37,1.05
+"  import: ggpubr",0.98,0.97,40,0.98
+"  import: ggh4x",0.98,0.86,30,0.98
+"  import: viridis",0.93,0.86,32,0.93
+"  import: ggVennDiagram",0.89,0.89,30,0.89
+"  import: ggvenn",0.85,0.84,30,0.85
+"  import: reshape2",0.47,0.47,19,0.47
+"  import: tidyr",0.42,0.41,23,0.42
+"  import: dplyr",0.41,0.37,21,0.41
+"  import: scales",0.39,0.37,17,0.39
+"  import: stringr",0.36,0.32,16,0.36
+"  import: tibble",0.32,0.31,17,0.32
+"  import: purrr",0.2,0.2,14,0.2
+"  import: gtable",0.19,0.19,14,0.19
+"  import: tidyselect",0.17,0.17,12,0.17
+"  import: rlang",0.14,0.12,10,0.14
+"  import: geosphere",0.13,0.11,11,0.13
+"  import: circlize",0.12,0.12,13,0.12
+"  import: hillR",0.02,0,9,0.02
+"  import: randomForest",0.01,0.01,9,0.01
+"  import: RColorBrewer",0,0,9,0

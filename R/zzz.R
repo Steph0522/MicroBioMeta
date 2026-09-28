@@ -120,28 +120,55 @@ utils::globalVariables(c(
   scales::label_pvalue(accuracy = accuracy)(p)
 }
 
-# --- Local RNG state helper --------------------------------------------------
-# set.seed() run inside a function changes the *caller's* global RNG state
-# too, since R's RNG state is a single session-wide object - left as-is that
-# leaks into whatever random draws the caller makes next, e.g. after calling
-# beta_ord_plot()/beta_test_table()/cca_rda_biplot() (each uses set.seed()
-# for reproducible Monte Carlo Dirichlet sampling / ordination).
-# Usage inside a function: capture the closure, then register it with
-# on.exit() from your OWN function body (not from in here) right after
-# receiving it, so the restore actually happens in your function's frame:
-#   restore_seed <- .mbm_save_seed()
-#   on.exit(restore_seed(), add = TRUE)
-#   set.seed(seed)
-.mbm_save_seed <- function() {
-  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  old_seed <- if (had_seed) get(".Random.seed", envir = .GlobalEnv) else NULL
-  function() {
-    if (had_seed) {
-      assign(".Random.seed", old_seed, envir = .GlobalEnv)
-    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-      rm(".Random.seed", envir = .GlobalEnv)
-    }
+# --- Metadata / sample alignment ---------------------------------------------
+# Matches metadata rows to the samples of a table by ID, never by position,
+# since vegan::adonis2(), betadisper(), envfit(), ALDEx2 and randomForest all
+# pair samples with metadata rows by position and would silently give wrong
+# results on misaligned inputs.
+#   sample_ids: sample IDs in the order the table/distance holds them.
+#   metadata:   data frame whose first column holds the sample IDs.
+# Stops if metadata has duplicated IDs or shares no sample with the table.
+# Samples of the table that are not in metadata are left out, saying which
+# ones with a message (subsetting metadata is a common way to keep only some
+# groups); metadata rows for samples not in the table are dropped too. If
+# the rows had to be reordered, says so with a message.
+# Returns metadata in table order, for the samples present in both, after
+# checking the IDs are identical row by row. Callers then keep only those
+# samples of the table: table[, aligned[[1]]] (or the rows, or the dist).
+.mbm_align_metadata <- function(sample_ids, metadata) {
+  sample_ids <- trimws(as.character(sample_ids))
+  meta_ids   <- trimws(as.character(metadata[[1]]))
+
+  if (anyDuplicated(meta_ids)) {
+    stop("Duplicated sample IDs in the first column of metadata: ",
+         paste(head(unique(meta_ids[duplicated(meta_ids)])), collapse = ", "),
+         call. = FALSE)
   }
+  keep <- sample_ids[sample_ids %in% meta_ids]
+  if (length(keep) == 0) {
+    stop("None of the samples of the table are in the first column of metadata, ",
+         "which must hold the sample IDs.\n",
+         "Table samples (first 6): ", paste(head(sample_ids), collapse = ", "), "\n",
+         "Metadata IDs (first 6): ", paste(head(meta_ids), collapse = ", "),
+         call. = FALSE)
+  }
+  missing_ids <- setdiff(sample_ids, keep)
+  if (length(missing_ids) > 0) {
+    message(length(missing_ids), " sample(s) of the table are not in metadata ",
+            "and were left out: ", paste(head(missing_ids), collapse = ", "),
+            if (length(missing_ids) > 6) ", ..." else "")
+  }
+
+  if (!identical(meta_ids[meta_ids %in% keep], keep)) {
+    message("metadata rows were reordered to match the sample order of the table.")
+  }
+  aligned <- metadata[match(keep, meta_ids), , drop = FALSE]
+  aligned[[1]] <- keep
+
+  if (!identical(as.character(aligned[[1]]), keep)) {
+    stop("Internal error: metadata could not be aligned with the table.", call. = FALSE)
+  }
+  aligned
 }
 
 # --- Shared theme -----------------------------------------------------------

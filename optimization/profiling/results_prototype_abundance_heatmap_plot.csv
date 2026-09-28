@@ -1,0 +1,8 @@
+"variant","first","build_med","render_med"
+"original (paquete), pdf(NULL)",1.02,0.72,0.03
+"original (paquete), png activo",0.83,0.86,0.02
+"H1 findInterval",0.7,0.61,0.03
+"H2 H1 + taxonomia unica/top_n",0.4,0.4,0.03
+"H3 H2 + sin dibujo interno",0.48,0.38,0.03
+"H3, png activo",0.39,0.37,0.03
+"phyloseq plot_heatmap (ref.)",1.44,1.36,0.14

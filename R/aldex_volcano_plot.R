@@ -9,7 +9,9 @@
 #' @param col_sup Color for points higher than threshold. Default `'#E69F00'` (Okabe-Ito orange).
 #' @param threshold_lower Lower threshold for effect size/difference (x-axis).
 #' @param threshold_upper Upper threshold for effect size/difference (x-axis).
-#' @param cond Name of the condition that appears first in `table` (used in plot labels).
+#' @param cond Name of the reference condition for the plot labels: positive
+#'   values on the x-axis mean higher in \code{cond}. Default \code{NULL}, the
+#'   condition of the first sample in \code{table}.
 #' @param cutoff.pval p-value cutoff for significance (default = 0.05).
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
@@ -106,18 +108,25 @@ aldex_volcano_plot <- function(table,
 
   # Align samples between table and metadata (first column = sample ID,
   # regardless of its original name)
-  common_samples <- intersect(colnames(table), metadata[[1]])
-  if (length(common_samples) == 0)
-    stop("No matching samples found between 'table' and 'metadata'.")
-  table    <- table[, common_samples, drop = FALSE]
-  metadata <- metadata[match(common_samples, metadata[[1]]), , drop = FALSE]
+  metadata <- .mbm_align_metadata(colnames(table), metadata)
+  table    <- table[, metadata[[1]], drop = FALSE]
 
   conditions <- as.character(metadata[[col_cond]])
   groups <- unique(conditions)
   if (is.null(cond)) cond <- groups[1]
+  if (!cond %in% groups)
+    stop("`cond` must be one of: ", paste(groups, collapse = ", "), call. = FALSE)
   other_cond <- setdiff(groups, cond)[1]
   
   aldex_clr <- ALDEx2::aldex(table, conditions, mc.samples = 128, denom = "all")
+
+  # ALDEx2 computes diff.btw/effect as the alphabetically second group minus
+  # the first. Flip the sign when needed so that a positive value always
+  # means higher in `cond`, which is what the "Higher/Lower in" labels assume.
+  if (cond == sort(groups)[1]) {
+    aldex_clr$diff.btw <- -aldex_clr$diff.btw
+    aldex_clr$effect   <- -aldex_clr$effect
+  }
   
   
   

@@ -1,0 +1,59 @@
+Type of analysis
+ | Function
+ | Time (s)
+ | Observations
+ | Relative abundance barplots
+ | abundance_bar_plot (MicrobioMeta)
+ | 0.61
+ | Generates relative-abundance plots directly from the microbiome object. The values plotted correspond to the average of the relative abundance.
+ | plot_bar (Phyloseq)
+ | 2.67
+ | For different taxonomic levels, it is necessary to collapse taxa using tax_glom. Transformation to relative abundance, filtering of the most abundant groups, and aggregation of replicates may also require additional steps using different functions.
+ | taxa_stacked (Rbiom)
+ | 0.25
+ | Replicates remain separate; biom_relativize is required to convert abundances to relative abundance.
+ | Relative abundance heatmaps
+ | abundance_heatmap_plot (MicrobioMeta)
+ | 4.75
+ | Generates a heatmap directly from the table
+ | plot_heatmap (Phyloseq)
+ | 2.11
+ | Provides heatmap visualization; additional preprocessing may be required depending on the desired taxonomic level and abundance transformation.
+ | taxa_heatmap (Rbiom)
+ | 0.22
+ | Generates a heatmap directly from the Rbiom object.
+ | Alpha diversity
+ | alpha_diversity_plot (MicrobioMeta)
+ | 5.42
+ | All three functions generate a similar result, the main difference being related to the appearance and customization of the plot
+ | plot_richness (Phyloseq)
+ | 0.23
+ | adiv_boxplot  (Rbiom)
+ | 0.21
+ | Beta diversity (Ordination)
+ | beta_ord_plot (MicrobioMeta)
+ | 0.22
+ | Performs and visualizes CCA/RDA analysis in a single function.
+Ordination + plot_ordination (Phyloseq)
+ | 0.93
+ | Requires two functions: one to perform the ordination analysis and another to generate the plot.
+ | bdiv_ord_plot (Rbiom)
+ | 0.24
+ | It allows statistical analysis to be performed and placed on the graph. It does not allow shapes to be defined according to a second variable; the second variable can only be used for faceting.
+ | Beta diversity (Statistical comparison)
+ | beta_test_table(MicrobioMeta)
+ | 14.95
+ | Multivariate analysis
+ | bdiv_stats(Rbiom)
+ | 0.02
+ | Univariate analyses
+ | distmat_stats(Rbiom)
+ | 0.19
+ | Multivariate analysis, but additional steps are required.
+ | Environmental analysis
+ | cca_rda_biplot (MicrobioMeta)
+ | 0.5
+ | Performs and visualizes CCA/RDA analysis in a single function. Requiere una table independiente con la información Ambiental.
+ | ordinate + plot_ordination(Phyloseq)
+ | 0.27
+ | Requires two functions: one to perform the ordination analysis and another to generate the plot. It uses the information of the environmental variables contained in the metadata, therefore it does not require an additional table with this information.

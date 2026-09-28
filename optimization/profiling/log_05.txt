@@ -1,0 +1,116 @@
+R vacio (baseline)                              0.00 s  (ns=8)
+library(MicroBioMeta) [instalado]               0.78 s  (ns=33)
+loadNamespace('devtools')                       0.52 s  (ns=26)
+devtools::load_all() [como la colaboradora]     8.75 s  (ns=198)
+todos los Imports (loadNamespace)               8.44 s  (ns=185)
+  import: dplyr                                 0.41 s  (ns=21)
+  import: tidyr                                 0.42 s  (ns=23)
+  import: tibble                                0.32 s  (ns=17)
+  import: ggplot2                               1.50 s  (ns=29)
+  import: stringr                               0.36 s  (ns=16)
+  import: ggpubr                                0.98 s  (ns=40)
+  import: ggrepel                               1.58 s  (ns=32)
+  import: cowplot                               1.19 s  (ns=30)
+  import: ggh4x                                 0.98 s  (ns=30)
+  import: scales                                0.39 s  (ns=17)
+  import: RColorBrewer                          0.00 s  (ns=9)
+  import: reshape2                              0.47 s  (ns=19)
+  import: vegan                                 1.47 s  (ns=19)
+  import: hillR                                 0.02 s  (ns=9)
+  import: betapart                              1.05 s  (ns=37)
+  import: phyloseq                             10.50 s  (ns=75)
+  import: ALDEx2                                5.35 s  (ns=50)
+  import: rlang                                 0.14 s  (ns=10)
+  import: purrr                                 0.20 s  (ns=14)
+  import: tidyselect                            0.17 s  (ns=12)
+  import: randomForest                          0.01 s  (ns=9)
+  import: ggvenn                                0.85 s  (ns=30)
+  import: ggVennDiagram                         0.89 s  (ns=30)
+  import: viridis                               0.93 s  (ns=32)
+  import: ComplexHeatmap                        1.54 s  (ns=33)
+  import: ANCOMBC                               2.81 s  (ns=107)
+  import: circlize                              0.12 s  (ns=13)
+  import: geosphere                             0.13 s  (ns=11)
+  import: gtable                                0.19 s  (ns=14)
+library(phyloseq) [competidor]                  7.48 s  (ns=75)
+library(rbiom) [competidor]                     2.22 s  (ns=77)
+                                        case median_s min_s n_namespaces
+                          R vacio (baseline)     0.00  0.00            8
+           library(MicroBioMeta) [instalado]     0.78  0.77           33
+                   loadNamespace('devtools')     0.52  0.52           26
+ devtools::load_all() [como la colaboradora]     8.75  8.63          198
+           todos los Imports (loadNamespace)     8.44  8.11          185
+                            import: phyloseq    10.50  7.37           75
+              library(phyloseq) [competidor]     7.48  7.15           75
+                              import: ALDEx2     5.35  5.34           50
+                             import: ANCOMBC     2.81  2.79          107
+                 library(rbiom) [competidor]     2.22  2.16           77
+                             import: ggrepel     1.58  0.94           32
+                      import: ComplexHeatmap     1.54  1.54           33
+                             import: ggplot2     1.50  1.48           29
+                               import: vegan     1.47  1.30           19
+                             import: cowplot     1.19  0.96           30
+                            import: betapart     1.05  1.04           37
+                              import: ggpubr     0.98  0.97           40
+                               import: ggh4x     0.98  0.86           30
+                             import: viridis     0.93  0.86           32
+                       import: ggVennDiagram     0.89  0.89           30
+                              import: ggvenn     0.85  0.84           30
+                            import: reshape2     0.47  0.47           19
+                               import: tidyr     0.42  0.41           23
+                               import: dplyr     0.41  0.37           21
+                              import: scales     0.39  0.37           17
+                             import: stringr     0.36  0.32           16
+                              import: tibble     0.32  0.31           17
+                               import: purrr     0.20  0.20           14
+                              import: gtable     0.19  0.19           14
+                          import: tidyselect     0.17  0.17           12
+                               import: rlang     0.14  0.12           10
+                           import: geosphere     0.13  0.11           11
+                            import: circlize     0.12  0.12           13
+                               import: hillR     0.02  0.00            9
+                        import: randomForest     0.01  0.01            9
+                        import: RColorBrewer     0.00  0.00            9
+ minus_baseline
+           0.00
+           0.78
+           0.52
+           8.75
+           8.44
+          10.50
+           7.48
+           5.35
+           2.81
+           2.22
+           1.58
+           1.54
+           1.50
+           1.47
+           1.19
+           1.05
+           0.98
+           0.98
+           0.93
+           0.89
+           0.85
+           0.47
+           0.42
+           0.41
+           0.39
+           0.36
+           0.32
+           0.20
+           0.19
+           0.17
+           0.14
+           0.13
+           0.12
+           0.02
+           0.01
+           0.00
+
+Version instalada: 0.99.0  | DESCRIPTION fuente: 0.99.0 
+
+abundance_heatmap_plot llamadas 1,2,3 en sesion nueva:
+  con library(MicroBioMeta) (byte-compilado): HM=2.98,2.78,0.73 
+  con devtools::load_all() (sin byte-compilar): HM=1.39,2.94,0.69 

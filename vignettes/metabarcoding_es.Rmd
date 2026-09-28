@@ -448,7 +448,10 @@ El parámetro `group_col` especifica la columna de metadatos usada para colorear
 
 El argumento `distance` define la métrica de disimilitud usada para calcular la diversidad beta (por ejemplo, **bray, jaccard, aitchsion**, etc.), y `ordination` (opciones: **PCA, PCoA** o **NMDS**) especifica el método de ordenación aplicado para visualizar las distancias entre muestras.
 
+⚠️ **NOTA: `distance = "compositional"` usa una de las instancias Monte Carlo que `ALDEx2` genera al azar, así que el resultado cambia un poco en cada corrida. Si quieres obtener siempre el mismo resultado, se sugiere correr `set.seed()` antes de la función**, como en los ejemplos de abajo. Lo mismo aplica a `beta_test_table(method = "compositional")`, a las funciones de ALDEx2 y a los p-valores de `cca_rda_biplot()`.
+
 ```{r ordenaci-n-de-la-composici-n-de-la-comunidad-28, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+set.seed(123)
 beta_ord_plot(table = table_bac,
               metadata = metadata_bacteria,
                distance = "compositional",
@@ -458,6 +461,7 @@ beta_ord_plot(table = table_bac,
 ```
 
 ```{r ordenaci-n-de-la-composici-n-de-la-comunidad-29, fig.width=8, fig.height=6}
+set.seed(123)
 beta_ord_plot(table = table_fung,
               metadata = metadata_fungi,
               group_col = "Type_of_soil",
@@ -472,13 +476,14 @@ La función `beta_test_table()` realiza pruebas estadísticas para evaluar si la
 
 El argumento `formula_str` especifica el diseño experimental usando una sintaxis de fórmula similar a la de los modelos lineales en R, o como se usa en el paquete `vegan` [@oksanen2024vegan]. El parámetro `method` define la métrica de distancia usada para calcular las disimilitudes, y el argumento `test` especifica la prueba estadística (opciones: **PERMANOVA** [@anderson2001permanova] o **BETADISPER**).
 
-El parámetro `permutations` determina el número de permutaciones usadas para estimar la significancia estadística. `strata_var` se usa, como en el paquete `vegan`, para bloquear un parámetro.
+El parámetro `permutations` determina el número de permutaciones usadas para estimar la significancia estadística. `strata_var` se usa, como en el paquete `vegan`, para bloquear un parámetro. La primera columna de `metadata` debe tener los IDs de las muestras: se emparejan por ID, así que el orden de las filas de la metadata no importa. `table` también puede ser una distancia ya calculada (por ejemplo, de `vegan::vegdist()`), que se usa tal cual.
 
 ⚠️ **NOTA: Cada función tiene la opción save_* que exporta una tabla o un elemento obtenido en cada función**.
 
 `method` se establece en `compositional` para ambos conjuntos de datos, coincidiendo con el PCA de cada uno arriba, de modo que la prueba de significancia evalúa la misma noción de disimilitud que se muestra en el gráfico.
 
 ```{r pruebas-estad-sticas-para-diversidad-beta-30, fig.width=8, fig.height=4}
+set.seed(123)
 beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
@@ -488,6 +493,7 @@ beta_test_table(table = table_bac,
 ```
 
 ```{r pruebas-estad-sticas-para-diversidad-beta-31, fig.width=8, fig.height=4}
+set.seed(123)
 beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
@@ -582,7 +588,7 @@ Así que el gráfico de abajo tiene una franja morada arriba (este color se pued
 
 `comparison_condition1` selecciona qué combinaciones `"valor1_vs_valor2"` conservar, siempre con el grupo de referencia (`Rhizosphere`) primero. `comparison_condition2` conserva solo los pares del mismo tratamiento, para que el recambio no se confunda al comparar muestras de tratamientos distintos.
 
-`color_facets_x` colorea la franja de faceta superior (`condition1.x`) y `color_axis_x` colorea las dos cajas (`condition1.y`). Las etiquetas del eje están ocultas por defecto ya que los grupos ya están identificados en la leyenda. Establece `show_x_labels = TRUE` para mostrarlas de nuevo. `stat` agrega una comparación estadística entre las dos cajas.
+`color_facets_x` colorea las franjas de faceta superiores (una por par de `comparison_condition2`) y `color_axis_x` colorea las cajas (una por par de `comparison_condition1`). Las etiquetas del eje están ocultas por defecto ya que los grupos ya están identificados en la leyenda. Establece `show_x_labels = TRUE` para mostrarlas de nuevo. `stat` agrega una comparación estadística entre las dos cajas.
 
 ```{r recambio-pareado-turnover-entre-grupos-vs-dentro-del-grupo-38, warning=FALSE, fig.width=3.5, fig.height=4.5, out.width="60%"}
 beta_turnover_plot(
@@ -590,10 +596,8 @@ beta_turnover_plot(
   metadata              = metadata_fungi,
   comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
   comparison_condition2 = c("TC_vs_TC", "TD_vs_TD", "TED_vs_TED"),
-  condition1.x          = "Type_of_soil.x",
-  condition1.y          = "Type_of_soil.y",
-  condition2.x          = "Treatment.x",
-  condition2.y          = "Treatment.y",
+  condition1_col        = "Type_of_soil",
+  condition2_col        = "Treatment",
   color_facets_x        = "#5D478B",
   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00"),
   stat                  = "wilcox.test"

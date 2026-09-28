@@ -1,0 +1,79 @@
+Avisos:
+1: In merge_feature_taxonomy(table = table_bacteria, taxonomy = taxonomy_bacteria) :
+  83 taxonomy IDs are not present in the table and will be excluded from the result.
+2: ℹ Ignoring taxonomy for 2400 OTUs not currently in biom object:
+  "f73f1e72cb227429158dea0257514d8c", "8372cccf035addf04760a48b3e858a93",
+  "cd836bc75e3b0d4abdea21bb4096802e", "ad2badfd28b25eb70d3cda15078fd828",
+  "466b0f79c5a8eac247a68ebcbbe0cd2f", "5e8701b151604b81b4ec1f0a73709643",
+  "950ff9ceb264498fb928e46ae28cc6df", "10d1fab6231d16bab3ad2a20042cf141",
+  "ef2a7f99b70476e00a48c74e70cb745b", "3b97ce5ee833d13ccb636816293169f7",
+  "7155cd9f5e94d88965474933726f5ad4", "00e59c93f76026e033c50eeef7f99068",
+  "ef6420e1875db89d24a4f09f18a5c9e9", "c5da3b3e6be51936a8b0c6a72a37ee55",
+  "808f4338889a3207df86ea1e644c28c6", "8e0ce76aba391108d479b6438fc3105a",
+  "d084f5c5367f9692a47de1c828f85dbb", "17ac42f2fbea215666fae3542b1599c4", …,
+  "a284ed81146f8f73b4c34b8f974760ff", and "5f1a166e761abac52e03b045204021f3". 
+
+== Verificacion P1 (exacto) ==
+identical(dist): TRUE | max|diff| dist: 0 
+identical(tabla adonis2): TRUE 
+all.equal(tabla adonis2): TRUE 
+                       original.R2 original.F original.Pr(>F)      P1.R2
+Treatment               0.02423108  0.9705365           0.793 0.02423108
+Type_of_soil            0.06507457  1.7376377           0.001 0.06507457
+Treatment:Type_of_soil  0.07431049  0.9921288           0.616 0.07431049
+Residual                0.83638386         NA              NA 0.83638386
+Total                   1.00000000         NA              NA 1.00000000
+                            P1.F P1.Pr(>F)
+Treatment              0.9705365     0.793
+Type_of_soil           1.7376377     0.001
+Treatment:Type_of_soil 0.9921288     0.616
+Residual                      NA        NA
+Total                         NA        NA
+
+== P2 (1 instancia MC; NO identico, solo comparacion) ==
+                       original.R2 original.F original.Pr(>F)      P2.R2
+Treatment               0.02423108  0.9705365           0.793 0.02418887
+Type_of_soil            0.06507457  1.7376377           0.001 0.06678708
+Treatment:Type_of_soil  0.07431049  0.9921288           0.616 0.07549950
+Residual                0.83638386         NA              NA 0.83352455
+Total                   1.00000000         NA              NA 1.00000000
+                            P2.F P2.Pr(>F)
+Treatment              0.9721694     0.775
+Type_of_soil           1.7894831     0.001
+Treatment:Type_of_soil 1.0114612     0.297
+Residual                      NA        NA
+Total                         NA        NA
+cor(dist original, dist P2): 0.7829528 
+
+== P4 (CLR esperada, determinista) vs media de 128 instancias MC ==
+cor(dist P4, dist media-128MC): 0.9999221 | cor(dist P4, dist 1a-instancia original): 0.8758327 
+                       media128.R2 media128.F media128.Pr(>F)      P4.R2
+Treatment               0.02087992  0.9478397           0.531 0.02070350
+Type_of_soil            0.17200906  5.2055435           0.001 0.17626400
+Treatment:Type_of_soil  0.06914089  1.0462121           0.298 0.06898127
+Residual                0.73797013         NA              NA 0.73405122
+Total                   1.00000000         NA              NA 1.00000000
+                            P4.F P4.Pr(>F)
+Treatment              0.9448488     0.535
+Type_of_soil           5.3627902     0.001
+Treatment:Type_of_soil 1.0493694     0.297
+Residual                      NA        NA
+Total                         NA        NA
+
+== Sensibilidad a la semilla de la implementacion actual (1 instancia de 128) ==
+     seed     R2_int p_Treat p_Soil p_int
+[1,]    1 0.07428688   0.542  0.001 0.567
+[2,]    2 0.07524414   0.468  0.001 0.293
+[3,]    3 0.07403019   0.496  0.001 0.618
+[4,]  123 0.07431049   0.793  0.001 0.616
+[5,] 2024 0.07426578   0.465  0.001 0.558
+                                       first median
+beta_test_table() publica (original)   12.72  12.32
+nucleo original (aldex.clr 128 MC)     11.75  11.72
+P1 exacto (misma RNG, solo 1a CLR)      6.32   6.32
+P2 1 instancia MC (no identico)         0.52   0.50
+P3 = P1 + adonis2(parallel = 4)         7.61   8.35
+P4 CLR esperada digamma (determinista)  0.47   0.46
+solo aldex.clr 128 MC                  11.07  11.02
+solo rgamma(l*128) por muestra          6.05   5.82
+solo adonis2 ~T*S 999 by=terms          0.33   0.34

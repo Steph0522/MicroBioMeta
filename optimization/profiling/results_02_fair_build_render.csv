@@ -1,0 +1,15 @@
+"call","build_first","render_first","build_med","render_med","total_med"
+"bar | MicroBioMeta abundance_bar_plot",0.22,0.43,0.22,0.3,0.52
+"bar | phyloseq plot_bar (+prep)",2.93,0.26,1.54,0.25,1.78
+"bar | rbiom taxa_stacked",1.38,0.32,1.21,0.33,1.54
+"heatmap | MicroBioMeta abundance_heatmap_plot (dibuja DENTRO)",1.18,0.03,0.7,0.03,0.73
+"heatmap | phyloseq plot_heatmap (+prune/glom)",1.28,0.14,1.23,0.14,1.37
+"heatmap | rbiom taxa_heatmap",1.25,0.31,1.22,0.29,1.52
+"alpha | MicroBioMeta alpha_diversity_plot",2.97,0.34,2.92,0.36,3.28
+"alpha | phyloseq plot_richness",0.19,0.55,0.19,0.45,0.64
+"alpha | rbiom adiv_boxplot",0.92,0.8,0.87,0.81,1.67
+"ord | MicroBioMeta beta_ord_plot",0.21,0.18,0.18,0.17,0.36
+"ord | phyloseq ordinate+plot_ordination (sin print)",0.44,0.17,0.44,0.18,0.62
+"ord | rbiom bdiv_ord_plot (adonis2 999)",1.31,0.45,1.3,0.25,1.55
+"cca | MicroBioMeta cca_rda_biplot",0.34,0.19,0.43,0.2,0.63
+"cca | phyloseq ordinate CCA + plot",0.22,0.17,0.19,0.16,0.35

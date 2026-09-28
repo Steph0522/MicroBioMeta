@@ -27,9 +27,13 @@
 #'   Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.
-#' @param seed Numeric. Random seed used for \code{method = "compositional"}'s
-#'   Monte Carlo Dirichlet sampling (via \code{ALDEx2::aldex.clr()}), so
-#'   results are reproducible by default. Default \code{123}.
+#'
+#' @details The first column of \code{metadata} must hold the sample IDs;
+#'   metadata rows are matched to the samples by ID, so their order doesn't
+#'   matter. A precomputed distance is used as-is (\code{method} is ignored).
+#'   \code{method = "compositional"} draws a random Monte Carlo instance
+#'   from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the
+#'   function to make the result reproducible.
 #'
 #' @return A table with the results of R-squared, F and p value
 #' @export
@@ -83,19 +87,28 @@ beta_test_table <- function(table,
                             strata_var = NULL,
                             decimales = 3,
                             save_table = FALSE,
-                            table_filename = "beta_test_results.txt",
-                            seed = 123) {
+                            table_filename = "beta_test_results.txt") {
 
   # Accept `test` and `method` case-insensitively (distance names are matched
   # case-sensitively by vegan::vegdist, so normalising here avoids a cryptic
   # "invalid distance method" error from e.g. method = "Bray").
   test   <- match.arg(tolower(test), c("permanova", "betadisper"))
   method <- tolower(method)
+  # A precomputed distance (a dist object, or a square symmetric matrix with
+  # a zero diagonal) is used as-is: no distance is computed and `method` is
+  # ignored, instead of running vegdist() on the distances themselves.
+  is_square_dist <- is.matrix(table) && nrow(table) == ncol(table) &&
+    isSymmetric(unname(table)) && all(diag(table) == 0)
+  precomputed <- inherits(table, "dist") || is_square_dist
   raw_input <- is.data.frame(table)
 
-  # --- Aceptar tambien data.frame o un objeto dist (p.ej. de vegan::vegdist) como matriz ---
-  if (inherits(table, "dist")) {
-    table <- as.matrix(table)
+  if (precomputed) {
+    if (method == "compositional") {
+      stop("method = 'compositional' requires a raw abundance table ",
+           "(data frame with a taxonomy column), not a precomputed distance matrix.")
+    }
+    dist_matrix <- stats::as.dist(table)
+    sample_ids  <- labels(dist_matrix)
   } else if (is.data.frame(table)) {
     # Si la ultima columna parece taxonomia, eliminarla
     tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
@@ -111,14 +124,35 @@ beta_test_table <- function(table,
   } else if (!is.matrix(table)) {
     stop("'table' must be a matrix, dataframe, or dist object")
   }
-  
+
   # --- Detectar orientacion ---
-  if (ncol(table) == nrow(metadata)) {
-    table <- t(table)
-  } else if (nrow(table) != nrow(metadata)) {
-    stop("Dimensons of table and metadata don't match.")
+  # Samples go in rows: transpose when the sample IDs are the column names.
+  meta_ids <- trimws(as.character(metadata[[1]]))
+  if (!precomputed) {
+    n_cols_in_meta <- sum(colnames(table) %in% meta_ids)
+    n_rows_in_meta <- sum(rownames(table) %in% meta_ids)
+    if (n_cols_in_meta == 0 && n_rows_in_meta == 0) {
+      stop("None of the sample names in table are in the first column of metadata.")
+    }
+    if (n_cols_in_meta >= n_rows_in_meta) table <- t(table)
+    sample_ids <- rownames(table)
   }
-  
+
+  # --- Alinear metadata con las muestras (por ID, nunca por posicion) ---
+  if (is.null(sample_ids)) {
+    stop("table has no sample names; they are needed to match it with ",
+         "the sample IDs in the first column of metadata.")
+  }
+  metadata <- .mbm_align_metadata(sample_ids, metadata)
+  keep <- metadata[[1]]
+  if (precomputed) {
+    if (length(keep) < length(sample_ids)) {
+      dist_matrix <- stats::as.dist(as.matrix(dist_matrix)[keep, keep])
+    }
+  } else {
+    table <- table[keep, , drop = FALSE]
+  }
+
   # --- Verificaciones ---
   if (test == "permanova") {
     vars <- all.vars(as.formula(paste("~", formula_str)))
@@ -137,14 +171,13 @@ beta_test_table <- function(table,
   }
   
   # --- Distancia (mismo criterio que beta_div_plot) ---
-  if (method == "compositional") {
+  if (precomputed) {
+    # dist_matrix already set above
+  } else if (method == "compositional") {
     if (!raw_input) {
       stop("method = 'compositional' requires a raw abundance table ",
            "(data frame with a taxonomy column), not a precomputed distance matrix.")
     }
-    restore_seed <- .mbm_save_seed()
-    on.exit(restore_seed(), add = TRUE)
-    set.seed(seed)
     aldex_obj   <- ALDEx2::aldex.clr(t(table), mc.samples = 128,
                                      denom = "all", verbose = FALSE, useMC = FALSE)
     clr_samples <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))

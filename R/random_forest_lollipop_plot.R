@@ -59,12 +59,9 @@ random_forest_lollipop_plot <- function(table,
     table_numeric <- data.frame(t(table_numeric), check.names = FALSE)
   }
   
-  # Find common samples between table and metadata
-  common_samples <- intersect(rownames(table_numeric), metadata[[1]])
-  
-  # Filter both datasets to include only common samples
-  otu_filtered <- table_numeric[common_samples, , drop = FALSE]
-  metadata_filtered <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
+  # Match metadata rows to the table's samples by ID (checked row by row)
+  metadata_filtered <- .mbm_align_metadata(rownames(table_numeric), metadata)
+  otu_filtered <- table_numeric[metadata_filtered[[1]], , drop = FALSE]
   
   # Convert response variable to factor
   response <- as.factor(metadata_filtered[[variable_to_predict]])

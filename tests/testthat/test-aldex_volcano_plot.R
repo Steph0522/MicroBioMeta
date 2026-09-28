@@ -65,3 +65,22 @@ test_that("aldex_volcano_plot rejects an invalid type", {
     "`type` must be either"
   )
 })
+
+test_that("aldex_volcano_plot: positive effect means higher in cond", {
+  toy <- make_toy_community()
+
+  # OTU1-OTU4 are enriched in group A (see helper-toy_community.R)
+  effect_otu1 <- function(cond) {
+    tmp <- tempfile(fileext = ".txt")
+    on.exit(unlink(tmp))
+    set.seed(1)
+    aldex_volcano_plot(toy$table, toy$metadata, col_cond = "Group",
+                       type = "effect", cond = cond,
+                       save_table = TRUE, table_filename = tmp)
+    saved <- utils::read.delim(tmp, check.names = FALSE)
+    saved$effect[saved$Feature.ID == "OTU1"]
+  }
+
+  expect_gt(effect_otu1("A"), 0)
+  expect_lt(effect_otu1("B"), 0)
+})

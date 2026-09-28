@@ -447,7 +447,10 @@ The `group_col` parameter specifies the metadata column used to color the sample
 
 The `distance` argument defines the dissimilarity metric used to calculate beta diversity (e.g, **bray, jaccard, aitchsion**, etc), and `ordination` (options: **PCA, PCoA** or **NMDS**) specifies the ordination method applied to visualize the distances among samples.
 
+⚠️ **NOTE: `distance = "compositional"` uses one of the Monte Carlo instances that `ALDEx2` draws at random, so the result changes slightly from run to run. If you want to get the same result every time, we suggest running `set.seed()` before the function**, as in the examples below. The same applies to `beta_test_table(method = "compositional")`, to the ALDEx2 functions and to the p-values of `cca_rda_biplot()`.
+
 ```{r ordination-of-community-composition-28, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+set.seed(123)
 beta_ord_plot(table = table_bac,
               metadata = metadata_bacteria,
                distance = "compositional",
@@ -457,6 +460,7 @@ beta_ord_plot(table = table_bac,
 ```
 
 ```{r ordination-of-community-composition-29, fig.width=8, fig.height=6}
+set.seed(123)
 beta_ord_plot(table = table_fung,
               metadata = metadata_fungi,
               group_col = "Type_of_soil",
@@ -471,13 +475,14 @@ The `beta_test_table()` function performs statistical tests to evaluate whether 
 
 The `formula_str` argument specifies the experimental design using a formula syntax similar to linear models in R or as it is used for the `vegan` package [@oksanen2024vegan]. The `method` parameter defines the distance metric used to calculate dissimilarities, and the `test` argument specifies the statistical test (options: **PERMANOVA** [@anderson2001permanova] or **BETADISPER**).
 
-The `permutations` parameter determines the number of permutations used to estimate statistical significance. The `strata_var` is used as in `vegan` package to block for a parameter. 
+The `permutations` parameter determines the number of permutations used to estimate statistical significance. The `strata_var` is used as in `vegan` package to block for a parameter. The first column of `metadata` must hold the sample IDs: samples are matched by ID, so the order of the metadata rows doesn't matter. `table` can also be a precomputed distance (e.g. from `vegan::vegdist()`), which is used as-is.
 
 ⚠️ **NOTE: Each function has the option save_* that export a table or an element obtain in each function**. 
 
 `method` is set to `compositional` for both datasets, matching each one's PCA above, so the significance test evaluates the same notion of dissimilarity shown in the plot.
 
 ```{r statistical-tests-for-beta-diversity-30, fig.width=8, fig.height=4}
+set.seed(123)
 beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
@@ -487,6 +492,7 @@ beta_test_table(table = table_bac,
 ```
 
 ```{r statistical-tests-for-beta-diversity-31, fig.width=8, fig.height=4}
+set.seed(123)
 beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
@@ -581,7 +587,7 @@ So the plot below has one purple (this color can be set) strip on top labeled **
 
 `comparison_condition1` selects which `"value1_vs_value2"` combinations to keep always with the reference group (`Rhizosphere`) first. `comparison_condition2` keeps only the same treatment pairs, so turnover isn't confounded by comparing samples from different treatments.
 
-`color_facets_x` colors the top facet strip (`condition1.x`) and `color_axis_x` colors the two boxes (`condition1.y`). Tick labels are hidden by default since the groups are already identified in the legend. Set `show_x_labels = TRUE` to bring them back. `stat` adds a statistical comparison between the two boxes.
+`color_facets_x` colors the top facet strips (one per `comparison_condition2` pair) and `color_axis_x` colors the boxes (one per `comparison_condition1` pair). Tick labels are hidden by default since the groups are already identified in the legend. Set `show_x_labels = TRUE` to bring them back. `stat` adds a statistical comparison between the two boxes.
 
 ```{r pairwise-turnover-between-group-vs-within-group-38, warning=FALSE, fig.width=3.5, fig.height=4.5, out.width="60%"}
 beta_turnover_plot(
@@ -589,10 +595,8 @@ beta_turnover_plot(
   metadata              = metadata_fungi,
   comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
   comparison_condition2 = c("TC_vs_TC", "TD_vs_TD", "TED_vs_TED"),
-  condition1.x          = "Type_of_soil.x",
-  condition1.y          = "Type_of_soil.y",
-  condition2.x          = "Treatment.x",
-  condition2.y          = "Treatment.y",
+  condition1_col        = "Type_of_soil",
+  condition2_col        = "Treatment",
   color_facets_x        = "#5D478B",
   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00"),
   stat                  = "wilcox.test"
