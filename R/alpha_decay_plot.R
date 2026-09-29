@@ -190,10 +190,10 @@ alpha_decay_plot <- function(
     slope <- if (is.null(m))  NA_real_ else unname(stats::coef(m)[2])
 
     label <- if (show_lm_stats) {
-      sprintf("%s = %.3f\np = %s\nR\u00b2 = %.3f\nslope = %.3f",
-              rho_sym, rho, .mbm_format_pval(pval), r2, slope)
+      sprintf("%s = %.3f\n%s\nR\u00b2 = %.3f\nslope = %.3f",
+              rho_sym, rho, .mbm_p_label(pval), r2, slope)
     } else {
-      sprintf("%s = %.3f\np = %s", rho_sym, rho, .mbm_format_pval(pval))
+      sprintf("%s = %.3f\n%s", rho_sym, rho, .mbm_p_label(pval))
     }
 
     data.frame(rho = rho, pval = pval, r2 = r2, slope = slope,

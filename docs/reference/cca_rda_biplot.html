@@ -99,15 +99,15 @@ sample scores and environmental vectors.</p>
 <span>  <span class="va">env_data</span>,</span>
 <span>  <span class="va">env_vars</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"hell"</span>,</span>
-<span>  metadata <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">metadata</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  scale_env <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  pval_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  show_all_env_vectors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  analysis <span class="op">=</span> <span class="st">"CCA"</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">123</span>,</span>
 <span>  scale_arrows <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -140,7 +140,7 @@ matching the sample names in <code>table</code>.</p></dd>
 
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
-<dd><p>Optional data frame with sample metadata for grouping in the plot.</p></dd>
+<dd><p>Data frame with sample metadata; its first column must hold the sample IDs.</p></dd>
 
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
@@ -163,6 +163,13 @@ matching the sample names in <code>table</code>.</p></dd>
 <dd><p>P-value threshold for selecting significant environmental variables (default is <code>0.05</code>).</p></dd>
 
 
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p>Multiple-comparison correction applied to the
+<code><a href="https://vegandevs.github.io/vegan/reference/envfit.html" class="external-link">vegan::envfit()</a></code> p-values of the environmental variables before
+<code>pval_threshold</code>; any method of <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default
+<code>"none"</code> (raw p-values, the usual choice with few variables).</p></dd>
+
+
 <dt id="arg-show-all-env-vectors">show_all_env_vectors<a class="anchor" aria-label="anchor" href="#arg-show-all-env-vectors"></a></dt>
 <dd><p>Logical; if TRUE, plot all environmental vectors regardless of significance.</p></dd>
 
@@ -170,10 +177,6 @@ matching the sample names in <code>table</code>.</p></dd>
 <dt id="arg-analysis">analysis<a class="anchor" aria-label="anchor" href="#arg-analysis"></a></dt>
 <dd><p>Constrained ordination method: <code>"CCA"</code> (default, Canonical
 Correspondence Analysis) or <code>"RDA"</code> (Redundancy Analysis). Case-insensitive.</p></dd>
-
-
-<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Random seed for reproducibility (default is <code>123</code>).</p></dd>
 
 
 <dt id="arg-scale-arrows">scale_arrows<a class="anchor" aria-label="anchor" href="#arg-scale-arrows"></a></dt>
@@ -199,6 +202,12 @@ when <code>save_table = TRUE</code>). Default <code>"cca_rda_scores.txt"</code>.
     <div id="value">
     <h2>Value</h2>
     <p>A <code>ggplot</code> object displaying the biplot with sample scores and environmental vectors.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>The p-values of the environmental vectors come from
+<code><a href="https://vegandevs.github.io/vegan/reference/envfit.html" class="external-link">vegan::envfit()</a></code> permutations; call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before the
+function to make them reproducible.</p>
     </div>
 
     <div id="ref-examples">

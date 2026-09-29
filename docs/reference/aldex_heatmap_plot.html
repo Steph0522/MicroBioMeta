@@ -97,9 +97,10 @@ difference between groups.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aldex_heatmap_plot</span><span class="op">(</span></span>
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
-<span>  <span class="va">col_cond</span>,</span>
+<span>  <span class="va">group_col</span>,</span>
 <span>  effect_threshold <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  pvalue_BH <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pval_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
 <span>  cluster_rows <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cluster_columns <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heatmap_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -108,7 +109,8 @@ difference between groups.</p>
 <span>    <span class="st">"#F0E442"</span>, `&gt;0.05` <span class="op">=</span> <span class="st">"grey85"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  group_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"aldex_pval_effect.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"aldex_pval_effect.txt"</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -124,10 +126,10 @@ contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
 <dd><p>Data frame with one row per sample. Must contain the column
-specified in <code>col_cond</code>.</p></dd>
+specified in <code>group_col</code>.</p></dd>
 
 
-<dt id="arg-col-cond">col_cond<a class="anchor" aria-label="anchor" href="#arg-col-cond"></a></dt>
+<dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
 <dd><p>Character. Name of the column in <code>metadata</code> that
 defines the two groups to compare. Exactly two unique values are required.</p></dd>
 
@@ -137,9 +139,17 @@ defines the two groups to compare. Exactly two unique values are required.</p></
 (default <code>0.8</code>).</p></dd>
 
 
-<dt id="arg-pvalue-bh">pvalue_BH<a class="anchor" aria-label="anchor" href="#arg-pvalue-bh"></a></dt>
-<dd><p>Numeric or NULL. Maximum BH-adjusted p-value to retain.
-If NULL (default) only <code>effect_threshold</code> is applied.</p></dd>
+<dt id="arg-pval-threshold">pval_threshold<a class="anchor" aria-label="anchor" href="#arg-pval-threshold"></a></dt>
+<dd><p>Numeric or NULL. Maximum p-value to retain (adjusted
+or not, depending on <code>p_adjust_method</code>). If NULL (default) only
+<code>effect_threshold</code> is applied.</p></dd>
+
+
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p><code>"BH"</code> (default) or <code>"none"</code>: whether
+<code>pval_threshold</code> and the p-value annotation use ALDEx2's
+Benjamini-Hochberg adjusted p-values (<code>wi.eBH</code>) or the raw ones
+(<code>wi.ep</code>). ALDEx2 only computes the BH correction.</p></dd>
 
 
 <dt id="arg-cluster-rows">cluster_rows<a class="anchor" aria-label="anchor" href="#arg-cluster-rows"></a></dt>
@@ -176,7 +186,7 @@ the heatmap body and effect size defaults).</p></dd>
 <dt id="arg-group-colors">group_colors<a class="anchor" aria-label="anchor" href="#arg-group-colors"></a></dt>
 <dd><p>Optional character vector of colors for the difference
 barplot annotation, one color per condition in the order they appear in
-<code>metadata[[col_cond]]</code>. If <code>NULL</code> (default) an orange/blue
+<code>metadata[[group_col]]</code>. If <code>NULL</code> (default) an orange/blue
 colorblind-friendly palette is used (matching the col_sup/col_inf
 convention used elsewhere, e.g. <code>aldex_volcano_plot</code>), cycling
 through the rest of the Okabe-Ito palette as needed
@@ -186,12 +196,19 @@ for more than two groups.</p></dd>
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, saves the underlying ALDEx2
 results table (filtered taxa, effect size, diff.btw, p-value category)
-to disk. Default <code>FALSE</code>.</p></dd>
+to disk. Default <code>FALSE</code>. <code>effect</code> and <code>diff.btw</code> are
+saved as ALDEx2 returns them (alphabetically second group minus the
+first); the <code>seccion</code> column says in which group each taxon is higher.</p></dd>
 
 
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. File path/name for the saved table (used
 when <code>save_table = TRUE</code>). Default <code>"aldex_pval_effect.txt"</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Old names of renamed arguments (<code>col_cond</code>, <code>pvalue_BH</code>), still accepted
+with a warning. Any other extra argument is an error.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -209,15 +226,15 @@ side effect).</p>
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># col_cond must have exactly two groups; Location has two</span></span></span>
+<span class="r-in"><span><span class="co"># group_col must have exactly two groups; Location has two</span></span></span>
 <span class="r-in"><span><span class="co"># (Rhizosphere and Roots) in the bundled example data. effect_threshold</span></span></span>
-<span class="r-in"><span><span class="co"># alone (no pvalue_BH) is used here since this small (46-sample) dataset</span></span></span>
+<span class="r-in"><span><span class="co"># alone (no pval_threshold) is used here since this small (46-sample) dataset</span></span></span>
 <span class="r-in"><span><span class="co"># rarely has taxa that pass both an effect-size and a significance</span></span></span>
 <span class="r-in"><span><span class="co"># threshold at once - combine both for a stricter, real analysis.</span></span></span>
 <span class="r-in"><span><span class="fu">aldex_heatmap_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table            <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata         <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  col_cond         <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  group_col         <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
 <span class="r-in"><span>  effect_threshold <span class="op">=</span> <span class="fl">0.5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> aldex.clr: generating Monte-Carlo instances and clr values</span>

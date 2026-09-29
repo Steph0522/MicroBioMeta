@@ -11,8 +11,8 @@ beta_turnover_plot(
   comparison_condition2 = NULL,
   condition1_col,
   condition2_col = NULL,
-  color_facets_x = NULL,
-  color_axis_x = NULL,
+  facet_colors = NULL,
+  group_colors = NULL,
   x_axis_title = "Section",
   show_x_labels = FALSE,
   x_label_angle = 0,
@@ -20,8 +20,10 @@ beta_turnover_plot(
   strip_text_color = "white",
   aspect_ratio = NULL,
   stat = NULL,
+  p_adjust_method = "holm",
   save_table = FALSE,
-  table_filename = "betadiv_turnover.txt"
+  table_filename = "betadiv_turnover.txt",
+  ...
 )
 }
 \arguments{
@@ -52,14 +54,17 @@ build \code{comparison_condition1}'s group pairs, same as
 \code{condition1_col} in \code{beta_dissimilarity_plot()}.}
 
 \item{condition2_col}{Optional. Metadata column used to build
-\code{comparison_condition2}'s group pairs. Required when
-\code{comparison_condition2} is set.}
+\code{comparison_condition2}'s group pairs, and to facet the plot.
+Required when \code{comparison_condition2} is set. If given without
+\code{comparison_condition2}, the plot is faceted by it keeping only
+pairs of samples with the same value (e.g. \code{"TC_vs_TC"},
+\code{"TD_vs_TD"}).}
 
-\item{color_facets_x}{Optional color vector for facet strips. Defaults to
+\item{facet_colors}{Optional color vector for facet strips. Defaults to
 a neutral \code{"grey85"} background for each facet, like
 \code{beta_dissimilarity_plot()}'s \code{facet_colors}.}
 
-\item{color_axis_x}{Optional named color vector for x-axis groups.
+\item{group_colors}{Optional named color vector for x-axis groups.
 Defaults to the package's colorblind-friendly Okabe-Ito palette
 (\code{.mbm_colors}, orange/blue first), like
 \code{beta_dissimilarity_plot()}'s \code{group_colors}.}
@@ -76,23 +81,33 @@ when \code{show_x_labels = TRUE}. Default \code{0} (horizontal).}
 Default \code{FALSE} (plain).}
 
 \item{strip_text_color}{Color of the top (x) facet strip labels, which sit on
-the \code{color_facets_x} backgrounds. Default \code{"white"}, unless
-\code{color_facets_x} is left at its own light \code{"grey85"} default,
+the \code{facet_colors} backgrounds. Default \code{"white"}, unless
+\code{facet_colors} is left at its own light \code{"grey85"} default,
 in which case this defaults to \code{"black"} instead so it stays legible.}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}
 
-\item{stat}{Character or \code{NULL}. Statistical test to compare groups
-within each panel, passed to \code{ggpubr::stat_compare_means()} (e.g.
-\code{"wilcox.test"}, \code{"kruskal.test"}, \code{"anova"}). Default
-\code{NULL} (no test shown).}
+\item{stat}{Character or \code{NULL}. Statistical test to compare the
+boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
+compare every pair of boxes, each with its own bracket and p-value
+(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
+give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
+Default \code{NULL} (no test shown).}
+
+\item{p_adjust_method}{Multiple-comparison correction for the pairwise
+tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
+each panel; any method of \code{stats::p.adjust()}. Default
+\code{"holm"}; \code{"none"} shows the raw p-values.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the underlying turnover
 table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.}
+
+\item{...}{Old names of renamed arguments (\code{color_axis_x}, \code{color_facets_x}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A ggplot2 figure with beta diversity partitions across conditions.
@@ -118,7 +133,7 @@ beta_turnover_plot(
   comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
   condition1_col        = "Location",
   condition2_col        = "Treatment",
-  color_facets_x        = c("#5D478B", "#8B668B"),
-  color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
+  facet_colors        = c("#5D478B", "#8B668B"),
+  group_colors          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 )
 }

@@ -9,6 +9,7 @@ alpha_diversity_plot(
   metadata,
   type = "boxplot",
   stat = NULL,
+  p_adjust_method = "holm",
   x_col,
   fill_col,
   facet_by = NULL,
@@ -45,7 +46,15 @@ The first column must contain the OTUID, ASV, or species name.}
 
 \item{type}{Type of plot: \code{"boxplot"} (default) or \code{"barplot"}. Case-insensitive.}
 
-\item{stat}{Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
+\item{stat}{Optional. Statistical test to compare the groups within each
+panel. \code{"wilcox.test"} or \code{"t.test"} compare every pair of
+groups, each with its own bracket and p-value (\code{ggpubr::stat_pwc()});
+\code{"kruskal.test"} or \code{"anova"} give one global p-value per panel.}
+
+\item{p_adjust_method}{Multiple-comparison correction for the pairwise
+tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
+each panel; any method of \code{stats::p.adjust()}. Default
+\code{"holm"}; \code{"none"} shows the raw p-values.
 Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
 \code{stat} only adds the p-value annotations on top of them.}
 

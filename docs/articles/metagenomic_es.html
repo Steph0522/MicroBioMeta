@@ -338,7 +338,7 @@ razón de efecto techo que arriba.</p>
 <div class="section level3">
 <h3 id="pruebas-estadísticas-para-diversidad-beta">Pruebas estadísticas para diversidad beta<a class="anchor" aria-label="anchor" href="#pruebas-estad%C3%ADsticas-para-diversidad-beta"></a>
 </h3>
-<p><code>method = "jaccard"</code> coincide con el usado en la
+<p><code>distance = "jaccard"</code> coincide con el usado en la
 ordenación de arriba, de modo que la ordenación (vía el paquete
 <code>vegan</code> <span class="citation">(<a href="#ref-oksanen2024vegan"><span class="nocase">Oksanen et al.</span>
 2024</a>)</span>) y la prueba PERMANOVA <span class="citation">(<a href="#ref-anderson2001permanova">Anderson 2001</a>)</span> evalúan la
@@ -347,7 +347,7 @@ misma noción de disimilitud.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                formula_str <span class="op">=</span> <span class="st">"Polygon*Site"</span>,</span>
-<span>                method <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>                distance <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
 <span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
 <span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
@@ -391,16 +391,16 @@ y 5:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>                   metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
-<span>                   col_cond <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
+<span>                   group_col <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-16-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
 <span>  table        <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>  metadata     <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
-<span>  col_cond     <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
-<span>  tax_level    <span class="op">=</span> <span class="st">"Genus"</span>,</span>
-<span>  prv_cut      <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span></span>
+<span>  group_col     <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
+<span>  level    <span class="op">=</span> <span class="st">"Genus"</span>,</span>
+<span>  min_prevalence      <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-17-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <div class="section level3">
@@ -415,7 +415,7 @@ encontrar los taxones que mejor predicen el polígono:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>           metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
-<span>           condition_col <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
+<span>           group_col <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
 <span>           top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>           condition_A <span class="op">=</span> <span class="st">"Pol2"</span>,</span>
 <span>           condition_B <span class="op">=</span> <span class="st">"Pol5"</span><span class="op">)</span></span></code></pre></div>
@@ -438,13 +438,13 @@ forma que en la viñeta de amplicón:</p>
 </h3>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
-<span>                    env_table <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
+<span>                    env_data <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                    taxonomy_db <span class="op">=</span> <span class="st">"Kraken2"</span>,</span>
 <span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in corr_env_abund_plot(table = table_meta, env_table = env_table_meta,</span></span>
-<span><span class="co">## : Dropping non-numeric columns from `env_table`: type, type2</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in corr_env_abund_plot(table = table_meta, env_data = env_table_meta, :</span></span>
+<span><span class="co">## Dropping non-numeric columns from `env_data`: type, type2</span></span></code></pre>
 <p><img src="metagenomic_es_files/figure-html/correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -609,7 +609,7 @@ Biology</em> 20: 257. <a href="https://doi.org/10.1186/s13059-019-1891-0" class=
 <span><span class="co">## [119] geosphere_1.6-8             tzdb_0.5.0                 </span></span>
 <span><span class="co">## [121] rjson_0.2.23                nloptr_2.2.1               </span></span>
 <span><span class="co">## [123] checkmate_2.3.4             nlme_3.1-169               </span></span>
-<span><span class="co">## [125] zoo_1.9-0                   proxy_0.4-29               </span></span>
+<span><span class="co">## [125] zoo_1.9-1                   proxy_0.4-29               </span></span>
 <span><span class="co">## [127] cachem_1.1.0                GlobalOptions_0.1.4        </span></span>
 <span><span class="co">## [129] rootSolve_1.8.2.4           parallel_4.6.1             </span></span>
 <span><span class="co">## [131] foreign_0.8-91              desc_1.4.3                 </span></span>

@@ -2,7 +2,7 @@
 #'
 #' @param table Data frame with count data; columns represent samples, rows represent features.
 #' @param metadata Data frame containing metadata for the samples.
-#' @param col_cond Name of the column in `metadata` that contains the experimental conditions.
+#' @param group_col Name of the column in `metadata` that contains the experimental conditions.
 #' @param type Type of plot to generate: `"volcano"` (default, volcano plot)
 #'   or `"effect"` (effect-size plot). Case-insensitive.
 #' @param col_inf Color for points lower than threshold. Default `'#56B4E9'` (Okabe-Ito blue, matching the package's 2-group default).
@@ -12,7 +12,14 @@
 #' @param cond Name of the reference condition for the plot labels: positive
 #'   values on the x-axis mean higher in \code{cond}. Default \code{NULL}, the
 #'   condition of the first sample in \code{table}.
-#' @param cutoff.pval p-value cutoff for significance (default = 0.05).
+#' @param pval_threshold p-value cutoff for significance (default = 0.05), drawn
+#'   as the dashed horizontal line.
+#' @param p_adjust_method \code{"BH"} (default) or \code{"none"}. With
+#'   \code{"BH"}, the y-axis and the significance cutoff use ALDEx2's
+#'   Benjamini-Hochberg adjusted p-values (\code{wi.eBH}), since thousands of
+#'   taxa are tested at once; \code{"none"} uses the raw p-values
+#'   (\code{wi.ep}). ALDEx2 only computes the BH correction, so no other
+#'   method is available here.
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
 #' @param label_size Numeric. Font size of the taxon labels drawn on
@@ -22,8 +29,13 @@
 #'   keeping the volcano plot's text annotations to named taxa. Default
 #'   \code{FALSE}.
 #' @param save_table Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.
+#'   \code{effect} and \code{diff.btw} are saved as ALDEx2 returns them
+#'   (alphabetically second group minus the first); in the plot they are
+#'   shown so that positive means higher in \code{cond}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.
 #'
+#' @param ... Old names of renamed arguments (\code{col_cond}, \code{cutoff.pval}, \code{adjusted_p}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A `ggplot` object with the selected plot.
 #' @export
 #'
@@ -35,12 +47,12 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # col_cond must have exactly two groups; Location has two
+#' # group_col must have exactly two groups; Location has two
 #' # (Rhizosphere and Roots) in the bundled example data
 #' aldex_volcano_plot(
 #'   table           = table,
 #'   metadata        = metadata,
-#'   col_cond        = "Location",
+#'   group_col        = "Location",
 #'   type            = "effect",
 #'   col_inf         = "#56B4E9",
 #'   col_sup         = "#E69F00",
@@ -52,21 +64,28 @@
 
 aldex_volcano_plot <- function(table,
                                metadata,
-                               col_cond,
+                               group_col,
                                type = "volcano",
                                col_inf = "#56B4E9",
                                col_sup = "#E69F00",
                                threshold_lower = -1.5,
                                threshold_upper = 1.5,
                                cond = NULL,
-                               cutoff.pval = 0.05,
+                               pval_threshold = 0.05,
+                               p_adjust_method = "BH",
                                show_labels = TRUE,
                                taxa = NULL,
                                label_size = 3.5,
                                filter_uncultured = FALSE,
                                save_table = FALSE,
-                               table_filename = "aldex_pval_effect.txt") {
-  
+                               table_filename = "aldex_pval_effect.txt",
+                               ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(col_cond = "group_col", cutoff.pval = "pval_threshold", adjusted_p = "p_adjust_method"), "aldex_volcano_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+  # the old adjusted_p was TRUE/FALSE
+  if (is.logical(p_adjust_method)) p_adjust_method <- if (isTRUE(p_adjust_method)) "BH" else "none"
+
   # Verify that type has a valid value (case-insensitive)
   type <- tolower(type)
   if (!type %in% c("effect", "volcano")) {
@@ -82,9 +101,9 @@ aldex_volcano_plot <- function(table,
   }
   
   # Verify that the condition column exists
-  if (!col_cond %in% colnames(metadata)) {
+  if (!group_col %in% colnames(metadata)) {
     stop(
-      "The column ", col_cond,
+      "The column ", group_col,
       " does not exist in the object 'metadata'. Check the name is written correctly."
     )
   }
@@ -111,7 +130,7 @@ aldex_volcano_plot <- function(table,
   metadata <- .mbm_align_metadata(colnames(table), metadata)
   table    <- table[, metadata[[1]], drop = FALSE]
 
-  conditions <- as.character(metadata[[col_cond]])
+  conditions <- as.character(metadata[[group_col]])
   groups <- unique(conditions)
   if (is.null(cond)) cond <- groups[1]
   if (!cond %in% groups)
@@ -119,14 +138,6 @@ aldex_volcano_plot <- function(table,
   other_cond <- setdiff(groups, cond)[1]
   
   aldex_clr <- ALDEx2::aldex(table, conditions, mc.samples = 128, denom = "all")
-
-  # ALDEx2 computes diff.btw/effect as the alphabetically second group minus
-  # the first. Flip the sign when needed so that a positive value always
-  # means higher in `cond`, which is what the "Higher/Lower in" labels assume.
-  if (cond == sort(groups)[1]) {
-    aldex_clr$diff.btw <- -aldex_clr$diff.btw
-    aldex_clr$effect   <- -aldex_clr$effect
-  }
   
   
   
@@ -157,8 +168,27 @@ aldex_volcano_plot <- function(table,
     ) 
     message("Table saved as: ", table_filename)
   }
+
+  # The table above is saved exactly as ALDEx2 returns it. ALDEx2 computes
+  # diff.btw/effect as the alphabetically second group minus the first, so
+  # for the plot flip the sign when needed: a positive value then always
+  # means higher in `cond`, which is what the "Higher/Lower in" labels assume.
+  if (cond == sort(groups)[1]) {
+    processed_data$diff.btw <- -processed_data$diff.btw
+    processed_data$effect   <- -processed_data$effect
+  }
   
   
+  # p-value used for the y-axis and the significance cutoff
+  p_adjust_method <- match.arg(p_adjust_method, c("BH", "none"))
+  adjusted <- p_adjust_method == "BH"
+  processed_data$.p <- if (adjusted) processed_data$wi.eBH else processed_data$wi.ep
+  y_lab <- if (adjusted) {
+    expression("-Log"[10]~"adjusted p-value (BH)")
+  } else {
+    expression("-Log"[10]~"p-value")
+  }
+
   if (type == "effect") {
     # Preparar datos para effect plot
     plot_data <- processed_data %>%
@@ -168,7 +198,7 @@ aldex_volcano_plot <- function(table,
           effect >= threshold_upper ~ paste("Higher in", cond),
           TRUE ~ "Not significant"
         ),
-        log_pvalue = -log10(wi.ep + min(wi.ep[wi.ep > 0])/10)
+        log_pvalue = -log10(.p + min(.p[.p > 0])/10)
       )
     
     # Obtener los top taxones para etiquetar
@@ -193,13 +223,13 @@ aldex_volcano_plot <- function(table,
         color = "black"
       ) +
       ggplot2::geom_hline(
-        yintercept = -log10(cutoff.pval),
+        yintercept = -log10(pval_threshold),
         linetype = 2,
         color = "black"
       ) +
       ggplot2::labs(
         x = "Effect size",
-        y = expression("-Log"[10]~"p-value"),
+        y = y_lab,
         color = NULL
       ) +
       .mbm_theme(legend_position = "none") +
@@ -267,8 +297,8 @@ aldex_volcano_plot <- function(table,
     # Preparar datos para volcano plot
     plot_data <- processed_data %>%
       dplyr::mutate(
-        log_pvalue = -log10(wi.ep + min(wi.ep[wi.ep > 0])/10),
-        significant = wi.ep <= cutoff.pval,
+        log_pvalue = -log10(.p + min(.p[.p > 0])/10),
+        significant = .p <= pval_threshold,
         direction = ifelse(diff.btw < 0, 
                            paste("Lower in", cond),
                            paste("Higher in", cond))
@@ -304,13 +334,13 @@ aldex_volcano_plot <- function(table,
         linetype = 'dashed'
       ) +
       ggplot2::geom_hline(
-        yintercept = -log10(cutoff.pval),
+        yintercept = -log10(pval_threshold),
         color = 'black',
         linetype = 'dashed'
       ) +
       ggplot2::labs(
         x = expression("Log"[2]~"Fold Change"),
-        y = expression("-Log"[10]~"p-value"),
+        y = y_lab,
         color = NULL
       ) +
       .mbm_theme(legend_position = "none") +

@@ -212,13 +212,13 @@ beta_decay_plot <- function(
   .fmt_label <- function(mantel_res, slope, r2) {
     if (show_lm_stats) {
       sprintf(
-        "Mantel %s = %.3f\np = %s\nslope = %.4f\nR2 = %.3f",
-        method_sym, mantel_res$statistic, .mbm_format_pval(mantel_res$signif), slope, r2
+        "Mantel %s = %.3f\n%s\nslope = %.4f\nR2 = %.3f",
+        method_sym, mantel_res$statistic, .mbm_p_label(mantel_res$signif), slope, r2
       )
     } else {
       sprintf(
-        "Mantel %s = %.3f\np = %s\nslope = %.4f",
-        method_sym, mantel_res$statistic, .mbm_format_pval(mantel_res$signif), slope
+        "Mantel %s = %.3f\n%s\nslope = %.4f",
+        method_sym, mantel_res$statistic, .mbm_p_label(mantel_res$signif), slope
       )
     }
   }

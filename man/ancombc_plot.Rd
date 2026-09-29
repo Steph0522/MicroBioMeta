@@ -7,17 +7,18 @@
 ancombc_plot(
   table,
   metadata,
-  col_cond,
-  tax_level = "Genus",
-  prv_cut = 0.1,
-  p_adj_method = "holm",
+  group_col,
+  level = "genus",
+  min_prevalence = 0.1,
+  p_adjust_method = "holm",
   formula = NULL,
   rand_formula = NULL,
   ref_level = NULL,
   diverging_palette = "BuOr",
   bar_colors = c("#56B4E9", "#E69F00"),
   save_table = FALSE,
-  table_filename = "ancombc_results.txt"
+  table_filename = "ancombc_results.txt",
+  ...
 )
 }
 \arguments{
@@ -28,34 +29,34 @@ column must contain taxonomy strings (named "taxonomy", "Taxonomy",
 \item{metadata}{Data frame with samples as rows. The first column must
 contain sample IDs that match the column names of \code{table}.}
 
-\item{col_cond}{Character. Name of the column in \code{metadata} that
+\item{group_col}{Character. Name of the column in \code{metadata} that
 defines the grouping variable. If this column is numeric (a continuous
 variable), it's treated as a covariate instead of a group: ANCOMBC2's
 \code{group}/structural-zero machinery (which requires discrete groups)
 is disabled, and the resulting plot shows the effect size per unit
 increase rather than a group-vs-group comparison.}
 
-\item{tax_level}{Character or \code{NULL}. Taxonomic level to agglomerate
-to before running \code{ancombc2} (e.g. \code{"Genus"}, \code{"Family"}).
-Default \code{"Genus"}. Pass \code{NULL} to skip agglomeration and run
+\item{level}{Character or \code{NULL}. Taxonomic level to agglomerate
+to before running \code{ancombc2} (e.g. \code{"genus"}, \code{"family"};
+case-insensitive). Default \code{"genus"}. Pass \code{NULL} to skip agglomeration and run
 ANCOMBC2 directly on the ASV/OTU-level table (rows of \code{table}, as-is).}
 
-\item{prv_cut}{Numeric. Prevalence cut-off passed to \code{ancombc2}
+\item{min_prevalence}{Numeric. Prevalence cut-off passed to \code{ancombc2}
 (default \code{0.1}). Lower values retain more taxa.}
 
-\item{p_adj_method}{Character. Multiple-testing correction method passed to
+\item{p_adjust_method}{Character. Multiple-testing correction method passed to
 \code{ancombc2} (default \code{"holm"}). Use \code{"BH"} for a less
 strict correction when sample sizes are small.}
 
 \item{formula}{Character. Right-hand side of the fixed-effects formula
 passed to \code{ancombc2} (e.g. \code{"group + age"}). If \code{NULL}
-(default) \code{col_cond} is used alone.}
+(default) \code{group_col} is used alone.}
 
 \item{rand_formula}{Character. Random-effects formula passed to
 \code{ancombc2} for mixed models (e.g. \code{"~ 1 | subject_id"}).
 Default \code{NULL}.}
 
-\item{ref_level}{Character. Reference level for \code{col_cond}. If
+\item{ref_level}{Character. Reference level for \code{group_col}. If
 \code{NULL} (default) the first factor level is used as reference.
 Use this to change which group appears as the baseline in comparisons
 (e.g. \code{ref_level = "P2"} to compare all other groups against P2).}
@@ -68,7 +69,7 @@ scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
 \code{bar_colors} instead.}
 
 \item{bar_colors}{Character vector of (at least) 2 colors used for the
-bar plot (2-group or continuous \code{col_cond}). First color is the
+bar plot (2-group or continuous \code{group_col}). First color is the
 "positive" direction (the non-reference group / increases with the
 variable); second color is the "negative" direction (the reference
 group / decreases with the variable). Default \code{c("#56B4E9",
@@ -81,6 +82,9 @@ table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"ancombc_results.txt"}.}
+
+\item{...}{Old names of renamed arguments (\code{col_cond}, \code{tax_level}, \code{prv_cut}, \code{p_adj_method}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
@@ -90,7 +94,7 @@ A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
 Runs ANCOMBC2 on a counts table and metadata, then visualizes differentially
 abundant taxa. For two-group comparisons a bar plot of log-fold changes is
 returned; for three or more groups a heatmap is returned; for a continuous
-\code{col_cond} (e.g. \code{"dist_km"}) a bar plot of the effect size per
+\code{group_col} (e.g. \code{"dist_km"}) a bar plot of the effect size per
 unit increase is returned instead, colored by the direction of the effect.
 }
 \examples{
@@ -104,16 +108,16 @@ colnames(metadata)[1] <- "SampleID"
 # Not run automatically because ANCOMBC2's internal bias-correction step
 # can intermittently error on some random bootstrap draws (a known
 # ANCOMBC2 edge case, not specific to this dataset), which would make an
-# always-run example a flaky check. p_adj_method = "BH" is less strict
-# than the "holm" default; prv_cut is raised above the 0.1 default to
+# always-run example a flaky check. p_adjust_method = "BH" is less strict
+# than the "holm" default; min_prevalence is raised above the 0.1 default to
 # filter out rare/sparse taxa before testing.
 \donttest{
 ancombc_plot(
   table        = table,
   metadata     = metadata,
-  col_cond     = "Location",
-  prv_cut      = 0.3,
-  p_adj_method = "BH"
+  group_col     = "Location",
+  min_prevalence      = 0.3,
+  p_adjust_method = "BH"
 )
 }
 }

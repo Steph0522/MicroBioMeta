@@ -5,7 +5,7 @@ test_that("beta_test_table runs a compositional PERMANOVA and returns a table fi
   res <- beta_test_table(
     toy$table, toy$metadata,
     formula_str  = "Group",
-    method       = "compositional",
+    distance     = "compositional",
     test         = "permanova",
     permutations = 99
   )
@@ -26,7 +26,7 @@ test_that("beta_test_table saves a PERMANOVA table with the tested term, R2 and 
   beta_test_table(
     toy$table, toy$metadata,
     formula_str    = "Group",
-    method         = "compositional",
+    distance       = "compositional",
     test           = "permanova",
     permutations   = 99,
     save_table     = TRUE,
@@ -48,7 +48,7 @@ test_that("beta_test_table also accepts a plain ecological distance (bray)", {
   res <- beta_test_table(
     toy$table, toy$metadata,
     formula_str  = "Group",
-    method       = "bray",
+    distance     = "bray",
     test         = "permanova",
     permutations = 99
   )
@@ -80,7 +80,7 @@ test_that("beta_test_table matches metadata to samples by ID, not by row order",
     tmp <- tempfile(fileext = ".txt")
     on.exit(unlink(tmp))
     set.seed(1)
-    beta_test_table(toy$table, meta, formula_str = "Group", method = "bray",
+    beta_test_table(toy$table, meta, formula_str = "Group", distance = "bray",
                     permutations = 99, save_table = TRUE, table_filename = tmp)
     utils::read.delim(tmp, check.names = FALSE)
   }

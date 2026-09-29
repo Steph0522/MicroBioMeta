@@ -94,14 +94,14 @@
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
 <span>  <span class="va">formula_str</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
+<span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"permanova"</span>, <span class="st">"betadisper"</span><span class="op">)</span>,</span>
 <span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span>
 <span>  strata_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  decimales <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"beta_test_results.txt"</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">123</span></span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -123,7 +123,7 @@ where the columns are the samples and rows are ASVs or taxa.</p></dd>
 <dd><p>Model formula</p></dd>
 
 
-<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dt id="arg-distance">distance<a class="anchor" aria-label="anchor" href="#arg-distance"></a></dt>
 <dd><p>Method for calculating pairwise distances. Same convention
 as <code>beta_div_plot</code>'s <code>distance</code> argument: <code>"compositional"</code>
 runs ALDEx2's CLR transform (<code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr</a></code>) on the raw counts
@@ -149,8 +149,8 @@ is passed straight to <code><a href="https://vegandevs.github.io/vegan/reference
 <dd><p>Group or variable within which permutations are restricted</p></dd>
 
 
-<dt id="arg-decimales">decimales<a class="anchor" aria-label="anchor" href="#arg-decimales"></a></dt>
-<dd><p>Number of decimales required</p></dd>
+<dt id="arg-digits">digits<a class="anchor" aria-label="anchor" href="#arg-digits"></a></dt>
+<dd><p>Number of decimal places for the numeric columns (except the p-value).</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
@@ -163,15 +163,23 @@ Default <code>FALSE</code>.</p></dd>
 when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</code>.</p></dd>
 
 
-<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Numeric. Random seed used for <code>method = "compositional"</code>'s
-Monte Carlo Dirichlet sampling (via <code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>), so
-results are reproducible by default. Default <code>123</code>.</p></dd>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Old names of renamed arguments (<code>method</code>, <code>decimales</code>), still accepted
+with a warning. Any other extra argument is an error.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>A table with the results of R-squared, F and p value</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>The first column of <code>metadata</code> must hold the sample IDs;
+metadata rows are matched to the samples by ID, so their order doesn't
+matter. A precomputed distance is used as-is (<code>distance</code> is ignored).
+<code>distance = "compositional"</code> draws a random Monte Carlo instance
+from <code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>; call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before the
+function to make the result reproducible.</p>
     </div>
 
     <div id="ref-examples">
@@ -188,7 +196,7 @@ results are reproducible by default. Default <code>123</code>.</p></dd>
 <span class="r-in"><span>  table       <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
 <span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location*Treatment"</span>,</span></span>
-<span class="r-in"><span>  method      <span class="op">=</span> <span class="st">"bray"</span>,</span></span>
+<span class="r-in"><span>  distance    <span class="op">=</span> <span class="st">"bray"</span>,</span></span>
 <span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
 <span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
 <span class="r-in"><span>  strata_var  <span class="op">=</span> <span class="st">"Plot"</span></span></span>
@@ -213,7 +221,7 @@ results are reproducible by default. Default <code>123</code>.</p></dd>
 <span class="r-in"><span>  table       <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
 <span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  method      <span class="op">=</span> <span class="st">"compositional"</span>,</span></span>
+<span class="r-in"><span>  distance    <span class="op">=</span> <span class="st">"compositional"</span>,</span></span>
 <span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
 <span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

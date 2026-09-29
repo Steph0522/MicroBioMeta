@@ -8,7 +8,7 @@
 #'   where the columns are the samples and rows are ASVs or taxa.
 #' @param metadata Data frame of characteristics or important information of the samples
 #' @param formula_str Model formula
-#' @param method Method for calculating pairwise distances. Same convention
+#' @param distance Method for calculating pairwise distances. Same convention
 #'   as \code{beta_div_plot}'s \code{distance} argument: \code{"compositional"}
 #'   runs ALDEx2's CLR transform (\code{ALDEx2::aldex.clr}) on the raw counts
 #'   and then a Euclidean distance on the CLR values (requires \code{table} to
@@ -22,7 +22,7 @@
 #'   \code{"betadisper"}. Case-insensitive.
 #' @param permutations Number of permutations required
 #' @param strata_var Group or variable within which permutations are restricted
-#' @param decimales Number of decimales required
+#' @param digits Number of decimal places for the numeric columns (except the p-value).
 #' @param save_table Logical. If \code{TRUE}, saves the results table to disk.
 #'   Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -30,11 +30,13 @@
 #'
 #' @details The first column of \code{metadata} must hold the sample IDs;
 #'   metadata rows are matched to the samples by ID, so their order doesn't
-#'   matter. A precomputed distance is used as-is (\code{method} is ignored).
-#'   \code{method = "compositional"} draws a random Monte Carlo instance
+#'   matter. A precomputed distance is used as-is (\code{distance} is ignored).
+#'   \code{distance = "compositional"} draws a random Monte Carlo instance
 #'   from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the
 #'   function to make the result reproducible.
 #'
+#' @param ... Old names of renamed arguments (\code{method}, \code{decimales}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A table with the results of R-squared, F and p value
 #' @export
 #'
@@ -51,7 +53,7 @@
 #'   table       = table,
 #'   metadata    = metadata,
 #'   formula_str = "Location*Treatment",
-#'   method      = "bray",
+#'   distance    = "bray",
 #'   test        = "permanova",
 #'   permutations = 999,
 #'   strata_var  = "Plot"
@@ -74,28 +76,33 @@
 #'   table       = table,
 #'   metadata    = metadata,
 #'   formula_str = "Location",
-#'   method      = "compositional",
+#'   distance    = "compositional",
 #'   test        = "permanova",
 #'   permutations = 999
 #' )
 beta_test_table <- function(table,
                             metadata,
                             formula_str,
-                            method = "euclidean", 
+                            distance = "euclidean", 
                             test = c("permanova", "betadisper"),
                             permutations = 999,
                             strata_var = NULL,
-                            decimales = 3,
+                            digits = 3,
                             save_table = FALSE,
-                            table_filename = "beta_test_results.txt") {
+                            table_filename = "beta_test_results.txt",
+                            ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(method = "distance", decimales = "digits"), "beta_test_table")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
 
-  # Accept `test` and `method` case-insensitively (distance names are matched
+
+  # Accept `test` and `distance` case-insensitively (distance names are matched
   # case-sensitively by vegan::vegdist, so normalising here avoids a cryptic
-  # "invalid distance method" error from e.g. method = "Bray").
+  # "invalid distance method" error from e.g. distance = "Bray").
   test   <- match.arg(tolower(test), c("permanova", "betadisper"))
-  method <- tolower(method)
+  distance <- tolower(distance)
   # A precomputed distance (a dist object, or a square symmetric matrix with
-  # a zero diagonal) is used as-is: no distance is computed and `method` is
+  # a zero diagonal) is used as-is: no distance is computed and `distance` is
   # ignored, instead of running vegdist() on the distances themselves.
   is_square_dist <- is.matrix(table) && nrow(table) == ncol(table) &&
     isSymmetric(unname(table)) && all(diag(table) == 0)
@@ -103,8 +110,8 @@ beta_test_table <- function(table,
   raw_input <- is.data.frame(table)
 
   if (precomputed) {
-    if (method == "compositional") {
-      stop("method = 'compositional' requires a raw abundance table ",
+    if (distance == "compositional") {
+      stop("distance = 'compositional' requires a raw abundance table ",
            "(data frame with a taxonomy column), not a precomputed distance matrix.")
     }
     dist_matrix <- stats::as.dist(table)
@@ -173,19 +180,19 @@ beta_test_table <- function(table,
   # --- Distancia (mismo criterio que beta_div_plot) ---
   if (precomputed) {
     # dist_matrix already set above
-  } else if (method == "compositional") {
+  } else if (distance == "compositional") {
     if (!raw_input) {
-      stop("method = 'compositional' requires a raw abundance table ",
+      stop("distance = 'compositional' requires a raw abundance table ",
            "(data frame with a taxonomy column), not a precomputed distance matrix.")
     }
     aldex_obj   <- ALDEx2::aldex.clr(t(table), mc.samples = 128,
                                      denom = "all", verbose = FALSE, useMC = FALSE)
     clr_samples <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))
     dist_matrix <- stats::dist(clr_samples, method = "euclidean")
-  } else if (method %in% c("aitchison", "robust.aitchison")) {
-    dist_matrix <- vegan::vegdist(table, method = method, pseudocount = 0.5)
+  } else if (distance %in% c("aitchison", "robust.aitchison")) {
+    dist_matrix <- vegan::vegdist(table, method = distance, pseudocount = 0.5)
   } else {
-    dist_matrix <- vegan::vegdist(table, method = method)
+    dist_matrix <- vegan::vegdist(table, method = distance)
   }
 
   # --- PERMANOVA ---
@@ -215,12 +222,12 @@ beta_test_table <- function(table,
   
   # --- Formato numerico ---
   # The p-value column uses significant-figure formatting (consistent with
-  # every other figure in the package) instead of the fixed `decimales`
+  # every other figure in the package) instead of the fixed `digits`
   # rounding applied to the other numeric columns, since fixed decimals can
   # round small p-values (e.g. 0.0004) down to "0".
   col_p_name <- grep("Pr", names(tabla), ignore.case = TRUE, value = TRUE)
   tabla <- tabla %>%
-    dplyr::mutate(across(where(is.numeric) & !dplyr::any_of(col_p_name), ~ round(., decimales))) %>%
+    dplyr::mutate(across(where(is.numeric) & !dplyr::any_of(col_p_name), ~ round(., digits))) %>%
     dplyr::mutate(across(dplyr::any_of(col_p_name), ~ .mbm_format_pval(.))) %>%
     dplyr::mutate(across(everything(), as.character)) %>%
     dplyr::mutate(across(everything(), ~ ifelse(is.na(.), "-", .)))

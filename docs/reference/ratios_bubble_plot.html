@@ -101,7 +101,7 @@ the dominant condition.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ratios_bubble_plot</span><span class="op">(</span></span>
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
-<span>  <span class="va">condition_col</span>,</span>
+<span>  <span class="va">group_col</span>,</span>
 <span>  <span class="va">condition_A</span>,</span>
 <span>  <span class="va">condition_B</span>,</span>
 <span>  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
@@ -111,7 +111,8 @@ the dominant condition.</p>
 <span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"ratios_bubble_table.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"ratios_bubble_table.txt"</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -130,7 +131,7 @@ correspond to sample IDs and include a column defining the experimental
 conditions.</p></dd>
 
 
-<dt id="arg-condition-col">condition_col<a class="anchor" aria-label="anchor" href="#arg-condition-col"></a></dt>
+<dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
 <dd><p>Character. Name of the metadata column defining the
 experimental condition.</p></dd>
 
@@ -163,7 +164,7 @@ experimental condition.</p></dd>
 
 <dt id="arg-legend-title">legend_title<a class="anchor" aria-label="anchor" href="#arg-legend-title"></a></dt>
 <dd><p>Character. Title for the fill legend and the axis
-showing the dominant condition. Defaults to <code>condition_col</code> when
+showing the dominant condition. Defaults to <code>group_col</code> when
 <code>NULL</code> (default).</p></dd>
 
 
@@ -180,6 +181,11 @@ to disk. Default <code>FALSE</code>.</p></dd>
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. File path/name for the saved table (used
 when <code>save_table = TRUE</code>). Default <code>"ratios_bubble_table.txt"</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Old names of renamed arguments (<code>condition_col</code>), still accepted
+with a warning. Any other extra argument is an error.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -200,7 +206,7 @@ conditions.</p>
 <span class="r-in"><span><span class="fu">ratios_bubble_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table         <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata      <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  condition_col <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  group_col <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
 <span class="r-in"><span>  condition_A   <span class="op">=</span> <span class="st">"Rhizosphere"</span>,</span></span>
 <span class="r-in"><span>  condition_B   <span class="op">=</span> <span class="st">"Roots"</span>,</span></span>
 <span class="r-in"><span>  taxonomy_db   <span class="op">=</span> <span class="st">"silva"</span>,</span></span>

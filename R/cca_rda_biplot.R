@@ -18,6 +18,10 @@
 #' @param legend_title Optional custom title for the group legend.
 #' @param scale_env Logical; whether to scale environmental variables (default is `TRUE`).
 #' @param pval_threshold P-value threshold for selecting significant environmental variables (default is `0.05`).
+#' @param p_adjust_method Multiple-comparison correction applied to the
+#'   \code{vegan::envfit()} p-values of the environmental variables before
+#'   \code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
+#'   \code{"none"} (raw p-values, the usual choice with few variables).
 #' @param show_all_env_vectors Logical; if TRUE, plot all environmental vectors regardless of significance.
 #' @param analysis Constrained ordination method: `"CCA"` (default, Canonical
 #'   Correspondence Analysis) or `"RDA"` (Redundancy Analysis). Case-insensitive.
@@ -68,6 +72,7 @@ cca_rda_biplot <- function(table,
                        legend_title = NULL,
                        scale_env = TRUE,
                        pval_threshold = 0.05,
+                       p_adjust_method = "none",
                        show_all_env_vectors = FALSE,
                        analysis = "CCA",
                        scale_arrows = 1,
@@ -135,10 +140,12 @@ cca_rda_biplot <- function(table,
   if (show_all_env_vectors) {
     vars_to_plot <- rownames(vegan::scores(fit, display = "vectors"))
   } else {
-    sig_vars <- names(which(fit$vectors$pvals < pval_threshold))
+    env_p <- stats::p.adjust(fit$vectors$pvals, method = p_adjust_method)
+    sig_vars <- names(which(env_p < pval_threshold))
     if (length(sig_vars) == 0) {
-      warning("No hay variables ambientales significativas (p <", pval_threshold, ")")
-      return(ggplot2::ggplot() + ggplot2::theme_void() + ggplot2::ggtitle("Sin variables significativas"))
+      warning("No significant environmental variables (p < ", pval_threshold,
+              ", p_adjust_method = '", p_adjust_method, "').")
+      return(ggplot2::ggplot() + ggplot2::theme_void() + ggplot2::ggtitle("No significant environmental variables"))
     }
     vars_to_plot <- sig_vars
   }

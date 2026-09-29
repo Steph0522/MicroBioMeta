@@ -27,10 +27,10 @@
 #'   \code{comparison_condition2}, the plot is faceted by it keeping only
 #'   pairs of samples with the same value (e.g. \code{"TC_vs_TC"},
 #'   \code{"TD_vs_TD"}).
-#' @param color_facets_x Optional color vector for facet strips. Defaults to
+#' @param facet_colors Optional color vector for facet strips. Defaults to
 #'   a neutral \code{"grey85"} background for each facet, like
 #'   \code{beta_dissimilarity_plot()}'s \code{facet_colors}.
-#' @param color_axis_x Optional named color vector for x-axis groups.
+#' @param group_colors Optional named color vector for x-axis groups.
 #'   Defaults to the package's colorblind-friendly Okabe-Ito palette
 #'   (\code{.mbm_colors}, orange/blue first), like
 #'   \code{beta_dissimilarity_plot()}'s \code{group_colors}.
@@ -42,20 +42,28 @@
 #' @param strip_text_bold Logical. If \code{TRUE}, facet strip labels are bold.
 #'   Default \code{FALSE} (plain).
 #' @param strip_text_color Color of the top (x) facet strip labels, which sit on
-#'   the \code{color_facets_x} backgrounds. Default \code{"white"}, unless
-#'   \code{color_facets_x} is left at its own light \code{"grey85"} default,
+#'   the \code{facet_colors} backgrounds. Default \code{"white"}, unless
+#'   \code{facet_colors} is left at its own light \code{"grey85"} default,
 #'   in which case this defaults to \code{"black"} instead so it stays legible.
 #' @param aspect_ratio Numeric. Aspect ratio (height/width) of each panel.
 #'   Default \code{NULL} (automatic).
-#' @param stat Character or \code{NULL}. Statistical test to compare groups
-#'   within each panel, passed to \code{ggpubr::stat_compare_means()} (e.g.
-#'   \code{"wilcox.test"}, \code{"kruskal.test"}, \code{"anova"}). Default
-#'   \code{NULL} (no test shown).
+#' @param stat Character or \code{NULL}. Statistical test to compare the
+#'   boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
+#'   compare every pair of boxes, each with its own bracket and p-value
+#'   (\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
+#'   give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
+#'   Default \code{NULL} (no test shown).
+#' @param p_adjust_method Multiple-comparison correction for the pairwise
+#'   tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
+#'   each panel; any method of \code{stats::p.adjust()}. Default
+#'   \code{"holm"}; \code{"none"} shows the raw p-values.
 #' @param save_table Logical. If \code{TRUE}, saves the underlying turnover
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.
 #'
+#' @param ... Old names of renamed arguments (\code{color_axis_x}, \code{color_facets_x}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A ggplot2 figure with beta diversity partitions across conditions.
 #' @export
 #'
@@ -77,8 +85,8 @@
 #'   comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
 #'   condition1_col        = "Location",
 #'   condition2_col        = "Treatment",
-#'   color_facets_x        = c("#5D478B", "#8B668B"),
-#'   color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
+#'   facet_colors        = c("#5D478B", "#8B668B"),
+#'   group_colors          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
 #' )
 
 beta_turnover_plot <- function(table, 
@@ -87,8 +95,8 @@ beta_turnover_plot <- function(table,
                       comparison_condition2 = NULL,
                       condition1_col,
                       condition2_col = NULL,
-                      color_facets_x = NULL,
-                      color_axis_x = NULL,
+                      facet_colors = NULL,
+                      group_colors = NULL,
                       x_axis_title = "Section",
                       show_x_labels = FALSE,
                       x_label_angle = 0,
@@ -96,8 +104,14 @@ beta_turnover_plot <- function(table,
                       strip_text_color = "white",
                       aspect_ratio = NULL,
                       stat = NULL,
+                      p_adjust_method = "holm",
                       save_table = FALSE,
-                      table_filename = "betadiv_turnover.txt") {
+                      table_filename = "betadiv_turnover.txt",
+                      ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(color_axis_x = "group_colors", color_facets_x = "facet_colors"), "beta_turnover_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+
 
   # Treat metadata's first column as the sample ID regardless of its original name
   colnames(metadata)[1] <- "OTUID"
@@ -133,6 +147,9 @@ beta_turnover_plot <- function(table,
     col2 <- metadata[[condition2_col]]
     lv2  <- if (is.factor(col2)) levels(droplevels(col2)) else sort(unique(as.character(col2)))
     comparison_condition2 <- paste0(lv2, "_vs_", lv2)
+    facet2_labels <- lv2
+  } else {
+    facet2_labels <- NULL
   }
   if (!is.null(comparison_condition2)) {
     if (is.null(condition2_col)) {
@@ -242,6 +259,9 @@ beta_turnover_plot <- function(table,
       unname(label_by_norm2[beta_formato$compar_condition2]),
       levels = unique(comparison_condition2)
     )
+    # Pairs built from condition2_col alone are labelled by the value
+    # itself ("TC" instead of "TC_vs_TC"), as in beta_dissimilarity_plot().
+    if (!is.null(facet2_labels)) levels(beta_formato$.facet2_col) <- facet2_labels
   }
   has_facet_by <- has_condition2
 
@@ -261,18 +281,18 @@ beta_turnover_plot <- function(table,
   if (nrow(beta_final) == 0) stop("After filtering comparisons, the table is empty.")
 
   # --- Default palettes if missing (same pattern as beta_dissimilarity_plot) ---
-  if (is.null(color_axis_x)) {
+  if (is.null(group_colors)) {
     n_groups <- length(unique(beta_final$.compar_label))
-    color_axis_x <- if (n_groups == 2) .mbm_colors_2group else rep_len(.mbm_colors, n_groups)
-    names(color_axis_x) <- unique(beta_final$.compar_label)
+    group_colors <- if (n_groups == 2) .mbm_colors_2group else rep_len(.mbm_colors, n_groups)
+    names(group_colors) <- unique(beta_final$.compar_label)
   }
-  if (has_facet_by && is.null(color_facets_x)) {
+  if (has_facet_by && is.null(facet_colors)) {
     # strip_text_color's own "white" default assumes the caller's (often
-    # dark) color_facets_x - illegible against this light default, so switch
+    # dark) facet_colors - illegible against this light default, so switch
     # to black here instead, unless the caller asked for white explicitly.
     if (missing(strip_text_color)) strip_text_color <- "black"
     n_facets <- length(unique(beta_final$.facet2_col))
-    color_facets_x <- rep("grey85", n_facets)
+    facet_colors <- rep("grey85", n_facets)
   }
 
   if (save_table) {
@@ -296,7 +316,7 @@ beta_turnover_plot <- function(table,
     ggh4x::facet_grid2(orden ~ .facet2_col,
                        scales = "free_x",
                        labeller = ggplot2::labeller(orden = q_labeller),
-                       strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = color_facets_x)))
+                       strip = ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(fill = facet_colors)))
   } else {
     ggh4x::facet_grid2(orden ~ .,
                        scales = "free_x",
@@ -308,7 +328,7 @@ beta_turnover_plot <- function(table,
     # Generic "features" instead of "ASVs" - the table can just as well hold
     # OTUs, species, or any other feature type.
     ggplot2::ylab("Proportion of feature turnover") +
-    ggplot2::scale_fill_manual(values = color_axis_x) +
+    ggplot2::scale_fill_manual(values = group_colors) +
     ggplot2::labs(fill = "Comparison") +
     facet_spec +
     .mbm_theme(
@@ -322,7 +342,7 @@ beta_turnover_plot <- function(table,
         # margin needed overriding here.
         axis.title.y = ggplot2::element_text(size = 14, color = "black",
                                              margin = ggplot2::margin(t = 0, r = 0.5, b = 0, l = 0, "cm")),
-        # x strips sit on the user-supplied `color_facets_x` backgrounds (often
+        # x strips sit on the user-supplied `facet_colors` backgrounds (often
         # dark), so their text color is exposed separately from the y strips,
         # which keep the package's plain grey-strip look (matching the
         # q0/q1/q2 strips in alpha_hill_plot/alpha_diversity_plot) instead of
@@ -346,13 +366,7 @@ beta_turnover_plot <- function(table,
     # of leaving that headroom out only for this stat-annotated case.
     figura <- figura +
       ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.15))) +
-      ggpubr::stat_compare_means(
-        method = stat,
-        mapping = ggplot2::aes(
-          label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-        ),
-        size = 3.5, family = "serif", hide.ns = TRUE
-      )
+      .mbm_stat_layer(stat, p_adjust_method)
   }
 
   # Returns the ggplot object directly (not wrapped in a list) so it drops

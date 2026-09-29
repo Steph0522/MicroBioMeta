@@ -8,13 +8,14 @@ beta_test_table(
   table,
   metadata,
   formula_str,
-  method = "euclidean",
+  distance = "euclidean",
   test = c("permanova", "betadisper"),
   permutations = 999,
   strata_var = NULL,
-  decimales = 3,
+  digits = 3,
   save_table = FALSE,
-  table_filename = "beta_test_results.txt"
+  table_filename = "beta_test_results.txt",
+  ...
 )
 }
 \arguments{
@@ -26,7 +27,7 @@ where the columns are the samples and rows are ASVs or taxa.}
 
 \item{formula_str}{Model formula}
 
-\item{method}{Method for calculating pairwise distances. Same convention
+\item{distance}{Method for calculating pairwise distances. Same convention
 as \code{beta_div_plot}'s \code{distance} argument: \code{"compositional"}
 runs ALDEx2's CLR transform (\code{ALDEx2::aldex.clr}) on the raw counts
 and then a Euclidean distance on the CLR values (requires \code{table} to
@@ -44,13 +45,16 @@ is passed straight to \code{vegan::vegdist} on the raw values
 
 \item{strata_var}{Group or variable within which permutations are restricted}
 
-\item{decimales}{Number of decimales required}
+\item{digits}{Number of decimal places for the numeric columns (except the p-value).}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the results table to disk.
 Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
+
+\item{...}{Old names of renamed arguments (\code{method}, \code{decimales}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A table with the results of R-squared, F and p value
@@ -61,8 +65,8 @@ This function create a table with the results of permanova or betadisper
 \details{
 The first column of \code{metadata} must hold the sample IDs;
 metadata rows are matched to the samples by ID, so their order doesn't
-matter. A precomputed distance is used as-is (\code{method} is ignored).
-\code{method = "compositional"} draws a random Monte Carlo instance
+matter. A precomputed distance is used as-is (\code{distance} is ignored).
+\code{distance = "compositional"} draws a random Monte Carlo instance
 from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the
 function to make the result reproducible.
 }
@@ -79,7 +83,7 @@ beta_test_table(
   table       = table,
   metadata    = metadata,
   formula_str = "Location*Treatment",
-  method      = "bray",
+  distance    = "bray",
   test        = "permanova",
   permutations = 999,
   strata_var  = "Plot"
@@ -102,7 +106,7 @@ beta_test_table(
   table       = table,
   metadata    = metadata,
   formula_str = "Location",
-  method      = "compositional",
+  distance    = "compositional",
   test        = "permanova",
   permutations = 999
 )

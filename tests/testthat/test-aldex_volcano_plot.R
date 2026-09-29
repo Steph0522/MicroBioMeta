@@ -7,7 +7,7 @@ test_that("aldex_volcano_plot returns a ggplot for the effect-size view", {
   p <- aldex_volcano_plot(
     table    = toy$table,
     metadata = toy$metadata,
-    col_cond = "Group",
+    group_col = "Group",
     type     = "effect",
     cond     = "A"
   )
@@ -22,7 +22,7 @@ test_that("aldex_volcano_plot returns a ggplot for the volcano view", {
   p <- aldex_volcano_plot(
     table    = toy$table,
     metadata = toy$metadata,
-    col_cond = "Group",
+    group_col = "Group",
     type     = "volcano",
     cond     = "A"
   )
@@ -40,7 +40,7 @@ test_that("aldex_volcano_plot saves the ALDEx2 result table when requested", {
   aldex_volcano_plot(
     table          = toy$table,
     metadata       = toy$metadata,
-    col_cond       = "Group",
+    group_col       = "Group",
     type           = "effect",
     cond           = "A",
     save_table     = TRUE,
@@ -59,28 +59,51 @@ test_that("aldex_volcano_plot rejects an invalid type", {
     aldex_volcano_plot(
       table    = toy$table,
       metadata = toy$metadata,
-      col_cond = "Group",
+      group_col = "Group",
       type     = "not-a-type"
     ),
     "`type` must be either"
   )
 })
 
-test_that("aldex_volcano_plot: positive effect means higher in cond", {
+test_that("aldex_volcano_plot: in the plot, positive effect means higher in cond", {
   toy <- make_toy_community()
 
   # OTU1-OTU4 are enriched in group A (see helper-toy_community.R)
-  effect_otu1 <- function(cond) {
+  run <- function(cond) {
     tmp <- tempfile(fileext = ".txt")
     on.exit(unlink(tmp))
     set.seed(1)
-    aldex_volcano_plot(toy$table, toy$metadata, col_cond = "Group",
-                       type = "effect", cond = cond,
-                       save_table = TRUE, table_filename = tmp)
+    p <- aldex_volcano_plot(toy$table, toy$metadata, group_col = "Group",
+                            type = "effect", cond = cond,
+                            save_table = TRUE, table_filename = tmp)
     saved <- utils::read.delim(tmp, check.names = FALSE)
-    saved$effect[saved$Feature.ID == "OTU1"]
+    list(plot  = p$data$effect[p$data$Feature.ID == "OTU1"],
+         saved = saved$effect[saved$Feature.ID == "OTU1"])
   }
 
-  expect_gt(effect_otu1("A"), 0)
-  expect_lt(effect_otu1("B"), 0)
+  a <- run("A")
+  b <- run("B")
+  expect_gt(a$plot, 0)
+  expect_lt(b$plot, 0)
+  # The saved table keeps ALDEx2's own sign (B minus A), whatever cond is
+  expect_lt(a$saved, 0)
+  expect_equal(a$saved, b$saved)
+})
+
+test_that("aldex_volcano_plot: p_adjust_method picks the adjusted or raw p-value", {
+  toy <- make_toy_community()
+
+  set.seed(1)
+  p_bh <- aldex_volcano_plot(toy$table, toy$metadata, group_col = "Group",
+                             type = "effect", cond = "A", p_adjust_method = "BH")
+  set.seed(1)
+  p_raw <- aldex_volcano_plot(toy$table, toy$metadata, group_col = "Group",
+                              type = "effect", cond = "A", p_adjust_method = "none")
+
+  expect_equal(p_bh$data$.p, p_bh$data$wi.eBH)
+  expect_equal(p_raw$data$.p, p_raw$data$wi.ep)
+  # ALDEx2 only offers BH
+  expect_error(aldex_volcano_plot(toy$table, toy$metadata, group_col = "Group",
+                                  type = "effect", p_adjust_method = "holm"))
 })

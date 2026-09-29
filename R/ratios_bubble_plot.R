@@ -11,7 +11,7 @@
 #' @param metadata A data frame containing sample metadata. The first column must
 #'   correspond to sample IDs and include a column defining the experimental
 #'   conditions.
-#' @param condition_col Character. Name of the metadata column defining the
+#' @param group_col Character. Name of the metadata column defining the
 #'   experimental condition.
 #' @param condition_A Character. Name of the first condition to compare.
 #' @param condition_B Character. Name of the second condition to compare.
@@ -22,7 +22,7 @@
 #'   (e.g. "phylum", "genus", "species").
 #' @param x_axis_title Character. Label for the x-axis (taxon names).
 #' @param legend_title Character. Title for the fill legend and the axis
-#'   showing the dominant condition. Defaults to \code{condition_col} when
+#'   showing the dominant condition. Defaults to \code{group_col} when
 #'   \code{NULL} (default).
 #' @param group_colors Character vector of colors used to represent the dominant
 #'   condition.
@@ -31,6 +31,8 @@
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ratios_bubble_table.txt"}.
 #'
+#' @param ... Old names of renamed arguments (\code{condition_col}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A ggplot2 object showing abundance ratios between the two
 #'   conditions.
 #'
@@ -47,7 +49,7 @@
 #' ratios_bubble_plot(
 #'   table         = table,
 #'   metadata      = metadata,
-#'   condition_col = "Location",
+#'   group_col = "Location",
 #'   condition_A   = "Rhizosphere",
 #'   condition_B   = "Roots",
 #'   taxonomy_db   = "silva",
@@ -57,7 +59,7 @@
 
 ratios_bubble_plot <- function(table,
                                  metadata,
-                                 condition_col,
+                                 group_col,
                                  condition_A,
                                  condition_B,
                                  taxonomy_db = "silva",
@@ -67,11 +69,16 @@ ratios_bubble_plot <- function(table,
                                  legend_title = NULL,
                                  group_colors = NULL,
                                  save_table = FALSE,
-                                 table_filename = "ratios_bubble_table.txt") {
+                                 table_filename = "ratios_bubble_table.txt",
+                                 ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(condition_col = "group_col"), "ratios_bubble_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+
   # Filtrar metadatos a las condiciones deseadas
   metadata_sub <- metadata %>%
-    dplyr::filter(.data[[condition_col]] %in% c(condition_A, condition_B)) %>%
-    dplyr::select(SampleID = 1, Condition = dplyr::all_of(condition_col))
+    dplyr::filter(.data[[group_col]] %in% c(condition_A, condition_B)) %>%
+    dplyr::select(SampleID = 1, Condition = dplyr::all_of(group_col))
 
   samples <- metadata_sub$SampleID
 
@@ -218,7 +225,7 @@ ratios_bubble_plot <- function(table,
   }
 
   # Bubble plot
-  legend_name <- if (!is.null(legend_title)) legend_title else condition_col
+  legend_name <- if (!is.null(legend_title)) legend_title else group_col
   ggplot2::ggplot(top_taxa,
          ggplot2::aes(
            x = reorder(taxonomy, Ratio),

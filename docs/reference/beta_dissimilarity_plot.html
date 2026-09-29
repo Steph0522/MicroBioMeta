@@ -108,8 +108,11 @@ constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs
 <span>  partition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"shared"</span>, <span class="st">"turnover"</span>, <span class="st">"nestedness"</span><span class="op">)</span>,</span>
 <span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sorensen"</span>, <span class="st">"jaccard"</span><span class="op">)</span>,</span>
 <span>  stat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"holm"</span>,</span>
+<span>  show_x_labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  x_label_angle <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  strip_text_bold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  strip_text_color <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  aspect_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"betadiv_table.txt"</span></span>
@@ -137,7 +140,10 @@ constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs
 
 
 <dt id="arg-condition-col">condition2_col<a class="anchor" aria-label="anchor" href="#arg-condition-col"></a></dt>
-<dd><p>Optional column name in metadata for the second condition (used as facet).</p></dd>
+<dd><p>Optional column name in metadata for the second
+condition, used as facet. Each facet keeps only pairs of samples that
+share that value (e.g. two samples of treatment TC), so comparisons are
+split by the condition they come from instead of mixing them.</p></dd>
 
 
 <dt id="arg-facet-colors">facet_colors<a class="anchor" aria-label="anchor" href="#arg-facet-colors"></a></dt>
@@ -164,19 +170,43 @@ colorblind-friendly Okabe-Ito palette (<code>.mbm_colors</code>, orange/blue fir
 
 
 <dt id="arg-stat">stat<a class="anchor" aria-label="anchor" href="#arg-stat"></a></dt>
-<dd><p>Character or <code>NULL</code>. Statistical test to compare groups,
-passed to <code><a href="https://rpkgs.datanovia.com/ggpubr/reference/stat_compare_means.html" class="external-link">ggpubr::stat_compare_means()</a></code> (e.g. <code>"wilcox.test"</code>,
-<code>"kruskal.test"</code>, <code>"anova"</code>). Default <code>NULL</code> (no test shown).</p></dd>
+<dd><p>Character or <code>NULL</code>. Statistical test to compare the
+boxes within each panel/facet. <code>"wilcox.test"</code> or <code>"t.test"</code>
+compare every pair of boxes, each with its own bracket and p-value
+(<code><a href="https://rpkgs.datanovia.com/ggpubr/reference/geom_pwc.html" class="external-link">ggpubr::stat_pwc()</a></code>); <code>"kruskal.test"</code> or <code>"anova"</code>
+give one global p-value per panel (<code><a href="https://rpkgs.datanovia.com/ggpubr/reference/stat_compare_means.html" class="external-link">ggpubr::stat_compare_means()</a></code>).
+Default <code>NULL</code> (no test shown).</p></dd>
+
+
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p>Multiple-comparison correction for the pairwise
+tests (<code>stat = "wilcox.test"</code> or <code>"t.test"</code>), applied within
+each panel; any method of <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default
+<code>"holm"</code>; <code>"none"</code> shows the raw p-values.</p></dd>
+
+
+<dt id="arg-show-x-labels">show_x_labels<a class="anchor" aria-label="anchor" href="#arg-show-x-labels"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), x-axis tick labels
+are shown. The comparison groups are also in the legend, so set to
+<code>FALSE</code> to hide the (often long) tick labels when that's redundant.</p></dd>
 
 
 <dt id="arg-x-label-angle">x_label_angle<a class="anchor" aria-label="anchor" href="#arg-x-label-angle"></a></dt>
 <dd><p>Numeric. Rotation (in degrees) of the x-axis tick
-labels. Default <code>0</code> (horizontal); use e.g. <code>45</code> or <code>90</code> when
-comparison names are long enough to overlap.</p></dd>
+labels when <code>show_x_labels = TRUE</code>. Default <code>0</code> (horizontal);
+use e.g. <code>45</code> or <code>90</code> when comparison names are long enough to
+overlap.</p></dd>
 
 
 <dt id="arg-strip-text-bold">strip_text_bold<a class="anchor" aria-label="anchor" href="#arg-strip-text-bold"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, facet strip labels are bold. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-strip-text-color">strip_text_color<a class="anchor" aria-label="anchor" href="#arg-strip-text-color"></a></dt>
+<dd><p>Color of the facet strip labels, which sit on the
+<code>facet_colors</code> backgrounds. Default <code>"black"</code> (the default
+<code>facet_colors</code> is a light <code>"grey85"</code>; pass <code>"white"</code> if
+you supply darker <code>facet_colors</code>).</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect_ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>

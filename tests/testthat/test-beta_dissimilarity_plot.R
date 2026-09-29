@@ -67,3 +67,22 @@ test_that("beta_dissimilarity_plot keeps each pair of samples once and no self-c
     expect_false(any(duplicated(pair_key)))
   }
 })
+test_that("beta_dissimilarity_plot facets keep only pairs within the same condition2 value", {
+  toy <- make_beta_toy_community()
+
+  tmp <- tempfile(fileext = ".txt")
+  on.exit(unlink(tmp), add = TRUE)
+
+  beta_dissimilarity_plot(
+    toy$table, toy$metadata,
+    condition1_col = "Group",
+    condition2_col = "Batch",
+    partition      = "shared",
+    save_table     = TRUE,
+    table_filename = tmp
+  )
+
+  saved <- utils::read.delim(tmp, check.names = FALSE)
+  expect_gt(nrow(saved), 0)
+  expect_true(all(saved$Batch.x == saved$Batch.y))
+})

@@ -163,7 +163,7 @@ Abundance barplots are useful to identify patterns in community composition base
 This function generates stacked barplots of relative abundances using an abundance table and a metadata file as input.
 
 The `taxonomy_db` parameter specifies the taxonomic reference database used for taxonomic assignment (e.g., SILVA, GTDB, UNITE).\
-The `x_col` parameter indicates the column in the metadata used for grouping samples along the x-axis, while `facet_col` defines the metadata column used to split the plot into facets.
+The `x_col` parameter indicates the column in the metadata used for grouping samples along the x-axis, while `facet_by` defines the metadata column used to split the plot into facets.
 
 The `level` parameters allow us to choose the taxonomic level to collapse.
 
@@ -183,7 +183,7 @@ abundance_bar_plot(table = table_bac,
                   level = "phylum",
                   top_n = 15,
                   x_col = "Type_of_soil",
-                  facet_col = "Treatment",
+                  facet_by = "Treatment",
                   add_remained = TRUE,
                   label =   "Phylum",
                   x_label_angle = 45,
@@ -195,7 +195,7 @@ abundance_bar_plot(table = table_bac,
 abundance_bar_plot(table = table_fung,
                   metadata = metadata_fungi,
                   x_col = "Treatment",
-                  facet_col = "Type_of_soil",
+                  facet_by = "Type_of_soil",
                   add_remained = TRUE,
                   label =   "Genera",
                   x_label_angle = 45,
@@ -321,7 +321,7 @@ alpha_diversity_plot(table = table_fung,
                 save_table = FALSE)
 ```
 
-Each panel is automatically labeled (A, B, C, ...) so it can be referenced. When `stat` is set, a p-value annotation is added to each panel as well (default Wilcoxon for two comparisons and Kruskal-Wallis for three comparisons), we can indicate the method to use with `stat` as the function `stat_compare_means()` of `ggpubr`.
+Each panel is automatically labeled (A, B, C, ...) so it can be referenced. When `stat` is set, p-values are added to each panel as well. `"wilcox.test"` or `"t.test"` compare every pair of groups, each with its own bracket, and correct the p-values for multiple comparisons within the panel with `p_adjust_method` (default `"holm"`; `"none"` shows the raw p-values). `"kruskal.test"` or `"anova"` give one global p-value per panel. Only significant comparisons are drawn.
 `panel_label_case` switches between upper and lowercase labels, `panel_label_bold` for bold labels and `panel_labels` lets you supply custom labels(e.g. `c("(a)", "(b)", "(c)")`) instead of the auto-generated ones. `free_y` lets each panel use its own y-axis scale instead of a shared one, as below:
 
 ```{r alpha-diversity-visualization-21, warning=FALSE, fig.height=6, fig.width=9}
@@ -447,7 +447,7 @@ The `group_col` parameter specifies the metadata column used to color the sample
 
 The `distance` argument defines the dissimilarity metric used to calculate beta diversity (e.g, **bray, jaccard, aitchsion**, etc), and `ordination` (options: **PCA, PCoA** or **NMDS**) specifies the ordination method applied to visualize the distances among samples.
 
-⚠️ **NOTE: `distance = "compositional"` uses one of the Monte Carlo instances that `ALDEx2` draws at random, so the result changes slightly from run to run. If you want to get the same result every time, we suggest running `set.seed()` before the function**, as in the examples below. The same applies to `beta_test_table(method = "compositional")`, to the ALDEx2 functions and to the p-values of `cca_rda_biplot()`.
+⚠️ **NOTE: `distance = "compositional"` uses one of the Monte Carlo instances that `ALDEx2` draws at random, so the result changes slightly from run to run. If you want to get the same result every time, we suggest running `set.seed()` before the function**, as in the examples below. The same applies to `beta_test_table(distance = "compositional")`, to the ALDEx2 functions and to the p-values of `cca_rda_biplot()`.
 
 ```{r ordination-of-community-composition-28, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 set.seed(123)
@@ -473,20 +473,20 @@ beta_ord_plot(table = table_fung,
 ### 🖥️ Statistical tests for beta diversity
 The `beta_test_table()` function performs statistical tests to evaluate whether community composition differs among experimental groups.
 
-The `formula_str` argument specifies the experimental design using a formula syntax similar to linear models in R or as it is used for the `vegan` package [@oksanen2024vegan]. The `method` parameter defines the distance metric used to calculate dissimilarities, and the `test` argument specifies the statistical test (options: **PERMANOVA** [@anderson2001permanova] or **BETADISPER**).
+The `formula_str` argument specifies the experimental design using a formula syntax similar to linear models in R or as it is used for the `vegan` package [@oksanen2024vegan]. The `distance` parameter defines the distance metric used to calculate dissimilarities, and the `test` argument specifies the statistical test (options: **PERMANOVA** [@anderson2001permanova] or **BETADISPER**).
 
-The `permutations` parameter determines the number of permutations used to estimate statistical significance. The `strata_var` is used as in `vegan` package to block for a parameter. The first column of `metadata` must hold the sample IDs: samples are matched by ID, so the order of the metadata rows doesn't matter. `table` can also be a precomputed distance (e.g. from `vegan::vegdist()`), which is used as-is.
+The `permutations` parameter determines the number of permutations used to estimate statistical significance. The `strata_var` is used as in `vegan` package to block for a parameter. The first column of `metadata` must hold the sample IDs. The functions never match samples by position: metadata rows are matched to the table by ID (and reordered if needed, with a message), samples missing from the metadata are left out with a message, and the function stops if no ID matches. This applies to every function that runs a statistical test (PERMANOVA, betadisper, ALDEx2, CCA/RDA, random forest). `table` can also be a precomputed distance (e.g. from `vegan::vegdist()`), which is used as-is.
 
 ⚠️ **NOTE: Each function has the option save_* that export a table or an element obtain in each function**. 
 
-`method` is set to `compositional` for both datasets, matching each one's PCA above, so the significance test evaluates the same notion of dissimilarity shown in the plot.
+`distance` is set to `compositional` for both datasets, matching each one's PCA above, so the significance test evaluates the same notion of dissimilarity shown in the plot.
 
 ```{r statistical-tests-for-beta-diversity-30, fig.width=8, fig.height=4}
 set.seed(123)
 beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
-                method = "compositional",
+                distance = "compositional",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -496,7 +496,7 @@ set.seed(123)
 beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
-                method = "compositional",
+                distance = "compositional",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -504,13 +504,13 @@ beta_test_table(table = table_fung,
 ### 💻 Beta diversity partitioning
 Beta diversity can also be decomposed into different components. The `beta_partition_ord_plot()` function partitions beta diversity into the turnover and nestedness components based on selected dissimilarity indices [@baselga2012betapart].
 
-The `index` argument specifies the dissimilarity family used for the partition (e.g., Jaccard or Sørensen). The `group_col` and `shape_col` parameters define how samples are visualized according to metadata variables.
+The `family` argument specifies the dissimilarity family used for the partition (e.g., Jaccard or Sørensen). The `group_col` and `shape_col` parameters define how samples are visualized according to metadata variables.
 
 ```{r beta-diversity-partitioning-32, fig.width=14, fig.height=5.5}
 beta_partition_ord_plot(
   table = table_bac,
   metadata = metadata_bacteria,
-  index = "jaccard",
+  family = "jaccard",
   group_col = "Type_of_soil",
   shape_col = "Treatment", 
   save_table = FALSE)
@@ -520,7 +520,7 @@ beta_partition_ord_plot(
 beta_partition_ord_plot(
   table = table_fung,
   metadata = metadata_fungi,
-  index = "jaccard",
+  family = "jaccard",
   group_col = "Type_of_soil",
   shape_col = "Treatment", 
   save_table = FALSE)
@@ -529,7 +529,7 @@ beta_partition_ord_plot(
 ### 🖥️ Pairwise beta diversity visualization
 The `beta_dissimilarity_plot()` function summarizes pairwise beta diversity values using boxplots, allowing comparison of diversity patterns among groups of samples. This funciont uses betapart on incidence data using Sorensen or Jaccard index: shared, turnover or nestedness. 
 
-The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
+The `condition1_col` and `condition2_col` parameters specify metadata variables used to define the groups being compared. `condition2_col` splits the comparisons into facets: each facet keeps only pairs of samples from the same value (e.g. both samples from treatment TC), so treatments are not mixed. The `partition` argument determines which component of beta diversity is displayed (e.g., shared or unique), while `family` defines the dissimilarity index used.
 
 By default `beta_dissimilarity_plot()` keeps every pairwise combination possible of `condition1_col`, including a group compared against itself (e.g. `"Roots_vs_Roots"`). The `comparison_condition1` argument restricts the plot to specific `"value1_vs_value2"` labels (the two values sorted alphabetically and joined with `"*_vs_*"`). Here we build that list programmatically to keep only the comparisons of every other compartment **against Roots**, dropping self-comparisons:
 
@@ -539,7 +539,7 @@ vs_roots_bac <- paste0(pmin(groups_bac, "Roots"), "_vs_", pmax(groups_bac, "Root
 vs_roots_bac
 ```
 
-As with the alpha diversity plots, `x_label_angle` rotates the x-axis tick labels (default `0`), `strip_text_bold` toggles bold facet strip titles (default `FALSE`), and `aspect_ratio` fixes the panel's height/width ratio. As with the alpha plots, `stat` (e.g. `"wilcox.test"`, `"kruskal.test"`, `"anova"`) adds a statistical comparison across the boxplots, passed through to `ggpubr::stat_compare_means()`.
+As with the alpha diversity plots, `x_label_angle` rotates the x-axis tick labels (default `0`), `strip_text_bold` toggles bold facet strip titles (default `FALSE`), and `aspect_ratio` fixes the panel's height/width ratio. As with the alpha plots, `stat` (e.g. `"wilcox.test"`, `"kruskal.test"`, `"anova"`) adds a statistical comparison across the boxplots of each facet, with the same pairwise or global behavior and `p_adjust_method` as in the alpha plots.
 
 If `save_table = TRUE`, the function also returns a table containing the beta diversity values used to generate the plot.
 
@@ -585,9 +585,9 @@ beta_dissimilarity_plot(table = table_fung,
 
 So the plot below has one purple (this color can be set) strip on top labeled **"Rhizosphere"**, the fixed reference group in both comparisons and,inside it, two boxes: **"Roots"** (Rhizosphere vs. Roots, between-group) and **"Rhizosphere"** (Rhizosphere vs. Rhizosphere, within-group). The strip and the "Rhizosphere" box both being labeled the same is intentional, not a duplicate, the strip names the reference, the box names what it's being compared *against* (itself, in that one case).
 
-`comparison_condition1` selects which `"value1_vs_value2"` combinations to keep always with the reference group (`Rhizosphere`) first. `comparison_condition2` keeps only the same treatment pairs, so turnover isn't confounded by comparing samples from different treatments.
+`comparison_condition1` selects which `"value1_vs_value2"` combinations to keep always with the reference group (`Rhizosphere`) first. `comparison_condition2` keeps only the same treatment pairs, so turnover isn't confounded by comparing samples from different treatments. Giving only `condition2_col` (without `comparison_condition2`) does the same for every treatment: it keeps the same-treatment pairs and facets by treatment.
 
-`color_facets_x` colors the top facet strips (one per `comparison_condition2` pair) and `color_axis_x` colors the boxes (one per `comparison_condition1` pair). Tick labels are hidden by default since the groups are already identified in the legend. Set `show_x_labels = TRUE` to bring them back. `stat` adds a statistical comparison between the two boxes.
+`facet_colors` colors the top facet strips (one per `comparison_condition2` pair) and `group_colors` colors the boxes (one per `comparison_condition1` pair). Tick labels are hidden by default since the groups are already identified in the legend. Set `show_x_labels = TRUE` to bring them back. `stat` adds a statistical comparison between the boxes of each facet, as in `beta_dissimilarity_plot()`.
 
 ```{r pairwise-turnover-between-group-vs-within-group-38, warning=FALSE, fig.width=3.5, fig.height=4.5, out.width="60%"}
 beta_turnover_plot(
@@ -597,8 +597,8 @@ beta_turnover_plot(
   comparison_condition2 = c("TC_vs_TC", "TD_vs_TD", "TED_vs_TED"),
   condition1_col        = "Type_of_soil",
   condition2_col        = "Treatment",
-  color_facets_x        = "#5D478B",
-  color_axis_x          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00"),
+  facet_colors        = "#5D478B",
+  group_colors          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00"),
   stat                  = "wilcox.test"
 )
 ```
@@ -676,7 +676,7 @@ We can visualize differential abundance using a **volcano plot**. Significant ta
 ```{r example-bacterial-data-42, fig.width=7, fig.height=5.5, message=FALSE, warning=FALSE}
 aldex_volcano_plot(table = table_bac_compar,
                    metadata = metadata_bacteria_compar,
-                   col_cond = "Type_of_soil",
+                   group_col = "Type_of_soil",
                    type = "volcano",
                    label_size = 3,
                    filter_uncultured = TRUE )
@@ -691,18 +691,18 @@ aldex_volcano_plot(table = table_bac_compar,
 BiocManager::install(c("ANCOMBC", "phyloseq"))
 ```
 
-`tax_level` groups the table to a taxonomic rank before testing (default `"Genus"`), and `p_adj_method`/`prv_cut` control the multiple-testing correction and prevalence filter.
+`level` groups the table to a taxonomic rank before testing (default `"Genus"`), and `p_adjust_method`/`min_prevalence` control the multiple-testing correction and prevalence filter.
 
-⚠️ With a low `prv_cut`, rare/sparse taxa can trigger a `"Zero variances have been detected..."` error from ANCOMBC2's internal bias-correction step on some runs (it doesn't always happen, it depends on which taxa the bootstrap iteration happens to keep). Raising `prv_cut` filters those sparse taxa out before testing and avoids it.
+⚠️ With a low `min_prevalence`, rare/sparse taxa can trigger a `"Zero variances have been detected..."` error from ANCOMBC2's internal bias-correction step on some runs (it doesn't always happen, it depends on which taxa the bootstrap iteration happens to keep). Raising `min_prevalence` filters those sparse taxa out before testing and avoids it.
 
 ```{r ancombc2-as-an-alternative-method-44, fig.width=8, fig.height=6, message=FALSE, warning=FALSE}
 ancombc_plot(
   table        = table_bac_compar,
   metadata     = metadata_bacteria_compar,
-  col_cond     = "Type_of_soil",
-  tax_level    = "Genus",
-  prv_cut      = 0.3,
-  p_adj_method = "BH"
+  group_col     = "Type_of_soil",
+  level    = "Genus",
+  min_prevalence      = 0.3,
+  p_adjust_method = "BH"
 )
 ```
 
@@ -722,7 +722,7 @@ table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
 ```{r example-fungal-data-46, fig.width=9, fig.height=4, message=FALSE, warning=FALSE}
 aldex_heatmap_plot(table = table_fung_compar,
                    metadata = metadata_fungi_compar,
-                   col_cond = "Type_of_soil")
+                   group_col = "Type_of_soil")
 
 ```
 
@@ -744,7 +744,7 @@ Alternatively, taxa with the strongest **log-ratio differences between two condi
 ```{r identifying-important-taxa-48, fig.width=8, fig.height=9}
 ratios_bubble_plot(table = table_fung_compar,
            metadata = metadata_fungi_compar,
-           condition_col = "Type_of_soil",
+           group_col = "Type_of_soil",
            top_n = 20,
            condition_A = "Rhizosphere",
            condition_B = "Bulk soil")
@@ -774,7 +774,7 @@ Example using **phylum-level abundances**:
 
 ```{r correlation-between-environmental-variables-and-taxonomic-abundance-50, fig.width=9, fig.height=8}
 corr_env_abund_plot(table = table_fung,
-                    env_table = env_table_fung,
+                    env_data = env_table_fung,
                     metadata = metadata_fungi,
                     level = "phylum",
                     save_table = FALSE)
@@ -788,7 +788,7 @@ Correlations can also be displayed using circle markers instead of tiles:
 
 ```{r alternative-visualization-51, fig.width=9, fig.height=8}
 corr_env_abund_plot(table = table_fung,
-                    env_table = env_table_fung,
+                    env_data = env_table_fung,
                     metadata = metadata_fungi,
                     level = "phylum",
                     save_table = FALSE,

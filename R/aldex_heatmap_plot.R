@@ -8,13 +8,18 @@
 #'   contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
 #'   "taxon", "taxa", "Taxa", or "Taxon").
 #' @param metadata Data frame with one row per sample. Must contain the column
-#'   specified in \code{col_cond}.
-#' @param col_cond Character. Name of the column in \code{metadata} that
+#'   specified in \code{group_col}.
+#' @param group_col Character. Name of the column in \code{metadata} that
 #'   defines the two groups to compare. Exactly two unique values are required.
 #' @param effect_threshold Numeric. Minimum absolute effect size to retain
 #'   (default \code{0.8}).
-#' @param pvalue_BH Numeric or NULL. Maximum BH-adjusted p-value to retain.
-#'   If NULL (default) only \code{effect_threshold} is applied.
+#' @param pval_threshold Numeric or NULL. Maximum p-value to retain (adjusted
+#'   or not, depending on \code{p_adjust_method}). If NULL (default) only
+#'   \code{effect_threshold} is applied.
+#' @param p_adjust_method \code{"BH"} (default) or \code{"none"}: whether
+#'   \code{pval_threshold} and the p-value annotation use ALDEx2's
+#'   Benjamini-Hochberg adjusted p-values (\code{wi.eBH}) or the raw ones
+#'   (\code{wi.ep}). ALDEx2 only computes the BH correction.
 #' @param cluster_rows Logical. Cluster heatmap rows (default \code{FALSE}).
 #' @param cluster_columns Logical. Cluster heatmap columns (default \code{FALSE}).
 #' @param heatmap_colors Controls the color scale of the main heatmap body (CLR values).
@@ -33,17 +38,21 @@
 #'   the heatmap body and effect size defaults).
 #' @param group_colors Optional character vector of colors for the difference
 #'   barplot annotation, one color per condition in the order they appear in
-#'   \code{metadata[[col_cond]]}. If \code{NULL} (default) an orange/blue
+#'   \code{metadata[[group_col]]}. If \code{NULL} (default) an orange/blue
 #'   colorblind-friendly palette is used (matching the col_sup/col_inf
 #'   convention used elsewhere, e.g. \code{aldex_volcano_plot}), cycling
 #'   through the rest of the Okabe-Ito palette as needed
 #'   for more than two groups.
 #' @param save_table Logical. If \code{TRUE}, saves the underlying ALDEx2
 #'   results table (filtered taxa, effect size, diff.btw, p-value category)
-#'   to disk. Default \code{FALSE}.
+#'   to disk. Default \code{FALSE}. \code{effect} and \code{diff.btw} are
+#'   saved as ALDEx2 returns them (alphabetically second group minus the
+#'   first); the \code{seccion} column says in which group each taxon is higher.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.
 #'
+#' @param ... Old names of renamed arguments (\code{col_cond}, \code{pvalue_BH}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A \code{ComplexHeatmap} object (returned invisibly; drawn as a
 #'   side effect).
 #' @export
@@ -56,24 +65,25 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # col_cond must have exactly two groups; Location has two
+#' # group_col must have exactly two groups; Location has two
 #' # (Rhizosphere and Roots) in the bundled example data. effect_threshold
-#' # alone (no pvalue_BH) is used here since this small (46-sample) dataset
+#' # alone (no pval_threshold) is used here since this small (46-sample) dataset
 #' # rarely has taxa that pass both an effect-size and a significance
 #' # threshold at once - combine both for a stricter, real analysis.
 #' aldex_heatmap_plot(
 #'   table            = table,
 #'   metadata         = metadata,
-#'   col_cond         = "Location",
+#'   group_col         = "Location",
 #'   effect_threshold = 0.5
 #' )
 #'
 
 aldex_heatmap_plot <- function(table,
                                metadata,
-                               col_cond,
+                               group_col,
                                effect_threshold  = 0.8,
-                               pvalue_BH         = NULL,
+                               pval_threshold    = NULL,
+                               p_adjust_method   = "BH",
                                cluster_rows      = FALSE,
                                cluster_columns   = FALSE,
                                heatmap_colors    = NULL,
@@ -91,7 +101,12 @@ aldex_heatmap_plot <- function(table,
                                ),
                                group_colors = NULL,
                                save_table = FALSE,
-                               table_filename = "aldex_pval_effect.txt") {
+                               table_filename = "aldex_pval_effect.txt",
+                               ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(col_cond = "group_col", pvalue_BH = "pval_threshold"), "aldex_heatmap_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+
 
   # Check ComplexHeatmap
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
@@ -103,8 +118,8 @@ aldex_heatmap_plot <- function(table,
   }
 
   # Verify condition column
-  if (!col_cond %in% colnames(metadata))
-    stop("Column ", col_cond, " not found in metadata.")
+  if (!group_col %in% colnames(metadata))
+    stop("Column ", group_col, " not found in metadata.")
 
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table),
                   ignore.case = TRUE)
@@ -123,7 +138,7 @@ aldex_heatmap_plot <- function(table,
   metadata     <- .mbm_align_metadata(colnames(table_counts), metadata)
   table_counts <- table_counts[, metadata[[1]], drop = FALSE]
 
-  conditions       <- as.character(metadata[[col_cond]])
+  conditions       <- as.character(metadata[[group_col]])
   unique_conditions <- unique(conditions)
   if (length(unique_conditions) != 2)
     stop("Exactly two conditions are required for the analysis.")
@@ -150,31 +165,35 @@ aldex_heatmap_plot <- function(table,
   # the first. Flip the sign when needed so that a positive value always
   # means higher in unique_conditions[1], which is what the labels and bar
   # colors below assume.
-  if (unique_conditions[1] == sort(unique_conditions)[1]) {
+  # (The saved table, below, keeps the values exactly as ALDEx2 returns them.)
+  flip_sign <- unique_conditions[1] == sort(unique_conditions)[1]
+  if (flip_sign) {
     aldex_results$diff.btw <- -aldex_results$diff.btw
     aldex_results$effect   <- -aldex_results$effect
   }
 
-  # Filter by thresholds
+  # Filter by thresholds, on the adjusted or raw p-value (p_adjust_method)
+  p_adjust_method <- match.arg(p_adjust_method, c("BH", "none"))
+  aldex_results$.p <- if (p_adjust_method == "BH") aldex_results$wi.eBH else aldex_results$wi.ep
   aldex_filtered <- aldex_results
-  if (effect_threshold > 0 && !is.null(pvalue_BH)) {
+  if (effect_threshold > 0 && !is.null(pval_threshold)) {
     aldex_filtered <- aldex_results %>%
-      dplyr::filter(abs(effect) >= effect_threshold, wi.eBH <= pvalue_BH)
+      dplyr::filter(abs(effect) >= effect_threshold, .p <= pval_threshold)
   } else if (effect_threshold > 0) {
     aldex_filtered <- aldex_results %>%
       dplyr::filter(abs(effect) >= effect_threshold)
-  } else if (!is.null(pvalue_BH)) {
+  } else if (!is.null(pval_threshold)) {
     aldex_filtered <- aldex_results %>%
-      dplyr::filter(wi.eBH <= pvalue_BH)
+      dplyr::filter(.p <= pval_threshold)
   }
 
   if (nrow(aldex_filtered) == 0)
     stop(
       "No taxa passed the filtering thresholds ",
       "(effect_threshold = ", effect_threshold,
-      if (!is.null(pvalue_BH)) ", pvalue_BH = " else "",
-      if (!is.null(pvalue_BH)) pvalue_BH else "",
-      ").\nTry lowering effect_threshold and/or raising pvalue_BH."
+      if (!is.null(pval_threshold)) ", pval_threshold = " else "",
+      if (!is.null(pval_threshold)) pval_threshold else "",
+      ").\nTry lowering effect_threshold and/or raising pval_threshold."
     )
 
   # Prepare plot data
@@ -203,16 +222,22 @@ aldex_heatmap_plot <- function(table,
       taxonomy = stringr::str_trim(taxonomy),
       taxonomy = make.unique(taxonomy),
       p.value  = dplyr::case_when(
-        wi.eBH <= 0.001 ~ "<0.001",
-        wi.eBH <= 0.01  ~ "<0.01",
-        wi.eBH <  0.05  ~ "<0.05",
+        .p <= 0.001 ~ "<0.001",
+        .p <= 0.01  ~ "<0.01",
+        .p <  0.05  ~ "<0.05",
         TRUE            ~ ">0.05"
       )
     ) %>%
     dplyr::arrange(diff.btw)
 
   if (save_table) {
-    utils::write.table(aldex_plot, file = table_filename, sep = "\t",
+    aldex_saved <- aldex_plot
+    aldex_saved$.p <- NULL
+    if (flip_sign) {
+      aldex_saved$diff.btw <- -aldex_saved$diff.btw
+      aldex_saved$effect   <- -aldex_saved$effect
+    }
+    utils::write.table(aldex_saved, file = table_filename, sep = "\t",
                        quote = FALSE, row.names = FALSE)
     message("Table saved as: ", table_filename)
   }

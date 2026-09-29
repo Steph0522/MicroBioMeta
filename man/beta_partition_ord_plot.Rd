@@ -7,7 +7,7 @@
 beta_partition_ord_plot(
   table,
   metadata,
-  index = "jaccard",
+  family = "jaccard",
   group_col = NULL,
   shape_col = NULL,
   legend_title = NULL,
@@ -17,7 +17,8 @@ beta_partition_ord_plot(
   panel_labels = NULL,
   panel_label_bold = TRUE,
   save_table = FALSE,
-  table_filename = "SAMPLE1"
+  table_filename = "SAMPLE1",
+  ...
 )
 }
 \arguments{
@@ -27,7 +28,7 @@ taxonomy column is present it is detected and removed automatically.}
 
 \item{metadata}{Data frame with sample metadata. First column must be SampleID.}
 
-\item{index}{Dissimilarity family for the partition: \code{"jaccard"} (default)
+\item{family}{Dissimilarity family for the partition: \code{"jaccard"} (default)
 or \code{"sorensen"}. Case-insensitive.}
 
 \item{group_col}{Column in metadata to use as color grouping.}
@@ -57,6 +58,9 @@ panel tags.}
 \item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. Base name for the saved table file. Default \code{"SAMPLE1"}.}
+
+\item{...}{Old names of renamed arguments (\code{index}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A combined cowplot panel of beta diversity partition plots.

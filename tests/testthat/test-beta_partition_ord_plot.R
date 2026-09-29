@@ -6,7 +6,7 @@ test_that("beta_partition_ord_plot returns a combined ordination panel", {
   p <- beta_partition_ord_plot(
     table     = toy$table,
     metadata  = toy$metadata,
-    index     = "jaccard",
+    family    = "jaccard",
     group_col = "Group"
   )
 
@@ -22,7 +22,7 @@ test_that("beta_partition_ord_plot saves jaccard/turnover/nestedness tables when
   beta_partition_ord_plot(
     table          = toy$table,
     metadata       = toy$metadata,
-    index          = "jaccard",
+    family         = "jaccard",
     group_col      = "Group",
     save_table     = TRUE,
     table_filename = base

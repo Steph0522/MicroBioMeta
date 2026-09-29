@@ -96,7 +96,7 @@
 <span>  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"genus"</span>,</span>
 <span>  <span class="va">x_col</span>,</span>
-<span>  facet_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  facet_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  width_equal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"taxonomy"</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">15</span>,</span>
@@ -107,7 +107,8 @@
 <span>  aspect_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_remained <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"relative_abundance.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"relative_abundance.txt"</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -141,7 +142,7 @@ is used to simplify the taxonomic names shown in the plot. One of
 <dd><p>Character. Column name in <code>metadata</code> to use for the x-axis (e.g., environment, condition).</p></dd>
 
 
-<dt id="arg-facet-col">facet_col<a class="anchor" aria-label="anchor" href="#arg-facet-col"></a></dt>
+<dt id="arg-facet-by">facet_by<a class="anchor" aria-label="anchor" href="#arg-facet-by"></a></dt>
 <dd><p>Optional. Character. Column name in <code>metadata</code> to facet the plot by (e.g., treatment group). Default is <code>NULL</code>.</p></dd>
 
 
@@ -174,7 +175,7 @@ Default <code>FALSE</code> (plain).</p></dd>
 
 <dt id="arg-strip-color">strip_color<a class="anchor" aria-label="anchor" href="#arg-strip-color"></a></dt>
 <dd><p>Background color of facet strips (only used when
-<code>facet_col</code> is set). Default: <code>"grey"</code>.</p></dd>
+<code>facet_by</code> is set). Default: <code>"grey"</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect_ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
@@ -193,6 +194,11 @@ Default <code>NULL</code> (automatic).</p></dd>
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. File path/name for the saved table (used when <code>save_table = TRUE</code>). Default <code>"relative_abundance.txt"</code>.</p></dd>
 
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Old names of renamed arguments (<code>facet_col</code>), still accepted
+with a warning. Any other extra argument is an error.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -205,7 +211,7 @@ Default <code>NULL</code> (automatic).</p></dd>
 <li><p>Taxa names are collapsed to the specified taxonomic <code>level</code> ("genus" or "phylum").</p></li>
 <li><p>Only the top <code>top_n</code> taxa are shown; others are filtered out.</p></li>
 <li><p>Samples are grouped and ordered according to <code>x_col</code>.</p></li>
-<li><p>Optional faceting by <code>facet_col</code> if provided.</p></li>
+<li><p>Optional faceting by <code>facet_by</code> if provided.</p></li>
 <li><p>Taxonomic strings matching <code>"d__Bacteria;__;__;__;__;__"</code> are automatically removed.</p></li>
 </ul></div>
 
@@ -225,7 +231,7 @@ Default <code>NULL</code> (automatic).</p></dd>
 <span class="r-in"><span>  level        <span class="op">=</span> <span class="st">"genus"</span>,</span></span>
 <span class="r-in"><span>  x_col        <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
 <span class="r-in"><span>  label        <span class="op">=</span> <span class="st">"Genus"</span>,</span></span>
-<span class="r-in"><span>  facet_col    <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>  facet_by    <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
 <span class="r-in"><span>  top_n        <span class="op">=</span> <span class="fl">30</span>,</span></span>
 <span class="r-in"><span>  add_remained <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

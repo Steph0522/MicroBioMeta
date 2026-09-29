@@ -9,7 +9,10 @@
 #' @param metadata Data frame with sample metadata. First column must match sample names in table.
 #' @param comparison_condition1 Optional vector of comparison labels for the first condition.
 #' @param condition1_col Column name in metadata for the first condition.
-#' @param condition2_col Optional column name in metadata for the second condition (used as facet).
+#' @param condition2_col Optional column name in metadata for the second
+#'   condition, used as facet. Each facet keeps only pairs of samples that
+#'   share that value (e.g. two samples of treatment TC), so comparisons are
+#'   split by the condition they come from instead of mixing them.
 #' @param facet_colors Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"} background.
 #' @param group_colors Optional named vector of colors for x-axis groups. Defaults to the package's
 #'   colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).
@@ -18,9 +21,16 @@
 #'   `"turnover"`, or `"nestedness"`. Case-insensitive.
 #' @param family Dissimilarity family for the turnover/nestedness partition:
 #'   `"sorensen"` (default) or `"jaccard"`. Case-insensitive.
-#' @param stat Character or \code{NULL}. Statistical test to compare groups,
-#'   passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
-#'   \code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).
+#' @param stat Character or \code{NULL}. Statistical test to compare the
+#'   boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
+#'   compare every pair of boxes, each with its own bracket and p-value
+#'   (\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
+#'   give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
+#'   Default \code{NULL} (no test shown).
+#' @param p_adjust_method Multiple-comparison correction for the pairwise
+#'   tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
+#'   each panel; any method of \code{stats::p.adjust()}. Default
+#'   \code{"holm"}; \code{"none"} shows the raw p-values.
 #' @param show_x_labels Logical. If \code{TRUE} (default), x-axis tick labels
 #'   are shown. The comparison groups are also in the legend, so set to
 #'   \code{FALSE} to hide the (often long) tick labels when that's redundant.
@@ -70,6 +80,7 @@ beta_dissimilarity_plot <- function(
     partition = c("shared","turnover","nestedness"),
     family = c("sorensen","jaccard"),
     stat = NULL,
+    p_adjust_method = "holm",
     show_x_labels = TRUE,
     x_label_angle = 0,
     strip_text_bold = FALSE,
@@ -140,7 +151,21 @@ beta_dissimilarity_plot <- function(
     # arbitrary) - same ordering behavior as beta_turnover_plot().
     beta_df$condition1_group <- factor(beta_df$condition1_group, levels = unique(norm1))
   }
-  
+
+  # condition2_col facets the plot: keep only pairs whose two samples share
+  # the same condition2 value, so each facet (e.g. TC) holds only
+  # comparisons within that treatment, never a TC sample against a TD one
+  # (same as beta_turnover_plot()).
+  if (!is.null(condition2_col)) {
+    c2_x <- as.character(beta_df[[paste0(condition2_col, ".x")]])
+    c2_y <- as.character(beta_df[[paste0(condition2_col, ".y")]])
+    beta_df <- beta_df[!is.na(c2_x) & c2_x == c2_y, , drop = FALSE]
+    if (nrow(beta_df) == 0) {
+      stop("No pairs of samples share the same value of condition2_col '",
+           condition2_col, "'.")
+    }
+  }
+
   
   if (save_table) {
     utils::write.table(
@@ -216,13 +241,7 @@ beta_dissimilarity_plot <- function(
   }
 
   if (!is.null(stat)) {
-    figura <- figura + ggpubr::stat_compare_means(
-      method = stat,
-      mapping = ggplot2::aes(
-        label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-      ),
-      size = 3.5, family = "serif", hide.ns = TRUE
-    )
+    figura <- figura + .mbm_stat_layer(stat, p_adjust_method)
   }
 
   return(figura)

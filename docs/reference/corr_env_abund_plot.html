@@ -98,9 +98,9 @@ abundances and environmental variables, and visualizes the results as either a h
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">corr_env_abund_plot</span><span class="op">(</span></span>
 <span>  <span class="va">table</span>,</span>
-<span>  <span class="va">env_table</span>,</span>
+<span>  <span class="va">env_data</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cond_vect <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  env_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"spearman"</span>,</span>
 <span>  hc.order <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  geom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tile"</span>, <span class="st">"circle"</span><span class="op">)</span>,</span>
@@ -111,8 +111,10 @@ abundances and environmental variables, and visualizes the results as either a h
 <span>  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"genus"</span>,</span>
 <span>  pval_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"corr.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"corr.txt"</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -125,7 +127,7 @@ abundances and environmental variables, and visualizes the results as either a h
 taxonomy column and sample columns with numeric counts.</p></dd>
 
 
-<dt id="arg-env-table">env_table<a class="anchor" aria-label="anchor" href="#arg-env-table"></a></dt>
+<dt id="arg-env-data">env_data<a class="anchor" aria-label="anchor" href="#arg-env-data"></a></dt>
 <dd><p>A data frame or matrix of environmental variables, with
 samples as row names.</p></dd>
 
@@ -135,7 +137,7 @@ samples as row names.</p></dd>
 must correspond to sample identifiers.</p></dd>
 
 
-<dt id="arg-cond-vect">cond_vect<a class="anchor" aria-label="anchor" href="#arg-cond-vect"></a></dt>
+<dt id="arg-env-vars">env_vars<a class="anchor" aria-label="anchor" href="#arg-env-vars"></a></dt>
 <dd><p>Character vector of environmental variables to include in
 the correlation analysis. If NULL, all available variables are used.</p></dd>
 
@@ -204,6 +206,13 @@ showing significant correlations with at least one environmental variable.
 If <code>NULL</code>, no significance filtering is applied.</p></dd>
 
 
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p>Multiple-comparison correction applied to the
+p-values of all taxon x variable correlations before filtering with
+<code>pval_threshold</code>; any method of <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default
+<code>"BH"</code> (false discovery rate); <code>"none"</code> uses the raw p-values.</p></dd>
+
+
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
 <dd><p>Logical. If TRUE, saves the correlation matrix as a
 tab-delimited text file.</p></dd>
@@ -212,6 +221,11 @@ tab-delimited text file.</p></dd>
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. Name of the output file used when
 save_table = TRUE.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Old names of renamed arguments (<code>env_table</code>, <code>cond_vect</code>), still accepted
+with a warning. Any other extra argument is an error.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -228,26 +242,27 @@ save_table = TRUE.</p></dd>
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># env_table must have rownames matching the sample names in `table`</span></span></span>
+<span class="r-in"><span><span class="co"># env_data must have rownames matching the sample names in `table`</span></span></span>
 <span class="r-in"><span><span class="va">env_data</span> <span class="op">&lt;-</span> <span class="va">metadata</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">env_data</span><span class="op">$</span><span class="va">SampleID</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Uses the default colorblind-friendly diverging palette (purple-white-yellow)</span></span></span>
 <span class="r-in"><span><span class="fu">corr_env_abund_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table          <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  env_table      <span class="op">=</span> <span class="va">env_data</span>,</span></span>
+<span class="r-in"><span>  env_data      <span class="op">=</span> <span class="va">env_data</span>,</span></span>
 <span class="r-in"><span>  metadata       <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  cond_vect      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"TOC"</span>, <span class="st">"FW"</span>, <span class="st">"Root_FW"</span>, <span class="st">"DW"</span>, <span class="st">"Root_L"</span>, <span class="st">"Stem_L"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  env_vars      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"TOC"</span>, <span class="st">"FW"</span>, <span class="st">"Root_FW"</span>, <span class="st">"DW"</span>, <span class="st">"Root_L"</span>, <span class="st">"Stem_L"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  method         <span class="op">=</span> <span class="st">"pearson"</span>,</span></span>
 <span class="r-in"><span>  geom           <span class="op">=</span> <span class="st">"tile"</span>,</span></span>
 <span class="r-in"><span>  hc.order       <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  invert_axes    <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  show_labels    <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  level          <span class="op">=</span> <span class="st">"phylum"</span>,</span></span>
-<span class="r-in"><span>  taxonomy_db    <span class="op">=</span> <span class="st">"silva"</span>,</span></span>
-<span class="r-in"><span>  pval_threshold <span class="op">=</span> <span class="fl">0.05</span></span></span>
+<span class="r-in"><span>  taxonomy_db    <span class="op">=</span> <span class="st">"silva"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="corr_env_abund_plot-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># pval_threshold = 0.05 would keep only taxa with a significant correlation</span></span></span>
+<span class="r-in"><span><span class="co"># after the p_adjust_method correction (BH by default).</span></span></span>
 </code></pre></div>
     </div>
   </div>

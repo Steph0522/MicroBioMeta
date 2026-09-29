@@ -7,7 +7,7 @@
 #'   samples as columns (same orientation as the rest of the package). If a
 #'   taxonomy column is present it is detected and removed automatically.
 #' @param metadata Data frame with sample metadata. First column must be SampleID.
-#' @param index Dissimilarity family for the partition: `"jaccard"` (default)
+#' @param family Dissimilarity family for the partition: `"jaccard"` (default)
 #'   or `"sorensen"`. Case-insensitive.
 #' @param group_col Column in metadata to use as color grouping.
 #' @param shape_col Optional column in metadata for point shapes.
@@ -28,6 +28,8 @@
 #' @param save_table Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. Base name for the saved table file. Default \code{"SAMPLE1"}.
 #'
+#' @param ... Old names of renamed arguments (\code{index}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A combined cowplot panel of beta diversity partition plots.
 #' @export
 #'
@@ -49,7 +51,7 @@
 
 
 beta_partition_ord_plot <- function(table, metadata, 
-                                index = "jaccard", 
+                                family = "jaccard", 
                                 group_col = NULL, 
                                 shape_col = NULL, 
                                 legend_title = NULL,
@@ -59,9 +61,14 @@ beta_partition_ord_plot <- function(table, metadata,
                                 panel_labels = NULL,
                                 panel_label_bold = TRUE,
                                 save_table = FALSE,
-                                table_filename = "SAMPLE1") {
+                                table_filename = "SAMPLE1",
+                                ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(index = "family"), "beta_partition_ord_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
 
-  index <- tolower(index)               # accept "Jaccard"/"Sorensen" too
+
+  family <- tolower(family)               # accept "Jaccard"/"Sorensen" too
   panel_label_case <- tolower(panel_label_case)
 
   suppressWarnings({
@@ -96,17 +103,17 @@ beta_partition_ord_plot <- function(table, metadata,
   colnames(metadata)[1] <- "SampleID"
   
   # --- 2. Beta diversity partition ---
-  beta <- betapart::beta.pair(table_pa, index.family = index)
-  if(index == "jaccard"){
+  beta <- betapart::beta.pair(table_pa, index.family = family)
+  if(family == "jaccard"){
     jac <- beta$beta.jac
     jtu <- beta$beta.jtu
     jne <- beta$beta.jne
-  } else if(index == "sorensen"){
+  } else if(family == "sorensen"){
     jac <- beta$beta.sor
     jtu <- beta$beta.sim
     jne <- beta$beta.sne
   } else {
-    stop("Only 'jaccard' or 'sorensen' are supported for index")
+    stop("Only 'jaccard' or 'sorensen' are supported for family")
   }
   
   # --- 3. Merge with metadata ---
@@ -257,7 +264,7 @@ beta_partition_ord_plot <- function(table, metadata,
   panel_fontface <- if (panel_label_bold) "bold" else "plain"
   panel <- cowplot::plot_grid(
     plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black", family = "serif", face = "bold")) +
-      ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(index, " dissimilarity (mean = ", mean_jac, ")")),
+      ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(family, " dissimilarity (mean = ", mean_jac, ")")),
      plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black", family = "serif", face = "bold")) +
       ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
     plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black", family = "serif", face = "bold")) +

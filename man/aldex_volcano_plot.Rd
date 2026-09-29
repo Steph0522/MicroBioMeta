@@ -7,20 +7,22 @@
 aldex_volcano_plot(
   table,
   metadata,
-  col_cond,
+  group_col,
   type = "volcano",
   col_inf = "#56B4E9",
   col_sup = "#E69F00",
   threshold_lower = -1.5,
   threshold_upper = 1.5,
   cond = NULL,
-  cutoff.pval = 0.05,
+  pval_threshold = 0.05,
+  p_adjust_method = "BH",
   show_labels = TRUE,
   taxa = NULL,
   label_size = 3.5,
   filter_uncultured = FALSE,
   save_table = FALSE,
-  table_filename = "aldex_pval_effect.txt"
+  table_filename = "aldex_pval_effect.txt",
+  ...
 )
 }
 \arguments{
@@ -28,7 +30,7 @@ aldex_volcano_plot(
 
 \item{metadata}{Data frame containing metadata for the samples.}
 
-\item{col_cond}{Name of the column in \code{metadata} that contains the experimental conditions.}
+\item{group_col}{Name of the column in \code{metadata} that contains the experimental conditions.}
 
 \item{type}{Type of plot to generate: \code{"volcano"} (default, volcano plot)
 or \code{"effect"} (effect-size plot). Case-insensitive.}
@@ -45,7 +47,15 @@ or \code{"effect"} (effect-size plot). Case-insensitive.}
 values on the x-axis mean higher in \code{cond}. Default \code{NULL}, the
 condition of the first sample in \code{table}.}
 
-\item{cutoff.pval}{p-value cutoff for significance (default = 0.05).}
+\item{pval_threshold}{p-value cutoff for significance (default = 0.05), drawn
+as the dashed horizontal line.}
+
+\item{p_adjust_method}{\code{"BH"} (default) or \code{"none"}. With
+\code{"BH"}, the y-axis and the significance cutoff use ALDEx2's
+Benjamini-Hochberg adjusted p-values (\code{wi.eBH}), since thousands of
+taxa are tested at once; \code{"none"} uses the raw p-values
+(\code{wi.ep}). ALDEx2 only computes the BH correction, so no other
+method is available here.}
 
 \item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).}
 
@@ -59,9 +69,15 @@ significant points in the "volcano" plot. Default \code{3.5}.}
 keeping the volcano plot's text annotations to named taxa. Default
 \code{FALSE}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.
+\code{effect} and \code{diff.btw} are saved as ALDEx2 returns them
+(alphabetically second group minus the first); in the plot they are
+shown so that positive means higher in \code{cond}.}
 
 \item{table_filename}{Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.}
+
+\item{...}{Old names of renamed arguments (\code{col_cond}, \code{cutoff.pval}, \code{adjusted_p}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ggplot} object with the selected plot.
@@ -77,12 +93,12 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# col_cond must have exactly two groups; Location has two
+# group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data
 aldex_volcano_plot(
   table           = table,
   metadata        = metadata,
-  col_cond        = "Location",
+  group_col        = "Location",
   type            = "effect",
   col_inf         = "#56B4E9",
   col_sup         = "#E69F00",

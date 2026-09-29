@@ -6,9 +6,9 @@
 \usage{
 corr_env_abund_plot(
   table,
-  env_table,
+  env_data,
   metadata = NULL,
-  cond_vect = NULL,
+  env_vars = NULL,
   method = "spearman",
   hc.order = TRUE,
   geom = c("tile", "circle"),
@@ -19,21 +19,23 @@ corr_env_abund_plot(
   taxonomy_db = "silva",
   level = "genus",
   pval_threshold = NULL,
+  p_adjust_method = "BH",
   save_table = FALSE,
-  table_filename = "corr.txt"
+  table_filename = "corr.txt",
+  ...
 )
 }
 \arguments{
 \item{table}{A data frame containing a taxonomic abundance table with a
 taxonomy column and sample columns with numeric counts.}
 
-\item{env_table}{A data frame or matrix of environmental variables, with
+\item{env_data}{A data frame or matrix of environmental variables, with
 samples as row names.}
 
 \item{metadata}{A data frame containing sample metadata. The first column
 must correspond to sample identifiers.}
 
-\item{cond_vect}{Character vector of environmental variables to include in
+\item{env_vars}{Character vector of environmental variables to include in
 the correlation analysis. If NULL, all available variables are used.}
 
 \item{method}{Character. Correlation method passed to stats::cor and
@@ -80,11 +82,19 @@ for parsing/annotation. One of \code{"silva"} (default), \code{"gg2"} (also acce
 showing significant correlations with at least one environmental variable.
 If \code{NULL}, no significance filtering is applied.}
 
+\item{p_adjust_method}{Multiple-comparison correction applied to the
+p-values of all taxon x variable correlations before filtering with
+\code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
+\code{"BH"} (false discovery rate); \code{"none"} uses the raw p-values.}
+
 \item{save_table}{Logical. If TRUE, saves the correlation matrix as a
 tab-delimited text file.}
 
 \item{table_filename}{Character. Name of the output file used when
 save_table = TRUE.}
+
+\item{...}{Old names of renamed arguments (\code{env_table}, \code{cond_vect}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A ggplot2 object.
@@ -103,23 +113,24 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# env_table must have rownames matching the sample names in `table`
+# env_data must have rownames matching the sample names in `table`
 env_data <- metadata
 rownames(env_data) <- env_data$SampleID
 
 # Uses the default colorblind-friendly diverging palette (purple-white-yellow)
 corr_env_abund_plot(
   table          = table,
-  env_table      = env_data,
+  env_data      = env_data,
   metadata       = metadata,
-  cond_vect      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
+  env_vars      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
   method         = "pearson",
   geom           = "tile",
   hc.order       = FALSE,
   invert_axes    = TRUE,
   show_labels    = FALSE,
   level          = "phylum",
-  taxonomy_db    = "silva",
-  pval_threshold = 0.05
+  taxonomy_db    = "silva"
 )
+# pval_threshold = 0.05 would keep only taxa with a significant correlation
+# after the p_adjust_method correction (BH by default).
 }

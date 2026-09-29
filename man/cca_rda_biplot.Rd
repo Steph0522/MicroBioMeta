@@ -15,6 +15,7 @@ cca_rda_biplot(
   legend_title = NULL,
   scale_env = TRUE,
   pval_threshold = 0.05,
+  p_adjust_method = "none",
   show_all_env_vectors = FALSE,
   analysis = "CCA",
   scale_arrows = 1,
@@ -47,6 +48,11 @@ matching the sample names in \code{table}.}
 \item{scale_env}{Logical; whether to scale environmental variables (default is \code{TRUE}).}
 
 \item{pval_threshold}{P-value threshold for selecting significant environmental variables (default is \code{0.05}).}
+
+\item{p_adjust_method}{Multiple-comparison correction applied to the
+\code{vegan::envfit()} p-values of the environmental variables before
+\code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
+\code{"none"} (raw p-values, the usual choice with few variables).}
 
 \item{show_all_env_vectors}{Logical; if TRUE, plot all environmental vectors regardless of significance.}
 

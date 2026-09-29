@@ -9,11 +9,11 @@
 #'
 #' @param table A data frame containing a taxonomic abundance table with a
 #'   taxonomy column and sample columns with numeric counts.
-#' @param env_table A data frame or matrix of environmental variables, with
+#' @param env_data A data frame or matrix of environmental variables, with
 #'   samples as row names.
 #' @param metadata A data frame containing sample metadata. The first column
 #'   must correspond to sample identifiers.
-#' @param cond_vect Character vector of environmental variables to include in
+#' @param env_vars Character vector of environmental variables to include in
 #'   the correlation analysis. If NULL, all available variables are used.
 #' @param method Character. Correlation method passed to stats::cor and
 #'   stats::cor.test. Supported options include ("spearman", "pearson", "kendall").
@@ -49,11 +49,17 @@
 #' @param pval_threshold Numeric. Optional p-value threshold to retain only taxa
 #'   showing significant correlations with at least one environmental variable.
 #'   If \code{NULL}, no significance filtering is applied.
+#' @param p_adjust_method Multiple-comparison correction applied to the
+#'   p-values of all taxon x variable correlations before filtering with
+#'   \code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
+#'   \code{"BH"} (false discovery rate); \code{"none"} uses the raw p-values.
 #' @param save_table Logical. If TRUE, saves the correlation matrix as a
 #'   tab-delimited text file.
 #' @param table_filename Character. Name of the output file used when
 #'   save_table = TRUE.
 #'
+#' @param ... Old names of renamed arguments (\code{env_table}, \code{cond_vect}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A ggplot2 object.
 #' @export
 #'
@@ -65,30 +71,31 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # env_table must have rownames matching the sample names in `table`
+#' # env_data must have rownames matching the sample names in `table`
 #' env_data <- metadata
 #' rownames(env_data) <- env_data$SampleID
 #'
 #' # Uses the default colorblind-friendly diverging palette (purple-white-yellow)
 #' corr_env_abund_plot(
 #'   table          = table,
-#'   env_table      = env_data,
+#'   env_data      = env_data,
 #'   metadata       = metadata,
-#'   cond_vect      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
+#'   env_vars      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
 #'   method         = "pearson",
 #'   geom           = "tile",
 #'   hc.order       = FALSE,
 #'   invert_axes    = TRUE,
 #'   show_labels    = FALSE,
 #'   level          = "phylum",
-#'   taxonomy_db    = "silva",
-#'   pval_threshold = 0.05
+#'   taxonomy_db    = "silva"
 #' )
+#' # pval_threshold = 0.05 would keep only taxa with a significant correlation
+#' # after the p_adjust_method correction (BH by default).
 
 corr_env_abund_plot <- function(table,
-                                env_table,
+                                env_data,
                                 metadata = NULL,
-                                cond_vect = NULL,
+                                env_vars = NULL,
                                 method = "spearman",
                                 hc.order = TRUE,
                                 geom = c("tile", "circle"),
@@ -99,8 +106,14 @@ corr_env_abund_plot <- function(table,
                                 taxonomy_db = "silva",
                                 level = "genus",
                                 pval_threshold = NULL,
+                                p_adjust_method = "BH",
                                 save_table = FALSE,
-                                table_filename = "corr.txt") {
+                                table_filename = "corr.txt",
+                                ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(env_table = "env_data", cond_vect = "env_vars"), "corr_env_abund_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+
   geom <- match.arg(tolower(geom), c("tile", "circle"))
 
   # Accept taxonomy_db / level case-insensitively (mapping to the exact value
@@ -142,21 +155,21 @@ corr_env_abund_plot <- function(table,
     dplyr::filter(taxonomy != "d__Eukaryota")
   
   
-  # Align samples across table, env_table, and (optionally) metadata
+  # Align samples across table, env_data, and (optionally) metadata
   if (!is.null(metadata)) {
     metadata <- as.data.frame(metadata)
-    common_samples <- Reduce(intersect, list(colnames(table), rownames(env_table), metadata[[1]]))
+    common_samples <- Reduce(intersect, list(colnames(table), rownames(env_data), metadata[[1]]))
     table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
-    env_table <- env_table[common_samples, , drop = FALSE]
+    env_data <- env_data[common_samples, , drop = FALSE]
     metadata <- metadata[metadata[[1]] %in% common_samples, , drop = FALSE]
     rownames(metadata) <- metadata[[1]]
     table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
     ordered_samples <- intersect(metadata[, 1], colnames(table)[-1])
     table <- table[, c("taxonomy", ordered_samples)]
   } else {
-    common_samples <- intersect(colnames(table), rownames(env_table))
+    common_samples <- intersect(colnames(table), rownames(env_data))
     table <- table[, c(tax_col, match(common_samples, colnames(table))), drop = FALSE]
-    env_table <- env_table[common_samples, , drop = FALSE]
+    env_data <- env_data[common_samples, , drop = FALSE]
     table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
     ordered_samples <- common_samples
     table <- table[, c("taxonomy", ordered_samples)]
@@ -392,24 +405,24 @@ corr_env_abund_plot <- function(table,
     }
   }
   # --- Filas comunes
-  common_samples <- base::intersect(colnames(table), rownames(env_table))
+  common_samples <- base::intersect(colnames(table), rownames(env_data))
   counts <- table[, common_samples, drop = FALSE]
-  env <- env_table[common_samples, , drop = FALSE]
+  env <- env_data[common_samples, , drop = FALSE]
   
   
-  # Seleccionar solo las variables ambientales indicadas en cond_vect, verificando coincidencias
-  if (!is.null(cond_vect)) {
-    cond_vect <- cond_vect[cond_vect %in% colnames(env)]
-    if(length(cond_vect) == 0) stop("No matching variables found in env_table")
-    env <- env[, cond_vect, drop = FALSE]
+  # Seleccionar solo las variables ambientales indicadas en env_vars, verificando coincidencias
+  if (!is.null(env_vars)) {
+    env_vars <- env_vars[env_vars %in% colnames(env)]
+    if(length(env_vars) == 0) stop("No matching variables found in env_data")
+    env <- env[, env_vars, drop = FALSE]
   }
   
   
   # Descartar columnas no numericas (p.ej. IDs o variables categoricas
-  # mezcladas en env_table); stats::cor() requiere que env sea todo numerico.
+  # mezcladas en env_data); stats::cor() requiere que env sea todo numerico.
   is_num <- vapply(env, is.numeric, logical(1))
   if (!all(is_num)) {
-    warning("Dropping non-numeric columns from `env_table`: ",
+    warning("Dropping non-numeric columns from `env_data`: ",
             paste(names(env)[!is_num], collapse = ", "))
     env <- env[, is_num, drop = FALSE]
   }
@@ -457,8 +470,18 @@ corr_env_abund_plot <- function(table,
       }
     }
     
+    # Every taxon x variable pair is a separate test, so correct for
+    # multiple comparisons over the whole matrix before filtering.
+    pval_mat[] <- stats::p.adjust(pval_mat, method = p_adjust_method)
+
     # Mantener solo taxones significativos en al menos una variable
     signif_taxa <- rownames(abund)[apply(pval_mat, 2, function(x) any(x < pval_threshold, na.rm = TRUE))]
+    if (length(signif_taxa) == 0) {
+      stop("No taxa have a significant correlation (p < ", pval_threshold,
+           " after p_adjust_method = '", p_adjust_method, "').\n",
+           "Try a higher pval_threshold, a coarser level, or p_adjust_method = 'none'.",
+           call. = FALSE)
+    }
     abund <- abund[signif_taxa, , drop = FALSE]
     corr_mat <- stats::cor(env, t(abund), method = method, use = "pairwise.complete.obs")
   }

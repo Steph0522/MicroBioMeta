@@ -99,6 +99,7 @@ It supports palette customization, faceting, and statistical comparison.</p>
 <span>  <span class="va">metadata</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"boxplot"</span>,</span>
 <span>  stat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"holm"</span>,</span>
 <span>  <span class="va">x_col</span>,</span>
 <span>  <span class="va">fill_col</span>,</span>
 <span>  facet_by <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -146,7 +147,17 @@ The first column must contain the OTUID, ASV, or species name.</p></dd>
 
 
 <dt id="arg-stat">stat<a class="anchor" aria-label="anchor" href="#arg-stat"></a></dt>
-<dd><p>Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
+<dd><p>Optional. Statistical test to compare the groups within each
+panel. <code>"wilcox.test"</code> or <code>"t.test"</code> compare every pair of
+groups, each with its own bracket and p-value (<code><a href="https://rpkgs.datanovia.com/ggpubr/reference/geom_pwc.html" class="external-link">ggpubr::stat_pwc()</a></code>);
+<code>"kruskal.test"</code> or <code>"anova"</code> give one global p-value per panel.</p></dd>
+
+
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p>Multiple-comparison correction for the pairwise
+tests (<code>stat = "wilcox.test"</code> or <code>"t.test"</code>), applied within
+each panel; any method of <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default
+<code>"holm"</code>; <code>"none"</code> shows the raw p-values.
 Panel tags (A, B, C...) are added regardless of whether <code>stat</code> is set;
 <code>stat</code> only adds the p-value annotations on top of them.</p></dd>
 

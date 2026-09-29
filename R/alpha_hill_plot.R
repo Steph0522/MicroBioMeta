@@ -8,7 +8,14 @@
 #'              The first column must contain the OTUID, ASV, or species name.
 #' @param metadata A data frame with metadata. The first column must match sample names in `table`.
 #' @param type Type of plot: `"boxplot"` (default) or `"barplot"`. Case-insensitive.
-#' @param stat Optional. A string indicating the test used for comparing means (e.g., "wilcox.test").
+#' @param stat Optional. Statistical test to compare the groups within each
+#'   panel. \code{"wilcox.test"} or \code{"t.test"} compare every pair of
+#'   groups, each with its own bracket and p-value (\code{ggpubr::stat_pwc()});
+#'   \code{"kruskal.test"} or \code{"anova"} give one global p-value per panel.
+#' @param p_adjust_method Multiple-comparison correction for the pairwise
+#'   tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
+#'   each panel; any method of \code{stats::p.adjust()}. Default
+#'   \code{"holm"}; \code{"none"} shows the raw p-values.
 #'   Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
 #'   \code{stat} only adds the p-value annotations on top of them.
 #' @param x_col Column in `metadata` to be used on the x-axis.
@@ -82,6 +89,7 @@ alpha_hill_plot <- function(
     metadata,
     type = "boxplot",
     stat = NULL,
+    p_adjust_method = "holm",
     x_col,
     fill_col,
     facet_by = NULL,
@@ -370,14 +378,8 @@ alpha_hill_plot <- function(
         x_center <- mean(range(x_numeric, na.rm = TRUE))
         p_cell <- p_cell +
           ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18))) +
-          ggpubr::stat_compare_means(
-            data = cell_data, method = stat,
-            mapping = ggplot2::aes(
-              label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-            ),
-            size = 3.5, family = "serif", hide.ns = TRUE,
-            label.y = y_val, label.x = x_center
-          )
+          .mbm_stat_layer(stat, p_adjust_method, data = cell_data,
+                         label.x = x_center, label.y = y_val)
       }
 
       # Every row needs its own q strip when q is stacked in rows (each row
@@ -536,18 +538,8 @@ alpha_hill_plot <- function(
         x_numeric <- match(.x[[x_col]], x_levels)
         x_center <- mean(range(x_numeric, na.rm = TRUE))
 
-        ggpubr::stat_compare_means(
-          data = .x,
-          method = stat,
-          mapping = ggplot2::aes(
-            label = paste0("p = ", scales::label_pvalue(accuracy = 0.001)(ggplot2::after_stat(p)))
-          ),
-          size = 3.5,
-          family= "serif",
-          hide.ns = TRUE,
-          label.y = y_val,
-          label.x = x_center
-        )
+        .mbm_stat_layer(stat, p_adjust_method, data = .x,
+                       label.x = x_center, label.y = y_val)
       })
 
     p <- p +

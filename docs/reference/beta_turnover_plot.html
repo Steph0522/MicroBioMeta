@@ -94,13 +94,11 @@
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
 <span>  <span class="va">comparison_condition1</span>,</span>
-<span>  <span class="va">comparison_condition2</span>,</span>
-<span>  <span class="va">condition1.x</span>,</span>
-<span>  <span class="va">condition1.y</span>,</span>
-<span>  <span class="va">condition2.x</span>,</span>
-<span>  <span class="va">condition2.y</span>,</span>
-<span>  <span class="va">color_facets_x</span>,</span>
-<span>  <span class="va">color_axis_x</span>,</span>
+<span>  comparison_condition2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">condition1_col</span>,</span>
+<span>  condition2_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  facet_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_axis_title <span class="op">=</span> <span class="st">"Section"</span>,</span>
 <span>  show_x_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  x_label_angle <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -108,8 +106,10 @@
 <span>  strip_text_color <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>  aspect_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"holm"</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"betadiv_turnover.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"betadiv_turnover.txt"</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -126,35 +126,53 @@
 
 
 <dt id="arg-comparison-condition-">comparison_condition1<a class="anchor" aria-label="anchor" href="#arg-comparison-condition-"></a></dt>
-<dd><p>Vector of comparisons 1</p></dd>
+<dd><p>Vector of <code>"A_vs_B"</code> group-pair labels to
+keep (matched against the values of <code>condition1_col</code>). Matching
+ignores order - listing <code>"A_vs_B"</code> also matches pairs the pairwise
+self-join happened to record as <code>"B_vs_A"</code>, so each pair only needs
+to be listed once. Each matched pair becomes one x-axis/fill group,
+labelled exactly as written (e.g. <code>"Rhizosphere_vs_Roots"</code>), same
+as <code>condition1_group</code> in <code><a href="beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>.</p></dd>
 
 
 <dt id="arg-comparison-condition-">comparison_condition2<a class="anchor" aria-label="anchor" href="#arg-comparison-condition-"></a></dt>
-<dd><p>Vector of comparisons 2</p></dd>
+<dd><p>Optional. Same as <code>comparison_condition1</code>,
+for the values of <code>condition2_col</code> (e.g. <code>"TC_vs_TC"</code>
+to keep only within-group pairs of a given treatment). condition1 stays
+the main comparison (x-axis/legend); condition2 is the secondary one -
+supplying it both filters to the named pairs <em>and</em> facets the plot
+by them (one panel per pair, e.g. <code>"TC_vs_TC"</code>, <code>"TD_vs_TD"</code>),
+the same role <code>condition2_col</code> plays in <code><a href="beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>.
+Default <code>NULL</code>: every pair matching <code>comparison_condition1</code> is
+kept and the plot only facets by q.</p></dd>
 
 
-<dt id="arg-condition-x">condition1.x<a class="anchor" aria-label="anchor" href="#arg-condition-x"></a></dt>
-<dd><p>Condition 1 of axis-x</p></dd>
+<dt id="arg-condition-col">condition1_col<a class="anchor" aria-label="anchor" href="#arg-condition-col"></a></dt>
+<dd><p>Metadata column (e.g. <code>"Type_of_soil"</code>) used to
+build <code>comparison_condition1</code>'s group pairs, same as
+<code>condition1_col</code> in <code><a href="beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>.</p></dd>
 
 
-<dt id="arg-condition-y">condition1.y<a class="anchor" aria-label="anchor" href="#arg-condition-y"></a></dt>
-<dd><p>Condition 1 of axis-y</p></dd>
+<dt id="arg-condition-col">condition2_col<a class="anchor" aria-label="anchor" href="#arg-condition-col"></a></dt>
+<dd><p>Optional. Metadata column used to build
+<code>comparison_condition2</code>'s group pairs, and to facet the plot.
+Required when <code>comparison_condition2</code> is set. If given without
+<code>comparison_condition2</code>, the plot is faceted by it keeping only
+pairs of samples with the same value (e.g. <code>"TC_vs_TC"</code>,
+<code>"TD_vs_TD"</code>).</p></dd>
 
 
-<dt id="arg-condition-x">condition2.x<a class="anchor" aria-label="anchor" href="#arg-condition-x"></a></dt>
-<dd><p>Condition 2 of axis-x</p></dd>
+<dt id="arg-facet-colors">facet_colors<a class="anchor" aria-label="anchor" href="#arg-facet-colors"></a></dt>
+<dd><p>Optional color vector for facet strips. Defaults to
+a neutral <code>"grey85"</code> background for each facet, like
+<code><a href="beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>'s <code>facet_colors</code>.</p></dd>
 
 
-<dt id="arg-condition-y">condition2.y<a class="anchor" aria-label="anchor" href="#arg-condition-y"></a></dt>
-<dd><p>Condition 2 of axis-y</p></dd>
-
-
-<dt id="arg-color-facets-x">color_facets_x<a class="anchor" aria-label="anchor" href="#arg-color-facets-x"></a></dt>
-<dd><p>Color vector for facet strips.</p></dd>
-
-
-<dt id="arg-color-axis-x">color_axis_x<a class="anchor" aria-label="anchor" href="#arg-color-axis-x"></a></dt>
-<dd><p>Named color vector for x-axis groups.</p></dd>
+<dt id="arg-group-colors">group_colors<a class="anchor" aria-label="anchor" href="#arg-group-colors"></a></dt>
+<dd><p>Optional named color vector for x-axis groups.
+Defaults to the package's colorblind-friendly Okabe-Ito palette
+(<code>.mbm_colors</code>, orange/blue first), like
+<code><a href="beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>'s <code>group_colors</code>.</p></dd>
 
 
 <dt id="arg-x-axis-title">x_axis_title<a class="anchor" aria-label="anchor" href="#arg-x-axis-title"></a></dt>
@@ -178,7 +196,9 @@ Default <code>FALSE</code> (plain).</p></dd>
 
 <dt id="arg-strip-text-color">strip_text_color<a class="anchor" aria-label="anchor" href="#arg-strip-text-color"></a></dt>
 <dd><p>Color of the top (x) facet strip labels, which sit on
-the <code>color_facets_x</code> backgrounds. Default <code>"white"</code>.</p></dd>
+the <code>facet_colors</code> backgrounds. Default <code>"white"</code>, unless
+<code>facet_colors</code> is left at its own light <code>"grey85"</code> default,
+in which case this defaults to <code>"black"</code> instead so it stays legible.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect_ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
@@ -187,10 +207,19 @@ Default <code>NULL</code> (automatic).</p></dd>
 
 
 <dt id="arg-stat">stat<a class="anchor" aria-label="anchor" href="#arg-stat"></a></dt>
-<dd><p>Character or <code>NULL</code>. Statistical test to compare groups
-within each panel, passed to <code><a href="https://rpkgs.datanovia.com/ggpubr/reference/stat_compare_means.html" class="external-link">ggpubr::stat_compare_means()</a></code> (e.g.
-<code>"wilcox.test"</code>, <code>"kruskal.test"</code>, <code>"anova"</code>). Default
-<code>NULL</code> (no test shown).</p></dd>
+<dd><p>Character or <code>NULL</code>. Statistical test to compare the
+boxes within each panel/facet. <code>"wilcox.test"</code> or <code>"t.test"</code>
+compare every pair of boxes, each with its own bracket and p-value
+(<code><a href="https://rpkgs.datanovia.com/ggpubr/reference/geom_pwc.html" class="external-link">ggpubr::stat_pwc()</a></code>); <code>"kruskal.test"</code> or <code>"anova"</code>
+give one global p-value per panel (<code><a href="https://rpkgs.datanovia.com/ggpubr/reference/stat_compare_means.html" class="external-link">ggpubr::stat_compare_means()</a></code>).
+Default <code>NULL</code> (no test shown).</p></dd>
+
+
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p>Multiple-comparison correction for the pairwise
+tests (<code>stat = "wilcox.test"</code> or <code>"t.test"</code>), applied within
+each panel; any method of <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default
+<code>"holm"</code>; <code>"none"</code> shows the raw p-values.</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
@@ -201,6 +230,11 @@ table to disk. Default <code>FALSE</code>.</p></dd>
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. File path/name for the saved table (used
 when <code>save_table = TRUE</code>). Default <code>"betadiv_turnover.txt"</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Old names of renamed arguments (<code>color_axis_x</code>, <code>color_facets_x</code>), still accepted
+with a warning. Any other extra argument is an error.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -217,23 +251,30 @@ when <code>save_table = TRUE</code>). Default <code>"betadiv_turnover.txt"</code
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"OTUID"</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># comparison_condition1/2 match "value.x_vs_value.y" pairs created by the</span></span></span>
-<span class="r-in"><span><span class="co"># pairwise self-join (condition.x = site1's value, condition.y = site2's value)</span></span></span>
+<span class="r-in"><span><span class="co"># comparison_condition1/2 match group pairs regardless of order, so listing</span></span></span>
+<span class="r-in"><span><span class="co"># "Rhizosphere_vs_Roots" also catches pairs the self-join recorded the</span></span></span>
+<span class="r-in"><span><span class="co"># other way around ("Roots_vs_Rhizosphere") - no need to list both.</span></span></span>
 <span class="r-in"><span><span class="fu">beta_turnover_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table                 <span class="op">=</span> <span class="va">table</span>,</span></span>
 <span class="r-in"><span>  metadata              <span class="op">=</span> <span class="va">metadata</span>,</span></span>
 <span class="r-in"><span>  comparison_condition1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>, <span class="st">"Rhizosphere_vs_Rhizosphere"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  comparison_condition2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control_vs_Control"</span>, <span class="st">"Moderate_drought_vs_Moderate_drought"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  condition1.x          <span class="op">=</span> <span class="st">"Location.x"</span>,</span></span>
-<span class="r-in"><span>  condition1.y          <span class="op">=</span> <span class="st">"Location.y"</span>,</span></span>
-<span class="r-in"><span>  condition2.x          <span class="op">=</span> <span class="st">"Treatment.x"</span>,</span></span>
-<span class="r-in"><span>  condition2.y          <span class="op">=</span> <span class="st">"Treatment.y"</span>,</span></span>
-<span class="r-in"><span>  color_facets_x        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5D478B"</span>, <span class="st">"#8B668B"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  color_axis_x          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>, <span class="st">"Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  condition1_col        <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>  condition2_col        <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>  facet_colors        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5D478B"</span>, <span class="st">"#8B668B"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  group_colors          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>, <span class="st">"Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some species in comm data were not observed in any site,</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>  delete them...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some species in comm data were not observed in any site,</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>  delete them...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some species in comm data were not observed in any site,</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>  delete them...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="beta_turnover_plot-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
   </div>

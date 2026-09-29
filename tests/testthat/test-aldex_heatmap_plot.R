@@ -9,14 +9,14 @@ test_that("aldex_heatmap_plot returns a HeatmapList for a two-group comparison",
   ht <- aldex_heatmap_plot(
     table            = toy$table,
     metadata         = toy$metadata,
-    col_cond         = "Group",
+    group_col         = "Group",
     effect_threshold = 0.1
   )
 
   expect_s4_class(ht, "HeatmapList")
 })
 
-test_that("aldex_heatmap_plot errors when col_cond doesn't have exactly two groups", {
+test_that("aldex_heatmap_plot errors when group_col doesn't have exactly two groups", {
   toy <- make_toy_community()
   toy$metadata$ThreeGroups <- rep(c("A", "B", "C"), 2)
 
@@ -24,7 +24,7 @@ test_that("aldex_heatmap_plot errors when col_cond doesn't have exactly two grou
     aldex_heatmap_plot(
       table    = toy$table,
       metadata = toy$metadata,
-      col_cond = "ThreeGroups"
+      group_col = "ThreeGroups"
     ),
     "Exactly two conditions"
   )
@@ -40,7 +40,7 @@ test_that("aldex_heatmap_plot saves the filtered results table when requested", 
   aldex_heatmap_plot(
     table            = toy$table,
     metadata         = toy$metadata,
-    col_cond         = "Group",
+    group_col         = "Group",
     effect_threshold = 0.1,
     save_table       = TRUE,
     table_filename   = tmp

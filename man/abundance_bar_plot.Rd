@@ -10,7 +10,7 @@ abundance_bar_plot(
   taxonomy_db = "silva",
   level = "genus",
   x_col,
-  facet_col = NULL,
+  facet_by = NULL,
   width_equal = FALSE,
   label = "taxonomy",
   top_n = 15,
@@ -21,7 +21,8 @@ abundance_bar_plot(
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
-  table_filename = "relative_abundance.txt"
+  table_filename = "relative_abundance.txt",
+  ...
 )
 }
 \arguments{
@@ -41,7 +42,7 @@ is used to simplify the taxonomic names shown in the plot. One of
 
 \item{x_col}{Character. Column name in \code{metadata} to use for the x-axis (e.g., environment, condition).}
 
-\item{facet_col}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment group). Default is \code{NULL}.}
+\item{facet_by}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment group). Default is \code{NULL}.}
 
 \item{width_equal}{Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.}
 
@@ -59,7 +60,7 @@ sample names are long enough to overlap.}
 Default \code{FALSE} (plain).}
 
 \item{strip_color}{Background color of facet strips (only used when
-\code{facet_col} is set). Default: \code{"grey"}.}
+\code{facet_by} is set). Default: \code{"grey"}.}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of the panel.
 Default \code{NULL} (automatic).}
@@ -69,6 +70,9 @@ Default \code{NULL} (automatic).}
 \item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.}
+
+\item{...}{Old names of renamed arguments (\code{facet_col}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ggplot2} object showing a stacked barplot of relative abundances.
@@ -82,7 +86,7 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 \item Taxa names are collapsed to the specified taxonomic \code{level} ("genus" or "phylum").
 \item Only the top \code{top_n} taxa are shown; others are filtered out.
 \item Samples are grouped and ordered according to \code{x_col}.
-\item Optional faceting by \code{facet_col} if provided.
+\item Optional faceting by \code{facet_by} if provided.
 \item Taxonomic strings matching \code{"d__Bacteria;__;__;__;__;__"} are automatically removed.
 }
 }
@@ -101,7 +105,7 @@ abundance_bar_plot(
   level        = "genus",
   x_col        = "Location",
   label        = "Genus",
-  facet_col    = "Treatment",
+  facet_by    = "Treatment",
   top_n        = 30,
   add_remained = TRUE
 )

@@ -13,7 +13,7 @@
 #'   `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
 #'   `"species"`. Case-insensitive.
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
-#' @param facet_col Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
+#' @param facet_by Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The title for the x-axis (default = "Samples")
@@ -23,13 +23,15 @@
 #' @param strip_text_bold Logical. If \code{TRUE}, facet strip labels are bold.
 #'   Default \code{FALSE} (plain).
 #' @param strip_color Background color of facet strips (only used when
-#'   \code{facet_col} is set). Default: \code{"grey"}.
+#'   \code{facet_by} is set). Default: \code{"grey"}.
 #' @param aspect_ratio Numeric. Aspect ratio (height/width) of the panel.
 #'   Default \code{NULL} (automatic).
 #' @param add_remained Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.
 #' @param width_equal Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.
 #' @param save_table Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.
+#' @param ... Old names of renamed arguments (\code{facet_col}), still accepted
+#'   with a warning. Any other extra argument is an error.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
@@ -37,7 +39,7 @@
 #' - Taxa names are collapsed to the specified taxonomic `level` ("genus" or "phylum").
 #' - Only the top `top_n` taxa are shown; others are filtered out.
 #' - Samples are grouped and ordered according to `x_col`.
-#' - Optional faceting by `facet_col` if provided.
+#' - Optional faceting by `facet_by` if provided.
 #' - Taxonomic strings matching `"d__Bacteria;__;__;__;__;__"` are automatically removed.
 #'
 #' @export
@@ -57,7 +59,7 @@
 #'   level        = "genus",
 #'   x_col        = "Location",
 #'   label        = "Genus",
-#'   facet_col    = "Treatment",
+#'   facet_by    = "Treatment",
 #'   top_n        = 30,
 #'   add_remained = TRUE
 #' )
@@ -69,7 +71,7 @@ abundance_bar_plot <- function(table,
                               taxonomy_db = "silva",
                               level = "genus",
                               x_col,
-                              facet_col = NULL,
+                              facet_by = NULL,
                               width_equal = FALSE,
                               label = "taxonomy",
                               top_n = 15,
@@ -80,7 +82,12 @@ abundance_bar_plot <- function(table,
                               aspect_ratio = NULL,
                               add_remained = FALSE,
                               save_table = FALSE,
-                              table_filename = "relative_abundance.txt") {
+                              table_filename = "relative_abundance.txt",
+                              ...) {
+  # Old argument names still work, with a warning (see .mbm_renamed_args)
+  renamed <- .mbm_renamed_args(list(...), c(facet_col = "facet_by"), "abundance_bar_plot")
+  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+
 
   # Accept taxonomy_db / level case-insensitively (and a few common spellings),
   # mapping each to the exact value the rest of the function expects, so users
@@ -215,7 +222,7 @@ abundance_bar_plot <- function(table,
     tidyr::pivot_longer(cols = -taxonomy, names_to = "SAMPLEID", values_to = "RelativeAbundance")
   
   # Join with metadata
-  columns_to_join <- c("SAMPLEID", x_col, facet_col)
+  columns_to_join <- c("SAMPLEID", x_col, facet_by)
   columns_to_join <- columns_to_join[!is.na(columns_to_join) & columns_to_join != "NULL"]
   table_long <- dplyr::left_join(
     table_long,
@@ -225,8 +232,8 @@ abundance_bar_plot <- function(table,
   
   # Grouping
   grouping_vars <- c(x_col, "taxonomy")
-  if (!is.null(facet_col)) {
-    grouping_vars <- c(grouping_vars, facet_col)
+  if (!is.null(facet_by)) {
+    grouping_vars <- c(grouping_vars, facet_by)
   }
   
   avg_by_group <- table_long %>%
@@ -412,9 +419,9 @@ abundance_bar_plot <- function(table,
     dplyr::summarise(MeanAbundance = sum(MeanAbundance, na.rm = TRUE),
                      .groups = "drop")
   
-  if (!is.null(facet_col)) {
-    facet_levels <- unique(avg_by_group[[facet_col]])
-    avg_by_group[[facet_col]] <- factor(avg_by_group[[facet_col]], levels = facet_levels)
+  if (!is.null(facet_by)) {
+    facet_levels <- unique(avg_by_group[[facet_by]])
+    avg_by_group[[facet_by]] <- factor(avg_by_group[[facet_by]], levels = facet_levels)
   }
   
   x_levels <- unique(metadata[[x_col]])
@@ -483,18 +490,18 @@ abundance_bar_plot <- function(table,
     ggplot2::ylab("Relative abundance (%)") +
     ggplot2::xlab(x_axis_title)
   
-  if (!is.null(facet_col)) {
+  if (!is.null(facet_by)) {
     # Wrap long facet level names (e.g. "Moderate_drought") onto multiple
     # lines instead of letting them get clipped by a narrow strip
     strip_labeller <- ggplot2::labeller(
       .default = ggplot2::label_wrap_gen(width = 10)
     )
     if (width_equal) {
-      p <- p + ggplot2::facet_grid(rows = NULL, cols = vars(!!rlang::sym(facet_col)),
+      p <- p + ggplot2::facet_grid(rows = NULL, cols = vars(!!rlang::sym(facet_by)),
                                    scales = "free_x", space = "free",
                                    labeller = strip_labeller)
     } else {
-      p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(facet_col)), scales = "free_x",
+      p <- p + ggplot2::facet_wrap(ggplot2::vars(!!rlang::sym(facet_by)), scales = "free_x",
                                    labeller = strip_labeller)
     }
   }

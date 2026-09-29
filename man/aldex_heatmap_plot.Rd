@@ -7,9 +7,10 @@
 aldex_heatmap_plot(
   table,
   metadata,
-  col_cond,
+  group_col,
   effect_threshold = 0.8,
-  pvalue_BH = NULL,
+  pval_threshold = NULL,
+  p_adjust_method = "BH",
   cluster_rows = FALSE,
   cluster_columns = FALSE,
   heatmap_colors = NULL,
@@ -18,7 +19,8 @@ aldex_heatmap_plot(
     "#F0E442", `>0.05` = "grey85")),
   group_colors = NULL,
   save_table = FALSE,
-  table_filename = "aldex_pval_effect.txt"
+  table_filename = "aldex_pval_effect.txt",
+  ...
 )
 }
 \arguments{
@@ -27,16 +29,22 @@ contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
 "taxon", "taxa", "Taxa", or "Taxon").}
 
 \item{metadata}{Data frame with one row per sample. Must contain the column
-specified in \code{col_cond}.}
+specified in \code{group_col}.}
 
-\item{col_cond}{Character. Name of the column in \code{metadata} that
+\item{group_col}{Character. Name of the column in \code{metadata} that
 defines the two groups to compare. Exactly two unique values are required.}
 
 \item{effect_threshold}{Numeric. Minimum absolute effect size to retain
 (default \code{0.8}).}
 
-\item{pvalue_BH}{Numeric or NULL. Maximum BH-adjusted p-value to retain.
-If NULL (default) only \code{effect_threshold} is applied.}
+\item{pval_threshold}{Numeric or NULL. Maximum p-value to retain (adjusted
+or not, depending on \code{p_adjust_method}). If NULL (default) only
+\code{effect_threshold} is applied.}
+
+\item{p_adjust_method}{\code{"BH"} (default) or \code{"none"}: whether
+\code{pval_threshold} and the p-value annotation use ALDEx2's
+Benjamini-Hochberg adjusted p-values (\code{wi.eBH}) or the raw ones
+(\code{wi.ep}). ALDEx2 only computes the BH correction.}
 
 \item{cluster_rows}{Logical. Cluster heatmap rows (default \code{FALSE}).}
 
@@ -61,7 +69,7 @@ the heatmap body and effect size defaults).}
 
 \item{group_colors}{Optional character vector of colors for the difference
 barplot annotation, one color per condition in the order they appear in
-\code{metadata[[col_cond]]}. If \code{NULL} (default) an orange/blue
+\code{metadata[[group_col]]}. If \code{NULL} (default) an orange/blue
 colorblind-friendly palette is used (matching the col_sup/col_inf
 convention used elsewhere, e.g. \code{aldex_volcano_plot}), cycling
 through the rest of the Okabe-Ito palette as needed
@@ -69,10 +77,15 @@ for more than two groups.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the underlying ALDEx2
 results table (filtered taxa, effect size, diff.btw, p-value category)
-to disk. Default \code{FALSE}.}
+to disk. Default \code{FALSE}. \code{effect} and \code{diff.btw} are
+saved as ALDEx2 returns them (alphabetically second group minus the
+first); the \code{seccion} column says in which group each taxon is higher.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
+
+\item{...}{Old names of renamed arguments (\code{col_cond}, \code{pvalue_BH}), still accepted
+with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ComplexHeatmap} object (returned invisibly; drawn as a
@@ -91,15 +104,15 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# col_cond must have exactly two groups; Location has two
+# group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data. effect_threshold
-# alone (no pvalue_BH) is used here since this small (46-sample) dataset
+# alone (no pval_threshold) is used here since this small (46-sample) dataset
 # rarely has taxa that pass both an effect-size and a significance
 # threshold at once - combine both for a stricter, real analysis.
 aldex_heatmap_plot(
   table            = table,
   metadata         = metadata,
-  col_cond         = "Location",
+  group_col         = "Location",
   effect_threshold = 0.5
 )
 

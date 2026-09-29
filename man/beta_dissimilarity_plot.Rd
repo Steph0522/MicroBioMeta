@@ -16,6 +16,7 @@ beta_dissimilarity_plot(
   partition = c("shared", "turnover", "nestedness"),
   family = c("sorensen", "jaccard"),
   stat = NULL,
+  p_adjust_method = "holm",
   show_x_labels = TRUE,
   x_label_angle = 0,
   strip_text_bold = FALSE,
@@ -34,7 +35,10 @@ beta_dissimilarity_plot(
 
 \item{condition1_col}{Column name in metadata for the first condition.}
 
-\item{condition2_col}{Optional column name in metadata for the second condition (used as facet).}
+\item{condition2_col}{Optional column name in metadata for the second
+condition, used as facet. Each facet keeps only pairs of samples that
+share that value (e.g. two samples of treatment TC), so comparisons are
+split by the condition they come from instead of mixing them.}
 
 \item{facet_colors}{Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"} background.}
 
@@ -49,9 +53,17 @@ colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
 \item{family}{Dissimilarity family for the turnover/nestedness partition:
 \code{"sorensen"} (default) or \code{"jaccard"}. Case-insensitive.}
 
-\item{stat}{Character or \code{NULL}. Statistical test to compare groups,
-passed to \code{ggpubr::stat_compare_means()} (e.g. \code{"wilcox.test"},
-\code{"kruskal.test"}, \code{"anova"}). Default \code{NULL} (no test shown).}
+\item{stat}{Character or \code{NULL}. Statistical test to compare the
+boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
+compare every pair of boxes, each with its own bracket and p-value
+(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
+give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
+Default \code{NULL} (no test shown).}
+
+\item{p_adjust_method}{Multiple-comparison correction for the pairwise
+tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
+each panel; any method of \code{stats::p.adjust()}. Default
+\code{"holm"}; \code{"none"} shows the raw p-values.}
 
 \item{show_x_labels}{Logical. If \code{TRUE} (default), x-axis tick labels
 are shown. The comparison groups are also in the legend, so set to

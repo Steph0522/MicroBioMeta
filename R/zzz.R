@@ -120,6 +120,88 @@ utils::globalVariables(c(
   scales::label_pvalue(accuracy = accuracy)(p)
 }
 
+# Same, as a full label: "p<0.001" below `accuracy`, "p=0.012" otherwise
+# (never "p = <0.001").
+.mbm_p_label <- function(p, accuracy = 0.001) {
+  scales::pvalue(p, accuracy = accuracy, add_p = TRUE)
+}
+
+# --- Group-comparison layer for boxplots --------------------------------------
+# Two-sample tests ("wilcox.test", "t.test") are run for every pair of boxes
+# within each panel/facet, drawn with a bracket each and adjusted for
+# multiple comparisons within the panel (p_adjust_method, "holm" by default;
+# "none" to skip it). Global tests ("kruskal.test", "anova") give one p-value
+# per panel. Before, stat_compare_means() with a two-sample test and more
+# than two boxes drew every pairwise p-value on top of each other at the
+# same spot, which read as a single (and misleading) p-value.
+#   data, label.x, label.y: optional, for callers that add one layer per
+#   panel with its own data subset (alpha_diversity_plot/alpha_hill_plot);
+#   label.x/label.y only place the global-test label.
+.mbm_stat_layer <- function(stat, p_adjust_method = "holm",
+                            data = NULL, label.x = NULL, label.y = NULL) {
+  if (stat %in% c("wilcox.test", "t.test")) {
+    # Labels use the package's own p-value format ("p<0.001", "p=0.012"),
+    # through stat_pwc()'s glue template, instead of rstatix's scientific
+    # notation.
+    p_col <- if (p_adjust_method == "none") "p" else "p.adj"
+    ggpubr::stat_pwc(
+      data            = data,
+      method          = stat,
+      p.adjust.method = p_adjust_method,
+      p.adjust.by     = "panel",
+      label           = paste0("{scales::pvalue(", p_col, ", 0.001, add_p = TRUE)}"),
+      hide.ns         = p_col,
+      size            = 0.4,
+      label.size      = 3,
+      family          = "serif",
+      tip.length      = 0.01,
+      step.increase   = 0.14,
+      vjust           = -0.2
+    )
+  } else {
+    ggpubr::stat_compare_means(
+      method  = stat,
+      mapping = ggplot2::aes(
+        # kept short: ggpubr deparses this mapping and fails on multi-line code
+        label = scales::pvalue(after_stat(p), 0.001, add_p = TRUE)
+      ),
+      size = 3.5, family = "serif", hide.ns = TRUE,
+      data = data, label.x = label.x, label.y = label.y
+    )
+  }
+}
+
+# --- Renamed arguments ----------------------------------------------------------
+# Several arguments were renamed so the same thing has the same name across
+# the package (e.g. col_cond -> group_col). Functions take `...` and pass it
+# here: an old name still works, with a warning saying what to use instead,
+# and any other unknown argument is an error (so a typo isn't silently
+# swallowed by `...`).
+#   dots:    list(...) of the calling function.
+#   renames: named character vector, c(old_name = "new_name").
+#   fn:      the calling function's name, for the messages.
+# Returns a named list of the values to use, keyed by the new names.
+.mbm_renamed_args <- function(dots, renames, fn) {
+  if (length(dots) == 0) return(list())
+  nms <- names(dots)
+  if (is.null(nms) || any(nms == "")) {
+    stop("Unused unnamed argument(s) in ", fn, "().", call. = FALSE)
+  }
+  unknown <- setdiff(nms, names(renames))
+  if (length(unknown) > 0) {
+    stop("Unused argument(s) in ", fn, "(): ", paste(unknown, collapse = ", "),
+         call. = FALSE)
+  }
+  out <- list()
+  for (old in nms) {
+    new <- renames[[old]]
+    warning("In ", fn, "(), `", old, "` was renamed to `", new,
+            "`; please use `", new, "` instead.", call. = FALSE)
+    out[[new]] <- dots[[old]]
+  }
+  out
+}
+
 # --- Metadata / sample alignment ---------------------------------------------
 # Matches metadata rows to the samples of a table by ID, never by position,
 # since vegan::adonis2(), betadisper(), envfit(), ALDEx2 and randomForest all
@@ -355,7 +437,12 @@ utils::globalVariables(c(
   "wi.eBH",
   "wi.ep",
   "log_pvalue",
+  ".p",
   "significant",
+  # global-test label in .mbm_stat_layer(): kept short, so after_stat() is
+  # not namespaced there
+  "after_stat",
+  "p",
   "direction",
   # ancombc columns
   "lfc",
