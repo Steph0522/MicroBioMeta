@@ -11,7 +11,7 @@ test_that("beta_turnover_plot returns a plot comparing beta diversity within sam
     condition1_col        = "Group",
     condition2_col        = "Batch",
     facet_colors        = c("#E69F00", "#56B4E9"),
-    group_colors          = c("A" = "#E69F00", "B" = "#56B4E9")
+    group_colors          = c("A_vs_A" = "#E69F00", "A_vs_B" = "#56B4E9", "B_vs_B" = "#009E73")
   )
 
   expect_s3_class(result, "ggplot")
@@ -31,7 +31,7 @@ test_that("beta_turnover_plot saves a table with the Hill-order column when requ
     condition1_col        = "Group",
     condition2_col        = "Batch",
     facet_colors        = c("#E69F00", "#56B4E9"),
-    group_colors          = c("A" = "#E69F00", "B" = "#56B4E9"),
+    group_colors          = c("A_vs_A" = "#E69F00", "A_vs_B" = "#56B4E9", "B_vs_B" = "#009E73"),
     save_table            = TRUE,
     table_filename        = tmp
   )
@@ -62,4 +62,13 @@ test_that("beta_turnover_plot facets by condition2_col alone, keeping same-value
   expect_setequal(levels(p$data$.facet2_col), c("B1", "B2"))
   saved <- utils::read.delim(tmp, check.names = FALSE)
   expect_true(all(saved$Batch.x == saved$Batch.y))
+})
+test_that("beta_turnover_plot warns when group_colors names match no comparison", {
+  toy <- make_beta_toy_community()
+  expect_warning(
+    beta_turnover_plot(toy$table, toy$metadata,
+                       comparison_condition1 = c("A_vs_B"), condition1_col = "Group",
+                       group_colors = c("A" = "#E69F00", "B" = "#56B4E9")),
+    "drawn grey"
+  )
 })

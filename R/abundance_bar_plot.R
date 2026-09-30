@@ -17,6 +17,8 @@
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The title for the x-axis (default = "Samples")
+#' @param y_axis_title Character. The title for the y-axis (default =
+#'   "Relative abundance (%)").
 #' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis tick
 #'   labels. Default \code{0} (horizontal); set to \code{45} or \code{90} when
 #'   sample names are long enough to overlap.
@@ -76,6 +78,7 @@ abundance_bar_plot <- function(table,
                               label = "taxonomy",
                               top_n = 15,
                               x_axis_title = "Samples",
+                              y_axis_title = "Relative abundance (%)",
                               x_label_angle = 0,
                               strip_text_bold = FALSE,
                               strip_color = "grey",
@@ -487,7 +490,7 @@ abundance_bar_plot <- function(table,
       )
     ) +
     ggplot2::coord_cartesian(ylim = c(0, 100)) +
-    ggplot2::ylab("Relative abundance (%)") +
+    ggplot2::ylab(y_axis_title) +
     ggplot2::xlab(x_axis_title)
   
   if (!is.null(facet_by)) {

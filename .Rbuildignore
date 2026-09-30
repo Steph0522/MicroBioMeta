@@ -13,3 +13,4 @@
 ^MicroBioMeta\.BiocCheck$
 ^MicroBioMeta_.*\.tar\.gz$
 ^Rplots\.pdf$
+^optimization$

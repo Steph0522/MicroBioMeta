@@ -42,6 +42,9 @@
 #'   (blue-vermillion), \code{"BuPk"} (blue-pink), or \code{"GnPk"}
 #'   (green-pink). Ignored for the 2-group / continuous bar plot, which uses
 #'   \code{bar_colors} instead.
+#' @param x_axis_title,y_axis_title Titles for the x- and y-axis. Default
+#'   \code{NULL}: the log fold change of the comparison on x of the bar
+#'   plots, and no title otherwise.
 #' @param bar_colors Character vector of (at least) 2 colors used for the
 #'   bar plot (2-group or continuous \code{group_col}). First color is the
 #'   "positive" direction (the non-reference group / increases with the
@@ -95,6 +98,8 @@ ancombc_plot <- function(table,
                          rand_formula      = NULL,
                          ref_level         = NULL,
                          diverging_palette = "BuOr",
+                         x_axis_title      = NULL,
+                         y_axis_title      = NULL,
                          bar_colors        = c("#56B4E9", "#E69F00"),
                          save_table        = FALSE,
                          table_filename    = "ancombc_results.txt",
@@ -274,8 +279,8 @@ ancombc_plot <- function(table,
       ggplot2::geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
       ggplot2::scale_fill_manual(values = fill_colors, name = NULL, labels = legend_labs) +
       ggplot2::labs(
-        x     = paste0("Log fold change (", cmp_group, " vs ", ref_group, ")"),
-        y     = NULL,
+        x     = if (is.null(x_axis_title)) paste0("Log fold change (", cmp_group, " vs ", ref_group, ")") else x_axis_title,
+        y     = y_axis_title,
         title = paste0("Differential taxa by ", term)
       ) +
       .mbm_theme(
@@ -327,8 +332,8 @@ ancombc_plot <- function(table,
       ggplot2::geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
       ggplot2::scale_fill_manual(values = fill_colors, name = NULL, labels = legend_labs) +
       ggplot2::labs(
-        x     = paste0("Log fold change (", term, ")"),
-        y     = NULL,
+        x     = if (is.null(x_axis_title)) paste0("Log fold change (", term, ")") else x_axis_title,
+        y     = y_axis_title,
         title = paste0("Differential taxa by ", term)
       ) +
       .mbm_theme(
@@ -380,8 +385,8 @@ ancombc_plot <- function(table,
       ) +
       ggplot2::geom_text(ggplot2::aes(label = lfc), size = 3.5) +
       ggplot2::labs(
-        x     = NULL,
-        y     = NULL,
+        x     = x_axis_title,
+        y     = y_axis_title,
         title = paste("Log fold changes -", term)
       ) +
       .mbm_theme(

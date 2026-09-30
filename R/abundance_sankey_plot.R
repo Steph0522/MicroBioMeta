@@ -72,11 +72,16 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
 
   # Cleanup according to database
   if(tolower(taxonomy_db) == "silva") {
+    # SILVA writes spaces in names as "_" at every rank (e.g. "Incertae_Sedis",
+    # "Nucleariidae_and_Fonticula_group"), not only in the species: turn them
+    # into spaces at all ranks, since "_" is the separator used below to build
+    # (and later split) the node ids - otherwise "Incertae_Sedis" became a
+    # node named "Sedis" and "..._group" one named "group".
     otu_rel_parse <- otu_rel_parse %>%
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
       dplyr::mutate(s = stringr::str_trim(s),
-                    s = stringr::str_replace(s, "^\\s*[a-zA-Z]+__", ""),
-                    s = stringr::str_replace_all(s, "_", " "))
+                    s = stringr::str_replace(s, "^\\s*[a-zA-Z]+__", "")) %>%
+      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_replace_all(., "_", " ")))
   }else if (tolower(taxonomy_db) == "unite") {
     otu_rel_parse <- otu_rel_parse %>%
       # eliminar prefijos tipo k__, p__, c__, etc., pero conservar "incertae sedis"
@@ -120,7 +125,11 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   # - so each lineage keeps its own, identifiable, still-short node (e.g.
   # "other Mucoromycota" rather than the much longer "Mucoromycota Incertae
   # Sedis" or the ambiguous bare "Incertae Sedis").
-  is_incertae_sedis <- function(x) !is.na(x) & grepl("^incertae\\s+sedis$", x, ignore.case = TRUE)
+  # Also "uncultured", which is not a taxon either (same fallback as the other
+  # functions). "_" or spaces between the words, for any taxonomy_db.
+  is_incertae_sedis <- function(x) {
+    !is.na(x) & grepl("^(incertae[\\s_]+sedis|uncultured)$", x, ignore.case = TRUE, perl = TRUE)
+  }
   rank_cols <- c("k","p","c","o","f","g","s")
   for (i in seq(2, length(rank_cols))) {
     this_col <- rank_cols[i]

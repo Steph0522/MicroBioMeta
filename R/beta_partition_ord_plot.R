@@ -30,7 +30,9 @@
 #'
 #' @param ... Old names of renamed arguments (\code{index}), still accepted
 #'   with a warning. Any other extra argument is an error.
-#' @return A combined cowplot panel of beta diversity partition plots.
+#' @return A \code{patchwork} object with the three partition ordinations
+#'   (Jaccard/Sorensen, turnover, nestedness). It can still be modified:
+#'   \code{p & theme(...)} changes every panel, \code{p[[2]] + labs(...)} one.
 #' @export
 #'
 #' @examples
@@ -245,41 +247,49 @@ beta_partition_ord_plot <- function(table, metadata,
   }
   
   # --- 6. Generate plots ---
-  plot_jac  <- function_plot_beta(jacs, env1) + 
-    ggplot2::guides(
-      colour = ggplot2::guide_legend(nrow = 1, title = if(!is.null(legend_title)) legend_title else group_col),
-      # Without an explicit title, ggplot falls back to deparsing the raw
-      # aes() expression used for `shape` (the `if (!is.null(shape_col)) ...`
-      # conditional itself) as the legend label, instead of the column name.
-      shape  = ggplot2::guide_legend(nrow = 1, title = shape_col)
-    ) + ggplot2::theme(legend.position = "top")
-  
-  plot_turn <- function_plot_beta(jtus, env1)
-  plot_nes  <- function_plot_beta(jnes, env1)
-  
-  leg <- cowplot::get_legend(plot_jac)
+  # The same legend settings on the three panels, so patchwork merges their
+  # (identical) legends into a single one, above the panels.
+  legend_guides <- ggplot2::guides(
+    colour = ggplot2::guide_legend(nrow = 1, title = if(!is.null(legend_title)) legend_title else group_col),
+    # Without an explicit title, ggplot falls back to deparsing the raw
+    # aes() expression used for `shape` (the `if (!is.null(shape_col)) ...`
+    # conditional itself) as the legend label, instead of the column name.
+    shape  = ggplot2::guide_legend(nrow = 1, title = shape_col)
+  )
+  title_theme <- ggplot2::theme(
+    plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black",
+                                       family = "serif", face = "bold"),
+    aspect.ratio = 10/10
+  )
+  plot_jac <- function_plot_beta(jacs, env1) + legend_guides + title_theme +
+    ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") +
+    ggplot2::ggtitle(paste0(family, " dissimilarity (mean = ", mean_jac, ")"))
+  plot_turn <- function_plot_beta(jtus, env1) + legend_guides + title_theme +
+    ggplot2::ylab("") + ggplot2::xlab("DIM1") +
+    ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")"))
+  plot_nes <- function_plot_beta(jnes, env1) + legend_guides + title_theme +
+    ggplot2::ylab("") + ggplot2::xlab("DIM1") +
+    ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")"))
+
   resolved_labels <- if (!is.null(panel_labels)) {
     panel_labels
   } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
-  panel_fontface <- if (panel_label_bold) "bold" else "plain"
-  panel <- cowplot::plot_grid(
-    plot_jac + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black", family = "serif", face = "bold")) +
-      ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0(family, " dissimilarity (mean = ", mean_jac, ")")),
-     plot_turn + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black", family = "serif", face = "bold")) +
-      ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")")),
-    plot_nes + ggplot2::theme(legend.position = "none") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black", family = "serif", face = "bold")) +
-      ggplot2::ylab("") + ggplot2::xlab("DIM1") + ggplot2::theme(aspect.ratio = 10/10) + ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")")),
-    ncol = 3, align = "hv", labels = resolved_labels, label_fontfamily = "serif",
-    label_fontface = panel_fontface,
-    label_size = 14,
-    label_x = 0,
-    label_y = 1,
-    hjust = -0.2,
-    vjust = 1.3
+
+  # Joined with patchwork (see .mbm_patchwork_grid()), so the result stays
+  # modifiable: `p & theme(...)`, `p[[2]] + labs(...)`, `+ plot_annotation()`.
+  # The merged legend goes in its own row above the three panels (guide_area),
+  # not between the panel titles and the panels.
+  combined_plot <- patchwork::wrap_plots(
+      patchwork::guide_area(), plot_jac, plot_turn, plot_nes,
+      design = "AAA\nBCD", heights = c(0.12, 1)) +
+    patchwork::plot_layout(guides = "collect") +
+    patchwork::plot_annotation(tag_levels = list(resolved_labels)) &
+    ggplot2::theme(
+      legend.position = "top",
+      plot.tag = ggplot2::element_text(family = "serif", size = 14,
+                                       face = if (panel_label_bold) "bold" else "plain")
     )
-  
-  combined_plot <- cowplot::plot_grid(leg, panel, ncol = 1, rel_heights = c(0.12, 1))
-  
+
   return(combined_plot)
   })  # <- closes suppressWarnings
 }

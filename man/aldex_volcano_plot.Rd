@@ -18,6 +18,8 @@ aldex_volcano_plot(
   p_adjust_method = "BH",
   show_labels = TRUE,
   taxa = NULL,
+  x_axis_title = NULL,
+  y_axis_title = NULL,
   label_size = 3.5,
   filter_uncultured = FALSE,
   save_table = FALSE,
@@ -60,6 +62,10 @@ method is available here.}
 \item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).}
 
 \item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
+
+\item{x_axis_title, y_axis_title}{Titles for the x- and y-axis. Default
+\code{NULL}: \code{"Effect size"} (\code{"effect"}) or log2 fold change
+(\code{"volcano"}) on x, and the (adjusted) p-value on y.}
 
 \item{label_size}{Numeric. Font size of the taxon labels drawn on
 significant points in the "volcano" plot. Default \code{3.5}.}

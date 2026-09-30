@@ -54,9 +54,12 @@
 #' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
 #'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
 #'   panel tags.
+#' @param strip_text_bold Logical. If \code{TRUE}, the q0/q1/q2 facet strip
+#'   labels are bold. Default \code{FALSE} (plain), as in the other functions.
 #'
-#' @return A \code{ggplot} object (a \code{cowplot} composite of the three
-#'   q0/q1/q2 panels, always tagged A/B/C).
+#' @return A \code{patchwork} object joining the three q0/q1/q2 panels
+#'   (always tagged A/B/C). It can still be modified: \code{p & theme(...)}
+#'   changes every panel, \code{p[[2]] + labs(...)} a single one.
 #' @export
 #'
 #' @examples
@@ -116,7 +119,8 @@ alpha_decay_plot <- function(
     annotation_size   = 3.5,
     panel_label_case  = "upper",
     panel_labels      = NULL,
-    panel_label_bold  = TRUE
+    panel_label_bold  = TRUE,
+    strip_text_bold   = FALSE
 ) {
 
   # ---- 0. Validate inputs ----
@@ -277,7 +281,7 @@ alpha_decay_plot <- function(
   }
 
   facet_ncol <- if (facet_orientation == "horizontal") 3L else 1L
-  q_labeller <- ggplot2::as_labeller(.mbm_q_labels, default = ggplot2::label_parsed)
+  q_labeller <- .mbm_q_labeller(strip_text_bold)
 
   # When ungrouped, match alpha_hill_corr_plot's fixed reg.line/CI colors;
   # when grouped, let each group keep its own palette color.
@@ -302,7 +306,7 @@ alpha_decay_plot <- function(
   # Shared y-axis range across the three q panels when scales aren't free
   y_range <- if (!free_y) range(hills_long$hill, na.rm = TRUE) else NULL
 
-  # ---- 7. Build one panel per q level, then combine with cowplot so the
+  # ---- 7. Build one panel per q level, then combine with patchwork so the
   # A/B/C tags land outside each panel (matching alpha_hill_corr_plot) ----
   q_levels <- intersect(c("q0", "q1", "q2"), unique(hills_long$q))
 
@@ -329,9 +333,7 @@ alpha_decay_plot <- function(
       ggplot2::theme_bw() +
       ggplot2::theme(
         panel.grid       = ggplot2::element_blank(),
-        strip.text       = ggplot2::element_text(
-          size = 12, color = "black", family = "serif", face = "bold"
-        ),
+        strip.text       = .mbm_strip_text(strip_text_bold, size = 12),
         strip.background = ggplot2::element_rect(fill = "grey"),
         axis.title.x     = ggplot2::element_text(
           size = 14, color = "black", family = "serif"
@@ -365,41 +367,11 @@ alpha_decay_plot <- function(
 
   plots <- lapply(q_levels, build_q_panel)
 
-  has_legend <- !is.null(group_col) && show_legend
-  if (has_legend) {
-    leg <- cowplot::get_legend(plots[[1]])
-    plots <- lapply(plots, function(pl) pl + ggplot2::theme(legend.position = "none"))
-  }
-
-  panel_grid <- cowplot::plot_grid(
-    plotlist         = plots,
-    ncol              = facet_ncol,
-    labels            = panel_letters,
-    label_fontfamily  = "serif",
-    label_fontface    = if (panel_label_bold) "bold" else "plain",
-    label_size        = 14,
-    label_x           = 0,
-    label_y           = 1,
-    hjust             = -0.2,
-    vjust             = 1.3
-  )
-
-  p <- if (has_legend) {
-    switch(legend_position,
-      "top"    = cowplot::plot_grid(leg, panel_grid, ncol = 1, rel_heights = c(0.1, 1)),
-      "left"   = cowplot::plot_grid(leg, panel_grid, nrow = 1, rel_widths = c(0.2, 1)),
-      "right"  = cowplot::plot_grid(panel_grid, leg, nrow = 1, rel_widths = c(1, 0.2)),
-      cowplot::plot_grid(panel_grid, leg, ncol = 1, rel_heights = c(1, 0.1))
-    )
-  } else {
-    panel_grid
-  }
-
-  if (!is.null(title)) {
-    title_grob <- cowplot::ggdraw() +
-      cowplot::draw_label(title, fontface = "bold", fontfamily = "serif", size = 14)
-    p <- cowplot::plot_grid(title_grob, p, ncol = 1, rel_heights = c(0.08, 1))
-  }
-
-  p
+  # Joined with patchwork (see .mbm_patchwork_grid()), so the result stays
+  # modifiable: `p & theme(...)`, `p[[2]] + labs(...)`, `+ plot_annotation()`.
+  .mbm_patchwork_grid(plots, ncol = facet_ncol, tags = panel_letters,
+                      title = title,
+                      show_legend = !is.null(group_col) && show_legend,
+                      legend_position = legend_position,
+                      tag_bold = panel_label_bold)
 }

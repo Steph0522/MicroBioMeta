@@ -17,6 +17,8 @@
 #' @param group_colors Optional named vector of colors for x-axis groups. Defaults to the package's
 #'   colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).
 #' @param x_axis_title Title for the x-axis.
+#' @param y_axis_title Title for the y-axis. Default \code{NULL}: built from
+#'   \code{partition} (e.g. \code{"Beta diversity (shared features)"}).
 #' @param partition Type of beta diversity to compute: `"shared"` (default),
 #'   `"turnover"`, or `"nestedness"`. Case-insensitive.
 #' @param family Dissimilarity family for the turnover/nestedness partition:
@@ -77,6 +79,7 @@ beta_dissimilarity_plot <- function(
     facet_colors = NULL,
     group_colors = NULL,
     x_axis_title = "Condition",
+    y_axis_title = NULL,
     partition = c("shared","turnover","nestedness"),
     family = c("sorensen","jaccard"),
     stat = NULL,
@@ -183,6 +186,7 @@ beta_dissimilarity_plot <- function(
     group_colors <- if (n_groups == 2) .mbm_colors_2group else rep_len(.mbm_colors, n_groups)
   }
   if(is.null(names(group_colors))) names(group_colors) <- unique(beta_df$condition1_group)
+  .mbm_check_color_names(group_colors, as.character(unique(beta_df$condition1_group)))
 
   if(!is.null(condition2_col)) {
     n_facets <- length(unique(beta_df[[paste0(condition2_col,".x")]]))
@@ -213,7 +217,7 @@ beta_dissimilarity_plot <- function(
   # species...); "turnover"/"nestedness" are already standard beta-diversity
   # terms on their own, so only "shared" needs the extra word.
   partition_label <- if (partition == "shared") "shared features" else partition
-  y_lab <- paste0("Beta diversity (", partition_label, ")")
+  y_lab <- if (!is.null(y_axis_title)) y_axis_title else paste0("Beta diversity (", partition_label, ")")
 
   if(!is.null(condition2_col)) {
     figura <- ggpubr::ggboxplot(

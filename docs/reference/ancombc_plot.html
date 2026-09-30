@@ -109,6 +109,8 @@ unit increase is returned instead, colored by the direction of the effect.</p>
 <span>  rand_formula <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref_level <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  diverging_palette <span class="op">=</span> <span class="st">"BuOr"</span>,</span>
+<span>  x_axis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  y_axis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bar_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#56B4E9"</span>, <span class="st">"#E69F00"</span><span class="op">)</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"ancombc_results.txt"</span>,</span>
@@ -186,6 +188,12 @@ scale. One of <code>"BuOr"</code> (blue-orange, default), <code>"BuVm"</code>
 <code>bar_colors</code> instead.</p></dd>
 
 
+<dt id="arg-x-axis-title-y-axis-title">x_axis_title, y_axis_title<a class="anchor" aria-label="anchor" href="#arg-x-axis-title-y-axis-title"></a></dt>
+<dd><p>Titles for the x- and y-axis. Default
+<code>NULL</code>: the log fold change of the comparison on x of the bar
+plots, and no title otherwise.</p></dd>
+
+
 <dt id="arg-bar-colors">bar_colors<a class="anchor" aria-label="anchor" href="#arg-bar-colors"></a></dt>
 <dd><p>Character vector of (at least) 2 colors used for the
 bar plot (2-group or continuous <code>group_col</code>). First color is the
@@ -241,6 +249,9 @@ with a warning. Any other extra argument is an error.</p></dd>
 <span class="r-in"><span>  min_prevalence      <span class="op">=</span> <span class="fl">0.3</span>,</span></span>
 <span class="r-in"><span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'lme4':</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   method           from</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   na.action.merMod car </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking the input data type ...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The input data is of type: phyloseq</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> PASS</span>

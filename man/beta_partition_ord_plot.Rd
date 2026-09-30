@@ -63,7 +63,9 @@ panel tags.}
 with a warning. Any other extra argument is an error.}
 }
 \value{
-A combined cowplot panel of beta diversity partition plots.
+A \code{patchwork} object with the three partition ordinations
+(Jaccard/Sorensen, turnover, nestedness). It can still be modified:
+\code{p & theme(...)} changes every panel, \code{p[[2]] + labs(...)} one.
 }
 \description{
 This function computes beta diversity partition (Jaccard or Sorensen)

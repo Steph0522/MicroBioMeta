@@ -100,6 +100,7 @@
 <span>  facet_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_axis_title <span class="op">=</span> <span class="st">"Section"</span>,</span>
+<span>  y_axis_title <span class="op">=</span> <span class="st">"Proportion of feature turnover"</span>,</span>
 <span>  show_x_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  x_label_angle <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  strip_text_bold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -177,6 +178,11 @@ Defaults to the package's colorblind-friendly Okabe-Ito palette
 
 <dt id="arg-x-axis-title">x_axis_title<a class="anchor" aria-label="anchor" href="#arg-x-axis-title"></a></dt>
 <dd><p>Title for the x-axis. Default <code>"Section"</code>.</p></dd>
+
+
+<dt id="arg-y-axis-title">y_axis_title<a class="anchor" aria-label="anchor" href="#arg-y-axis-title"></a></dt>
+<dd><p>Title for the y-axis. Default
+<code>"Proportion of feature turnover"</code>.</p></dd>
 
 
 <dt id="arg-show-x-labels">show_x_labels<a class="anchor" aria-label="anchor" href="#arg-show-x-labels"></a></dt>
@@ -262,7 +268,8 @@ with a warning. Any other extra argument is an error.</p></dd>
 <span class="r-in"><span>  condition1_col        <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
 <span class="r-in"><span>  condition2_col        <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
 <span class="r-in"><span>  facet_colors        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5D478B"</span>, <span class="st">"#8B668B"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group_colors          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>, <span class="st">"Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  group_colors          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>       <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span></span>
+<span class="r-in"><span>                            <span class="st">"Rhizosphere_vs_Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some species in comm data were not observed in any site,</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  delete them...</span>
@@ -270,10 +277,6 @@ with a warning. Any other extra argument is an error.</p></dd>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  delete them...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some species in comm data were not observed in any site,</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span>  delete them...</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">fill</span> values.</span>
 <span class="r-plt img"><img src="beta_turnover_plot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

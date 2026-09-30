@@ -26,7 +26,8 @@ alpha_decay_plot(
   annotation_size = 3.5,
   panel_label_case = "upper",
   panel_labels = NULL,
-  panel_label_bold = TRUE
+  panel_label_bold = TRUE,
+  strip_text_bold = FALSE
 )
 }
 \arguments{
@@ -96,10 +97,14 @@ per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
 \item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
 bold. Set to \code{FALSE} for journals that require plain (non-bold)
 panel tags.}
+
+\item{strip_text_bold}{Logical. If \code{TRUE}, the q0/q1/q2 facet strip
+labels are bold. Default \code{FALSE} (plain), as in the other functions.}
 }
 \value{
-A \code{ggplot} object (a \code{cowplot} composite of the three
-q0/q1/q2 panels, always tagged A/B/C).
+A \code{patchwork} object joining the three q0/q1/q2 panels
+(always tagged A/B/C). It can still be modified: \code{p & theme(...)}
+changes every panel, \code{p[[2]] + labs(...)} a single one.
 }
 \description{
 Computes Hill numbers (q = 0, 1, 2) from an ASV/OTU table and plots them

@@ -15,6 +15,7 @@ abundance_bar_plot(
   label = "taxonomy",
   top_n = 15,
   x_axis_title = "Samples",
+  y_axis_title = "Relative abundance (\%)",
   x_label_angle = 0,
   strip_text_bold = FALSE,
   strip_color = "grey",
@@ -51,6 +52,9 @@ is used to simplify the taxonomic names shown in the plot. One of
 \item{top_n}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
 
 \item{x_axis_title}{Character. The title for the x-axis (default = "Samples")}
+
+\item{y_axis_title}{Character. The title for the y-axis (default =
+"Relative abundance (\%)").}
 
 \item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
 labels. Default \code{0} (horizontal); set to \code{45} or \code{90} when

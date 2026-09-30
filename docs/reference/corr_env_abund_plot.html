@@ -112,6 +112,7 @@ abundances and environmental variables, and visualizes the results as either a h
 <span>  level <span class="op">=</span> <span class="st">"genus"</span>,</span>
 <span>  pval_threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
+<span>  x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  table_filename <span class="op">=</span> <span class="st">"corr.txt"</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -211,6 +212,12 @@ If <code>NULL</code>, no significance filtering is applied.</p></dd>
 p-values of all taxon x variable correlations before filtering with
 <code>pval_threshold</code>; any method of <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default
 <code>"BH"</code> (false discovery rate); <code>"none"</code> uses the raw p-values.</p></dd>
+
+
+<dt id="arg-x-label-angle">x_label_angle<a class="anchor" aria-label="anchor" href="#arg-x-label-angle"></a></dt>
+<dd><p>Numeric. Rotation (in degrees) of the x-axis labels,
+so long variable or taxon names don't overlap. Default <code>45</code>;
+<code>0</code> for horizontal labels.</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>

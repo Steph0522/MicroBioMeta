@@ -13,7 +13,8 @@ alpha_hill_corr_plot(
   panel_labels = NULL,
   panel_label_bold = TRUE,
   save_table = FALSE,
-  table_filename = "hill.txt"
+  table_filename = "hill.txt",
+  x_axis_title = "Sequencing depth (number of reads)"
 )
 }
 \arguments{
@@ -51,6 +52,9 @@ disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"hill.txt"}.}
+
+\item{x_axis_title}{Title for the x-axis of the three panels. Default
+\code{"Sequencing depth (number of reads)"}.}
 }
 \value{
 A ggplot object showing alpha diversity with Hill numbers.
@@ -59,7 +63,8 @@ A ggplot object showing alpha diversity with Hill numbers.
 Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
 sequencing depth (total reads) as a scatter plot with a fitted regression
 line and correlation coefficient, combining the three plots (q0,
-q1, q2) into a single figure via \code{cowplot}.
+q1, q2) into a single figure via \code{patchwork}, which stays modifiable
+(e.g. \code{p & ggplot2::theme(...)} changes every panel).
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

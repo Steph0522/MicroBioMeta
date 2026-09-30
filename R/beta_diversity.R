@@ -35,6 +35,8 @@
 #'   (\code{.mbm_colors}, orange/blue first), like
 #'   \code{beta_dissimilarity_plot()}'s \code{group_colors}.
 #' @param x_axis_title Title for the x-axis. Default \code{"Section"}.
+#' @param y_axis_title Title for the y-axis. Default
+#'   \code{"Proportion of feature turnover"}.
 #' @param show_x_labels Logical. If \code{TRUE}, x-axis tick labels are shown.
 #'   Default \code{FALSE}, since the same groups are already named in the legend.
 #' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis tick labels
@@ -86,7 +88,8 @@
 #'   condition1_col        = "Location",
 #'   condition2_col        = "Treatment",
 #'   facet_colors        = c("#5D478B", "#8B668B"),
-#'   group_colors          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
+#'   group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
+#'                             "Rhizosphere_vs_Rhizosphere" = "#E69F00")
 #' )
 
 beta_turnover_plot <- function(table, 
@@ -98,6 +101,7 @@ beta_turnover_plot <- function(table,
                       facet_colors = NULL,
                       group_colors = NULL,
                       x_axis_title = "Section",
+                      y_axis_title = "Proportion of feature turnover",
                       show_x_labels = FALSE,
                       x_label_angle = 0,
                       strip_text_bold = FALSE,
@@ -286,6 +290,7 @@ beta_turnover_plot <- function(table,
     group_colors <- if (n_groups == 2) .mbm_colors_2group else rep_len(.mbm_colors, n_groups)
     names(group_colors) <- unique(beta_final$.compar_label)
   }
+  .mbm_check_color_names(group_colors, as.character(unique(beta_final$.compar_label)))
   if (has_facet_by && is.null(facet_colors)) {
     # strip_text_color's own "white" default assumes the caller's (often
     # dark) facet_colors - illegible against this light default, so switch
@@ -327,7 +332,7 @@ beta_turnover_plot <- function(table,
     ggpubr::ggboxplot(x = ".compar_label", y = "Recambio", fill = ".compar_label") +
     # Generic "features" instead of "ASVs" - the table can just as well hold
     # OTUs, species, or any other feature type.
-    ggplot2::ylab("Proportion of feature turnover") +
+    ggplot2::ylab(y_axis_title) +
     ggplot2::scale_fill_manual(values = group_colors) +
     ggplot2::labs(fill = "Comparison") +
     facet_spec +
@@ -350,7 +355,11 @@ beta_turnover_plot <- function(table,
         strip.background.y = ggplot2::element_rect(fill = "grey", color = "black"),
         strip.text.x = .mbm_strip_text(strip_text_bold, colour = strip_text_color),
         strip.text.y = .mbm_strip_text(strip_text_bold),
-        panel.border = ggplot2::element_rect(color = "black", fill = NA, linewidth = 0.5)
+        panel.border = ggplot2::element_rect(color = "black", fill = NA, linewidth = 0.5),
+        # The q0/q1/q2 rows are stacked: without some room between them, the
+        # bottom "0" label of one row sits right against the top label of the
+        # next one.
+        panel.spacing.y = grid::unit(0.8, "lines")
       )
     ) +
     ggplot2::xlab(x_axis_title)
@@ -359,14 +368,17 @@ beta_turnover_plot <- function(table,
     figura <- figura + ggplot2::theme(aspect.ratio = aspect_ratio)
   }
 
+  # Turnover is a proportion: axis marks only from 0 to 1 (not up to the
+  # headroom left for the p-value brackets, e.g. "1.2"), and a bottom margin
+  # so the lowest boxes and the "0" mark don't touch the panel border. The
+  # top margin is wider when stat adds brackets above the boxes.
+  top_expand <- if (is.null(stat)) 0.05 else 0.15
+  figura <- figura +
+    ggplot2::scale_y_continuous(breaks = seq(0, 1, by = 0.25),
+                                expand = ggplot2::expansion(mult = c(0.08, top_expand)))
+
   if (!is.null(stat)) {
-    # stat_compare_means() places its label a fixed fraction above the data's
-    # max, which the default 5% top expansion doesn't leave room for - the
-    # label gets clipped by the panel border. Widen the top expansion instead
-    # of leaving that headroom out only for this stat-annotated case.
-    figura <- figura +
-      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.15))) +
-      .mbm_stat_layer(stat, p_adjust_method)
+    figura <- figura + .mbm_stat_layer(stat, p_adjust_method)
   }
 
   # Returns the ggplot object directly (not wrapped in a list) so it drops

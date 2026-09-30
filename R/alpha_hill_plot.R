@@ -315,6 +315,8 @@ alpha_hill_plot <- function(
     # Shared y-axis range across all panels when scales aren't free (the
     # default), so boxplots stay visually comparable across the grid.
     y_range <- if (!free_y) range(results_largo$value, na.rm = TRUE) else NULL
+    # long y titles go on two lines when there are several (short) rows
+    y_title_cell <- .mbm_row_axis_title(y_axis_title, n_rows_grid)
 
     panel_letters <- if (!is.null(panel_labels)) {
       panel_labels
@@ -343,8 +345,10 @@ alpha_hill_plot <- function(
         # below, since every facet_by row down that column reads the same
         # units/legend as the row above it.
         ggplot2::labs(
-          x = NULL,
-          y = if (q_in_rows || col_idx == 1) y_axis_title else NULL,
+          # x title only on the bottom row (patchwork then merges the
+          # identical ones into one), as the y title is only on column 1
+          x = if (row_idx == n_rows_grid) x_axis_title else NULL,
+          y = if (q_in_rows || col_idx == 1) y_title_cell else NULL,
           fill = legend_title
         ) +
         .mbm_theme(
@@ -436,58 +440,21 @@ alpha_hill_plot <- function(
       p_cell
     }
 
-    grid_ncol <- n_cols_grid
-    plots <- vector("list", n_rows_grid * grid_ncol)
-    labels_full <- character(length(plots))
-    letter_i <- 1L
-    pos <- 1L
+    plots <- list()
     for (row_idx in seq_len(n_rows_grid)) {
       for (col_idx in seq_len(n_cols_grid)) {
-        plots[[pos]] <- build_cell(row_idx, col_idx)
-        labels_full[pos] <- panel_letters[letter_i]
-        letter_i <- letter_i + 1L
-        pos <- pos + 1L
+        plots[[length(plots) + 1L]] <- build_cell(row_idx, col_idx)
       }
     }
 
-    has_legend <- show_legend
-    if (has_legend) {
-      leg <- cowplot::get_legend(build_cell(1, 1) + ggplot2::theme(legend.position = legend_position))
-    }
-    # Strip each panel's own legend unconditionally - not just when
-    # consolidating into one shared legend above - so show_legend = FALSE
-    # actually removes it instead of leaving it on every panel.
-    plots <- lapply(plots, function(pl) pl + ggplot2::theme(legend.position = "none"))
-
-    panel_grid <- cowplot::plot_grid(
-      plotlist         = plots,
-      ncol             = grid_ncol,
-      labels           = labels_full,
-      label_fontfamily = "serif",
-      label_fontface   = if (panel_label_bold) "bold" else "plain",
-      label_size       = 14,
-      label_x          = 0,
-      label_y          = 1,
-      hjust            = -0.2,
-      vjust            = 1.3
-    )
-
-    p <- if (has_legend) {
-      switch(legend_position,
-        "top"    = cowplot::plot_grid(leg, panel_grid, ncol = 1, rel_heights = c(0.1, 1)),
-        "left"   = cowplot::plot_grid(leg, panel_grid, nrow = 1, rel_widths = c(0.2, 1)),
-        "right"  = cowplot::plot_grid(panel_grid, leg, nrow = 1, rel_widths = c(1, 0.2)),
-        cowplot::plot_grid(panel_grid, leg, ncol = 1, rel_heights = c(1, 0.1))
-      )
-    } else {
-      panel_grid
-    }
-
-    if (!is.null(title)) {
-      title_grob <- cowplot::ggdraw() +
-        cowplot::draw_label(title, fontface = "bold", fontfamily = "serif", size = 14)
-      p <- cowplot::plot_grid(title_grob, p, ncol = 1, rel_heights = c(0.08, 1))
-    }
+    # Joined with patchwork (see .mbm_patchwork_grid()), so the result stays
+    # modifiable: `p & theme(...)`, `p[[2]] + labs(...)`, `+ plot_annotation()`.
+    # Axis titles stay on each panel; to merge them into one, add
+    # `+ patchwork::plot_layout(axis_titles = "collect")` to the result.
+    p <- .mbm_patchwork_grid(plots, ncol = n_cols_grid, tags = panel_letters,
+                             title = title, show_legend = show_legend,
+                             legend_position = legend_position,
+                             tag_bold = panel_label_bold)
 
     return(p)
   }
@@ -547,80 +514,16 @@ alpha_hill_plot <- function(
       p_vals_layers
   }
 
-  {
-    # Add A, B, C... style labels to the panels. Rather than reusing an
-    # existing gtable row (which may not exist, e.g. the 2nd/3rd row of a
-    # facet_by grid has no strip above it, only panel.spacing), a brand new,
-    # dedicated, guaranteed-empty row is inserted directly above every
-    # panel, so the tag never overlaps the strip text or the plotted data.
-    panel_letters <- if (!is.null(panel_labels)) {
-      panel_labels
-    } else if (identical(panel_label_case, "lower")) {
-      letters
-    } else {
-      LETTERS
-    }
-
-    g <- ggplot2::ggplotGrob(p)
-    tag_height <- grid::unit(10, "mm")
-
-    # Panel grobs are matched by their on-page reading-order position (top-
-    # to-bottom, left-to-right - i.e. sorted by gtable row `t` then column
-    # `l`), not by reconstructing their grob name. ggplot2's facet_wrap
-    # names panel grobs "panel-<COL>-<ROW>" while ggh4x's facet_grid2/
-    # facet_nested use "panel-<ROW>-<COL>" - guessing a single fixed pattern
-    # (as this used to) matches the wrong panels for one of the two facet
-    # types, silently dropping every tag whose constructed name doesn't
-    # exist in the gtable, which left every facet_orientation = "vertical"
-    # plot with at most one A/B/C tag instead of one per panel.
-    panel_layout <- g$layout[grepl("^panel-", g$layout$name), ]
-    panel_layout <- panel_layout[order(panel_layout$t, panel_layout$l), ]
-    panel_names <- panel_layout$name
-
-    # Panels sharing the same facet row share the same gtable row index, so
-    # insert exactly one tag-row per unique row - not one per panel, which
-    # would stack up redundant blank rows. Process bottom-to-top so
-    # inserting above a lower row never shifts the row index of rows still
-    # to be processed further up.
-    orig_row_of_panel <- vapply(panel_names, function(nm) g$layout$t[g$layout$name == nm][1], numeric(1))
-    unique_rows <- sort(unique(orig_row_of_panel), decreasing = TRUE)
-    row_reps <- panel_names[match(unique_rows, orig_row_of_panel)]
-    for (nm in row_reps) {
-      t_now <- g$layout$t[g$layout$name == nm][1]
-      g <- gtable::gtable_add_rows(g, tag_height, pos = t_now - 1)
-    }
-
-    for (i in seq_along(panel_names)) {
-      panel_cell <- g$layout[g$layout$name == panel_names[i], ]
-      if (nrow(panel_cell) == 1) {
-        tag_row <- panel_cell$t - 1
-        g <- gtable::gtable_add_grob(
-          g,
-          grid::textGrob(
-            panel_letters[i],
-            x = grid::unit(2, "mm"),
-            y = grid::unit(0.5, "npc"),
-            hjust = 0,
-            vjust = 0.5,
-            gp = grid::gpar(
-              fontface = if (panel_label_bold) "bold" else "plain",
-              fontfamily = "serif",
-              fontsize = 13
-            )
-          ),
-          t = tag_row,
-          l = max(1, panel_cell$l - 1),
-          b = tag_row,
-          r = panel_cell$r,
-          z = Inf,
-          name = paste0("panel-tag-", i)
-        )
-      }
-    }
-
-    p <- cowplot::ggdraw() +
-      cowplot::draw_grob(g)
+  # A, B, C... tags on each panel. The plot stays a normal (faceted) ggplot,
+  # modifiable with + theme()/labs(), instead of a gtable edited into an image.
+  panel_letters <- if (!is.null(panel_labels)) {
+    panel_labels
+  } else if (identical(panel_label_case, "lower")) {
+    letters
+  } else {
+    LETTERS
   }
+  p <- .mbm_facet_tags(p, panel_letters, bold = panel_label_bold)
 
   return(p)
 }

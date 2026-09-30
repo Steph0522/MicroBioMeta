@@ -15,6 +15,8 @@ ancombc_plot(
   rand_formula = NULL,
   ref_level = NULL,
   diverging_palette = "BuOr",
+  x_axis_title = NULL,
+  y_axis_title = NULL,
   bar_colors = c("#56B4E9", "#E69F00"),
   save_table = FALSE,
   table_filename = "ancombc_results.txt",
@@ -67,6 +69,10 @@ scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
 (blue-vermillion), \code{"BuPk"} (blue-pink), or \code{"GnPk"}
 (green-pink). Ignored for the 2-group / continuous bar plot, which uses
 \code{bar_colors} instead.}
+
+\item{x_axis_title, y_axis_title}{Titles for the x- and y-axis. Default
+\code{NULL}: the log fold change of the comparison on x of the bar
+plots, and no title otherwise.}
 
 \item{bar_colors}{Character vector of (at least) 2 colors used for the
 bar plot (2-group or continuous \code{group_col}). First color is the

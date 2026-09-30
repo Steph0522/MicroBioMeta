@@ -14,6 +14,7 @@ beta_turnover_plot(
   facet_colors = NULL,
   group_colors = NULL,
   x_axis_title = "Section",
+  y_axis_title = "Proportion of feature turnover",
   show_x_labels = FALSE,
   x_label_angle = 0,
   strip_text_bold = FALSE,
@@ -70,6 +71,9 @@ Defaults to the package's colorblind-friendly Okabe-Ito palette
 \code{beta_dissimilarity_plot()}'s \code{group_colors}.}
 
 \item{x_axis_title}{Title for the x-axis. Default \code{"Section"}.}
+
+\item{y_axis_title}{Title for the y-axis. Default
+\code{"Proportion of feature turnover"}.}
 
 \item{show_x_labels}{Logical. If \code{TRUE}, x-axis tick labels are shown.
 Default \code{FALSE}, since the same groups are already named in the legend.}
@@ -134,6 +138,7 @@ beta_turnover_plot(
   condition1_col        = "Location",
   condition2_col        = "Treatment",
   facet_colors        = c("#5D478B", "#8B668B"),
-  group_colors          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00")
+  group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
+                            "Rhizosphere_vs_Rhizosphere" = "#E69F00")
 )
 }

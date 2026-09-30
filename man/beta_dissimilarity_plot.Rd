@@ -13,6 +13,7 @@ beta_dissimilarity_plot(
   facet_colors = NULL,
   group_colors = NULL,
   x_axis_title = "Condition",
+  y_axis_title = NULL,
   partition = c("shared", "turnover", "nestedness"),
   family = c("sorensen", "jaccard"),
   stat = NULL,
@@ -46,6 +47,9 @@ split by the condition they come from instead of mixing them.}
 colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
 
 \item{x_axis_title}{Title for the x-axis.}
+
+\item{y_axis_title}{Title for the y-axis. Default \code{NULL}: built from
+\code{partition} (e.g. \code{"Beta diversity (shared features)"}).}
 
 \item{partition}{Type of beta diversity to compute: \code{"shared"} (default),
 \code{"turnover"}, or \code{"nestedness"}. Case-insensitive.}

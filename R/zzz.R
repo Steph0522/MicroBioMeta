@@ -171,6 +171,77 @@ utils::globalVariables(c(
   }
 }
 
+# --- Multi-panel figures (patchwork) -------------------------------------------
+# Joins a list of ggplots with patchwork instead of cowplot, so the result is
+# still a modifiable plot: `p & theme(...)` changes every panel,
+# `p[[2]] + labs(...)` a single one, `p + plot_annotation(...)` the figure.
+# Identical legends are collected into one, and the A/B/C tags are patchwork
+# tags (drawn outside each panel, like cowplot's labels were).
+#   tags: character vector of panel tags (one per plot), or NULL for none.
+.mbm_patchwork_grid <- function(plots, ncol, tags = NULL, title = NULL,
+                                show_legend = TRUE, legend_position = "bottom",
+                                tag_bold = TRUE, nrow = NULL, widths = NULL,
+                                heights = NULL) {
+  p <- patchwork::wrap_plots(plots, ncol = ncol, nrow = nrow,
+                             widths = widths, heights = heights) +
+    patchwork::plot_layout(guides = "collect") +
+    patchwork::plot_annotation(
+      title      = title,
+      tag_levels = if (!is.null(tags)) list(tags[seq_along(plots)]) else NULL,
+      theme      = ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", family = "serif",
+                                           size = 14, hjust = 0.5)
+      )
+    )
+  p & ggplot2::theme(
+    legend.position = if (show_legend) legend_position else "none",
+    plot.tag = ggplot2::element_text(family = "serif", size = 14,
+                                     face = if (tag_bold) "bold" else "plain")
+  )
+}
+
+# Warns when a named `group_colors` matches none of the groups actually
+# plotted (e.g. c("Roots" = ...) for boxes labelled "Rhizosphere_vs_Roots"):
+# ggplot would otherwise silently draw every box grey.
+.mbm_check_color_names <- function(group_colors, groups, arg = "group_colors") {
+  if (!is.null(names(group_colors)) && !any(names(group_colors) %in% groups)) {
+    warning("None of the names of `", arg, "` (", paste(names(group_colors), collapse = ", "),
+            ") match the groups in the plot (", paste(groups, collapse = ", "),
+            "), so they are drawn grey. Name the colors after these groups.",
+            call. = FALSE)
+  }
+  invisible(NULL)
+}
+
+# Y-axis title for each row of a multi-panel grid: with more than one row the
+# rows are short, so a long title (e.g. "Effective number of features") is
+# wrapped onto two lines instead of running into the row above/below.
+.mbm_row_axis_title <- function(title, n_rows, width = 18) {
+  if (n_rows > 1 && is.character(title) && length(title) == 1 && nchar(title) > width) {
+    paste(strwrap(title, width = width), collapse = "\n")
+  } else {
+    title
+  }
+}
+
+# Adds A/B/C tags to the panels of a single faceted ggplot, as text in the
+# top-left corner of each panel (in reading order: rows, then columns). The
+# plot stays a normal ggplot, unlike the gtable-edited image used before.
+.mbm_facet_tags <- function(p, tags, bold = TRUE) {
+  layout <- ggplot2::ggplot_build(p)$layout$layout
+  layout <- layout[order(layout$ROW, layout$COL), , drop = FALSE]
+  facet_vars <- setdiff(names(layout), c("PANEL", "ROW", "COL", "SCALE_X", "SCALE_Y",
+                                         "AXIS_X", "AXIS_Y", "COORD"))
+  tag_df <- layout[, facet_vars, drop = FALSE]
+  tag_df$.tag <- tags[seq_len(nrow(tag_df))]
+  p + ggplot2::geom_text(
+    data = tag_df,
+    mapping = ggplot2::aes(x = -Inf, y = Inf, label = .tag),
+    inherit.aes = FALSE, hjust = -0.4, vjust = 1.4,
+    family = "serif", size = 4.5, fontface = if (bold) "bold" else "plain"
+  )
+}
+
 # --- Renamed arguments ----------------------------------------------------------
 # Several arguments were renamed so the same thing has the same name across
 # the package (e.g. col_cond -> group_col). Functions take `...` and pass it
@@ -438,6 +509,7 @@ utils::globalVariables(c(
   "wi.ep",
   "log_pvalue",
   ".p",
+  ".tag",
   "significant",
   # global-test label in .mbm_stat_layer(): kept short, so after_stat() is
   # not namespaced there

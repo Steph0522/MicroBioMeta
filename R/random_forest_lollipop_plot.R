@@ -9,6 +9,8 @@
 #' @param size the size of the point of the lollipop.
 #' @param save_table Logical. If \code{TRUE}, saves the feature-importance
 #'   table to disk. Default \code{FALSE}.
+#' @param x_axis_title Title for the horizontal (importance) axis. Default
+#'   \code{"Feature importance (MeanDecreaseGini)"}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"randomforest_importance.txt"}.
 #'
@@ -39,7 +41,8 @@ random_forest_lollipop_plot <- function(table,
                                   group_colors = NULL,
                                   title = NULL,
                                   save_table = FALSE,
-                                  table_filename = "randomforest_importance.txt") {
+                                  table_filename = "randomforest_importance.txt",
+                                  x_axis_title = "Feature importance (MeanDecreaseGini)") {
 
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
@@ -193,7 +196,7 @@ random_forest_lollipop_plot <- function(table,
       color = "black",
       linewidth = 1
     ) +
-    ggplot2::ylab("Feature importance (MeanDecreaseGini)") +
+    ggplot2::ylab(x_axis_title) +  # coord_flip(): shown as the horizontal axis
     ggplot2::geom_point(size = size, shape = 21, color = "black") +
     ggplot2::scale_fill_manual(values = fill_colors) +
     ggplot2::scale_x_discrete(labels = row_labels) +

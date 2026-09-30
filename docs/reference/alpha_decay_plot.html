@@ -126,7 +126,8 @@ regression lines.</p>
 <span>  annotation_size <span class="op">=</span> <span class="fl">3.5</span>,</span>
 <span>  panel_label_case <span class="op">=</span> <span class="st">"upper"</span>,</span>
 <span>  panel_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  panel_label_bold <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  panel_label_bold <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  strip_text_bold <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -244,11 +245,17 @@ per q0/q1/q2 panel), used as-is (e.g. <code>c("(a)", "(b)", "(c)")</code> or
 bold. Set to <code>FALSE</code> for journals that require plain (non-bold)
 panel tags.</p></dd>
 
+
+<dt id="arg-strip-text-bold">strip_text_bold<a class="anchor" aria-label="anchor" href="#arg-strip-text-bold"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, the q0/q1/q2 facet strip
+labels are bold. Default <code>FALSE</code> (plain), as in the other functions.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>ggplot</code> object (a <code>cowplot</code> composite of the three
-q0/q1/q2 panels, always tagged A/B/C).</p>
+    <p>A <code>patchwork</code> object joining the three q0/q1/q2 panels
+(always tagged A/B/C). It can still be modified: <code>p &amp; theme(...)</code>
+changes every panel, <code>p[[2]] + labs(...)</code> a single one.</p>
     </div>
 
     <div id="ref-examples">

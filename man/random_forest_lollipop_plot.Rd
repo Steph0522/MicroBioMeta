@@ -13,7 +13,8 @@ random_forest_lollipop_plot(
   group_colors = NULL,
   title = NULL,
   save_table = FALSE,
-  table_filename = "randomforest_importance.txt"
+  table_filename = "randomforest_importance.txt",
+  x_axis_title = "Feature importance (MeanDecreaseGini)"
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"randomforest_importance.txt"}.}
+
+\item{x_axis_title}{Title for the horizontal (importance) axis. Default
+\code{"Feature importance (MeanDecreaseGini)"}.}
 }
 \value{
 A lollipop plot showing top important features from random forest analysis.

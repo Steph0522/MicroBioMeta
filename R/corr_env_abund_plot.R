@@ -53,6 +53,9 @@
 #'   p-values of all taxon x variable correlations before filtering with
 #'   \code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
 #'   \code{"BH"} (false discovery rate); \code{"none"} uses the raw p-values.
+#' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis labels,
+#'   so long variable or taxon names don't overlap. Default \code{45};
+#'   \code{0} for horizontal labels.
 #' @param save_table Logical. If TRUE, saves the correlation matrix as a
 #'   tab-delimited text file.
 #' @param table_filename Character. Name of the output file used when
@@ -107,6 +110,7 @@ corr_env_abund_plot <- function(table,
                                 level = "genus",
                                 pval_threshold = NULL,
                                 p_adjust_method = "BH",
+                                x_label_angle = 45,
                                 save_table = FALSE,
                                 table_filename = "corr.txt",
                                 ...) {
@@ -560,9 +564,9 @@ corr_env_abund_plot <- function(table,
       legend_position = "right",
       extra = ggplot2::theme(
         axis.text.x = ggplot2::element_text(
-          angle = if (invert_axes) 0 else 45,
-          vjust = if (invert_axes) 0.5 else 1,
-          hjust = if (invert_axes) 0.5 else 1,
+          angle = x_label_angle,
+          vjust = if (x_label_angle == 0) 0.5 else 1,
+          hjust = if (x_label_angle == 0) 0.5 else 1,
           size  = 12, color = "black",
           face  = if (invert_axes) "plain" else "italic"
         ),

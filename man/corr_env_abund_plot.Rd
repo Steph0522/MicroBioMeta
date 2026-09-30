@@ -20,6 +20,7 @@ corr_env_abund_plot(
   level = "genus",
   pval_threshold = NULL,
   p_adjust_method = "BH",
+  x_label_angle = 45,
   save_table = FALSE,
   table_filename = "corr.txt",
   ...
@@ -86,6 +87,10 @@ If \code{NULL}, no significance filtering is applied.}
 p-values of all taxon x variable correlations before filtering with
 \code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
 \code{"BH"} (false discovery rate); \code{"none"} uses the raw p-values.}
+
+\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis labels,
+so long variable or taxon names don't overlap. Default \code{45};
+\code{0} for horizontal labels.}
 
 \item{save_table}{Logical. If TRUE, saves the correlation matrix as a
 tab-delimited text file.}

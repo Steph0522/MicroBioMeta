@@ -22,6 +22,9 @@
 #'   method is available here.
 #' @param show_labels Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).
 #' @param taxa Data frame with taxonomic information (required for "volcano" plot only).
+#' @param x_axis_title,y_axis_title Titles for the x- and y-axis. Default
+#'   \code{NULL}: \code{"Effect size"} (\code{"effect"}) or log2 fold change
+#'   (\code{"volcano"}) on x, and the (adjusted) p-value on y.
 #' @param label_size Numeric. Font size of the taxon labels drawn on
 #'   significant points in the "volcano" plot. Default \code{3.5}.
 #' @param filter_uncultured Logical. If \code{TRUE}, taxa whose name contains
@@ -75,6 +78,8 @@ aldex_volcano_plot <- function(table,
                                p_adjust_method = "BH",
                                show_labels = TRUE,
                                taxa = NULL,
+                               x_axis_title = NULL,
+                               y_axis_title = NULL,
                                label_size = 3.5,
                                filter_uncultured = FALSE,
                                save_table = FALSE,
@@ -228,8 +233,8 @@ aldex_volcano_plot <- function(table,
         color = "black"
       ) +
       ggplot2::labs(
-        x = "Effect size",
-        y = y_lab,
+        x = if (is.null(x_axis_title)) "Effect size" else x_axis_title,
+        y = if (is.null(y_axis_title)) y_lab else y_axis_title,
         color = NULL
       ) +
       .mbm_theme(legend_position = "none") +
@@ -339,8 +344,8 @@ aldex_volcano_plot <- function(table,
         linetype = 'dashed'
       ) +
       ggplot2::labs(
-        x = expression("Log"[2]~"Fold Change"),
-        y = y_lab,
+        x = if (is.null(x_axis_title)) expression("Log"[2]~"Fold Change") else x_axis_title,
+        y = if (is.null(y_axis_title)) y_lab else y_axis_title,
         color = NULL
       ) +
       .mbm_theme(legend_position = "none") +

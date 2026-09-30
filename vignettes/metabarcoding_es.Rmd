@@ -288,7 +288,7 @@ El argumento `facet_by` permite dividir el gráfico según una variable de metad
 
 Si `save_table = TRUE`, la función también retorna una tabla con los valores de diversidad alfa calculados para cada muestra.
 
-```{r visualizaci-n-de-diversidad-alfa-18, warning=FALSE, fig.width=8, fig.height=6}
+```{r visualizaci-n-de-diversidad-alfa-18, warning=FALSE, fig.width=9, fig.height=8}
 alpha_hill_plot(table = table_bac,
                 metadata = metadata_bacteria,
                 x_col = "Treatment",
@@ -298,7 +298,7 @@ alpha_hill_plot(table = table_bac,
                 save_table = FALSE)
 ```
 
-```{r visualizaci-n-de-diversidad-alfa-19, warning=FALSE, fig.height=6, fig.width=9}
+```{r visualizaci-n-de-diversidad-alfa-19, warning=FALSE, fig.width=9, fig.height=7}
 alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
@@ -310,7 +310,7 @@ alpha_hill_plot(table = table_fung,
 
 También podemos visualizar otras métricas considerando índices clásicos de diversidad alfa:
 
-```{r visualizaci-n-de-diversidad-alfa-20, warning=FALSE, fig.height=6, fig.width=9}
+```{r visualizaci-n-de-diversidad-alfa-20, warning=FALSE, fig.width=9, fig.height=7}
 alpha_diversity_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
@@ -325,7 +325,7 @@ alpha_diversity_plot(table = table_fung,
 Cada panel se etiqueta automáticamente (A, B, C, ...) para poder referenciarlo. Cuando se establece `stat`, también se agregan valores p a cada panel. `"wilcox.test"` o `"t.test"` comparan cada par de grupos, cada uno con su corchete, y corrigen los valores p por comparaciones múltiples dentro del panel con `p_adjust_method` (por defecto `"holm"`; `"none"` muestra los valores p sin corregir). `"kruskal.test"` o `"anova"` dan un solo valor p global por panel. Solo se dibujan las comparaciones significativas.
 `panel_label_case` alterna entre etiquetas en mayúsculas y minúsculas, `panel_label_bold` para etiquetas en negritas, y `panel_labels` te permite dar etiquetas personalizadas (por ejemplo `c("(a)", "(b)", "(c)")`) en vez de las generadas automáticamente. `free_y` permite que cada panel use su propia escala del eje y en vez de una compartida, como abajo:
 
-```{r visualizaci-n-de-diversidad-alfa-21, warning=FALSE, fig.height=6, fig.width=9}
+```{r visualizaci-n-de-diversidad-alfa-21, warning=FALSE, fig.width=9, fig.height=7}
 alpha_diversity_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
@@ -336,6 +336,18 @@ alpha_diversity_plot(table = table_fung,
                 free_y = TRUE,
                 x_label_angle = 45,
                 panel_label_bold = FALSE,
+                save_table = FALSE)
+```
+
+Con `facet_orientation = "vertical"` los órdenes de Hill (*q*) van en filas y los grupos de `facet_by` en columnas:
+
+```{r visualizaci-n-de-diversidad-alfa-vertical, warning=FALSE, fig.width=8, fig.height=8}
+alpha_hill_plot(table = table_fung,
+                metadata = metadata_fungi,
+                x_col = "Treatment",
+                fill_col = "Treatment",
+                facet_by = "Type_of_soil",
+                facet_orientation = "vertical",
                 save_table = FALSE)
 ```
 
@@ -363,7 +375,7 @@ Otra forma de explorar los patrones de diversidad alfa es examinando **qué taxo
 
 Generamos un diagrama de Venn agrupando muestras según el compartimento de suelo.
 
-```{r taxones-compartidos-entre-grupos-de-muestras-23, fig.width=7, fig.height=6}
+```{r taxones-compartidos-entre-grupos-de-muestras-23, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
                   merge_by = "Type_of_soil",
@@ -408,7 +420,7 @@ A veces es útil visualizar solo los taxones que ocurren frecuentemente dentro d
 
 Por ejemplo, el siguiente diagrama incluye solo los taxones presentes en **al menos el 20% de las muestras dentro de cada grupo**. El parámetro es 0 por defecto, lo que significa que no se aplica ningún filtro.
 
-```{r filtrar-taxones-por-prevalencia-25, fig.width=7, fig.height=6}
+```{r filtrar-taxones-por-prevalencia-25, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
                   merge_by = "Type_of_soil",
@@ -418,7 +430,7 @@ venn_plot(table = table_fung,
 #### 🖥️ Personalizar los colores de los grupos
 La función también permite colores personalizados para los grupos.
 
-```{r personalizar-los-colores-de-los-grupos-26, fig.width=7, fig.height=6}
+```{r personalizar-los-colores-de-los-grupos-26, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
                   merge_by = "Type_of_soil",
@@ -429,7 +441,7 @@ venn_plot(table = table_fung,
 #### 🖥️ Método de graficación alternativo
 Por defecto la función usa el paquete **ggvenn**, pero también puede generar el diagrama usando **ggVennDiagram**.
 
-```{r m-todo-de-graficaci-n-alternativo-27}
+```{r m-todo-de-graficaci-n-alternativo-27, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
                   merge_by = "Type_of_soil",
@@ -551,7 +563,7 @@ beta_dissimilarity_plot(table = table_bac,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        x_axis_title = "Samples",
-                       x_label_angle = 45,
+                       show_x_labels = FALSE,
                        stat = "kruskal.test",
                        partition = "shared",
                        family = "jaccard",
@@ -571,7 +583,7 @@ beta_dissimilarity_plot(table = table_fung,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        x_axis_title = "Samples",
-                       x_label_angle = 45,
+                       show_x_labels = FALSE,
                        stat = "kruskal.test",
                        partition = "shared",
                        family = "jaccard",
@@ -584,22 +596,22 @@ beta_dissimilarity_plot(table = table_fung,
 
 `beta_turnover_plot()` responde una pregunta distinta a la de `beta_dissimilarity_plot()`: para **un grupo de referencia** (por ejemplo, Rhizosphere), ¿es su recambio **contra otro grupo** (por ejemplo, Roots, una comparación entre grupos) mayor que su recambio **contra sí mismo** (pares Rhizosphere-vs-Rhizosphere, una línea base dentro del grupo)? Si el recambio entre grupos es significativamente mayor, eso es evidencia de que los dos compartimentos realmente albergan comunidades distintas, más allá de la variabilidad ya presente entre réplicas del mismo compartimento.
 
-Así que el gráfico de abajo tiene una franja morada arriba (este color se puede configurar) etiquetada **"Rhizosphere"**, el grupo de referencia fijo en ambas comparaciones y, dentro de ella, dos cajas: **"Roots"** (Rhizosphere vs. Roots, entre grupos) y **"Rhizosphere"** (Rhizosphere vs. Rhizosphere, dentro del grupo). Que la franja y la caja "Rhizosphere" tengan la misma etiqueta es intencional, no un duplicado, la franja nombra la referencia, la caja nombra contra qué se está comparando (contra sí misma, en ese caso).
+Así que el gráfico de abajo tiene una franja morada arriba (este color se puede configurar) por cada tratamiento (**TC**, **TD**, **TED**: solo se da `condition2_col`, así que cada faceta conserva los pares de muestras de ese mismo tratamiento) y, dentro de cada una, dos cajas: **"Rhizosphere_vs_Roots"** (entre grupos) y **"Rhizosphere_vs_Rhizosphere"** (la línea base dentro del grupo). Los nombres en `group_colors` deben coincidir exactamente con estas etiquetas de comparación; si no, las cajas salen grises (la función avisa).
 
 `comparison_condition1` selecciona qué combinaciones `"valor1_vs_valor2"` conservar, siempre con el grupo de referencia (`Rhizosphere`) primero. `comparison_condition2` conserva solo los pares del mismo tratamiento, para que el recambio no se confunda al comparar muestras de tratamientos distintos. Si solo se da `condition2_col` (sin `comparison_condition2`), se hace lo mismo para todos los tratamientos: se conservan los pares del mismo tratamiento y se faceta por tratamiento.
 
 `facet_colors` colorea las franjas de faceta superiores (una por par de `comparison_condition2`) y `group_colors` colorea las cajas (una por par de `comparison_condition1`). Las etiquetas del eje están ocultas por defecto ya que los grupos ya están identificados en la leyenda. Establece `show_x_labels = TRUE` para mostrarlas de nuevo. `stat` agrega una comparación estadística entre las cajas de cada faceta, como en `beta_dissimilarity_plot()`.
 
-```{r recambio-pareado-turnover-entre-grupos-vs-dentro-del-grupo-38, warning=FALSE, fig.width=3.5, fig.height=4.5, out.width="60%"}
+```{r recambio-pareado-turnover-entre-grupos-vs-dentro-del-grupo-38, warning=FALSE, fig.width=8, fig.height=6}
 beta_turnover_plot(
   table                 = table_fungi,
   metadata              = metadata_fungi,
   comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
-  comparison_condition2 = c("TC_vs_TC", "TD_vs_TD", "TED_vs_TED"),
   condition1_col        = "Type_of_soil",
   condition2_col        = "Treatment",
   facet_colors        = "#5D478B",
-  group_colors          = c("Roots" = "#56B4E9", "Rhizosphere" = "#E69F00"),
+  group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
+                            "Rhizosphere_vs_Rhizosphere" = "#E69F00"),
   stat                  = "wilcox.test"
 )
 ```
@@ -626,7 +638,7 @@ metadata_bacteria_decay <- metadata_bacteria %>%
 ```
 
 
-```{r decaimiento-de-la-similitud-comunitaria-con-la-distancia-40, warning=FALSE, fig.width=8, fig.height=6}
+```{r decaimiento-de-la-similitud-comunitaria-con-la-distancia-40, warning=FALSE, fig.width=6.5, fig.height=4.5, out.width="65%"}
 beta_decay_plot(
   table     = table_bac,
   metadata  = metadata_bacteria_decay,
@@ -672,9 +684,9 @@ table_bac_compar <- merge_feature_taxonomy(table_bacteria_compar, taxonomy_bacte
 
 ```
 
-Podemos visualizar la abundancia diferencial usando un **volcano plot**. Los taxones significativos se etiquetan con su nombre; `label_size` controla el tamaño de fuente de estas etiquetas, y `filter_uncultured = TRUE` descarta los taxones "uncultured"/"unculture" de las etiquetas (aunque igual se grafican como puntos, solo no se etiquetan).
+Podemos visualizar la abundancia diferencial usando un **volcano plot**. Los taxones significativos se etiquetan con su nombre; `label_size` controla el tamaño de fuente de estas etiquetas, y `filter_uncultured = TRUE` descarta los taxones "uncultured"/"unculture" de las etiquetas (aunque igual se grafican como puntos, solo no se etiquetan). Por defecto la significancia usa el valor p ajustado por Benjamini-Hochberg (`p_adjust_method = "BH"`), porque se prueban miles de taxones a la vez. En estos datos ningún taxón queda significativo tras la corrección (todos los puntos grises); con `p_adjust_method = "none"` se usa el valor p sin corregir.
 
-```{r ejemplo-datos-de-bacterias-42, fig.width=7, fig.height=5.5, message=FALSE, warning=FALSE}
+```{r ejemplo-datos-de-bacterias-42, message=FALSE, warning=FALSE, fig.width=6, fig.height=4.5, out.width="60%"}
 aldex_volcano_plot(table = table_bac_compar,
                    metadata = metadata_bacteria_compar,
                    group_col = "Type_of_soil",
@@ -696,7 +708,7 @@ BiocManager::install(c("ANCOMBC", "phyloseq"))
 
 ⚠️ Con un `min_prevalence` bajo, los taxones raros o dispersos pueden disparar un error `"Zero variances have been detected..."` en el paso interno de corrección de sesgo de ANCOMBC2 en algunas corridas (no siempre ocurre, depende de qué taxones conserve la iteración de bootstrap en turno). Subir `min_prevalence` filtra esos taxones dispersos antes de la prueba y evita el error.
 
-```{r ancombc2-como-m-todo-alternativo-44, fig.width=8, fig.height=6, message=FALSE, warning=FALSE}
+```{r ancombc2-como-m-todo-alternativo-44, message=FALSE, warning=FALSE, fig.width=7, fig.height=5, out.width="60%"}
 ancombc_plot(
   table        = table_bac_compar,
   metadata     = metadata_bacteria_compar,
@@ -732,7 +744,7 @@ Las funciones `random_forest_lollipop_plot()` y `ratios_bubble_plot()` también 
 
 Por ejemplo, un **modelo Random Forest** puede usarse para identificar los taxones que mejor predicen el compartimento de suelo:
 
-```{r identificando-taxones-importantes-47, fig.width=7, fig.height=6}
+```{r identificando-taxones-importantes-47, fig.width=7, fig.height=5, out.width="60%"}
 random_forest_lollipop_plot(
   table = table_bac,
   metadata = metadata_bacteria,
@@ -742,7 +754,7 @@ random_forest_lollipop_plot(
 
 Alternativamente, los taxones con las diferencias log-razón más fuertes entre dos condiciones pueden visualizarse con:
 
-```{r identificando-taxones-importantes-48, fig.width=8, fig.height=9}
+```{r identificando-taxones-importantes-48, fig.width=10, fig.height=9}
 ratios_bubble_plot(table = table_fung_compar,
            metadata = metadata_fungi_compar,
            group_col = "Type_of_soil",
@@ -773,7 +785,7 @@ La función `corr_env_abund_plot()` calcula correlaciones entre **variables ambi
 
 Ejemplo usando **abundancias a nivel de phylum**:
 
-```{r correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-50, fig.width=9, fig.height=8}
+```{r correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-50, fig.width=11, fig.height=9}
 corr_env_abund_plot(table = table_fung,
                     env_data = env_table_fung,
                     metadata = metadata_fungi,
@@ -787,7 +799,7 @@ corr_env_abund_plot(table = table_fung,
 ### 🖥️ Visualización alternativa
 Las correlaciones también pueden mostrarse usando marcadores circulares en vez de celdas:
 
-```{r visualizaci-n-alternativa-51, fig.width=9, fig.height=8}
+```{r visualizaci-n-alternativa-51, fig.width=11, fig.height=9}
 corr_env_abund_plot(table = table_fung,
                     env_data = env_table_fung,
                     metadata = metadata_fungi,

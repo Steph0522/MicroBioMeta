@@ -184,7 +184,9 @@ with a warning. Any other extra argument is an error.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A combined cowplot panel of beta diversity partition plots.</p>
+    <p>A <code>patchwork</code> object with the three partition ordinations
+(Jaccard/Sorensen, turnover, nestedness). It can still be modified:
+<code>p &amp; theme(...)</code> changes every panel, <code>p[[2]] + labs(...)</code> one.</p>
     </div>
 
     <div id="ref-examples">

@@ -3,7 +3,8 @@
 #' Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
 #' sequencing depth (total reads) as a scatter plot with a fitted regression
 #' line and correlation coefficient, combining the three plots (q0,
-#' q1, q2) into a single figure via \code{cowplot}.
+#' q1, q2) into a single figure via \code{patchwork}, which stays modifiable
+#' (e.g. \code{p & ggplot2::theme(...)} changes every panel).
 #'
 #' @param table A data frame or matrix with samples as columns and taxa as rows.
 #'              The first column must contain the OTUID, ASV, or species name.
@@ -29,6 +30,8 @@
 #'   panel tags.
 #' @param save_table Logical. If \code{TRUE}, saves the Hill numbers table to
 #'   disk. Default \code{FALSE}.
+#' @param x_axis_title Title for the x-axis of the three panels. Default
+#'   \code{"Sequencing depth (number of reads)"}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"hill.txt"}.
 #'
@@ -58,7 +61,8 @@ alpha_hill_corr_plot <- function(table,
                                 panel_labels = NULL,
                                 panel_label_bold = TRUE,
                                 save_table = FALSE,
-                                table_filename = "hill.txt") {
+                                table_filename = "hill.txt",
+                                x_axis_title = "Sequencing depth (number of reads)") {
 
   # --- Data preparation ---
   table <- table[, !colnames(table) %in% "taxonomy"]
@@ -98,7 +102,7 @@ alpha_hill_corr_plot <- function(table,
   # --- q0 plot ---
   q0_vs_depth <- ggpubr::ggscatter(
     q_data, x = "Frequency", y = "q0",
-    xlab = "Sequencing depth (number of reads)",
+    xlab = x_axis_title,
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
     add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
@@ -120,7 +124,7 @@ alpha_hill_corr_plot <- function(table,
   # --- q1 plot ---
   q1_vs_depth <- ggpubr::ggscatter(
     q_data, x = "Frequency", y = "q1",
-    xlab = "Sequencing depth (number of reads)",
+    xlab = x_axis_title,
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
     add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
@@ -142,7 +146,7 @@ alpha_hill_corr_plot <- function(table,
   # --- q2 plot ---
   q2_vs_depth <- ggpubr::ggscatter(
     q_data, x = "Frequency", y = "q2",
-    xlab = "Sequencing depth (number of reads)",
+    xlab = x_axis_title,
     add = "reg.line", conf.int = TRUE, cor.coef = TRUE,
     add.params = list(color = "#D55E00", fill = "#56B4E9"),
     cor.coeff.args = list(
@@ -161,61 +165,29 @@ alpha_hill_corr_plot <- function(table,
     ggplot2::labs(y = expression(paste(italic("q"), "=2", " (number of dominant features)"))) +
     ggplot2::theme(aspect.ratio = aspect_ratio_theme)
   
-  # --- Compose plot grid ---
+  # --- Compose the three panels (patchwork) ---
+  # Joined with patchwork instead of cowplot, so the result stays modifiable:
+  # `p & theme(...)` changes every panel, `p[[2]] + labs(...)` a single one,
+  # `p + plot_annotation(...)` the whole figure.
   resolved_labels <- if (!is.null(panel_labels)) {
     panel_labels
   } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
-  panel_fontface <- if (panel_label_bold) "bold" else "plain"
 
-  grid_plot <- if (facet_orientation == "horizontal") {
-    cowplot::plot_grid(
-      q0_vs_depth, q1_vs_depth, q2_vs_depth,
-      labels = resolved_labels,
-      nrow = 1,
-      label_fontfamily = "serif",
-      label_fontface = panel_fontface,
-      label_size = 14,
-      label_x = 0,
-      label_y = 1,
-      hjust = -0.2,
-      vjust = 1.3
-    )
+  resolved_title <- if (!is.character(title) || tolower(title) == "none") {
+    NULL
+  } else if (tolower(title) == "default") {
+    "Alpha diversity vs sequencing depth"
   } else {
-    cowplot::plot_grid(
-      q0_vs_depth, q1_vs_depth, q2_vs_depth,
-      labels = resolved_labels,
-      ncol = 1,
-      label_fontfamily = "serif",
-      label_fontface = panel_fontface,
-      label_size = 14,
-      label_x = 0,
-      label_y = 1,
-      hjust = -0.2,
-      vjust = 1.3
-    )
+    title
   }
-  
-  # --- Plot title ---
-  if (is.character(title)) {
-    if (tolower(title) == "none") {
-      return(grid_plot)
-    } else if (tolower(title) == "default") {
-      title_grob <- cowplot::ggdraw() +
-        cowplot::draw_label("Alpha diversity vs sequencing depth",
-                            fontface = "bold",
-                            fontfamily = "serif")
-    } else {
-      title_grob <- cowplot::ggdraw() +
-        cowplot::draw_label(title,
-                            fontface = "bold",
-                            fontfamily = "serif")
-    }
-    cowplot::plot_grid(title_grob, grid_plot, ncol = 1, rel_heights = c(0.1, 1))
-  } else {
-    return(grid_plot)
-  }
+
+  horizontal <- identical(facet_orientation, "horizontal")
+  .mbm_patchwork_grid(
+    list(q0_vs_depth, q1_vs_depth, q2_vs_depth),
+    ncol = if (horizontal) 3 else 1,
+    tags = resolved_labels,
+    title = resolved_title,
+    show_legend = FALSE,
+    tag_bold = panel_label_bold
+  )
 }
-
-
-
-
