@@ -1,16 +1,12 @@
 #' ANCOMBC2 differential abundance bar/heatmap plot
 #'
-#' Runs ANCOMBC2 on a counts table and metadata, then visualizes differentially
-#' abundant taxa. For two-group comparisons a bar plot of log-fold changes is
-#' returned; for three or more groups a heatmap is returned; for a continuous
-#' \code{group_col} (e.g. \code{"dist_km"}) a bar plot of the effect size per
-#' unit increase is returned instead, colored by the direction of the effect.
+#' Runs ANCOMBC2 on a table and metadata, then visualizes differentially
+#' abundant taxa. 
 #'
-#' @param table Data frame with taxa as rows and samples as columns. The last
-#'   column must contain taxonomy strings (named "taxonomy", "Taxonomy",
-#'   "taxon", "taxa", "Taxa", or "Taxon").
-#' @param metadata Data frame with samples as rows. The first column must
-#'   contain sample IDs that match the column names of \code{table}.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param group_col Character. Name of the column in \code{metadata} that
 #'   defines the grouping variable. If this column is numeric (a continuous
 #'   variable), it's treated as a covariate instead of a group: ANCOMBC2's
@@ -20,7 +16,7 @@
 #' @param level Character or \code{NULL}. Taxonomic level to agglomerate
 #'   to before running \code{ancombc2} (e.g. \code{"genus"}, \code{"family"};
 #'   case-insensitive). Default \code{"genus"}. Pass \code{NULL} to skip agglomeration and run
-#'   ANCOMBC2 directly on the ASV/OTU-level table (rows of \code{table}, as-is).
+#'   ANCOMBC2 directly on the ASV/OTU/species-level table (rows of \code{table}, as-is).
 #' @param min_prevalence Numeric. Prevalence cut-off passed to \code{ancombc2}
 #'   (default \code{0.1}). Lower values retain more taxa.
 #' @param p_adjust_method Character. Multiple-testing correction method passed to
@@ -57,9 +53,6 @@
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ancombc_results.txt"}.
-#'
-#' @param ... Old names of renamed arguments (\code{col_cond}, \code{tax_level}, \code{prv_cut}, \code{p_adj_method}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
 #'   (\eqn{\geq}3 groups).
 #' @export
@@ -73,9 +66,7 @@
 #' colnames(metadata)[1] <- "SampleID"
 #'
 #' # Not run automatically because ANCOMBC2's internal bias-correction step
-#' # can intermittently error on some random bootstrap draws (a known
-#' # ANCOMBC2 edge case, not specific to this dataset), which would make an
-#' # always-run example a flaky check. p_adjust_method = "BH" is less strict
+#' # p_adjust_method = "BH" is less strict
 #' # than the "holm" default; min_prevalence is raised above the 0.1 default to
 #' # filter out rare/sparse taxa before testing.
 #' \donttest{
@@ -104,17 +95,9 @@ ancombc_plot <- function(table,
                          save_table        = FALSE,
                          table_filename    = "ancombc_results.txt",
                          ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(col_cond = "group_col", tax_level = "level", prv_cut = "min_prevalence", p_adj_method = "p_adjust_method"), "ancombc_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
-
 
   if (length(bar_colors) < 2)
     stop("`bar_colors` must have at least 2 colors.")
-
-  # --- 0. package checks ---------------------------------------------------
-  # ANCOMBC, phyloseq, and microbiome (a transitive dependency ancombc2()
-  # needs internally for its data_sanity_check() step) are on Bioconductor.
   for (pkg in c("ANCOMBC", "phyloseq", "microbiome")) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       stop(
@@ -124,7 +107,6 @@ ancombc_plot <- function(table,
       )
     }
   }
-  # --- 1. validate inputs --------------------------------------------------
   if (!group_col %in% colnames(metadata))
     stop("Column ", group_col, " not found in metadata.")
 
@@ -140,7 +122,7 @@ ancombc_plot <- function(table,
 
   names(table)[tax_col] <- "taxonomy"
 
-  # --- 2. build phyloseq object ---------------------------------------------
+  # buildo phyloseq object
   table_counts <- table %>% dplyr::select(-taxonomy)
   otumat  <- as.matrix(table_counts)
 
@@ -151,13 +133,11 @@ ancombc_plot <- function(table,
 
   sample_id_col <- colnames(metadata)[1]
 
-  # Build sample_data: use base R to avoid tibble's row-name restriction
   meta_df <- as.data.frame(metadata)
   rownames(meta_df) <- meta_df[[sample_id_col]]
   meta_df[[sample_id_col]] <- NULL
 
-  # level is case-insensitive, as in the rest of the package; ancombc2()
-  # needs the rank exactly as named in the taxonomy table (e.g. "Genus").
+
   tax_rank <- NULL
   if (!is.null(level)) {
     tax_rank <- colnames(taxmat)[match(tolower(level), tolower(colnames(taxmat)))]
@@ -177,13 +157,9 @@ ancombc_plot <- function(table,
   )
   dat <- physeq_filt
 
-  # --- 3. run ANCOMBC2 -------------------------------------------------------
+  # run ancombc2
   fix_formula <- if (is.null(formula)) group_col else formula
 
-  # `group` (and the struc_zero/neg_lb machinery tied to it) only make sense
-  # for a categorical grouping variable. If group_col is numeric (e.g. a
-  # continuous gradient like "dist_km"), treat it as a plain covariate:
-  # no group, no structural-zero detection.
   is_continuous_cond <- is.numeric(meta_df[[group_col]])
   if (is_continuous_cond) {
     message("`group_col` ('", group_col, "') is numeric; treating it as a ",
@@ -214,13 +190,11 @@ ancombc_plot <- function(table,
     message("Table saved as: ", table_filename)
   }
 
-  # --- 4. parse formula terms to plot ----------------------------------------
-  # Build list of terms: variables + interactions (e.g. "A*B" -> "A","B","A:B")
+
   fix_formula_str <- if (is.null(formula)) group_col else formula
   simple_terms    <- trimws(unlist(strsplit(gsub("\\*", "+", fix_formula_str), "\\+")))
   simple_terms    <- unique(simple_terms[nchar(simple_terms) > 0])
 
-  # add interaction terms if * was used
   all_terms <- simple_terms
   if (grepl("\\*", fix_formula_str)) {
     inter_vars  <- trimws(unlist(strsplit(
@@ -231,7 +205,6 @@ ancombc_plot <- function(table,
     all_terms   <- c(all_terms, inter_label)
   }
 
-  # --- 5. helper functions --------------------------------------------------
 
   .make_barplot <- function(res, lfc_col, diff_col, se_col, term, meta_df) {
     cmp_group  <- sub(paste0("^lfc_", term), "", lfc_col)
@@ -244,10 +217,6 @@ ancombc_plot <- function(table,
       dplyr::filter(.data[[diff_col]] %in% TRUE) %>%
       dplyr::arrange(.data[[lfc_col]]) %>%
       dplyr::mutate(
-        # SILVA/GTDB clade placeholder names (e.g. "Subgroup_7", "bacteriap25")
-        # use "_" as a word separator, which reads oddly as-is; the saved
-        # table keeps the original ANCOMBC2 taxon string, only the plotted
-        # label is cleaned up.
         taxon  = gsub("_", " ", taxon),
         taxon  = factor(taxon, levels = taxon),
         direct = factor(
@@ -292,9 +261,6 @@ ancombc_plot <- function(table,
         )
       )
   }
-
-  # Continuous covariate (e.g. "dist_km"): there is no second group to
-  # compare against, so bars are colored by the sign of the effect instead.
   .make_continuous_barplot <- function(res, lfc_col, diff_col, se_col, term) {
     df <- res %>%
       dplyr::select(taxon, dplyr::all_of(c(lfc_col, diff_col, se_col))) %>%
@@ -400,7 +366,6 @@ ancombc_plot <- function(table,
       )
   }
 
-  # --- 6. build one plot per term -------------------------------------------
   plots <- list()
 
   for (term in all_terms) {
@@ -408,7 +373,7 @@ ancombc_plot <- function(table,
     diff_t <- grep(paste0("^diff_", term), names(res_prim), value = TRUE)
     se_t   <- grep(paste0("^se_",   term), names(res_prim), value = TRUE)
 
-    if (length(lfc_t) == 0) next   # term not found in results (e.g. naming mismatch) -> skip
+    if (length(lfc_t) == 0) next   
 
     if (length(lfc_t) == 1) {
       p <- if (is.numeric(meta_df[[term]])) {
@@ -422,7 +387,6 @@ ancombc_plot <- function(table,
 
     if (!is.null(p)) {
       plots[[term]] <- p
-      # also print diagnostic
       n_sig <- if (length(lfc_t) == 1)
         sum(res_prim[[diff_t]] %in% TRUE)
       else
@@ -440,7 +404,6 @@ ancombc_plot <- function(table,
       "Try p_adjust_method = 'BH' or lower min_prevalence (current = ", min_prevalence, ")."
     )
 
-  # return single plot directly, or named list if multiple terms
   if (length(plots) == 1) return(plots[[1]])
   return(plots)
 }

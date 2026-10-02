@@ -92,7 +92,9 @@ p-values of all taxon x variable correlations before filtering with
 so long variable or taxon names don't overlap. Default \code{45};
 \code{0} for horizontal labels.}
 
-\item{save_table}{Logical. If TRUE, saves the correlation matrix as a
+\item{save_table}{Logical. If TRUE, saves the plotted correlations (one row
+per taxon and variable, with the taxon name, raw p-value and p-value
+adjusted with \code{p_adjust_method}) as a
 tab-delimited text file.}
 
 \item{table_filename}{Character. Name of the output file used when

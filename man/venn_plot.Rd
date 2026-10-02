@@ -33,7 +33,9 @@ venn_plot(
 \item{method}{Character. Package used to draw the Venn diagram: \code{"ggvenn"}
 (default) or \code{"ggVennDiagram"}. Case-insensitive.}
 
-\item{group_colors}{Optional vector of colors for the groups. If NULL, a default \code{distiller} scale with \code{Set3} palette will be used.}
+\item{group_colors}{Optional vector of colors for the groups, either named
+after the groups or in the order of the groups. If NULL, the
+colorblind-friendly Okabe-Ito palette is used.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves a long-format table of taxa
 membership per group to disk. Default \code{FALSE}.}

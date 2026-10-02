@@ -72,7 +72,9 @@ scores and environmental vector loadings to disk, distinguished by a
 when \code{save_table = TRUE}). Default \code{"cca_rda_scores.txt"}.}
 }
 \value{
-A \code{ggplot} object displaying the biplot with sample scores and environmental vectors.
+A \code{ggplot} object displaying the biplot with sample scores and
+environmental vectors. The axis titles show the percentage of the total
+variance (inertia) explained by each constrained axis.
 }
 \description{
 Performs Canonical Correspondence Analysis (CCA) or Redundancy Analysis (RDA) based on a species abundance table

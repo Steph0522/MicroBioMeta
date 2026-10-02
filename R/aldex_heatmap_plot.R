@@ -1,14 +1,11 @@
 #' ALDEx2 differential abundance heatmap
 #'
-#' Runs ALDEx2 on a counts table and metadata and returns a ComplexHeatmap
-#' showing differentially abundant taxa, their effect size, p-value, and
-#' difference between groups.
+#' Runs ALDEx2 on a table and returns a ComplexHeatmap
 #'
-#' @param table Data frame with taxa as rows and samples as columns. Must
-#'   contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
-#'   "taxon", "taxa", "Taxa", or "Taxon").
-#' @param metadata Data frame with one row per sample. Must contain the column
-#'   specified in \code{group_col}.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param group_col Character. Name of the column in \code{metadata} that
 #'   defines the two groups to compare. Exactly two unique values are required.
 #' @param effect_threshold Numeric. Minimum absolute effect size to retain
@@ -30,14 +27,20 @@
 #'   \code{"BuOr"} (blue-orange), \code{"BuVm"} (blue-vermillion), \code{"BuPk"}
 #'   (blue-pink), \code{"GnPk"} (green-pink); or a \code{circlize::colorRamp2}
 #'   function for full manual control.
-#' @param effect_colors Color function for the effect size annotation strip
-#'   (default: green-white-pink colorblind-friendly scale, distinct from the
-#'   heatmap body and p-value defaults).
-#' @param pvalue_colors Named list of colors for the p-value annotation strip
-#'   (default: black/vermillion/yellow/grey categorical scale, distinct from
-#'   the heatmap body and effect size defaults).
+#' @param effect_colors Three colors for the effect size annotation strip:
+#'   negative, zero and positive effect (mapped to -1.5, 0 and 1.5). Default
+#'   \code{c("#009E73", "white", "#CC79A7")} (green-white-pink,
+#'   colorblind-friendly, distinct from the heatmap body and p-value
+#'   defaults). A \code{circlize::colorRamp2()} function is also accepted.
+#' @param pvalue_colors Named vector of colors for the p-value annotation
+#'   strip, with names \code{"<0.001"}, \code{"<0.01"}, \code{"<0.05"} and
+#'   \code{">0.05"}. Default black/vermillion/yellow/grey (distinct from the
+#'   heatmap body and effect size defaults). A list with one such vector named
+#'   \code{"p-value"} is also accepted.
 #' @param group_colors Optional character vector of colors for the difference
-#'   barplot annotation, one color per condition in the order they appear in
+#'   barplot annotation, either named after the conditions (e.g.
+#'   \code{c(Rhizosphere = "#56B4E9", Roots = "#009E73")}) or one color per
+#'   condition in the order they appear in
 #'   \code{metadata[[group_col]]}. If \code{NULL} (default) an orange/blue
 #'   colorblind-friendly palette is used (matching the col_sup/col_inf
 #'   convention used elsewhere, e.g. \code{aldex_volcano_plot}), cycling
@@ -53,8 +56,13 @@
 #'
 #' @param ... Old names of renamed arguments (\code{col_cond}, \code{pvalue_BH}), still accepted
 #'   with a warning. Any other extra argument is an error.
-#' @return A \code{ComplexHeatmap} object (returned invisibly; drawn as a
-#'   side effect).
+#' @param draw Logical. If \code{TRUE} (default), the heatmap is drawn on the
+#'   current device. Use \code{FALSE} to only build the returned grob without
+#'   drawing it.
+#' @return Invisibly, a \code{gTree} (grid grob) with the heatmap. Printing it
+#'   (e.g. typing its name) draws the heatmap; it can also be combined with
+#'   other plots (e.g. \code{cowplot::plot_grid()},
+#'   \code{patchwork::wrap_elements()}).
 #' @export
 #'
 #' @examples
@@ -77,6 +85,24 @@
 #'   effect_threshold = 0.5
 #' )
 #'
+#' # All the colors have colorblind-friendly defaults, but each can be set by
+#' # hand: group_colors (difference bars, named after the groups),
+#' # effect_colors (negative, zero and positive effect size), pvalue_colors
+#' # (one color per p-value class) and heatmap_colors (median clr values)
+#' \donttest{
+#' aldex_heatmap_plot(
+#'   table            = table,
+#'   metadata         = metadata,
+#'   group_col        = "Location",
+#'   effect_threshold = 0.5,
+#'   group_colors     = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+#'   effect_colors    = c("#0072B2", "white", "#E69F00"),
+#'   pvalue_colors    = c("<0.001" = "black", "<0.01" = "grey30",
+#'                        "<0.05" = "grey60", ">0.05" = "grey90"),
+#'   heatmap_colors   = "BuOr"
+#' )
+#' }
+#'
 
 aldex_heatmap_plot <- function(table,
                                metadata,
@@ -87,26 +113,18 @@ aldex_heatmap_plot <- function(table,
                                cluster_rows      = FALSE,
                                cluster_columns   = FALSE,
                                heatmap_colors    = NULL,
-                               effect_colors = circlize::colorRamp2(
-                                 c(-1.5, 0, 1.5),
-                                 c("#009E73", "white", "#CC79A7")
-                               ),
-                               pvalue_colors = list(
-                                 "p-value" = c(
-                                   "<0.001" = "#000000",
-                                   "<0.01"  = "#D55E00",
-                                   "<0.05"  = "#F0E442",
-                                   ">0.05"  = "grey85"
-                                 )
+                               effect_colors = c("#009E73", "white", "#CC79A7"),
+                               pvalue_colors = c(
+                                 "<0.001" = "#000000",
+                                 "<0.01"  = "#D55E00",
+                                 "<0.05"  = "#F0E442",
+                                 ">0.05"  = "grey85"
                                ),
                                group_colors = NULL,
                                save_table = FALSE,
                                table_filename = "aldex_pval_effect.txt",
+                               draw = TRUE,
                                ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(col_cond = "group_col", pvalue_BH = "pval_threshold"), "aldex_heatmap_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
-
 
   # Check ComplexHeatmap
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
@@ -117,7 +135,7 @@ aldex_heatmap_plot <- function(table,
     )
   }
 
-  # Verify condition column
+  # verify condition column
   if (!group_col %in% colnames(metadata))
     stop("Column ", group_col, " not found in metadata.")
 
@@ -126,15 +144,13 @@ aldex_heatmap_plot <- function(table,
   if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
   names(table)[tax_col] <- "taxonomy"
 
-  # Prepare count table
+  # prepare count table
   table        <- table %>% tibble::rownames_to_column(var = "OTUID")
   table_counts <- table %>%
     dplyr::select(-taxonomy) %>%
     tibble::column_to_rownames("OTUID")
 
-  # Align samples between table and metadata (first column = sample ID,
-  # regardless of its original name), so callers don't have to pre-filter
-  # metadata to exactly match table's columns/order themselves.
+  
   metadata     <- .mbm_align_metadata(colnames(table_counts), metadata)
   table_counts <- table_counts[, metadata[[1]], drop = FALSE]
 
@@ -146,7 +162,7 @@ aldex_heatmap_plot <- function(table,
   if (length(conditions) != ncol(table_counts))
     stop("Number of conditions does not match number of samples.")
 
-  # Run ALDEx2
+  # run ALDEx2
   aldex_results <- ALDEx2::aldex(
     reads                  = table_counts,
     conditions             = conditions,
@@ -161,18 +177,13 @@ aldex_heatmap_plot <- function(table,
   if (!all(c("effect", "wi.eBH") %in% colnames(aldex_results)))
     stop("Columns 'effect' or 'wi.eBH' missing in ALDEx2 results.")
 
-  # ALDEx2 computes diff.btw/effect as the alphabetically second group minus
-  # the first. Flip the sign when needed so that a positive value always
-  # means higher in unique_conditions[1], which is what the labels and bar
-  # colors below assume.
-  # (The saved table, below, keeps the values exactly as ALDEx2 returns them.)
+  
   flip_sign <- unique_conditions[1] == sort(unique_conditions)[1]
   if (flip_sign) {
     aldex_results$diff.btw <- -aldex_results$diff.btw
     aldex_results$effect   <- -aldex_results$effect
   }
 
-  # Filter by thresholds, on the adjusted or raw p-value (p_adjust_method)
   p_adjust_method <- match.arg(p_adjust_method, c("BH", "none"))
   aldex_results$.p <- if (p_adjust_method == "BH") aldex_results$wi.eBH else aldex_results$wi.ep
   aldex_filtered <- aldex_results
@@ -219,7 +230,7 @@ aldex_heatmap_plot <- function(table,
           paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
         TRUE ~ "Unclassified"
       ),
-      taxonomy = stringr::str_trim(taxonomy),
+      taxonomy = .mbm_composite_genus(stringr::str_trim(taxonomy)),
       taxonomy = make.unique(taxonomy),
       p.value  = dplyr::case_when(
         .p <= 0.001 ~ "<0.001",
@@ -249,18 +260,15 @@ aldex_heatmap_plot <- function(table,
     tibble::column_to_rownames(var = "taxonomy") %>%
     as.matrix()
 
-  # Resolve heatmap body colors
   data_max <- max(abs(heat_data), na.rm = TRUE)
   heatmap_colors_fn <- if (is.null(heatmap_colors) ||
                           (is.character(heatmap_colors) && length(heatmap_colors) == 1 &&
                            tolower(heatmap_colors) == "viridis")) {
-    # Default: sequential viridis scale (same family as abundance_heatmap_plot)
     circlize::colorRamp2(
       seq(-data_max, data_max, length.out = 13),
       viridis::viridis(13, option = "C", direction = -1)
     )
   } else if (is.character(heatmap_colors) && length(heatmap_colors) == 1) {
-    # Diverging preset name string
     pal <- .mbm_div_palettes[[heatmap_colors]]
     if (is.null(pal)) {
       warning("Unknown heatmap_colors preset '", heatmap_colors,
@@ -277,33 +285,38 @@ aldex_heatmap_plot <- function(table,
       circlize::colorRamp2(c(-data_max, 0, data_max), pal)
     }
   } else {
-    heatmap_colors   # assume already a colorRamp2 function
+    heatmap_colors   
   }
 
-  # Resolve group colors for barplot: default starts at orange/blue (higher
-  # in condition 1 = orange, higher in condition 2 = blue), matching the
-  # col_sup/col_inf convention used elsewhere (e.g. aldex_volcano_plot), then
-  # cycles through the rest of Okabe-Ito for N conditions
+
   if (is.null(group_colors)) {
     group_default <- .mbm_colors[c(1, 5, 3, 7, 6, 8, 2, 4)]
     group_colors  <- rep_len(group_default, length(unique_conditions))
+  } else if (!is.null(names(group_colors))) {
+    # Named colors are matched to the conditions by name
+    group_colors <- .mbm_match_colors(group_colors, as.character(unique_conditions),
+                                      "group_colors")
   } else {
     group_colors <- rep_len(group_colors, length(unique_conditions))
   }
-  # Map: diff.btw > 0 → condition 1 color; diff.btw < 0 → condition 2 color
   bar_fills <- ifelse(aldex_plot$diff.btw > 0, group_colors[1], group_colors[2])
 
-  # Shared gpar helpers (consistent font/color across all annotations)
   gp_title  <- grid::gpar(fontsize = 12, fontface = "bold",
                            fontfamily = "serif", col = "black")
   gp_legend_title <- grid::gpar(fontsize = 14, fontface = "bold",
                                 fontfamily = "serif", col = "black")
   gp_labels <- grid::gpar(fontsize = 12, fontfamily = "serif", col = "black")
-  # A white (rather than black) border between cells reads as a small gap,
-  # which keeps adjacent dark-colored cells visually distinguishable.
+ 
   gp_border <- grid::gpar(col = "white", lwd = 1.5)
 
-  # --- Left annotation: Effect size ---
+  
+  if (is.character(effect_colors)) {
+    if (length(effect_colors) != 3)
+      stop("`effect_colors` must be 3 colors (negative, zero, positive effect).")
+    effect_colors <- circlize::colorRamp2(c(-1.5, 0, 1.5), effect_colors)
+  }
+  if (!is.list(pvalue_colors)) pvalue_colors <- list("p-value" = pvalue_colors)
+
   left_annotation <- ComplexHeatmap::rowAnnotation(
     "Effect size" = aldex_plot$effect,
     col           = list("Effect size" = effect_colors),
@@ -319,7 +332,6 @@ aldex_heatmap_plot <- function(table,
     show_annotation_name = TRUE
   )
 
-  # --- Right annotation 1: p-value tiles ---
   annP <- ComplexHeatmap::rowAnnotation(
     "p-value"        = aldex_plot$p.value,
     simple_anno_size = grid::unit(0.5, "cm"),
@@ -335,7 +347,6 @@ aldex_heatmap_plot <- function(table,
     show_annotation_name = TRUE
   )
 
-  # --- Right annotation 2: difference barplot ---
   barpl <- ComplexHeatmap::rowAnnotation(
     "difference\nbetween groups" = ComplexHeatmap::anno_barplot(
       aldex_plot$diff.btw,
@@ -348,7 +359,6 @@ aldex_heatmap_plot <- function(table,
     annotation_name_rot  = 0
   )
 
-  # --- Main heatmap ---
   heatmap <- ComplexHeatmap::Heatmap(
     heat_data,
     cluster_rows     = cluster_rows,
@@ -367,28 +377,16 @@ aldex_heatmap_plot <- function(table,
     ),
     column_names_gp  = gp_title,
     col              = heatmap_colors_fn,
-    # Heatmap()'s own built-in row-name mechanism (show_row_names +
-    # row_names_gp/row_names_max_width) never actually drew anything in this
-    # composite left_annotation + right-annotations layout, despite
-    # heat_data's dimnames being verified correct - so row names are instead
-    # drawn as their own explicit rowAnnotation() below (`taxon_labels`),
-    # which doesn't depend on Heatmap()'s automatic row-name space
-    # allocation.
+    
     show_row_names   = FALSE,
     show_heatmap_legend = TRUE
   )
 
-  # Only an actual genus-level hit gets italicized, matching standard
-  # taxonomic convention; the "other <higher rank>" / "Unclassified"
-  # fallbacks (see the taxonomy case_when above) aren't a genus name, so they
-  # stay upright. gpar() accepts a per-element vector here, recycled across
-  # rows of the annotation in order.
-  taxon_names <- rownames(heat_data)
+
+  taxon_names <- sub("[.][0-9]+$", "", rownames(heat_data))
   taxon_face  <- ifelse(grepl("^other |^Unclassified", taxon_names), "plain", "italic")
 
-  # Explicit row-label annotation (see comment above): draws the taxon names
-  # via anno_text() as its own component in ht_list, independent of
-  # Heatmap()'s built-in (here non-functional) row-name mechanism.
+  
   taxon_labels <- ComplexHeatmap::rowAnnotation(
     taxon = ComplexHeatmap::anno_text(
       taxon_names,
@@ -399,21 +397,27 @@ aldex_heatmap_plot <- function(table,
     show_annotation_name = FALSE
   )
 
-  # Draw: main heatmap + p-value annotation + barplot + taxon labels, in that
-  # left-to-right order, so the taxon names sit at the far right.
+ 
   ht_list <- heatmap + annP + barpl + taxon_labels
 
-  ComplexHeatmap::draw(
+  draw_heatmap <- function() ComplexHeatmap::draw(
     ht_list,
     heatmap_legend_side    = "right",
     annotation_legend_side = "right",
     merge_legend           = FALSE,
-    # The rotated "Effect size" annotation name is wider than the default
-    # left margin, and that margin doesn't grow with the plotting device's
-    # size (this heatmap's components all use fixed physical units) - so
-    # without an explicit left pad the name gets clipped by the device edge
-    # regardless of fig.width. Padding order is (top, right, bottom, left).
-    padding = grid::unit(c(2, 2, 2, 12), "mm")
+    
+    padding = grid::unit(c(2, 2, 2, 12), "mm"),
+    background = "transparent"
   )
-  return(invisible(ht_list))
+
+  
+  if (draw) {
+    grid::grid.newpage()
+    draw_heatmap()
+    heatmap_output <- grid::grid.grab(wrap.grobs = TRUE)
+  } else {
+    heatmap_output <- grid::grid.grabExpr(draw_heatmap())
+  }
+  class(heatmap_output) <- c("mbm_heatmap", class(heatmap_output))
+  return(invisible(heatmap_output))
 }

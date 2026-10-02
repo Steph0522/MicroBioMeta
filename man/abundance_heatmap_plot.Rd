@@ -20,16 +20,22 @@ abundance_heatmap_plot(
   exclude_unclassified = TRUE,
   cluster = TRUE,
   show_column_names = TRUE,
-  annotation_height = 3,
+  cell_size = NULL,
+  annotation_height = NULL,
   save_table = FALSE,
   table_filename = "abundance_heatmap_table.txt",
-  feature_prefix = ""
+  feature_prefix = "",
+  max_label_length = 35,
+  composite_names = TRUE,
+  draw = TRUE
 )
 }
 \arguments{
-\item{table}{Data frame with taxonomy, where, the columns are the samples and rows are ASV's or taxa.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame of characteristics or important information of the samples}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{condition1}{Variable of the first horizontal annotation}
 
@@ -37,11 +43,19 @@ abundance_heatmap_plot(
 
 \item{condition3}{Variable of the third horizontal annotation}
 
-\item{colors_condition1}{Color vector for condition 1}
+\item{colors_condition1}{Color vector for condition 1. If named, colors are
+matched to the condition values by name (e.g.
+\code{c(Roots = "#009E73", Rhizosphere = "#56B4E9")}); otherwise they are
+assigned in alphabetical order of the values. Defaults to the
+colorblind-friendly Okabe-Ito palette.}
 
-\item{colors_condition2}{Color vector for condition 2}
+\item{colors_condition2}{Color vector for condition 2 (same rules as
+\code{colors_condition1}). Defaults to colors from the colorblind-friendly
+"Safe" palette (rose, indigo, olive...), which contrast with the
+Okabe-Ito colors of condition 1.}
 
-\item{colors_condition3}{Color vector for condition 3}
+\item{colors_condition3}{Color vector for condition 3 (same rules as
+\code{colors_condition1}).}
 
 \item{name_legend_condition1}{Title assigned to legend of condition 1}
 
@@ -62,12 +76,19 @@ rows into the plot.}
 
 \item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
 
-\item{annotation_height}{Numeric. Height, in millimeters, of each column
-annotation bar (condition1/condition2/condition3). Column annotation
-bars have a fixed height regardless of how many rows the heatmap body
-has, so with few rows and many columns the body cells can look like
-thin stripes next to blockier annotation bars; lower this value to make
-the annotation bars thinner. Default \code{3}.}
+\item{cell_size}{Numeric or \code{NULL}. Side, in millimeters, of each
+(square) heatmap cell. The Phylum and condition annotations use the same
+size, so every tile in the figure has the same shape. If \code{NULL}
+(default), the largest size that fits the current plotting device is
+used; when there are too many samples for square cells to leave room
+for readable row labels, cells keep the available width but are made
+just tall enough for the labels. Increase the figure width (e.g.
+\code{fig.width} in R Markdown) to get squarer cells with many samples.}
+
+\item{annotation_height}{Numeric or \code{NULL}. Height, in millimeters,
+of each column annotation bar (condition1/condition2/condition3). If
+\code{NULL} (default), it matches the cell height, so annotation tiles
+have exactly the same size and shape as the heatmap cells.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the underlying abundance
 table to disk. Default \code{FALSE}.}
@@ -82,12 +103,33 @@ heatmap, immediately before the row number (e.g. \code{feature_prefix =
 depends on how \code{table}'s features were generated - set it to
 whatever fits (\code{"ASV"}, \code{"OTU"}, \code{"Taxon"},
 \code{"Species"}...).}
+
+\item{max_label_length}{Integer or \code{NULL}. Taxon names longer than
+this many characters are cut with an ellipsis in the row labels, so a
+single long name doesn't squeeze the heatmap. Use \code{NULL} to never
+cut. Default \code{35}.}
+
+\item{composite_names}{Logical. If \code{TRUE} (default), SILVA composite
+names of three or more genera are labeled with the last genus plus
+"group" (e.g. "Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium"
+becomes "Rhizobium group"); two-genus names (e.g.
+"Escherichia-Shigella") are kept whole. The full names are kept in the
+saved table.}
+
+\item{draw}{Logical. If \code{TRUE} (default), the heatmap is drawn on the
+current device. Use \code{FALSE} to only build the returned grob without
+drawing it, e.g. to combine it with other plots; then, unless
+\code{cell_size} is given, cells stretch to fill the panel they are
+placed in instead of having a fixed size.}
 }
 \value{
-A plot with the fifty (XX) taxonomic groups most abundant.
+Invisibly, a \code{gTree} (grid grob) with the heatmap of the
+\code{top_n} most abundant features. Printing it (e.g. typing its name)
+draws the heatmap; it can also be combined with other plots (e.g.
+\code{cowplot::plot_grid()}, \code{patchwork::wrap_elements()}).
 }
 \description{
-This function create a heatmap to visualize the relative abundance of ASV's, features o bacterial groups.
+Creates a heatmap using ComplexHeatmap to visualize the relative abundance of features or ASV's.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -110,4 +152,33 @@ abundance_heatmap_plot(
   name_legend_condition2 = "Treatment",
   name_legend_condition3 = "Plot"
 )
+
+# Every color has a colorblind-friendly default (Okabe-Ito for condition1,
+# "Safe" for condition2), but each annotation can be colored by hand: name
+# the colors after the values (any order), or give them unnamed, in
+# alphabetical order of the values. Other options: feature_prefix labels
+# the rows ("ASV1", "ASV2"...), cell_size fixes the cell side in mm
+# (by default it fits the plotting device; with many samples use a wide
+# device, e.g. cell_size = 4.5 and a 17-inch-wide figure),
+# max_label_length / composite_names control how long names are shortened,
+# and draw = FALSE only builds the grob (e.g. for cowplot::plot_grid()).
+\donttest{
+heat <- abundance_heatmap_plot(
+  table                  = table,
+  metadata               = metadata,
+  condition1             = "Location",
+  condition2             = "Treatment",
+  top_n                  = 20,
+  show_column_names      = FALSE,
+  colors_condition1      = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+  colors_condition2      = c(Control          = "#CC6677",
+                             Moderate_drought = "#332288",
+                             Severe_drought   = "#999933"),
+  name_legend_condition1 = "Compartment",
+  feature_prefix         = "ASV",
+  max_label_length       = 30,
+  draw                   = FALSE
+)
+heat  # printing the returned object draws the heatmap
+}
 }

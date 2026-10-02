@@ -56,7 +56,9 @@
 #' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis labels,
 #'   so long variable or taxon names don't overlap. Default \code{45};
 #'   \code{0} for horizontal labels.
-#' @param save_table Logical. If TRUE, saves the correlation matrix as a
+#' @param save_table Logical. If TRUE, saves the plotted correlations (one row
+#'   per taxon and variable, with the taxon name, raw p-value and p-value
+#'   adjusted with \code{p_adjust_method}) as a
 #'   tab-delimited text file.
 #' @param table_filename Character. Name of the output file used when
 #'   save_table = TRUE.
@@ -441,25 +443,10 @@ corr_env_abund_plot <- function(table,
   
   
   
-  # Guardar tabla si se solicita
-  if (save_table) {
-    # Convertir a data frame y conservar nombres de filas
-    corr_df <- as.data.frame(corr_mat)
-    corr_df <- cbind(Taxon = rownames(corr_df), corr_df)
-    
-    utils::write.table(
-      corr_df,
-      file = table_filename,
-      sep = "\t",
-      quote = FALSE,
-      row.names = FALSE
-    )
-    
-    message("Table saved as: ", table_filename)
-  }
   
   # --- Calcular p-values si se indica pval_threshold
-  if (!is.null(pval_threshold)) {
+  pval_mat <- NULL
+  if (!is.null(pval_threshold) || save_table) {
     pval_mat <- matrix(NA, 
                        nrow = ncol(env), 
                        ncol = nrow(abund),
@@ -476,7 +463,10 @@ corr_env_abund_plot <- function(table,
     
     # Every taxon x variable pair is a separate test, so correct for
     # multiple comparisons over the whole matrix before filtering.
+    pval_raw <- pval_mat
     pval_mat[] <- stats::p.adjust(pval_mat, method = p_adjust_method)
+  }
+  if (!is.null(pval_threshold)) {
 
     # Mantener solo taxones significativos en al menos una variable
     signif_taxa <- rownames(abund)[apply(pval_mat, 2, function(x) any(x < pval_threshold, na.rm = TRUE))]
@@ -518,6 +508,23 @@ corr_env_abund_plot <- function(table,
   # Replace "Group" with the taxonomic name
   corr_df$Taxon <- corr_df$taxonomy
   corr_df$taxonomy <- NULL
+
+  # Save the plotted correlations (long format, with taxon names and p-values)
+  if (save_table) {
+    ids <- as.character(corr_df$Group)
+    vars <- as.character(corr_df$Environmental)
+    out <- data.frame(
+      Taxon       = corr_df$Taxon,
+      Variable    = vars,
+      Correlation = corr_df$Correlation,
+      p_value     = pval_raw[cbind(vars, ids)],
+      p_adj       = pval_mat[cbind(vars, ids)],
+      check.names = FALSE
+    )
+    utils::write.table(out, file = table_filename, sep = "\t",
+                       quote = FALSE, row.names = FALSE)
+    message("Table saved as: ", table_filename)
+  }
   # Base plot
   if (invert_axes) {
     p <- ggplot2::ggplot(corr_df,

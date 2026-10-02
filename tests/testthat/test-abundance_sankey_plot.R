@@ -27,3 +27,34 @@ test_that("abundance_sankey_plot doesn't turn SILVA placeholders into fake taxa"
   expect_true("other Mucoromycota" %in% nodes)
   expect_true("Nucleariidae and Fonticula group" %in% nodes)
 })
+
+test_that("abundance_sankey_plot writes no file unless output_file is given", {
+  tab <- data.frame(S1 = c(10, 5), S2 = c(4, 8),
+                    taxonomy = c("d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas",
+                                 "d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus"),
+                    row.names = c("OTU1", "OTU2"))
+  wd <- tempfile("sankey_wd")
+  dir.create(wd)
+  old <- setwd(wd)
+  on.exit({ setwd(old); unlink(wd, recursive = TRUE) }, add = TRUE)
+  s <- abundance_sankey_plot(table = tab, taxonomy_db = "silva",
+                             taxRanks = c("P", "C", "G"))
+  expect_s3_class(s, "htmlwidget")
+  expect_length(list.files(wd), 0)
+})
+
+test_that("abundance_sankey_plot leaves no _files folder next to the HTML", {
+  skip_if_not(rmarkdown::pandoc_available())
+  tab <- data.frame(S1 = c(10, 5), S2 = c(4, 8),
+                    taxonomy = c("d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas",
+                                 "d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus"),
+                    row.names = c("OTU1", "OTU2"))
+  out_dir <- tempfile("sankey_out")
+  dir.create(out_dir)
+  on.exit(unlink(out_dir, recursive = TRUE), add = TRUE)
+  html <- file.path(out_dir, "s.html")
+  suppressMessages(abundance_sankey_plot(table = tab, taxonomy_db = "silva",
+                                         taxRanks = c("P", "C", "G"), output_file = html))
+  expect_true(file.exists(html))
+  expect_false(dir.exists(file.path(out_dir, "s_files")))
+})

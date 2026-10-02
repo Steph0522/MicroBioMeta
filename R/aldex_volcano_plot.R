@@ -159,7 +159,8 @@ aldex_volcano_plot <- function(table,
         stringr::str_detect(Taxon, "c__") ~ stringr::str_extract(Taxon, "(?<=c__)[^_;]+"),
         stringr::str_detect(Taxon, "o__") ~ stringr::str_extract(Taxon, "(?<=o__)[^_;]+"),
         TRUE ~ Feature.ID 
-      )
+      ),
+      taxa = .mbm_composite_genus(taxa)
     )
   
   # Guardar tabla si se solicita
@@ -242,7 +243,7 @@ aldex_volcano_plot <- function(table,
       # Generous top headroom: the corner condition labels sit in this
       # padding, strictly above the highest data point, so they don't
       # compete with that point's own taxon-name label for space.
-      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18)))
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.30)))
 
     # Add labels for significant taxa
     if (nrow(top_taxa) > 0) {
@@ -251,14 +252,19 @@ aldex_volcano_plot <- function(table,
       } else top_taxa
       if (nrow(plot_taxa) > 0) {
         p <- p +
-          ggplot2::geom_text(
+          # repelled so nearby taxa don't overlap or get cut at the edges
+          ggrepel::geom_text_repel(
             data = plot_taxa,
             ggplot2::aes(label = taxa),
             color = "black",
             family = "serif",
             size = label_size,
-            vjust = -0.9,
-            fontface = "italic"
+            fontface = "italic",
+            box.padding = 0.5,
+            min.segment.length = 0.3,
+            segment.color = "grey50",
+            max.overlaps = Inf,
+            seed = 1
           )
       }
     }
@@ -353,7 +359,7 @@ aldex_volcano_plot <- function(table,
       # padding, strictly above the highest data point, so they don't
       # compete with that point's own taxon-name label for space.
       ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.1)) +
-      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.18)))
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.30)))
 
     # Add taxa labels
     if (nrow(top_taxa) > 0) {
@@ -362,14 +368,19 @@ aldex_volcano_plot <- function(table,
       } else top_taxa
       if (nrow(plot_taxa) > 0) {
         p <- p +
-          ggplot2::geom_text(
+          # repelled so nearby taxa don't overlap or get cut at the edges
+          ggrepel::geom_text_repel(
             data = plot_taxa,
             ggplot2::aes(label = taxa),
             color = "black",
             family = "serif",
             size = label_size,
-            vjust = -0.9,
-            fontface = "italic"
+            fontface = "italic",
+            box.padding = 0.5,
+            min.segment.length = 0.3,
+            segment.color = "grey50",
+            max.overlaps = Inf,
+            seed = 1
           )
       }
     }

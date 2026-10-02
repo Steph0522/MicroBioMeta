@@ -1,4 +1,4 @@
-test_that("aldex_heatmap_plot returns a HeatmapList for a two-group comparison", {
+test_that("aldex_heatmap_plot returns a printable grob for a two-group comparison", {
   toy <- make_toy_community()
 
   # A low effect_threshold, plus the fixture's planted group signal
@@ -13,7 +13,9 @@ test_that("aldex_heatmap_plot returns a HeatmapList for a two-group comparison",
     effect_threshold = 0.1
   )
 
-  expect_s4_class(ht, "HeatmapList")
+  expect_s3_class(ht, "gTree")
+  expect_s3_class(ht, "mbm_heatmap")
+  expect_no_error(print(ht))
 })
 
 test_that("aldex_heatmap_plot errors when group_col doesn't have exactly two groups", {
@@ -47,4 +49,22 @@ test_that("aldex_heatmap_plot saves the filtered results table when requested", 
   )
 
   expect_true(file.exists(tmp))
+})
+
+test_that("aldex_heatmap_plot accepts plain color vectors for effect and p-value strips", {
+  toy <- make_toy_community()
+  set.seed(1)
+  expect_s3_class(
+    aldex_heatmap_plot(
+      table = toy$table, metadata = toy$metadata, group_col = "Group",
+      effect_threshold = 0.1, draw = FALSE,
+      effect_colors = c("#0072B2", "white", "#E69F00"),
+      pvalue_colors = c("<0.001" = "black", "<0.01" = "grey30",
+                        "<0.05" = "grey60", ">0.05" = "grey90")),
+    "mbm_heatmap")
+  expect_error(
+    aldex_heatmap_plot(table = toy$table, metadata = toy$metadata,
+                       group_col = "Group", effect_threshold = 0.1,
+                       draw = FALSE, effect_colors = c("red", "blue")),
+    "3 colors")
 })

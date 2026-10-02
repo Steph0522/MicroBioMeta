@@ -2,22 +2,26 @@
 % Please edit documentation in R/abundance_sankey_plot.R
 \name{abundance_sankey_plot}
 \alias{abundance_sankey_plot}
-\title{Generate a Sankey diagram from an OTU table with taxonomic information}
+\title{Sankey diagram of relative abundances}
 \usage{
 abundance_sankey_plot(
   table,
-  output_file = "sankey.html",
+  output_file = NULL,
   maxn = 25,
   taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
   taxonomy_db = "gg",
+  width = NULL,
+  height = NULL,
   save_table = FALSE,
   table_filename = "sankey_nodes_links.txt"
 )
 }
 \arguments{
-\item{table}{Data frame with one column for taxonomy and the other columns correspond to samples.}
+\item{table}{A data frame with taxa in rows and samples in columns. The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{output_file}{Output HTML file name (default: "sankey.html").}
+\item{output_file}{Character or \code{NULL}. Path of an HTML file to save
+the interactive diagram to. If \code{NULL} (default), nothing is written
+to disk; the diagram is only returned.}
 
 \item{maxn}{Maximum number of taxa per level to include in the diagram (default: 25).}
 
@@ -28,6 +32,10 @@ taxonomy strings follow. One of \code{"gg"} (default; Greengenes, also accepts
 \code{"gg2"} / \code{"greengenes2"}), \code{"silva"}, \code{"unite"}, or \code{"kraken2"}.
 Case-insensitive.}
 
+\item{width, height}{Numeric or \code{NULL}. Width and height of the
+diagram in pixels. If \code{NULL} (default), the widget's default size
+is used (it fills the available width).}
+
 \item{save_table}{Logical. If \code{TRUE}, saves a combined table of the
 Sankey nodes and links to disk, distinguished by a \code{table_type}
 column (\code{"node"} or \code{"link"}). Default \code{FALSE}.}
@@ -36,10 +44,12 @@ column (\code{"node"} or \code{"link"}). Default \code{FALSE}.}
 when \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.}
 }
 \value{
-Invisibly returns the Sankey diagram object and saves an HTML file.
+Invisibly returns the Sankey diagram object (an htmlwidget that
+is shown when printed). If \code{output_file} is given, it is also saved
+as an HTML file.
 }
 \description{
-Generate a Sankey diagram from an OTU table with taxonomic information
+Generate a Sankey diagram from a tale with taxonomy
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

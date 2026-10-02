@@ -17,7 +17,7 @@ Description: The goal of MicroBioMeta is to support beginners in microbiome
     publication-ready figures in an intuitive and accessible way.
 License: Artistic-2.0
 Depends: R (>= 4.5.0)
-URL: https://github.com/Steph0522/MicroBioMeta
+URL: https://github.com/Steph0522/MicroBioMeta, https://steph0522.github.io/MicroBioMeta/
 BugReports: https://github.com/Steph0522/MicroBioMeta/issues
 biocViews: Software, Microbiome, Metagenomics, Visualization,
     DifferentialExpression, MultipleComparison, LongRead
@@ -31,7 +31,6 @@ Imports:
     stringr,
     ggpubr,
     ggrepel,
-    cowplot,
     patchwork,
     ggh4x,
     scales,

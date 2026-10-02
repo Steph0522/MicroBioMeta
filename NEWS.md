@@ -9,6 +9,26 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+* SILVA composite genus names of three or more genera are now shown as
+  "<last genus> group" (e.g. "Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium"
+  becomes "Rhizobium group") in `abundance_heatmap_plot()`,
+  `abundance_bar_plot()`, `abundance_sankey_plot()`, `aldex_heatmap_plot()`
+  and `aldex_volcano_plot()`; two-genus names (e.g. "Escherichia-Shigella")
+  are kept whole. `abundance_heatmap_plot()` also cuts other labels longer
+  than `max_label_length` and gains `composite_names` to turn the rule off.
+* `abundance_heatmap_plot()`: annotation tiles have the same size as the
+  heatmap cells; named `colors_condition*` are matched by name; condition 2
+  defaults to the colorblind-friendly "Safe" palette; new `draw` argument
+  (the heatmap is drawn only once; `draw = FALSE` builds a grob that fills
+  the panel it is placed in, e.g. with `cowplot::plot_grid()`). Printing
+  the returned object draws the heatmap.
+* `aldex_heatmap_plot()` now returns a grob (instead of a
+  `ComplexHeatmap::HeatmapList`) that can be combined with other plots
+  (e.g. `cowplot::plot_grid()`) and is drawn when printed; new `draw`
+  argument; `effect_colors` takes 3 plain colors and
+  `pvalue_colors` a named vector (the previous forms still work).
+* `abundance_sankey_plot()` no longer writes an HTML file by default
+  (`output_file = NULL`) and gains `width`/`height`.
 * Standardized the optional table-export interface across all plotting and
   processing functions: every function now uses `save_table`/`table_filename`
   (default `FALSE`) instead of the previous, inconsistent argument names

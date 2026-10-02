@@ -14,22 +14,20 @@ aldex_heatmap_plot(
   cluster_rows = FALSE,
   cluster_columns = FALSE,
   heatmap_colors = NULL,
-  effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("#009E73", "white", "#CC79A7")),
-  pvalue_colors = list(`p-value` = c(`<0.001` = "#000000", `<0.01` = "#D55E00", `<0.05` =
-    "#F0E442", `>0.05` = "grey85")),
+  effect_colors = c("#009E73", "white", "#CC79A7"),
+  pvalue_colors = c(`<0.001` = "#000000", `<0.01` = "#D55E00", `<0.05` = "#F0E442",
+    `>0.05` = "grey85"),
   group_colors = NULL,
   save_table = FALSE,
   table_filename = "aldex_pval_effect.txt",
+  draw = TRUE,
   ...
 )
 }
 \arguments{
-\item{table}{Data frame with taxa as rows and samples as columns. Must
-contain exactly one taxonomy column (named "taxonomy", "Taxonomy",
-"taxon", "taxa", "Taxa", or "Taxon").}
+\item{table}{A data frame with taxa in rows and samples in columns. The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame with one row per sample. Must contain the column
-specified in \code{group_col}.}
+\item{metadata}{A data frame containing sample metadata. Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{group_col}{Character. Name of the column in \code{metadata} that
 defines the two groups to compare. Exactly two unique values are required.}
@@ -59,16 +57,22 @@ a preset name string — \code{"viridis"} or one of the diverging presets
 (blue-pink), \code{"GnPk"} (green-pink); or a \code{circlize::colorRamp2}
 function for full manual control.}
 
-\item{effect_colors}{Color function for the effect size annotation strip
-(default: green-white-pink colorblind-friendly scale, distinct from the
-heatmap body and p-value defaults).}
+\item{effect_colors}{Three colors for the effect size annotation strip:
+negative, zero and positive effect (mapped to -1.5, 0 and 1.5). Default
+\code{c("#009E73", "white", "#CC79A7")} (green-white-pink,
+colorblind-friendly, distinct from the heatmap body and p-value
+defaults). A \code{circlize::colorRamp2()} function is also accepted.}
 
-\item{pvalue_colors}{Named list of colors for the p-value annotation strip
-(default: black/vermillion/yellow/grey categorical scale, distinct from
-the heatmap body and effect size defaults).}
+\item{pvalue_colors}{Named vector of colors for the p-value annotation
+strip, with names \code{"<0.001"}, \code{"<0.01"}, \code{"<0.05"} and
+\code{">0.05"}. Default black/vermillion/yellow/grey (distinct from the
+heatmap body and effect size defaults). A list with one such vector named
+\code{"p-value"} is also accepted.}
 
 \item{group_colors}{Optional character vector of colors for the difference
-barplot annotation, one color per condition in the order they appear in
+barplot annotation, either named after the conditions (e.g.
+\code{c(Rhizosphere = "#56B4E9", Roots = "#009E73")}) or one color per
+condition in the order they appear in
 \code{metadata[[group_col]]}. If \code{NULL} (default) an orange/blue
 colorblind-friendly palette is used (matching the col_sup/col_inf
 convention used elsewhere, e.g. \code{aldex_volcano_plot}), cycling
@@ -84,17 +88,21 @@ first); the \code{seccion} column says in which group each taxon is higher.}
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
 
+\item{draw}{Logical. If \code{TRUE} (default), the heatmap is drawn on the
+current device. Use \code{FALSE} to only build the returned grob without
+drawing it.}
+
 \item{...}{Old names of renamed arguments (\code{col_cond}, \code{pvalue_BH}), still accepted
 with a warning. Any other extra argument is an error.}
 }
 \value{
-A \code{ComplexHeatmap} object (returned invisibly; drawn as a
-side effect).
+Invisibly, a \code{gTree} (grid grob) with the heatmap. Printing it
+(e.g. typing its name) draws the heatmap; it can also be combined with
+other plots (e.g. \code{cowplot::plot_grid()},
+\code{patchwork::wrap_elements()}).
 }
 \description{
-Runs ALDEx2 on a counts table and metadata and returns a ComplexHeatmap
-showing differentially abundant taxa, their effect size, p-value, and
-difference between groups.
+Runs ALDEx2 on a table and returns a ComplexHeatmap
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -115,5 +123,23 @@ aldex_heatmap_plot(
   group_col         = "Location",
   effect_threshold = 0.5
 )
+
+# All the colors have colorblind-friendly defaults, but each can be set by
+# hand: group_colors (difference bars, named after the groups),
+# effect_colors (negative, zero and positive effect size), pvalue_colors
+# (one color per p-value class) and heatmap_colors (median clr values)
+\donttest{
+aldex_heatmap_plot(
+  table            = table,
+  metadata         = metadata,
+  group_col        = "Location",
+  effect_threshold = 0.5,
+  group_colors     = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+  effect_colors    = c("#0072B2", "white", "#E69F00"),
+  pvalue_colors    = c("<0.001" = "black", "<0.01" = "grey30",
+                       "<0.05" = "grey60", ">0.05" = "grey90"),
+  heatmap_colors   = "BuOr"
+)
+}
 
 }

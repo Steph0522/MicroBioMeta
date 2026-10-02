@@ -457,6 +457,51 @@ utils::globalVariables(c(
 # dark navy in a 2-group plot and light sky-blue in a 4-group one).
 .mbm_colors_2group <- c("#E69F00", "#56B4E9")
 
+# --- Second qualitative palette ("Safe", colorblind-friendly) ----------------
+# From CARTOColors' "Safe" palette (based on Paul Tol's), reordered so its
+# first colors (rose, indigo, olive) contrast with the Okabe-Ito orange, blue,
+# green and yellow of `.mbm_colors`. Used for a second grouping variable shown
+# next to the first one (e.g. treatments next to soil types in a heatmap).
+.mbm_colors_safe <- c("#CC6677", "#332288", "#999933", "#882255",
+                      "#44AA99", "#AA4499", "#661100", "#88CCEE",
+                      "#DDCC77", "#117733", "#6699CC", "#888888")
+
+# Named color vector for the values of a categorical variable: a named
+# `colors` is matched by name (unmatched values grey, with a warning), an
+# unnamed one is assigned in order.
+.mbm_match_colors <- function(colors, values, arg = "colors") {
+  if (is.null(names(colors))) {
+    return(stats::setNames(colors[seq_along(values)], values))
+  }
+  .mbm_check_color_names(colors, values, arg)
+  out <- stats::setNames(unname(colors[values]), values)
+  out[is.na(out)] <- "grey70"
+  out
+}
+
+# SILVA composite genus names of 3+ genera joined by "-" (e.g.
+# "Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium") become "<last genus>
+# group" ("Rhizobium group") wherever they appear in a label, keeping any
+# prefix or suffix ("ASV8_", "other ", " sp."). 2-genus names (e.g.
+# "Escherichia-Shigella") and names whose parts aren't all genus-like
+# (e.g. "Gitt-GS-136") are left as they are. Vectorized; NA stays NA.
+.mbm_composite_genus <- function(x) {
+  gsub("(?<![A-Za-z-])(?:[A-Z][a-z]+-){2,}([A-Z][a-z]+)(?![A-Za-z-])",
+       "\\1 group", x, perl = TRUE)
+}
+
+# Row labels for heatmaps: composite genus names shortened (see
+# .mbm_composite_genus(), if `composite`), and other labels longer than
+# `max_length` cut with an ellipsis. Returns unique labels.
+.mbm_shorten_labels <- function(x, max_length = 35, composite = TRUE) {
+  if (composite) x <- .mbm_composite_genus(x)
+  if (!is.null(max_length)) {
+    long <- nchar(x) > max_length
+    x[long] <- paste0(substr(x[long], 1, max_length - 1), "\u2026")
+  }
+  make.unique(x, sep = "_")
+}
+
 # Suppress R CMD check NOTEs for column names used in dplyr/ggplot2 NSE
 # (no visible binding for global variable)
 utils::globalVariables(c(

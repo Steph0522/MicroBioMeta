@@ -31,18 +31,18 @@ alpha_decay_plot(
 )
 }
 \arguments{
-\item{table}{A data frame with taxa as rows and samples as columns.
-Must contain a column named \code{taxonomy} (any position).}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame whose \strong{first column} contains sample
-identifiers matching the column names of \code{table}.}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{cont_var}{Character. Name of the continuous variable column in
 \code{metadata} to place on the x-axis (e.g. \code{"dist_km"}).}
 
 \item{group_col}{Character or \code{NULL}. Optional column in
 \code{metadata} used to color points and fit separate regression lines
-per group (e.g. \code{"estado2"}).}
+per group (e.g. \code{"treatment"}).}
 
 \item{method}{Character. Correlation method for the statistic annotation.
 One of \code{"spearman"} (default) or \code{"pearson"}.}
@@ -107,14 +107,10 @@ A \code{patchwork} object joining the three q0/q1/q2 panels
 changes every panel, \code{p[[2]] + labs(...)} a single one.
 }
 \description{
-Computes Hill numbers (q = 0, 1, 2) from an ASV/OTU table and plots them
+Computes Hill numbers (q = 0, 1, 2) from table and plots them
 against a continuous metadata variable (e.g. distance to urban center,
-elevation, pH). Each Hill order is shown in its own facet panel with an
-ordinary least-squares regression line and an annotation reporting the
-Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-and optionally the linear regression R-squared and slope.
-An optional grouping variable adds per-group coloring and separate
-regression lines.
+elevation, pH). It reports the Spearman rank correlation coefficient (rho, or Pearson r),
+its p-value, and optionally the linear regression R-squared and slope.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -124,12 +120,6 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# alpha_decay_plot expects a continuous environmental gradient (e.g.
-# distance, elevation, pH). This bundled example dataset doesn't include
-# one, so this creates an illustrative synthetic "distance to a reference
-# point" (km), spread across the 'Loc' site codes with a little
-# per-sample jitter - substitute your own real gradient variable.
-set.seed(1)
 loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
   stats::rnorm(nrow(metadata), sd = 0.3)

@@ -1,7 +1,12 @@
-#' Generate a Sankey diagram from an OTU table with taxonomic information
+#' Sankey diagram of relative abundances
 #'
-#' @param table Data frame with one column for taxonomy and the other columns correspond to samples.
-#' @param output_file Output HTML file name (default: "sankey.html").
+#' Generate a Sankey diagram from a tale with taxonomy
+#'
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param output_file Character or \code{NULL}. Path of an HTML file to save
+#'   the interactive diagram to. If \code{NULL} (default), nothing is written
+#'   to disk; the diagram is only returned.
 #' @param maxn Maximum number of taxa per level to include in the diagram (default: 25).
 #' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
 #' @param taxonomy_db Reference taxonomy database whose prefix style the
@@ -14,7 +19,12 @@
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.
 #'
-#' @return Invisibly returns the Sankey diagram object and saves an HTML file.
+#' @param width,height Numeric or \code{NULL}. Width and height of the
+#'   diagram in pixels. If \code{NULL} (default), the widget's default size
+#'   is used (it fills the available width).
+#' @return Invisibly returns the Sankey diagram object (an htmlwidget that
+#'   is shown when printed). If \code{output_file} is given, it is also saved
+#'   as an HTML file.
 #' @export
 #'
 #' @examples
@@ -30,9 +40,11 @@
 #' )
 
 
-abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
+abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
                                   taxRanks = c("D","K","P","C","O","F","G","S"),
                                   taxonomy_db = "gg",
+                                  width = NULL,
+                                  height = NULL,
                                   save_table = FALSE,
                                   table_filename = "sankey_nodes_links.txt") {
 
@@ -44,10 +56,10 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     )
   }
 
-  # Internal function for relative abundance
+  #relative abundance function
   relabunda <- function(x) as.data.frame(t(t(x) / colSums(x))) * 100
 
-  # Identify the taxonomy column
+  #taxoonomy check
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
   
@@ -61,22 +73,8 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   otu_rel_parse <- otu_rel %>%
     tibble::rownames_to_column("Feature.ID") %>%
     tidyr::separate(taxonomy, into = c("k","p","c","o","f","g","s"), sep = ";", fill = "right") %>%
-    # QIIME2/SILVA/UNITE/GreenGenes2 taxonomy strings use "; " (semicolon +
-    # space) between ranks, but the separate() above only splits on ";", so
-    # every rank after the first keeps a leading space (e.g. " p__Mucoromycota").
-    # That space breaks the "^[a-zA-Z]+__" prefix-removal regexes below (they
-    # require the string to start with a letter), leaving stray "p__"/"c__"
-    # prefixes stuck onto the label. Trimming here fixes it for every
-    # `taxonomy_db` branch, not just the one where it was first noticed.
     dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_trim(.)))
-
-  # Cleanup according to database
   if(tolower(taxonomy_db) == "silva") {
-    # SILVA writes spaces in names as "_" at every rank (e.g. "Incertae_Sedis",
-    # "Nucleariidae_and_Fonticula_group"), not only in the species: turn them
-    # into spaces at all ranks, since "_" is the separator used below to build
-    # (and later split) the node ids - otherwise "Incertae_Sedis" became a
-    # node named "Sedis" and "..._group" one named "group".
     otu_rel_parse <- otu_rel_parse %>%
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
       dplyr::mutate(s = stringr::str_trim(s),
@@ -84,9 +82,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_replace_all(., "_", " ")))
   }else if (tolower(taxonomy_db) == "unite") {
     otu_rel_parse <- otu_rel_parse %>%
-      # eliminar prefijos tipo k__, p__, c__, etc., pero conservar "incertae sedis"
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ ifelse(grepl("incertae sedis", .), ., stringr::str_remove(., "^[a-zA-Z]+__")))) %>%
-      # reemplazar guiones bajos por espacios en todas las columnas
       dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_replace_all(., "_", " ")))
   
   
@@ -112,21 +108,6 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
                     s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g,s,sep=" "), s))
   }
 
-  # "Incertae Sedis" ("of uncertain systematic placement") is a real,
-  # standard placeholder rank used across UNITE/SILVA/GreenGenes2 - not an
-  # actual taxon name. Left as-is, every lineage that hits it at some rank
-  # collapses onto the SAME node below (only the deepest rank's label is
-  # kept as the node name), so e.g. Mucoromycota's class and Zoopagomycota's
-  # class would incorrectly render as one shared "Incertae Sedis" node.
-  # Replace it with "other <parent rank>" instead - the same fallback used
-  # for an unresolved ("uncultured"/empty, and in some cases already
-  # "Incertae_Sedis") rank in abundance_bar_plot()/corr_env_abund_plot()/
-  # abundance_heatmap_plot()/aldex_heatmap_plot()/random_forest_lollipop_plot()
-  # - so each lineage keeps its own, identifiable, still-short node (e.g.
-  # "other Mucoromycota" rather than the much longer "Mucoromycota Incertae
-  # Sedis" or the ambiguous bare "Incertae Sedis").
-  # Also "uncultured", which is not a taxon either (same fallback as the other
-  # functions). "_" or spaces between the words, for any taxonomy_db.
   is_incertae_sedis <- function(x) {
     !is.na(x) & grepl("^(incertae[\\s_]+sedis|uncultured)$", x, ignore.case = TRUE, perl = TRUE)
   }
@@ -136,14 +117,11 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     parent_col <- rank_cols[i - 1]
     hit <- is_incertae_sedis(otu_rel_parse[[this_col]])
     parent_val <- otu_rel_parse[[parent_col]][hit]
-    # A parent that's already "other X" (itself a run of consecutive
-    # Incertae Sedis ranks) is reused as-is rather than chained into
-    # "other other X".
     already_other <- grepl("^other ", parent_val)
     otu_rel_parse[[this_col]][hit] <- ifelse(already_other, parent_val, paste("other", parent_val))
   }
+  otu_rel_parse[rank_cols] <- lapply(otu_rel_parse[rank_cols], .mbm_composite_genus)
 
-  # Internal function to summarize by level and drop empty ones
   get_level_data <- function(df, level, unite_cols) {
     df %>%
       tidyr::unite(col = !!level, all_of(unite_cols), remove = FALSE) %>%
@@ -170,8 +148,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
       tibble::column_to_rownames("Taxon")
   }
   
-  # Resumir todos los niveles
-  bacterias <- get_level_data(otu_rel_parse, "kingdom", "k")
+  #resume levels  
   phylum    <- get_level_data(otu_rel_parse, "phylum", c("k","p"))
   class     <- get_level_data(otu_rel_parse, "class", c("k","p","c"))
   order     <- get_level_data(otu_rel_parse, "order", c("k","p","c","o"))
@@ -188,7 +165,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     dplyr::slice_max(order_by = abund, n = maxn, with_ties = FALSE) %>%
     dplyr::ungroup()
   
-  # Construct nodes and links for Sankey
+  # Construct nodes and links
   splits <- strsplit(my_report$ids,"_")
   sel <- vapply(splits, length, integer(1)) >= 3
   splits <- splits[sel]
@@ -205,7 +182,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   
   links <- links[!is.na(links$value) & links$value>0, ]
   
-  # Profundidad de los niveles
+  # deepness
   valid_ranks <- taxRanks[taxRanks %in% unique(my_report$taxRank)]
   taxRank_to_depth <- setNames(seq_along(valid_ranks)-1, valid_ranks)
   
@@ -225,6 +202,7 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
   nodes$name <- sub("^._","",nodes$name)
   links$type <- sub(" .*","",nodes[links$source + 1,"name"])
 
+  #save optional
   if (save_table) {
     nodes_out <- nodes
     nodes_out$table_type <- "node"
@@ -249,11 +227,18 @@ abundance_sankey_plot <- function(table, output_file = "sankey.html", maxn = 25,
     fontFamily = "serif",
     fontSize = 12,
     nodeWidth = 15,
-    iterations = 64
+    iterations = 64,
+    width = width,
+    height = height
   )
 
-  networkD3::saveNetwork(sankey, file = output_file)
-  message("Sankey diagram saved to: ", output_file)
+  if (!is.null(output_file)) {
+    networkD3::saveNetwork(sankey, file = output_file)
+    if (grepl("[.]html?$", output_file)) {
+      unlink(sub("[.]html?$", "_files", output_file), recursive = TRUE)
+    }
+    message("Sankey diagram saved to: ", output_file)
+  }
 
   invisible(sankey)
 }

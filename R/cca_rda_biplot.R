@@ -38,7 +38,9 @@
 #'   \code{vegan::envfit()} permutations; call \code{set.seed()} before the
 #'   function to make them reproducible.
 #'
-#' @return A `ggplot` object displaying the biplot with sample scores and environmental vectors.
+#' @return A `ggplot` object displaying the biplot with sample scores and
+#'   environmental vectors. The axis titles show the percentage of the total
+#'   variance (inertia) explained by each constrained axis.
 #' @export
 #' 
 #' @examples
@@ -210,18 +212,28 @@ cca_rda_biplot <- function(table,
       color = "black",
       inherit.aes = FALSE
     ) +
-    ggplot2::geom_text(
+    # Labels just beyond each arrow tip, repelled so they don't sit on the
+    # arrowheads or on each other
+    ggrepel::geom_label_repel(
       data = vectors_scores,
       ggplot2::aes(
-        x = .data[[axis_names[1]]] * scale_arrows,
-        y = .data[[axis_names[2]]] * scale_arrows,
+        x = .data[[axis_names[1]]] * scale_arrows * 1.08,
+        y = .data[[axis_names[2]]] * scale_arrows * 1.08,
         label = Variable
       ),
       color = "black",
       size = 5,
       family = "serif",
-      hjust = 0.5,
-      vjust = -0.5,
+      fontface = "bold",
+      # semi-transparent white box: readable even on top of sample points
+      fill = grDevices::adjustcolor("white", alpha.f = 0.75),
+      label.size = NA,
+      label.padding = grid::unit(0.1, "lines"),
+      box.padding = 0.3,
+      point.padding = 0,
+      min.segment.length = Inf,
+      max.overlaps = Inf,
+      seed = 1,
       inherit.aes = FALSE
     ) +
     ggplot2::coord_fixed(ratio = 1)
@@ -231,7 +243,7 @@ cca_rda_biplot <- function(table,
                          vectors_scores[[axis_names[1]]] * scale_arrows,
                          site_scores[[axis_names[2]]],
                          vectors_scores[[axis_names[2]]] * scale_arrows)))
-  buffer <- 1.1
+  buffer <- 1.2
   plot <- plot +
     ggplot2::scale_x_continuous(limits = c(-max_range, max_range) * buffer) +
     ggplot2::scale_y_continuous(limits = c(-max_range, max_range) * buffer) +
@@ -249,10 +261,15 @@ cca_rda_biplot <- function(table,
     ) +
     ggplot2::guides(fill = ggplot2::guide_legend(title = legend_title))
 
-  # 11. Plot title
+  # 11. Plot title, and axis titles with the % of the total variance
+  # (inertia) explained by each constrained axis
+  axis_pct <- 100 * vegan::eigenvals(ord_result)[axis_names] / ord_result$tot.chi
+  axis_labels <- sprintf("%s (%.1f%%)", axis_names, axis_pct)
   auto_title <- paste(toupper(analysis), "Biplot")
   plot <- plot + ggplot2::labs(
-    title = if (identical(title, "auto")) auto_title else title
+    title = if (identical(title, "auto")) auto_title else title,
+    x = axis_labels[1],
+    y = axis_labels[2]
   )
   
   return(plot)

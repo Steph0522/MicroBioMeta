@@ -2,10 +2,11 @@
 #'
 #' Generates a bar plot of relative abundance (%) for the most abundant taxa groups across samples or sample groups.
 #'
-#' @param table A data frame with taxa in rows and samples in columns. The first column must be named `taxonomy`, containing full taxonomic strings.
-#' @param metadata A data frame containing sample metadata. Must include a `SAMPLEID` column matching sample names in `table`.
-#' @param taxonomy_db Character. Reference taxonomy database whose prefix style
-#'   is used to simplify the taxonomic names shown in the plot. One of
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
+#' @param taxonomy_db Character. Reference taxonomy database. One of
 #'   `"silva"` (default), `"gg2"` (Greengenes2; also accepts `"gg"` /
 #'   `"greengenes2"`), `"unite"` (fungal ITS), or `"Kraken2"` (also accepts
 #'   `"kraken"`). Case-insensitive.
@@ -13,7 +14,7 @@
 #'   `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
 #'   `"species"`. Case-insensitive.
 #' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
-#' @param facet_by Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment group). Default is `NULL`.
+#' @param facet_by Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment). Default is `NULL`.
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
 #' @param x_axis_title Character. The title for the x-axis (default = "Samples")
@@ -32,8 +33,6 @@
 #' @param width_equal Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.
 #' @param save_table Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.
-#' @param ... Old names of renamed arguments (\code{facet_col}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A `ggplot2` object showing a stacked barplot of relative abundances.
 #'
 #' @details
@@ -87,14 +86,6 @@ abundance_bar_plot <- function(table,
                               save_table = FALSE,
                               table_filename = "relative_abundance.txt",
                               ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(facet_col = "facet_by"), "abundance_bar_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
-
-
-  # Accept taxonomy_db / level case-insensitively (and a few common spellings),
-  # mapping each to the exact value the rest of the function expects, so users
-  # don't have to remember that e.g. Kraken2 is capitalised internally.
   taxonomy_db <- switch(
     tolower(taxonomy_db),
     "silva"       = "silva",
@@ -110,7 +101,7 @@ abundance_bar_plot <- function(table,
   )
   level <- tolower(level)
 
-  # Treat metadata's first column as the sample ID regardless of its original name
+  # accept each firts name as sampleid
   colnames(metadata)[1] <- "SAMPLEID"
 
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
@@ -120,7 +111,7 @@ abundance_bar_plot <- function(table,
   
   table <- table[, c("taxonomy", setdiff(names(table), "taxonomy"))]
   
-  # Remove uninformative taxonomy strings
+  #format db
   table <- table %>%
     dplyr::filter(taxonomy != "d__Bacteria;__;__;__;__;__") %>%
     dplyr::filter(taxonomy != "d__Bacteria") %>%
@@ -136,18 +127,15 @@ abundance_bar_plot <- function(table,
     dplyr::filter(taxonomy != "d__Eukaryota")
   
   table <- table %>%
-  # drop taxonomy strings that only reach domain/kingdom level
   dplyr::filter(!grepl("^(d__|k__)[^;]*;[ _;]*$", taxonomy))
 
 
   if (taxonomy_db == "gg2") {
     table <- table %>%
-      # drop taxonomy strings with all empty levels (__)
       dplyr::filter(!grepl("(__;?)+$", taxonomy))
   }
   
   
-  # Reorder columns based on SAMPLEID order in metadata
   ordered_samples <- metadata[[1]]
   sample_columns <- colnames(table)[-1]
   ordered_samples <- intersect(ordered_samples, sample_columns)
@@ -176,7 +164,6 @@ abundance_bar_plot <- function(table,
     }
   }
   
-  # ---- Collapse taxonomy according to level ----
   if (taxonomy_db == "unite") {
     if (level == "kingdom") {
       table$taxonomy <- sub(";.*", "", table$taxonomy)
@@ -205,10 +192,9 @@ abundance_bar_plot <- function(table,
     dplyr::group_by(taxonomy) %>%
     dplyr::summarise(dplyr::across(where(is.numeric), \(x) sum(x, na.rm = TRUE)))
   
-  # Calculate relative abundance
   table[,-1] <- sweep(table[,-1], 2, colSums(table[,-1], na.rm = TRUE), FUN = "/") * 100
   
-  # Guardar tabla si se solicita
+  #save if is true
   if (save_table) {
     utils::write.table(
       table,
@@ -220,11 +206,10 @@ abundance_bar_plot <- function(table,
     message("Table saved as: ", table_filename)
   }
   
-  # Convert to long format
+  #join metadata
   table_long <- table %>%
     tidyr::pivot_longer(cols = -taxonomy, names_to = "SAMPLEID", values_to = "RelativeAbundance")
   
-  # Join with metadata
   columns_to_join <- c("SAMPLEID", x_col, facet_by)
   columns_to_join <- columns_to_join[!is.na(columns_to_join) & columns_to_join != "NULL"]
   table_long <- dplyr::left_join(
@@ -233,7 +218,7 @@ abundance_bar_plot <- function(table,
     by = "SAMPLEID"
   )
   
-  # Grouping
+  #group
   grouping_vars <- c(x_col, "taxonomy")
   if (!is.null(facet_by)) {
     grouping_vars <- c(grouping_vars, facet_by)
@@ -337,7 +322,6 @@ abundance_bar_plot <- function(table,
   }
   
   
-  # Simplify taxonomy for SILVA
   if (taxonomy_db %in% c("silva") && level == "genus") {
     avg_by_group <- avg_by_group %>%
       dplyr::mutate(
@@ -417,7 +401,11 @@ abundance_bar_plot <- function(table,
       )
   }
   
-  avg_by_group <- avg_by_group %>%     
+  # "Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium" -> "Rhizobium group" 
+  # new change for this name that is large
+  avg_by_group$taxonomy <- .mbm_composite_genus(avg_by_group$taxonomy)
+
+  avg_by_group <- avg_by_group %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(grouping_vars))) %>%
     dplyr::summarise(MeanAbundance = sum(MeanAbundance, na.rm = TRUE),
                      .groups = "drop")
@@ -439,7 +427,7 @@ abundance_bar_plot <- function(table,
   taxonomy_order <- unique(c(setdiff(taxonomy_order, c("Other", "Unclassified")), "Unclassified", "Other"))
   avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = rev(taxonomy_order))
   
-  # ==== PALETTE CORRECTION ====
+  #colors
   tax_levels <- levels(avg_by_group$taxonomy)
   tax_levels_no_other <- setdiff(tax_levels, c("Other", "Unclassified"))
   
@@ -453,7 +441,7 @@ abundance_bar_plot <- function(table,
   cbPalette["Other"] <- "#D3D3D3"
   cbPalette["Unclassified"] <- "#666666"
   
-  # Plot
+  # plot
   p <- ggplot2::ggplot(avg_by_group,
                        ggplot2::aes(x = !!rlang::sym(x_col),
                                     y = MeanAbundance,
@@ -464,18 +452,15 @@ abundance_bar_plot <- function(table,
       values = cbPalette,
       labels = function(taxa) {
         if (level %in% c("genus", "species")) {
-          # lapply(), not sapply()/vapply(): each element is either a plain
-          # string or a bquote() expression (for italics), so the result is
-          # never a homogeneous vector vapply() could type-check.
           lapply(taxa, function(x) {
             if (x %in% c("Other", "Unclassified") || grepl("^other ", x)) {
-              x   # texto plano
+              x   
             } else {
-              bquote(italic(.(x)))  # en cursivas
+              bquote(italic(.(x)))  
             }
           })
         } else {
-          taxa  # siempre texto plano
+          taxa  
         }
       }
       
@@ -494,8 +479,6 @@ abundance_bar_plot <- function(table,
     ggplot2::xlab(x_axis_title)
   
   if (!is.null(facet_by)) {
-    # Wrap long facet level names (e.g. "Moderate_drought") onto multiple
-    # lines instead of letting them get clipped by a narrow strip
     strip_labeller <- ggplot2::labeller(
       .default = ggplot2::label_wrap_gen(width = 10)
     )

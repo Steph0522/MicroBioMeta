@@ -27,12 +27,13 @@ abundance_bar_plot(
 )
 }
 \arguments{
-\item{table}{A data frame with taxa in rows and samples in columns. The first column must be named \code{taxonomy}, containing full taxonomic strings.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing sample metadata. Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
-\item{taxonomy_db}{Character. Reference taxonomy database whose prefix style
-is used to simplify the taxonomic names shown in the plot. One of
+\item{taxonomy_db}{Character. Reference taxonomy database. One of
 \code{"silva"} (default), \code{"gg2"} (Greengenes2; also accepts \code{"gg"} /
 \code{"greengenes2"}), \code{"unite"} (fungal ITS), or \code{"Kraken2"} (also accepts
 \code{"kraken"}). Case-insensitive.}
@@ -43,7 +44,7 @@ is used to simplify the taxonomic names shown in the plot. One of
 
 \item{x_col}{Character. Column name in \code{metadata} to use for the x-axis (e.g., environment, condition).}
 
-\item{facet_by}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment group). Default is \code{NULL}.}
+\item{facet_by}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment). Default is \code{NULL}.}
 
 \item{width_equal}{Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.}
 
@@ -74,9 +75,6 @@ Default \code{NULL} (automatic).}
 \item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.}
-
-\item{...}{Old names of renamed arguments (\code{facet_col}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ggplot2} object showing a stacked barplot of relative abundances.

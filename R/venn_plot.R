@@ -12,7 +12,9 @@
 #' @param title Optional character string for the title of the plot.
 #' @param method Character. Package used to draw the Venn diagram: `"ggvenn"`
 #'   (default) or `"ggVennDiagram"`. Case-insensitive.
-#' @param group_colors Optional vector of colors for the groups. If NULL, a default `distiller` scale with `Set3` palette will be used.
+#' @param group_colors Optional vector of colors for the groups, either named
+#'   after the groups or in the order of the groups. If NULL, the
+#'   colorblind-friendly Okabe-Ito palette is used.
 #' @param save_table Logical. If \code{TRUE}, saves a long-format table of taxa
 #'   membership per group to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -90,6 +92,10 @@ venn_plot <- function(table, metadata, merge_by = NULL,
     } else {
       rep_len(.mbm_colors, num_groups)
     }
+  } else if (!is.null(names(group_colors))) {
+    # Named colors are matched to the groups by name
+    group_colors <- unname(.mbm_match_colors(group_colors, names(metadata_split),
+                                             "group_colors"))
   } else {
     group_colors <- rep(group_colors, length.out = num_groups)
   }

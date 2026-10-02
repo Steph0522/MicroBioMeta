@@ -1,23 +1,19 @@
 #' Alpha diversity along a continuous gradient
 #'
-#' Computes Hill numbers (q = 0, 1, 2) from an ASV/OTU table and plots them
+#' Computes Hill numbers (q = 0, 1, 2) from table and plots them
 #' against a continuous metadata variable (e.g. distance to urban center,
-#' elevation, pH). Each Hill order is shown in its own facet panel with an
-#' ordinary least-squares regression line and an annotation reporting the
-#' Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-#' and optionally the linear regression R-squared and slope.
-#' An optional grouping variable adds per-group coloring and separate
-#' regression lines.
+#' elevation, pH). It reports the Spearman rank correlation coefficient (rho, or Pearson r), 
+#' its p-value, and optionally the linear regression R-squared and slope.
 #'
-#' @param table A data frame with taxa as rows and samples as columns.
-#'   Must contain a column named \code{taxonomy} (any position).
-#' @param metadata A data frame whose \strong{first column} contains sample
-#'   identifiers matching the column names of \code{table}.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param cont_var Character. Name of the continuous variable column in
 #'   \code{metadata} to place on the x-axis (e.g. \code{"dist_km"}).
 #' @param group_col Character or \code{NULL}. Optional column in
 #'   \code{metadata} used to color points and fit separate regression lines
-#'   per group (e.g. \code{"estado2"}).
+#'   per group (e.g. \code{"treatment"}).
 #' @param method Character. Correlation method for the statistic annotation.
 #'   One of \code{"spearman"} (default) or \code{"pearson"}.
 #' @param show_lm_stats Logical. If \code{TRUE} (default), adds R-squared and slope
@@ -70,12 +66,6 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # alpha_decay_plot expects a continuous environmental gradient (e.g.
-#' # distance, elevation, pH). This bundled example dataset doesn't include
-#' # one, so this creates an illustrative synthetic "distance to a reference
-#' # point" (km), spread across the 'Loc' site codes with a little
-#' # per-sample jitter - substitute your own real gradient variable.
-#' set.seed(1)
 #' loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 #' metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
 #'   stats::rnorm(nrow(metadata), sd = 0.3)
@@ -123,7 +113,6 @@ alpha_decay_plot <- function(
     strip_text_bold   = FALSE
 ) {
 
-  # ---- 0. Validate inputs ----
   method <- match.arg(method, c("spearman", "pearson"))
 
   if (!cont_var %in% colnames(metadata))
@@ -131,7 +120,6 @@ alpha_decay_plot <- function(
   if (!is.null(group_col) && !group_col %in% colnames(metadata))
     stop("`group_col` '", group_col, "' not found in metadata.")
 
-  # ---- 1. Align table and metadata ----
   sample_col <- colnames(metadata)[1]
   tax_idx    <- grep("^taxonomy$", colnames(table), ignore.case = TRUE)
   if (length(tax_idx) != 1)
@@ -144,7 +132,6 @@ alpha_decay_plot <- function(
 
   counts_t <- data.frame(t(table[, common, drop = FALSE]))
 
-  # ---- 2. Compute Hill numbers ----
   hills <- data.frame(
     .sample = rownames(counts_t),
     q0      = hillR::hill_taxa(comm = counts_t, q = 0),
@@ -153,7 +140,6 @@ alpha_decay_plot <- function(
     stringsAsFactors = FALSE
   )
 
-  # ---- 3. Merge with metadata ----
   meta_sub              <- metadata
   meta_sub[[sample_col]] <- as.character(meta_sub[[sample_col]])
   meta_sub[[cont_var]]   <- suppressWarnings(as.numeric(meta_sub[[cont_var]]))
@@ -161,7 +147,6 @@ alpha_decay_plot <- function(
   hills_meta <- dplyr::left_join(hills, meta_sub,
                                  by = stats::setNames(sample_col, ".sample"))
 
-  # ---- 4. Pivot to long ----
   hills_long <- tidyr::pivot_longer(
     hills_meta,
     cols      = c("q0", "q1", "q2"),
@@ -171,11 +156,9 @@ alpha_decay_plot <- function(
   hills_long <- hills_long[!is.na(hills_long[[cont_var]]) &
                               !is.na(hills_long$hill), ]
 
-  # ---- 5. Compute per-group stats ----
   group_vars <- if (!is.null(group_col)) c("q", group_col) else "q"
   rho_sym    <- if (method == "spearman") "rho" else "r"
 
-  # Helper that receives one sub-data frame and returns a 1-row stats data frame
   .compute_stats <- function(df) {
     x  <- df[[cont_var]]
     y  <- df$hill
@@ -209,8 +192,6 @@ alpha_decay_plot <- function(
     dplyr::group_modify(~ .compute_stats(.x)) %>%
     dplyr::ungroup()
 
-  # ---- 5b. Position annotations: right if alone; alternate left/right
-  #          (group 1 left, group 2 right, ...) when there is more than one ----
   line_gap <- if (show_lm_stats) 5.5 else 2.7
 
   if (!is.null(group_col)) {
@@ -241,7 +222,6 @@ alpha_decay_plot <- function(
       dplyr::mutate(x_pos = Inf, hjust = 1.05, vjust = 1.1, y_pos = Inf)
   }
 
-  # ---- 6. Color scale ----
   colorb_default <- if (!is.null(group_col) && length(unique(hills_long[[group_col]])) == 2) {
     .mbm_colors_2group
   } else {
@@ -259,7 +239,6 @@ alpha_decay_plot <- function(
     )
   }
 
-  # ---- 7. Build plot ----
   aes_pts <- if (!is.null(group_col)) {
     ggplot2::aes(
       x     = .data[[cont_var]],
@@ -270,7 +249,6 @@ alpha_decay_plot <- function(
     ggplot2::aes(x = .data[[cont_var]], y = hill)
   }
 
-  # Annotation mapping (color per group if requested)
   aes_ann <- if (!is.null(group_col)) {
     ggplot2::aes(x = x_pos, y = y_pos, label = label,
                  hjust = hjust, vjust = vjust,
@@ -283,8 +261,6 @@ alpha_decay_plot <- function(
   facet_ncol <- if (facet_orientation == "horizontal") 3L else 1L
   q_labeller <- .mbm_q_labeller(strip_text_bold)
 
-  # When ungrouped, match alpha_hill_corr_plot's fixed reg.line/CI colors;
-  # when grouped, let each group keep its own palette color.
   smooth_layer <- if (is.null(group_col)) {
     ggplot2::geom_smooth(
       method    = "lm",
@@ -303,11 +279,8 @@ alpha_decay_plot <- function(
     )
   }
 
-  # Shared y-axis range across the three q panels when scales aren't free
   y_range <- if (!free_y) range(hills_long$hill, na.rm = TRUE) else NULL
 
-  # ---- 7. Build one panel per q level, then combine with patchwork so the
-  # A/B/C tags land outside each panel (matching alpha_hill_corr_plot) ----
   q_levels <- intersect(c("q0", "q1", "q2"), unique(hills_long$q))
 
   build_q_panel <- function(q_level) {
@@ -367,8 +340,7 @@ alpha_decay_plot <- function(
 
   plots <- lapply(q_levels, build_q_panel)
 
-  # Joined with patchwork (see .mbm_patchwork_grid()), so the result stays
-  # modifiable: `p & theme(...)`, `p[[2]] + labs(...)`, `+ plot_annotation()`.
+
   .mbm_patchwork_grid(plots, ncol = facet_ncol, tags = panel_letters,
                       title = title,
                       show_legend = !is.null(group_col) && show_legend,

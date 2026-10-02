@@ -1,7 +1,8 @@
+url: https://steph0522.github.io/MicroBioMeta/
+
 template:
-  params:
-    bootswatch: flatly
-    ganalytics: UA-000000-01
+  bootstrap: 5
+  bootswatch: flatly
   opengraph:
     twitter:
       creator: "@Steph0522"
@@ -32,7 +33,7 @@ navbar:
       text: Installation
       href: articles/installation.html
     issues:
-      icon: fa-exclamation-circle
+      icon: fa-circle-exclamation
       href: https://github.com/Steph0522/MicroBioMeta/issues
       aria-label: Issues
 
@@ -87,3 +88,6 @@ authors:
     href: https://github.com/NinaMontoya
   Karla Zarco:
     href: https://github.com/KarlaZG
+
+news:
+  cran_dates: false

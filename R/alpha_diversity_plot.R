@@ -96,7 +96,7 @@ alpha_diversity_plot <- function(
     x_col,
     fill_col,
     facet_by = NULL,
-    facet_by2 = NULL,  # New parameter
+    facet_by2 = NULL, 
     facet_orientation = "horizontal",
     palette = "colorb",
     group_colors = NULL,

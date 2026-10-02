@@ -215,23 +215,33 @@ The `show_column_names` parameter determines whether sample names are displayed 
 
 Row labels default to just the feature's rank number (`"1"`, `"2"`...); `feature_prefix` prepends whatever fits the data - `"ASV"` here, since this table's features are QIIME2/DADA2 amplicon sequence variants.
 
-```{r abundance-heatmaps-12, warning=FALSE, fig.width=11, fig.height=6.5}
+SILVA composite names of three or more genera are shortened to the last genus plus "group" (e.g. *Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium* is shown as "Rhizobium group"; two-genus names such as *Escherichia-Shigella* stay whole), here and in the barplots, Sankey diagrams and ALDEx2 figures. Other labels longer than `max_label_length` (default `35`) characters are cut with "...". Set `composite_names = FALSE` to show the full names.
+
+The soil types keep the package's default colorblind-friendly Okabe-Ito colors (Bulk soil orange, Rhizosphere blue, Roots green, Uncultivated yellow). For the treatments we use colors from the colorblind-friendly "Safe" palette, so the two variables don't share colors:
+
+```{r colors}
+treatment_colors <- c(TC = "#CC6677", TD = "#332288", TED = "#999933")
+```
+
+```{r abundance-heatmaps-12, warning=FALSE, fig.width=14, fig.height=6}
 abundance_heatmap_plot(table = table_bac,
                   metadata = metadata_bacteria,
                   top_n = 20,
                   show_column_names = FALSE,
                   condition1 = "Type_of_soil",
                   condition2 = "Treatment",
+                  colors_condition2 = treatment_colors,
                   feature_prefix = "ASV")
 ```
 
-```{r abundance-heatmaps-13, warning=FALSE, fig.width=11, fig.height=6.5}
+```{r abundance-heatmaps-13, warning=FALSE, fig.width=14, fig.height=6}
 abundance_heatmap_plot(table = table_fung,
                   metadata = metadata_fungi,
                   top_n = 20,
                   show_column_names = FALSE,
                   condition1 = "Type_of_soil",
                   condition2 = "Treatment",
+                  colors_condition2 = treatment_colors,
                   feature_prefix = "ASV")
 ```
 
@@ -244,13 +254,14 @@ The `taxRanks` argument specifies which ranks to include as nodes, `maxn` caps t
 install.packages("networkD3")
 ```
 
-⚠️ Unlike the other functions, this one doesn't return a `ggplot` object but a `sankeyNetwork` object  and it has a parameter (`output_file`)  that allows to  **saves an HTML file** with an interactive sankey diafgram.
+⚠️ Unlike the other functions, this one doesn't return a `ggplot` object but an interactive `sankeyNetwork` (htmlwidget) object. Nothing is written to disk by default; set `output_file` (e.g. `output_file = "sankey_bacteria.html"`) to **save the diagram as an HTML file**.
 
 ```{r sankey-diagram-of-taxonomic-flow-15, warning=FALSE}
 sankey_bacteria <- abundance_sankey_plot(
   table       = table_bac,
-  output_file = "sankey_bacteria.html",
-  maxn        = 15,
+  maxn        = 10,
+  width       = 950,
+  height      = 650,
   taxRanks    = c("P", "C", "O", "F", "G"),
   taxonomy_db = "silva"
 )
@@ -292,6 +303,7 @@ alpha_hill_plot(table = table_bac,
                 metadata = metadata_bacteria,
                 x_col = "Treatment",
                 fill_col = "Treatment",
+                group_colors = treatment_colors,
                 facet_by = "Type_of_soil",
                 facet_orientation = "horizontal",
                 save_table = FALSE)
@@ -302,6 +314,7 @@ alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
+                group_colors = treatment_colors,
                 facet_by = "Type_of_soil",
                 facet_orientation = "horizontal",
                 save_table = FALSE)
@@ -314,6 +327,7 @@ alpha_diversity_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
+                group_colors = treatment_colors,
                 facet_by = "Type_of_soil",
                 facet_orientation = "horizontal",
                 stat = "anova",
@@ -329,6 +343,7 @@ alpha_diversity_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
+                group_colors = treatment_colors,
                 facet_by = "Type_of_soil",
                 facet_orientation = "horizontal",
                 stat = "anova",
@@ -345,6 +360,7 @@ alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
                 x_col = "Treatment",
                 fill_col = "Treatment",
+                group_colors = treatment_colors,
                 facet_by = "Type_of_soil",
                 facet_orientation = "vertical",
                 save_table = FALSE)
@@ -548,6 +564,10 @@ By default `beta_dissimilarity_plot()` keeps every pairwise combination possible
 ```{r pairwise-beta-diversity-visualization-34}
 groups_bac <- setdiff(unique(as.character(metadata_bacteria$Type_of_soil)), "Roots")
 vs_roots_bac <- paste0(pmin(groups_bac, "Roots"), "_vs_", pmax(groups_bac, "Roots"))
+# each comparison takes the color of the group compared with Roots
+vs_roots_colors <- c("Bulk soil_vs_Roots"    = "#E69F00",
+                     "Rhizosphere_vs_Roots"  = "#56B4E9",
+                     "Roots_vs_Uncultivated" = "#F0E442")
 vs_roots_bac
 ```
 
@@ -559,6 +579,7 @@ If `save_table = TRUE`, the function also returns a table containing the beta di
 beta_dissimilarity_plot(table = table_bac,
                        metadata = metadata_bacteria,
                        comparison_condition1 = vs_roots_bac,
+                       group_colors = vs_roots_colors,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        x_axis_title = "Samples",
@@ -579,6 +600,7 @@ vs_roots_fung <- paste0(pmin(groups_fung, "Roots"), "_vs_", pmax(groups_fung, "R
 beta_dissimilarity_plot(table = table_fung,
                        metadata = metadata_fungi,
                        comparison_condition1 = vs_roots_fung,
+                       group_colors = vs_roots_colors,
                        condition1_col = "Type_of_soil",
                        condition2_col = "Treatment",
                        x_axis_title = "Samples",
@@ -610,7 +632,7 @@ beta_turnover_plot(
   condition2_col        = "Treatment",
   facet_colors        = "#5D478B",
   group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
-                            "Rhizosphere_vs_Rhizosphere" = "#E69F00"),
+                            "Rhizosphere_vs_Rhizosphere" = "grey75"),
   stat                  = "wilcox.test"
 )
 ```
