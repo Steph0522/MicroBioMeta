@@ -9,6 +9,28 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+* `abundance_bar_plot()` and `abundance_heatmap_plot()` no longer need
+  `metadata`: without it (or without `x_col`), they show one bar or column
+  per sample. Passing something that is not a table (e.g. R's `table()`
+  function by mistake) now gives a clear error.
+* `beta_test_table()` now returns the results as a data frame (columns
+  `Df`, `SumOfSqs`, `R2`, `F`, `Pr(>F)`, `Term`) instead of only an image.
+  Printing it draws the same table figure as before, and
+  `ggplot2::autoplot()` returns the figure as a ggplot to combine with other
+  plots or save it.
+* `beta_ord_plot()` and `beta_test_table()` gain `mc_samples` for
+  `distance = "compositional"`: the number of ALDEx2 Monte Carlo instances.
+  `1` (default) uses one random instance, as before, but only that one is
+  drawn (about 15x faster; with the same seed the values differ from the
+  previous version, which drew 128 and used the first). Values above 1
+  average the clr values over the instances (e.g. `128`, ALDEx2's default),
+  which gives stable results between runs.
+* Faster, with identical results: `corr_env_abund_plot()` computes the
+  correlation p-values for all pairs at once (same values as `cor.test()`),
+  `abundance_heatmap_plot()` reads each taxonomy string only once,
+  `beta_turnover_plot()` computes the pairwise Hill partition with matrices
+  (same values as `hillR::hill_taxa_parti_pairwise()`; 134 s -> 1 s with 53
+  samples), and the package theme is built once per session.
 * SILVA composite genus names of three or more genera are now shown as
   "<last genus> group" (e.g. "Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium"
   becomes "Rhizobium group") in `abundance_heatmap_plot()`,
@@ -22,6 +44,12 @@ SIGNIFICANT USER-VISIBLE CHANGES
   (the heatmap is drawn only once; `draw = FALSE` builds a grob that fills
   the panel it is placed in, e.g. with `cowplot::plot_grid()`). Printing
   the returned object draws the heatmap.
+* `aldex_heatmap_plot()` now filters taxa like `aldex_volcano_plot()` by
+  default: `pval_threshold = 0.05` and `effect_threshold = 0` (before:
+  `|effect| >= 0.8` and no p-value filter), so both show the same taxa.
+* Old argument names (e.g. `col_cond`, `env_table`, `index`) are no longer
+  accepted; functions no longer take `...`, so a misspelled or old argument
+  name gives R's usual "unused argument" error.
 * `aldex_heatmap_plot()` now returns a grob (instead of a
   `ComplexHeatmap::HeatmapList`) that can be combined with other plots
   (e.g. `cowplot::plot_grid()`) and is drawn when printed; new `draw`

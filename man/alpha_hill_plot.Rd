@@ -38,10 +38,11 @@ alpha_hill_plot(
 )
 }
 \arguments{
-\item{table}{A data frame or matrix with samples as columns and taxa as rows.
-The first column must contain the OTUID, ASV, or species name.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame with metadata. The first column must match sample names in \code{table}.}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{type}{Type of plot: \code{"boxplot"} (default) or \code{"barplot"}. Case-insensitive.}
 
@@ -126,9 +127,8 @@ Default \code{NULL}, which lets the panels fill the available space.}
 A ggplot object showing alpha diversity with Hill numbers.
 }
 \description{
-This function generates a boxplot or barplot to visualize alpha diversity Hill numbers (q = 0, 1, 2)
+Generates a boxplot or barplot to visualize alpha diversity Hill numbers (q = 0, 1, 2)
 for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-It supports palette customization, faceting, and statistical comparison.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

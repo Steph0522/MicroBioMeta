@@ -1,14 +1,9 @@
-# Distance-decay of community similarity
+# Distance-decay of community similarity plot
 
 Computes pairwise community dissimilarity (Jaccard, Horn/Morisita-Horn,
-Bray-Curtis, or other
-[`vegan::vegdist`](https://vegandevs.github.io/vegan/reference/vegdist.html)
-methods) and pairwise geographic distances (Haversine formula, km) from
-sample coordinates stored in `metadata`. It runs a Mantel test to
-evaluate the relationship between community similarity (1 -
-dissimilarity) and geographic distance, fits a linear regression, and
-returns a scatter plot annotated with the Mantel statistic, p-value, and
-regression slope.
+Bray-Curtis, or other) and pairwise geographic distances from sample
+coordinates stored in `metadata`. It runs a Mantel test to evaluate the
+relationship between community similarity and geographic distance
 
 ## Usage
 
@@ -39,14 +34,14 @@ beta_decay_plot(
 
 - table:
 
-  A data frame with taxa as rows and samples as columns. Must contain a
-  column named `taxonomy` (any position).
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame whose **first column** contains sample identifiers
-  matching the column names of `table`. Must also contain latitude and
-  longitude columns (see `lat_col` and `lon_col`).
+  A data frame containing sample metadata. Must include a `SAMPLEID`
+  column matching sample names in `table`. Must also contain latitude
+  and longitude columns
 
 - lat_col:
 
@@ -60,13 +55,7 @@ beta_decay_plot(
 
 - group_col:
 
-  Character or `NULL`. Optional categorical column in `metadata` (e.g.
-  `"estado2"`). When supplied, sample pairs from different groups are
-  dropped, and a separate Mantel test, regression line, and annotation
-  are computed **within each group** (matching what you'd get running
-  `beta_decay_plot` once per group), all drawn on the same plot colored
-  by group. When `NULL` (default), a single global Mantel test is run on
-  all samples, as before.
+  Character or `NULL`. Optional categorical column in `metadata`
 
 - palette:
 
@@ -98,15 +87,11 @@ beta_decay_plot(
 
 - point_color:
 
-  Character. Color of scatter points. Default `"black"`, matching
-  `alpha_hill_corr_plot`/`alpha_decay_plot`.
+  Character. Color of scatter points. Default `"black"`.
 
 - line_color:
 
-  Character. Color of the regression line. Default `"#D55E00"`, matching
-  `alpha_hill_corr_plot`/`alpha_decay_plot`'s ungrouped color scheme.
-  The confidence-interval ribbon uses that same scheme's fill,
-  `"#56B4E9"`.
+  Character. Color of the regression line. Default `"#D55E00"`.
 
 - point_size:
 
@@ -127,8 +112,7 @@ beta_decay_plot(
 - y_axis_title:
 
   Character or `NULL`. Y-axis label. If `NULL` (default), it is built
-  automatically from the `distance` method, e.g.
-  `"Jaccard similarity (1 - dissimilarity)"`.
+  automatically.
 
 - title:
 
@@ -148,10 +132,6 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# beta_decay_plot requires lat/lon columns, which this bundled example
-# dataset doesn't have. These coordinates are synthetic (one made-up
-# point per 'Loc' site code) purely to demonstrate the function - use
-# your own metadata's real coordinates for an actual analysis.
 loc_coords <- data.frame(
   Loc = 1:7,
   lat = 19.0 + seq(0, 0.6, length.out = 7),

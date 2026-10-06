@@ -398,7 +398,10 @@ Este es el primer paso antes de analizar las métricas de diversidad
 alfa.
 
 Para las bacterias 🦠, podemos observar que en todos los órdenes de *q*
-hay una correlación fuerte con la profundidad de secuenciación.
+hay una correlación fuerte con la profundidad de secuenciación. Cuando
+esto pasa, las diferencias de diversidad entre muestras pueden reflejar
+en parte diferencias en el esfuerzo de secuenciación, así que conviene
+tenerlo en cuenta (o rarefaccionar) antes de comparar grupos.
 
 ``` r
 
@@ -406,17 +409,6 @@ alpha_hill_corr_plot(table = table_bac)
 ```
 
 ![](metabarcoding_es_files/figure-html/correlaci-n-entre-n-meros-de-hill-16-1.png)
-
-Pero, para los datos de hongos 🍄 esta correlación es fuerte y
-significativa solo en *q*=0, es decir, para riqueza, pero no para los
-demás órdenes de *q*.
-
-``` r
-
-alpha_hill_corr_plot(table = table_fung)
-```
-
-![](metabarcoding_es_files/figure-html/correlaci-n-entre-n-meros-de-hill-17-1.png)
 
 ### 📊 Visualización de diversidad alfa
 
@@ -450,15 +442,20 @@ alpha_hill_plot(table = table_bac,
 
 ![](metabarcoding_es_files/figure-html/visualizaci-n-de-diversidad-alfa-18-1.png)
 
+La misma función permite intercambiar el papel de las variables. Para
+los hongos 🍄 ponemos el compartimento de suelo en el eje x y separamos
+los paneles por tratamiento, lo que resalta cómo cambia la diversidad
+del suelo desnudo a las raíces dentro de cada tratamiento:
+
 ``` r
 
 alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
-                x_col = "Treatment",
-                fill_col = "Treatment",
-                group_colors = treatment_colors,
-                facet_by = "Type_of_soil",
+                x_col = "Type_of_soil",
+                fill_col = "Type_of_soil",
+                facet_by = "Treatment",
                 facet_orientation = "horizontal",
+                show_legend = FALSE,
                 save_table = FALSE)
 ```
 
@@ -522,11 +519,11 @@ filas y los grupos de `facet_by` en columnas:
 
 alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
-                x_col = "Treatment",
-                fill_col = "Treatment",
-                group_colors = treatment_colors,
-                facet_by = "Type_of_soil",
+                x_col = "Type_of_soil",
+                fill_col = "Type_of_soil",
+                facet_by = "Treatment",
                 facet_orientation = "vertical",
+                show_legend = FALSE,
                 save_table = FALSE)
 ```
 
@@ -572,14 +569,14 @@ La función
 genera diagramas de Venn que resumen el traslape de taxones entre los
 grupos definidos en los metadatos.
 
-Generamos un diagrama de Venn agrupando muestras según el compartimento
-de suelo.
+Generamos un diagrama de Venn agrupando muestras según el tratamiento
+(TC, TD y TED).
 
 ``` r
 
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
-                  merge_by = "Type_of_soil",
+                  merge_by = "Treatment",
                   min_prevalence = 0 )
 ```
 
@@ -621,7 +618,7 @@ table_genus <- collapse_table(
 venn_plot(
   table = table_genus$collapsed_table,
   metadata = metadata_fungi,
-  merge_by = "Type_of_soil"
+  merge_by = "Treatment"
 )
 ```
 
@@ -649,7 +646,7 @@ es 0 por defecto, lo que significa que no se aplica ningún filtro.
 
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
-                  merge_by = "Type_of_soil",
+                  merge_by = "Treatment",
                   min_prevalence = 0.2 )
 ```
 
@@ -663,9 +660,9 @@ La función también permite colores personalizados para los grupos.
 
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
-                  merge_by = "Type_of_soil",
+                  merge_by = "Treatment",
                   min_prevalence = 0,
-                  group_colors = c("#1B9E77", "#D95F02", "#7570B3") )
+                  group_colors = treatment_colors )
 ```
 
 ![](metabarcoding_es_files/figure-html/personalizar-los-colores-de-los-grupos-26-1.png)
@@ -679,7 +676,7 @@ generar el diagrama usando **ggVennDiagram**.
 
 venn_plot(table = table_fung,
                   metadata = metadata_fungi,
-                  merge_by = "Type_of_soil",
+                  merge_by = "Treatment",
                   method = "ggvenndiagram" )
 ```
 
@@ -730,6 +727,11 @@ de la función**, como en los ejemplos de abajo. Lo mismo aplica a
 `beta_test_table(distance = "compositional")`, a las funciones de ALDEx2
 y a los p-valores de
 [`cca_rda_biplot()`](https://steph0522.github.io/MicroBioMeta/reference/cca_rda_biplot.md).
+Por defecto (`mc_samples = 1`) se usa una sola instancia, lo que es
+rápido; para los análisis finales se sugiere `mc_samples = 128` (el
+valor por defecto de ALDEx2), que promedia los valores clr de 128
+instancias y da casi el mismo resultado en cada corrida, aunque tarda
+más.
 
 ``` r
 
@@ -737,12 +739,18 @@ set.seed(123)
 beta_ord_plot(table = table_bac,
               metadata = metadata_bacteria,
                distance = "compositional",
+               mc_samples = 128,
               ordination = "PCA",
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
 
 ![](metabarcoding_es_files/figure-html/ordenaci-n-de-la-composici-n-de-la-comunidad-28-1.png)
+
+Para los hongos 🍄 usamos otra combinación: la disimilitud de
+**Bray-Curtis**, que pondera los taxones por su abundancia, con una
+ordenación **NMDS**. NMDS parte de configuraciones al azar, así que aquí
+también se usa [`set.seed()`](https://rdrr.io/r/base/Random.html):
 
 ``` r
 
@@ -751,19 +759,44 @@ beta_ord_plot(table = table_fung,
               metadata = metadata_fungi,
               group_col = "Type_of_soil",
               shape_col = "Treatment",
-              distance = "compositional",
-              ordination = "PCA")
+              distance = "bray",
+              ordination = "NMDS")
 ```
 
-    ## no conditions provided: forcing denom = 'all'
-
-    ## no conditions provided: forcing conds = 'NA'
-
-    ## conditions vector supplied
-
-    ## operating in serial mode
-
-    ## computing center with all features
+    ## Run 0 stress 0.1282494 
+    ## Run 1 stress 0.137064 
+    ## Run 2 stress 0.1268558 
+    ## ... New best solution
+    ## ... Procrustes: rmse 0.01348788  max resid 0.06322113 
+    ## Run 3 stress 0.131974 
+    ## Run 4 stress 0.1284548 
+    ## Run 5 stress 0.165162 
+    ## Run 6 stress 0.1272512 
+    ## ... Procrustes: rmse 0.007298609  max resid 0.05473952 
+    ## Run 7 stress 0.1402745 
+    ## Run 8 stress 0.1268558 
+    ## ... Procrustes: rmse 3.561058e-06  max resid 1.719656e-05 
+    ## ... Similar to previous best
+    ## Run 9 stress 0.1272512 
+    ## ... Procrustes: rmse 0.007300011  max resid 0.05475023 
+    ## Run 10 stress 0.1274534 
+    ## Run 11 stress 0.1315103 
+    ## Run 12 stress 0.1309372 
+    ## Run 13 stress 0.1301517 
+    ## Run 14 stress 0.1268558 
+    ## ... New best solution
+    ## ... Procrustes: rmse 4.203426e-06  max resid 1.973148e-05 
+    ## ... Similar to previous best
+    ## Run 15 stress 0.1272512 
+    ## ... Procrustes: rmse 0.007293077  max resid 0.05469673 
+    ## Run 16 stress 0.1574605 
+    ## Run 17 stress 0.1272512 
+    ## ... Procrustes: rmse 0.00729887  max resid 0.05473141 
+    ## Run 18 stress 0.1366118 
+    ## Run 19 stress 0.1272606 
+    ## ... Procrustes: rmse 0.02929663  max resid 0.1521837 
+    ## Run 20 stress 0.1361393 
+    ## *** Best solution repeated 1 times
 
     ## Coordinate system already present.
     ## ℹ Adding new coordinate system, which will replace the existing one.
@@ -802,10 +835,10 @@ que se usa tal cual.
 ⚠️ **NOTA: Cada función tiene la opción save\_\* que exporta una tabla o
 un elemento obtenido en cada función**.
 
-`distance` se establece en `compositional` para ambos conjuntos de
-datos, coincidiendo con el PCA de cada uno arriba, de modo que la prueba
-de significancia evalúa la misma noción de disimilitud que se muestra en
-el gráfico.
+`distance` coincide con la ordenación de cada conjunto de datos de
+arriba (`compositional` para bacterias, `bray` para hongos), de modo que
+la prueba de significancia evalúa la misma noción de disimilitud que se
+muestra en el gráfico.
 
 ``` r
 
@@ -814,6 +847,7 @@ beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
                 distance = "compositional",
+                mc_samples = 128,
                 test = "permanova",
                 permutations = 999)
 ```
@@ -836,20 +870,10 @@ set.seed(123)
 beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
-                distance = "compositional",
+                distance = "bray",
                 test = "permanova",
                 permutations = 999)
 ```
-
-    ## no conditions provided: forcing denom = 'all'
-
-    ## no conditions provided: forcing conds = 'NA'
-
-    ## conditions vector supplied
-
-    ## operating in serial mode
-
-    ## computing center with all features
 
 ![](metabarcoding_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-31-1.png)
 
@@ -965,6 +989,11 @@ beta_dissimilarity_plot(table = table_bac,
 
 ![](metabarcoding_es_files/figure-html/visualizaci-n-pareada-de-diversidad-beta-35-1.png)
 
+Para los hongos 🍄 vemos otro componente: `partition = "turnover"`
+conserva solo el reemplazo de taxones entre muestras (no las diferencias
+debidas a que una muestra tenga un subconjunto de los taxones de la
+otra), aquí con la familia Sørensen:
+
 ``` r
 
 groups_fung <- setdiff(unique(as.character(metadata_fungi$Type_of_soil)), "Roots")
@@ -982,8 +1011,8 @@ beta_dissimilarity_plot(table = table_fung,
                        x_axis_title = "Samples",
                        show_x_labels = FALSE,
                        stat = "kruskal.test",
-                       partition = "shared",
-                       family = "jaccard",
+                       partition = "turnover",
+                       family = "sorensen",
                        save_table = FALSE)
 ```
 
@@ -1190,12 +1219,12 @@ aldex_volcano_plot(table = table_bac_compar,
 
 [`ancombc_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ancombc_plot.md)
 ofrece una alternativa a las funciones basadas en ALDEx2 de arriba. Esta
-función depende de los paquetes de Bioconductor `ANCOMBC` y `phyloseq`:
+función depende del paquete de Bioconductor `ANCOMBC`:
 
 ``` r
 
 # install.packages("BiocManager")
-BiocManager::install(c("ANCOMBC", "phyloseq"))
+BiocManager::install("ANCOMBC")
 ```
 
 `level` agrupa la tabla a un rango taxonómico antes de la prueba (por
@@ -1225,13 +1254,14 @@ ancombc_plot(
 
 ### 📊 Ejemplo: datos de hongos
 
-Seguimos el mismo procedimiento, pero visualizamos los resultados con un
-**heatmap**. Esta función usa `ComplexHeatmap`.
+Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**,
+pero visualizamos los resultados con un **heatmap**. Esta función usa
+`ComplexHeatmap`.
 
 ``` r
 
 metadata_fungi_compar <-  metadata_fungi %>%
-  filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Rhizosphere")
+  filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Roots")
 
 table_fungi_compar <- table_fung[match(metadata_fungi_compar$SAMPLEID, colnames(table_fung))]
 
@@ -1241,8 +1271,16 @@ table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
     ## Warning in merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi): 17
     ## taxonomy IDs are not present in the table and will be excluded from the result.
 
+Como en el volcano plot, por defecto el heatmap conserva los taxones con
+un valor p ajustado por Benjamini-Hochberg menor a 0.05
+(`pval_threshold = 0.05`, `p_adjust_method = "BH"`); `effect_threshold`
+permite además filtrar por tamaño del efecto. Cada fila muestra los
+valores clr medianos por grupo, con anotaciones laterales para el tamaño
+del efecto, la clase de valor p y la diferencia entre grupos:
+
 ``` r
 
+set.seed(123)
 aldex_heatmap_plot(table = table_fung_compar,
                    metadata = metadata_fungi_compar,
                    group_col = "Type_of_soil")
@@ -1287,7 +1325,7 @@ ratios_bubble_plot(table = table_fung_compar,
            metadata = metadata_fungi_compar,
            group_col = "Type_of_soil",
            top_n = 20,
-           condition_A = "Rhizosphere",
+           condition_A = "Roots",
            condition_B = "Bulk soil")
 ```
 
@@ -1520,77 +1558,74 @@ sessionInfo()
     ##  [33] readxl_1.5.0.1              rstudioapi_0.19.0          
     ##  [35] generics_0.1.4              ggVennDiagram_1.5.7        
     ##  [37] shape_1.4.6.1               gtools_3.9.5               
-    ##  [39] car_3.1-5                   biomformat_1.40.0          
-    ##  [41] Matrix_1.7-5                interp_1.1-6               
-    ##  [43] DescTools_0.99.60           S4Vectors_0.50.3           
-    ##  [45] abind_1.4-8                 lifecycle_1.0.5            
-    ##  [47] multcomp_1.4-32             yaml_2.3.12                
-    ##  [49] carData_3.0-6               SummarizedExperiment_1.42.0
-    ##  [51] Rtsne_0.17                  SparseArray_1.12.2         
-    ##  [53] grid_4.6.1                  crayon_1.5.3               
-    ##  [55] lattice_0.22-9              haven_2.5.5                
-    ##  [57] cowplot_1.2.0               magick_2.9.1               
-    ##  [59] pillar_1.11.1               knitr_1.52                 
-    ##  [61] ComplexHeatmap_2.28.0       rcdd_1.6-1                 
-    ##  [63] GenomicRanges_1.64.0        rjson_0.2.23               
-    ##  [65] boot_1.3-32                 gld_2.6.8                  
-    ##  [67] codetools_0.2-20            fastmatch_1.1-8            
-    ##  [69] picante_1.8.4               glue_1.8.1                 
-    ##  [71] ggvenn_0.1.19               data.table_1.18.6.1        
-    ##  [73] vctrs_0.7.3                 png_0.1-9                  
-    ##  [75] Rdpack_2.6.6                cellranger_1.1.0           
-    ##  [77] gtable_0.3.6                cachem_1.1.0               
-    ##  [79] zigg_0.0.2                  xfun_0.61                  
-    ##  [81] rbibutils_2.4.1             S4Arrays_1.12.0            
-    ##  [83] Rfast_2.1.5.2               Seqinfo_1.2.0              
-    ##  [85] reformulas_0.4.4            survival_3.8-6             
-    ##  [87] hillR_0.5.2                 geometry_0.5.2             
-    ##  [89] iterators_1.0.14            TH.data_1.1-5              
-    ##  [91] directlabels_2026.8.27      nlme_3.1-169               
-    ##  [93] ANCOMBC_2.14.0              phyloseq_1.56.0            
-    ##  [95] data.tree_1.2.0             bslib_0.12.0               
-    ##  [97] otel_0.2.0                  rpart_4.1.27               
-    ##  [99] colorspace_2.1-3            BiocGenerics_0.58.1        
-    ## [101] Hmisc_5.3-0                 ade4_1.7-24                
-    ## [103] nnet_7.3-20                 NADA_1.6-1.2               
-    ## [105] Exact_3.3                   tidyselect_1.2.1           
-    ## [107] compiler_4.6.1              microbiome_1.34.0          
-    ## [109] htmlTable_2.5.0             expm_1.0-1                 
-    ## [111] desc_1.4.3                  DelayedArray_0.38.2        
-    ## [113] checkmate_2.3.4             scales_1.4.0               
-    ## [115] quadprog_1.5-8              digest_0.6.39              
-    ## [117] minqa_1.2.8                 rmarkdown_2.32             
-    ## [119] XVector_0.52.0              htmltools_0.5.9            
-    ## [121] pkgconfig_2.0.3             jpeg_0.1-11                
-    ## [123] base64enc_0.1-6             lme4_2.0-6                 
-    ## [125] MatrixGenerics_1.24.0       fastmap_1.2.0              
-    ## [127] rlang_1.3.0                 GlobalOptions_0.1.4        
-    ## [129] htmlwidgets_1.6.4           zCompositions_1.6.2        
-    ## [131] ggh4x_0.3.1                 farver_2.1.2               
-    ## [133] jquerylib_0.1.4             zoo_1.9-1                  
-    ## [135] jsonlite_2.0.0              energy_1.7-12              
-    ## [137] BiocParallel_1.46.0         magrittr_2.0.5             
-    ## [139] Formula_1.2-6               patchwork_1.3.2            
-    ## [141] geosphere_1.6-8             Rcpp_1.1.2                 
-    ## [143] ape_5.8-1                   viridis_0.6.5              
-    ## [145] stringi_1.8.9               rootSolve_1.8.2.4          
-    ## [147] MASS_7.3-65                 plyr_1.8.9                 
-    ## [149] parallel_4.6.1              ggrepel_0.9.8              
-    ## [151] doSNOW_1.0.20               lmom_3.3                   
-    ## [153] deldir_2.0-4                Biostrings_2.80.2          
-    ## [155] splines_4.6.1               multtest_2.68.0            
-    ## [157] hms_1.1.4                   circlize_0.4.18            
-    ## [159] ALDEx2_1.44.0               igraph_2.3.3               
-    ## [161] ggpubr_1.0.0                ggsignif_0.6.4             
-    ## [163] reshape2_1.4.5              stats4_4.6.1               
-    ## [165] magic_1.6-1                 evaluate_1.0.5             
-    ## [167] latticeExtra_0.6-31         RcppParallel_6.2.1         
-    ## [169] nloptr_2.2.1                tzdb_0.5.0                 
-    ## [171] networkD3_0.4.1             clue_0.3-68                
-    ## [173] broom_1.0.13                e1071_1.7-17               
-    ## [175] rstatix_1.1.0               viridisLite_0.4.3          
-    ## [177] class_7.3-23                ragg_1.5.2                 
-    ## [179] gsl_2.1-9                   truncnorm_1.0-9            
-    ## [181] snow_0.4-4                  minpack.lm_1.2-4           
-    ## [183] lmerTest_3.2-1              IRanges_2.46.0             
-    ## [185] cluster_2.1.8.2             timechange_0.4.0
+    ##  [39] car_3.1-5                   Matrix_1.7-5               
+    ##  [41] interp_1.1-6                DescTools_0.99.60          
+    ##  [43] S4Vectors_0.50.3            abind_1.4-8                
+    ##  [45] lifecycle_1.0.5             multcomp_1.4-32            
+    ##  [47] yaml_2.3.12                 carData_3.0-6              
+    ##  [49] SummarizedExperiment_1.42.0 SparseArray_1.12.2         
+    ##  [51] grid_4.6.1                  crayon_1.5.3               
+    ##  [53] lattice_0.22-9              haven_2.5.5                
+    ##  [55] cowplot_1.2.0               magick_2.9.1               
+    ##  [57] pillar_1.11.1               knitr_1.52                 
+    ##  [59] ComplexHeatmap_2.28.0       rcdd_1.6-1                 
+    ##  [61] GenomicRanges_1.64.0        rjson_0.2.23               
+    ##  [63] boot_1.3-32                 gld_2.6.8                  
+    ##  [65] codetools_0.2-20            fastmatch_1.1-8            
+    ##  [67] picante_1.8.4               glue_1.8.1                 
+    ##  [69] ggvenn_0.1.19               data.table_1.18.6.1        
+    ##  [71] vctrs_0.7.3                 png_0.1-9                  
+    ##  [73] Rdpack_2.6.6                cellranger_1.1.0           
+    ##  [75] gtable_0.3.6                cachem_1.1.0               
+    ##  [77] zigg_0.0.2                  xfun_0.61                  
+    ##  [79] rbibutils_2.4.1             S4Arrays_1.12.0            
+    ##  [81] Rfast_2.1.5.2               Seqinfo_1.2.0              
+    ##  [83] reformulas_0.4.4            survival_3.8-6             
+    ##  [85] hillR_0.5.2                 geometry_0.5.2             
+    ##  [87] iterators_1.0.14            TH.data_1.1-5              
+    ##  [89] directlabels_2026.8.27      nlme_3.1-169               
+    ##  [91] ANCOMBC_2.14.0              data.tree_1.2.0            
+    ##  [93] bslib_0.12.0                otel_0.2.0                 
+    ##  [95] rpart_4.1.27                colorspace_2.1-3           
+    ##  [97] BiocGenerics_0.58.1         Hmisc_5.3-0                
+    ##  [99] nnet_7.3-20                 NADA_1.6-1.2               
+    ## [101] Exact_3.3                   tidyselect_1.2.1           
+    ## [103] compiler_4.6.1              htmlTable_2.5.0            
+    ## [105] expm_1.0-1                  desc_1.4.3                 
+    ## [107] DelayedArray_0.38.2         checkmate_2.3.4            
+    ## [109] scales_1.4.0                quadprog_1.5-8             
+    ## [111] digest_0.6.39               minqa_1.2.8                
+    ## [113] rmarkdown_2.32              XVector_0.52.0             
+    ## [115] htmltools_0.5.9             pkgconfig_2.0.3            
+    ## [117] jpeg_0.1-11                 base64enc_0.1-6            
+    ## [119] lme4_2.0-6                  MatrixGenerics_1.24.0      
+    ## [121] fastmap_1.2.0               rlang_1.3.0                
+    ## [123] GlobalOptions_0.1.4         htmlwidgets_1.6.4          
+    ## [125] zCompositions_1.6.2         ggh4x_0.3.1                
+    ## [127] farver_2.1.2                jquerylib_0.1.4            
+    ## [129] zoo_1.9-1                   jsonlite_2.0.0             
+    ## [131] energy_1.7-12               BiocParallel_1.46.0        
+    ## [133] magrittr_2.0.5              Formula_1.2-6              
+    ## [135] patchwork_1.3.2             geosphere_1.6-8            
+    ## [137] Rcpp_1.1.2                  ape_5.8-1                  
+    ## [139] viridis_0.6.5               stringi_1.8.9              
+    ## [141] rootSolve_1.8.2.4           MASS_7.3-65                
+    ## [143] plyr_1.8.9                  parallel_4.6.1             
+    ## [145] ggrepel_0.9.8               doSNOW_1.0.20              
+    ## [147] lmom_3.3                    deldir_2.0-4               
+    ## [149] splines_4.6.1               multtest_2.68.0            
+    ## [151] hms_1.1.4                   circlize_0.4.18            
+    ## [153] ALDEx2_1.44.0               igraph_2.3.3               
+    ## [155] ggpubr_1.0.0                ggsignif_0.6.4             
+    ## [157] reshape2_1.4.5              stats4_4.6.1               
+    ## [159] magic_1.6-1                 evaluate_1.0.5             
+    ## [161] latticeExtra_0.6-31         RcppParallel_6.2.1         
+    ## [163] nloptr_2.2.1                tzdb_0.5.0                 
+    ## [165] networkD3_0.4.1             clue_0.3-68                
+    ## [167] broom_1.0.13                e1071_1.7-17               
+    ## [169] rstatix_1.1.0               viridisLite_0.4.3          
+    ## [171] class_7.3-23                ragg_1.5.2                 
+    ## [173] gsl_2.1-9                   truncnorm_1.0-9            
+    ## [175] snow_0.4-4                  minpack.lm_1.2-4           
+    ## [177] lmerTest_3.2-1              IRanges_2.46.0             
+    ## [179] cluster_2.1.8.2             timechange_0.4.0

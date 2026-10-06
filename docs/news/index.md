@@ -11,6 +11,40 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+- [`abundance_bar_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_bar_plot.md)
+  and
+  [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md)
+  no longer need `metadata`: without it (or without `x_col`), they show
+  one bar or column per sample. Passing something that is not a table
+  (e.g. R’s [`table()`](https://rdrr.io/r/base/table.html) function by
+  mistake) now gives a clear error.
+- [`beta_test_table()`](https://steph0522.github.io/MicroBioMeta/reference/beta_test_table.md)
+  now returns the results as a data frame (columns `Df`, `SumOfSqs`,
+  `R2`, `F`, `Pr(>F)`, `Term`) instead of only an image. Printing it
+  draws the same table figure as before, and
+  [`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+  returns the figure as a ggplot to combine with other plots or save it.
+- [`beta_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_ord_plot.md)
+  and
+  [`beta_test_table()`](https://steph0522.github.io/MicroBioMeta/reference/beta_test_table.md)
+  gain `mc_samples` for `distance = "compositional"`: the number of
+  ALDEx2 Monte Carlo instances. `1` (default) uses one random instance,
+  as before, but only that one is drawn (about 15x faster; with the same
+  seed the values differ from the previous version, which drew 128 and
+  used the first). Values above 1 average the clr values over the
+  instances (e.g. `128`, ALDEx2’s default), which gives stable results
+  between runs.
+- Faster, with identical results:
+  [`corr_env_abund_plot()`](https://steph0522.github.io/MicroBioMeta/reference/corr_env_abund_plot.md)
+  computes the correlation p-values for all pairs at once (same values
+  as [`cor.test()`](https://rdrr.io/r/stats/cor.test.html)),
+  [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md)
+  reads each taxonomy string only once,
+  [`beta_turnover_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_turnover_plot.md)
+  computes the pairwise Hill partition with matrices (same values as
+  [`hillR::hill_taxa_parti_pairwise()`](https://rdrr.io/pkg/hillR/man/hill_taxa_parti_pairwise.html);
+  134 s -\> 1 s with 53 samples), and the package theme is built once
+  per session.
 - SILVA composite genus names of three or more genera are now shown as “
   group” (e.g. “Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium”
   becomes “Rhizobium group”) in
@@ -33,11 +67,22 @@ SIGNIFICANT USER-VISIBLE CHANGES
   [`cowplot::plot_grid()`](https://wilkelab.org/cowplot/reference/plot_grid.html)).
   Printing the returned object draws the heatmap.
 - [`aldex_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_heatmap_plot.md)
+  now filters taxa like
+  [`aldex_volcano_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_volcano_plot.md)
+  by default: `pval_threshold = 0.05` and `effect_threshold = 0`
+  (before: `|effect| >= 0.8` and no p-value filter), so both show the
+  same taxa.
+- Old argument names (e.g. `col_cond`, `env_table`, `index`) are no
+  longer accepted; functions no longer take `...`, so a misspelled or
+  old argument name gives R’s usual “unused argument” error.
+- [`aldex_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_heatmap_plot.md)
   now returns a grob (instead of a
   [`ComplexHeatmap::HeatmapList`](https://rdrr.io/pkg/ComplexHeatmap/man/HeatmapList.html))
   that can be combined with other plots
   (e.g. [`cowplot::plot_grid()`](https://wilkelab.org/cowplot/reference/plot_grid.html))
-  and is drawn when printed; new `draw` argument.
+  and is drawn when printed; new `draw` argument; `effect_colors` takes
+  3 plain colors and `pvalue_colors` a named vector (the previous forms
+  still work).
 - [`abundance_sankey_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_sankey_plot.md)
   no longer writes an HTML file by default (`output_file = NULL`) and
   gains `width`/`height`.

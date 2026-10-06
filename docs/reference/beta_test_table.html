@@ -58,11 +58,11 @@
 <span>  distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
 <span>  test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"permanova"</span>, <span class="st">"betadisper"</span><span class="op">)</span>,</span>
 <span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span>
+<span>  mc_samples <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  strata_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"beta_test_results.txt"</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"beta_test_results.txt"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -106,6 +106,16 @@ is passed straight to <code><a href="https://vegandevs.github.io/vegan/reference
 <dd><p>Number of permutations required</p></dd>
 
 
+<dt id="arg-mc-samples">mc_samples<a class="anchor" aria-label="anchor" href="#arg-mc-samples"></a></dt>
+<dd><p>Number of ALDEx2 Monte Carlo instances used when
+<code>distance = "compositional"</code>. With <code>1</code> (default) the clr values
+of one random instance are used: fast, but the result changes a little
+between runs (use <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>). With more, the clr values are
+averaged across instances, which gives an almost identical result in every
+run; <code>128</code> (ALDEx2's default) is suggested for final analyses, and
+takes longer. Ignored for other distances.</p></dd>
+
+
 <dt id="arg-strata-var">strata_var<a class="anchor" aria-label="anchor" href="#arg-strata-var"></a></dt>
 <dd><p>Group or variable within which permutations are restricted</p></dd>
 
@@ -123,24 +133,27 @@ Default <code>FALSE</code>.</p></dd>
 <dd><p>Character. File path/name for the saved table (used
 when <code>save_table = TRUE</code>). Default <code>"beta_test_results.txt"</code>.</p></dd>
 
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Old names of renamed arguments (<code>method</code>, <code>decimales</code>), still accepted
-with a warning. Any other extra argument is an error.</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A table with the results of R-squared, F and p value</p>
+    <p>A data frame (class <code>mbm_test_table</code>) with the test results:
+one row per term and the columns returned by <code><a href="https://vegandevs.github.io/vegan/reference/adonis.html" class="external-link">vegan::adonis2()</a></code>
+(<code>Df</code>, <code>SumOfSqs</code>, <code>R2</code>, <code>F</code>, <code>Pr(&gt;F)</code>) or
+<code><a href="https://vegandevs.github.io/vegan/reference/anova.cca.html" class="external-link">vegan::permutest()</a></code>, plus <code>Term</code>. Printing it (e.g. typing its
+name) draws the formatted table figure; <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">ggplot2::autoplot()</a></code>
+returns that figure as a <code>ggplot</code> object, e.g. to combine it with
+other plots (<code><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">cowplot::plot_grid()</a></code>, <code>patchwork</code>) or save it
+with <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The first column of <code>metadata</code> must hold the sample IDs;
 metadata rows are matched to the samples by ID, so their order doesn't
 matter. A precomputed distance is used as-is (<code>distance</code> is ignored).
-<code>distance = "compositional"</code> draws a random Monte Carlo instance
-from <code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>; call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before the
-function to make the result reproducible.</p>
+With <code>distance = "compositional"</code> and <code>mc_samples = 1</code>, the
+clr values come from one random Monte Carlo instance of
+<code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>; call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before the function
+to make the result reproducible, or use <code>mc_samples = 128</code>.</p>
     </div>
 
     <div class="section level2">

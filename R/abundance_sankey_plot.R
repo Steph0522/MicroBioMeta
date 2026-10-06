@@ -1,6 +1,6 @@
 #' Sankey diagram of relative abundances
 #'
-#' Generate a Sankey diagram from a tale with taxonomy
+#' Generate a Sankey diagram from a table with taxonomy
 #'
 #' @param table A data frame with taxa in rows and samples in columns. 
 #' The last column must be named `taxonomy`, containing full taxonomic strings.
@@ -148,8 +148,9 @@ abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
       tibble::column_to_rownames("Taxon")
   }
   
-  #resume levels  
-  phylum    <- get_level_data(otu_rel_parse, "phylum", c("k","p"))
+  #resume levels
+  bacterias <- get_level_data(otu_rel_parse, "kingdom", "k")
+  phylum   <- get_level_data(otu_rel_parse, "phylum", c("k","p"))
   class     <- get_level_data(otu_rel_parse, "class", c("k","p","c"))
   order     <- get_level_data(otu_rel_parse, "order", c("k","p","c","o"))
   family    <- get_level_data(otu_rel_parse, "family", c("k","p","c","o","f"))

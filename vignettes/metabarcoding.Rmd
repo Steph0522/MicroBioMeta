@@ -276,17 +276,11 @@ The `alpha_hill_corr_plot()` function calculates Hill numbers for different orde
 
 This is the first step before analyze alpha diversity metrics.
 
-For the bacteria 🦠, we can observed that at all orders of *q* there is a strong correlation with sequencing depth.
+For the bacteria 🦠, we can observed that at all orders of *q* there is a strong correlation with sequencing depth. When this happens, differences in diversity between samples may partly reflect differences in sequencing effort, so it is worth keeping in mind (or rarefying) before comparing groups.
 
 ```{r correlation-among-hill-numbers-16, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_bac)
 
-```
-
-But, for fungi 🍄 data this correlation is just strong and significative at *q*=0, it means for richness but not to the others *q* orders.
-
-```{r correlation-among-hill-numbers-17, warning=FALSE, fig.width=12, fig.height=4.5}
-alpha_hill_corr_plot(table = table_fung)
 ```
 
 ### 📊 Alpha diversity visualization
@@ -309,14 +303,16 @@ alpha_hill_plot(table = table_bac,
                 save_table = FALSE)
 ```
 
+The same function can swap the roles of the variables. For the fungi 🍄 we put the soil compartment on the x-axis and split the panels by treatment, which highlights how diversity changes from bulk soil to roots within each treatment:
+
 ```{r alpha-diversity-visualization-19, warning=FALSE, fig.width=9, fig.height=7}
 alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
-                x_col = "Treatment",
-                fill_col = "Treatment",
-                group_colors = treatment_colors,
-                facet_by = "Type_of_soil",
+                x_col = "Type_of_soil",
+                fill_col = "Type_of_soil",
+                facet_by = "Treatment",
                 facet_orientation = "horizontal",
+                show_legend = FALSE,
                 save_table = FALSE)
 ```
 
@@ -358,11 +354,11 @@ With `facet_orientation = "vertical"` the Hill orders (*q*) go in rows and the `
 ```{r alpha-diversity-visualization-vertical, warning=FALSE, fig.width=8, fig.height=8}
 alpha_hill_plot(table = table_fung,
                 metadata = metadata_fungi,
-                x_col = "Treatment",
-                fill_col = "Treatment",
-                group_colors = treatment_colors,
-                facet_by = "Type_of_soil",
+                x_col = "Type_of_soil",
+                fill_col = "Type_of_soil",
+                facet_by = "Treatment",
                 facet_orientation = "vertical",
+                show_legend = FALSE,
                 save_table = FALSE)
 ```
 
@@ -388,12 +384,12 @@ alpha_decay_plot(table = table_bac,
 ### 💻 Shared taxa between sample groups
 Another way to explore alpha diversity patterns is by examining **which taxa are shared or unique among groups of samples**. The function `venn_plot()` generates Venn diagrams that summarize the overlap of taxa between groups defined in the metadata.
 
-We generate a Venn diagram grouping samples according to the soil compartment.
+We generate a Venn diagram grouping samples according to the treatment (TC, TD and TED).
 
 ```{r shared-taxa-between-sample-groups-23, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
-                  merge_by = "Type_of_soil",   
+                  merge_by = "Treatment",   
                   min_prevalence = 0 )
 ```
 
@@ -423,7 +419,7 @@ table_genus <- collapse_table(
 venn_plot(
   table = table_genus$collapsed_table,
   metadata = metadata_fungi,
-  merge_by = "Type_of_soil"
+  merge_by = "Treatment"
 )
 ```
 
@@ -438,7 +434,7 @@ For example, the following diagram includes only taxa present in **at least 20% 
 ```{r filtering-taxa-by-prevalence-25, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
-                  merge_by = "Type_of_soil",   
+                  merge_by = "Treatment",   
                   min_prevalence = 0.2 )
 ```
 
@@ -448,9 +444,9 @@ The function also allows custom colors for the groups.
 ```{r customizing-group-colors-26, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
-                  merge_by = "Type_of_soil",   
+                  merge_by = "Treatment",   
                   min_prevalence = 0,   
-                  group_colors = c("#1B9E77", "#D95F02", "#7570B3") )
+                  group_colors = treatment_colors )
 ```
 
 #### 🖥️ Alternative plotting method
@@ -459,7 +455,7 @@ By default the function uses the package **ggvenn**, but it can also generate th
 ```{r alternative-plotting-method-27, fig.width=5, fig.height=4}
 venn_plot(table = table_fung,   
                   metadata = metadata_fungi,   
-                  merge_by = "Type_of_soil",   
+                  merge_by = "Treatment",   
                   method = "ggvenndiagram" )
 ```
 
@@ -475,17 +471,20 @@ The `group_col` parameter specifies the metadata column used to color the sample
 
 The `distance` argument defines the dissimilarity metric used to calculate beta diversity (e.g, **bray, jaccard, aitchsion**, etc), and `ordination` (options: **PCA, PCoA** or **NMDS**) specifies the ordination method applied to visualize the distances among samples.
 
-⚠️ **NOTE: `distance = "compositional"` uses one of the Monte Carlo instances that `ALDEx2` draws at random, so the result changes slightly from run to run. If you want to get the same result every time, we suggest running `set.seed()` before the function**, as in the examples below. The same applies to `beta_test_table(distance = "compositional")`, to the ALDEx2 functions and to the p-values of `cca_rda_biplot()`.
+⚠️ **NOTE: `distance = "compositional"` uses one of the Monte Carlo instances that `ALDEx2` draws at random, so the result changes slightly from run to run. If you want to get the same result every time, we suggest running `set.seed()` before the function**, as in the examples below. The same applies to `beta_test_table(distance = "compositional")`, to the ALDEx2 functions and to the p-values of `cca_rda_biplot()`. By default (`mc_samples = 1`) a single instance is used, which is fast; for final analyses we suggest `mc_samples = 128` (ALDEx2's default), which averages the clr values over 128 instances and gives almost the same result in every run, at the cost of a longer computation.
 
 ```{r ordination-of-community-composition-28, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 set.seed(123)
 beta_ord_plot(table = table_bac,
               metadata = metadata_bacteria,
                distance = "compositional",
+               mc_samples = 128,
               ordination = "PCA",
               group_col = "Type_of_soil",
               shape_col = "Treatment")
 ```
+
+For the fungi 🍄 we use a different combination: **Bray-Curtis** dissimilarity, which weights taxa by their abundance, with an **NMDS** ordination. NMDS starts from random configurations, so `set.seed()` is used here too:
 
 ```{r ordination-of-community-composition-29, fig.width=8, fig.height=6}
 set.seed(123)
@@ -493,8 +492,8 @@ beta_ord_plot(table = table_fung,
               metadata = metadata_fungi,
               group_col = "Type_of_soil",
               shape_col = "Treatment",
-              distance = "compositional",
-              ordination = "PCA")
+              distance = "bray",
+              ordination = "NMDS")
 
 ```
 
@@ -507,7 +506,7 @@ The `permutations` parameter determines the number of permutations used to estim
 
 ⚠️ **NOTE: Each function has the option save_* that export a table or an element obtain in each function**. 
 
-`distance` is set to `compositional` for both datasets, matching each one's PCA above, so the significance test evaluates the same notion of dissimilarity shown in the plot.
+`distance` matches the ordination of each dataset above (`compositional` for bacteria, `bray` for fungi), so the significance test evaluates the same notion of dissimilarity shown in the plot.
 
 ```{r statistical-tests-for-beta-diversity-30, fig.width=8, fig.height=4}
 set.seed(123)
@@ -515,6 +514,7 @@ beta_test_table(table = table_bac,
                 metadata= metadata_bacteria,
                 formula_str = "Type_of_soil*Treatment",
                 distance = "compositional",
+                mc_samples = 128,
                 test = "permanova",
                 permutations = 999)
 ```
@@ -524,7 +524,7 @@ set.seed(123)
 beta_test_table(table = table_fung,
                 metadata= metadata_fungi,
                 formula_str = "Type_of_soil*Treatment",
-                distance = "compositional",
+                distance = "bray",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -591,6 +591,8 @@ beta_dissimilarity_plot(table = table_bac,
 
 ```
 
+For the fungi 🍄 we look at a different component: `partition = "turnover"` keeps only the replacement of taxa between samples (not the differences due to one sample holding a subset of the other), here with the Sørensen family:
+
 ```{r pairwise-beta-diversity-visualization-36}
 groups_fung <- setdiff(unique(as.character(metadata_fungi$Type_of_soil)), "Roots")
 vs_roots_fung <- paste0(pmin(groups_fung, "Roots"), "_vs_", pmax(groups_fung, "Roots"))
@@ -606,8 +608,8 @@ beta_dissimilarity_plot(table = table_fung,
                        x_axis_title = "Samples",
                        show_x_labels = FALSE,
                        stat = "kruskal.test",
-                       partition = "shared",
-                       family = "jaccard",
+                       partition = "turnover",
+                       family = "sorensen",
                        save_table = FALSE)
 
 ```
@@ -718,11 +720,11 @@ aldex_volcano_plot(table = table_bac_compar,
 ```
 
 ### 📊 ANCOMBC2 as an alternative method
-`ancombc_plot()` provides an alternative to the ALDEx2-based functions above. This functions depends on the Bioconductor packages `ANCOMBC` and `phyloseq`:
+`ancombc_plot()` provides an alternative to the ALDEx2-based functions above. This function depends on the Bioconductor package `ANCOMBC`:
 
 ```{r ancombc2-as-an-alternative-method-43, eval=FALSE}
 # install.packages("BiocManager")
-BiocManager::install(c("ANCOMBC", "phyloseq"))
+BiocManager::install("ANCOMBC")
 ```
 
 `level` groups the table to a taxonomic rank before testing (default `"Genus"`), and `p_adjust_method`/`min_prevalence` control the multiple-testing correction and prevalence filter.
@@ -741,11 +743,11 @@ ancombc_plot(
 ```
 
 ### 📊 Example: Fungal data
-We follow the same procedure but visualize the results with a **heatmap**. This funtcions uses `ComplexHeatmap`. 
+We follow the same procedure, comparing **Bulk soil** and **Roots**, but visualize the results with a **heatmap**. This funtcions uses `ComplexHeatmap`. 
 
 ```{r example-fungal-data-45}
 metadata_fungi_compar <-  metadata_fungi %>%
-  filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Rhizosphere")
+  filter(Type_of_soil == "Bulk soil" | Type_of_soil =="Roots")
 
 table_fungi_compar <- table_fung[match(metadata_fungi_compar$SAMPLEID, colnames(table_fung))]
 
@@ -753,7 +755,10 @@ table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
 
 ```
 
-```{r example-fungal-data-46, fig.width=9, fig.height=4, message=FALSE, warning=FALSE}
+As in the volcano plot, by default the heatmap keeps the taxa with a Benjamini-Hochberg adjusted p-value below 0.05 (`pval_threshold = 0.05`, `p_adjust_method = "BH"`); `effect_threshold` can additionally filter by effect size. Each row shows the median clr values per group, with side annotations for the effect size, the p-value class and the difference between groups:
+
+```{r example-fungal-data-46, fig.width=9, fig.height=5, message=FALSE, warning=FALSE}
+set.seed(123)
 aldex_heatmap_plot(table = table_fung_compar,
                    metadata = metadata_fungi_compar,
                    group_col = "Type_of_soil")
@@ -780,7 +785,7 @@ ratios_bubble_plot(table = table_fung_compar,
            metadata = metadata_fungi_compar,
            group_col = "Type_of_soil",
            top_n = 20,
-           condition_A = "Rhizosphere",
+           condition_A = "Roots",
            condition_B = "Bulk soil")
 ```
 

@@ -93,19 +93,16 @@ ancombc_plot <- function(table,
                          y_axis_title      = NULL,
                          bar_colors        = c("#56B4E9", "#E69F00"),
                          save_table        = FALSE,
-                         table_filename    = "ancombc_results.txt",
-                         ...) {
+                         table_filename    = "ancombc_results.txt") {
 
   if (length(bar_colors) < 2)
     stop("`bar_colors` must have at least 2 colors.")
-  for (pkg in c("ANCOMBC", "phyloseq", "microbiome")) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      stop(
-        "Package '", pkg, "' is required but not installed.\n",
-        "Install it with: BiocManager::install(\"", pkg, "\")",
-        call. = FALSE
-      )
-    }
+  if (!requireNamespace("ANCOMBC", quietly = TRUE)) {
+    stop(
+      "Package 'ANCOMBC' is required but not installed.\n",
+      "Install it with: BiocManager::install(\"ANCOMBC\")",
+      call. = FALSE
+    )
   }
   if (!group_col %in% colnames(metadata))
     stop("Column ", group_col, " not found in metadata.")
@@ -122,7 +119,7 @@ ancombc_plot <- function(table,
 
   names(table)[tax_col] <- "taxonomy"
 
-  # buildo phyloseq object
+  # count matrix, parsed taxonomy and metadata (sample IDs as row names)
   table_counts <- table %>% dplyr::select(-taxonomy)
   otumat  <- as.matrix(table_counts)
 
@@ -147,15 +144,25 @@ ancombc_plot <- function(table,
     }
   }
 
-  OTU        <- phyloseq::otu_table(otumat, taxa_are_rows = TRUE)
-  TAX        <- phyloseq::tax_table(taxmat)
-  sampledata <- phyloseq::sample_data(meta_df)
+  # drop taxa with constant counts
+  keep   <- apply(otumat, 1, stats::var) > 0
+  otumat <- otumat[keep, , drop = FALSE]
+  taxmat <- taxmat[keep, , drop = FALSE]
 
-  physeq      <- phyloseq::phyloseq(OTU, TAX, sampledata)
-  physeq_filt <- phyloseq::prune_taxa(
-    apply(phyloseq::otu_table(physeq), 1, var) > 0, physeq
-  )
-  dat <- physeq_filt
+  # agglomerate to `level`, as microbiome::aggregate_taxa() does: missing
+  # names become "Unknown", and a name shared by different lineages (e.g.
+  # "uncultured") keeps its whole lineage joined by "_"
+  agg_mat <- NULL
+  if (!is.null(tax_rank)) {
+    lineage <- taxmat[, seq_len(match(tax_rank, colnames(taxmat))), drop = FALSE]
+    lineage[is.na(lineage)] <- "Unknown"
+    lineage[lineage[, tax_rank] == "Unknown", ] <- "Unknown"
+    lineage_id <- apply(lineage, 1, paste, collapse = "_")
+    agg_mat <- rowsum(otumat, lineage_id)
+    rank_of <- lineage[match(rownames(agg_mat), lineage_id), tax_rank]
+    single  <- rank_of %in% names(which(table(rank_of) == 1))
+    rownames(agg_mat)[single] <- rank_of[single]
+  }
 
   # run ancombc2
   fix_formula <- if (is.null(formula)) group_col else formula
@@ -167,9 +174,9 @@ ancombc_plot <- function(table,
   }
 
   ancombc_res <- ANCOMBC::ancombc2(
-    data          = dat,
-    assay_name    = "counts",
-    tax_level     = tax_rank,
+    data           = otumat,
+    aggregate_data = agg_mat,
+    meta_data      = meta_df,
     fix_formula   = fix_formula,
     rand_formula  = rand_formula,
     p_adj_method  = p_adjust_method,

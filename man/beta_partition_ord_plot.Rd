@@ -17,8 +17,7 @@ beta_partition_ord_plot(
   panel_labels = NULL,
   panel_label_bold = TRUE,
   save_table = FALSE,
-  table_filename = "SAMPLE1",
-  ...
+  table_filename = "SAMPLE1"
 )
 }
 \arguments{
@@ -58,9 +57,6 @@ panel tags.}
 \item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. Base name for the saved table file. Default \code{"SAMPLE1"}.}
-
-\item{...}{Old names of renamed arguments (\code{index}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{patchwork} object with the three partition ordinations

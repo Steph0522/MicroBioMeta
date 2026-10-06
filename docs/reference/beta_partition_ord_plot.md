@@ -20,8 +20,7 @@ beta_partition_ord_plot(
   panel_labels = NULL,
   panel_label_bold = TRUE,
   save_table = FALSE,
-  table_filename = "SAMPLE1",
-  ...
+  table_filename = "SAMPLE1"
 )
 ```
 
@@ -89,11 +88,6 @@ beta_partition_ord_plot(
 - table_filename:
 
   Character. Base name for the saved table file. Default `"SAMPLE1"`.
-
-- ...:
-
-  Old names of renamed arguments (`index`), still accepted with a
-  warning. Any other extra argument is an error.
 
 ## Value
 

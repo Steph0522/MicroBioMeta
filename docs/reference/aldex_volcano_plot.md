@@ -25,8 +25,7 @@ aldex_volcano_plot(
   label_size = 3.5,
   filter_uncultured = FALSE,
   save_table = FALSE,
-  table_filename = "aldex_pval_effect.txt",
-  ...
+  table_filename = "aldex_pval_effect.txt"
 )
 ```
 
@@ -126,12 +125,6 @@ aldex_volcano_plot(
 
   Character. File path/name for the saved table. Default
   `"aldex_pval_effect.txt"`.
-
-- ...:
-
-  Old names of renamed arguments (`col_cond`, `cutoff.pval`,
-  `adjusted_p`), still accepted with a warning. Any other extra argument
-  is an error.
 
 ## Value
 

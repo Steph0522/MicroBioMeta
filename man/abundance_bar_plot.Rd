@@ -6,10 +6,10 @@
 \usage{
 abundance_bar_plot(
   table,
-  metadata,
+  metadata = NULL,
   taxonomy_db = "silva",
   level = "genus",
-  x_col,
+  x_col = NULL,
   facet_by = NULL,
   width_equal = FALSE,
   label = "taxonomy",
@@ -22,16 +22,16 @@ abundance_bar_plot(
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
-  table_filename = "relative_abundance.txt",
-  ...
+  table_filename = "relative_abundance.txt"
 )
 }
 \arguments{
 \item{table}{A data frame with taxa in rows and samples in columns.
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}). Optional: if
+\code{NULL} (default), one bar is drawn per sample.}
 
 \item{taxonomy_db}{Character. Reference taxonomy database. One of
 \code{"silva"} (default), \code{"gg2"} (Greengenes2; also accepts \code{"gg"} /
@@ -42,7 +42,8 @@ Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 \code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default), or
 \code{"species"}. Case-insensitive.}
 
-\item{x_col}{Character. Column name in \code{metadata} to use for the x-axis (e.g., environment, condition).}
+\item{x_col}{Character. Column name in \code{metadata} to use for the x-axis
+(e.g., environment, condition). If \code{NULL} (default), one bar per sample.}
 
 \item{facet_by}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment). Default is \code{NULL}.}
 

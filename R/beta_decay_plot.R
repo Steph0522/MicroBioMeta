@@ -1,29 +1,21 @@
-#' Distance-decay of community similarity
+#' Distance-decay of community similarity plot
 #'
 #' Computes pairwise community dissimilarity (Jaccard, Horn/Morisita-Horn,
-#' Bray-Curtis, or other \code{vegan::vegdist} methods) and pairwise
-#' geographic distances (Haversine formula, km) from sample coordinates
+#' Bray-Curtis, or other) and pairwise geographic distances from sample coordinates
 #' stored in \code{metadata}. It runs a Mantel test to evaluate the
-#' relationship between community similarity (1 - dissimilarity) and
-#' geographic distance, fits a linear regression, and returns a scatter plot
-#' annotated with the Mantel statistic, p-value, and regression slope.
+#' relationship between community similarity and geographic distance
 #'
-#' @param table A data frame with taxa as rows and samples as columns.
-#'   Must contain a column named \code{taxonomy} (any position).
-#' @param metadata A data frame whose \strong{first column} contains sample
-#'   identifiers matching the column names of \code{table}. Must also contain
-#'   latitude and longitude columns (see \code{lat_col} and \code{lon_col}).
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
+#'  Must also contain latitude and longitude columns
 #' @param lat_col Character. Name of the latitude column in \code{metadata}
 #'   (decimal degrees).
 #' @param lon_col Character. Name of the longitude column in \code{metadata}
 #'   (decimal degrees).
 #' @param group_col Character or \code{NULL}. Optional categorical column in
-#'   \code{metadata} (e.g. \code{"estado2"}). When supplied, sample pairs from
-#'   different groups are dropped, and a separate Mantel test, regression
-#'   line, and annotation are computed \strong{within each group} (matching
-#'   what you'd get running \code{beta_decay_plot} once per group), all drawn
-#'   on the same plot colored by group. When \code{NULL} (default), a single
-#'   global Mantel test is run on all samples, as before.
+#'   \code{metadata} 
 #' @param palette Only used when \code{group_col} is supplied. Either a
 #'   palette name (\code{"colorb"} default, \code{"grey"}, \code{"viridis"},
 #'   \code{"brewer"}) or a vector of fixed colors, one per group level.
@@ -39,11 +31,9 @@
 #' @param show_lm_stats Logical. If \code{TRUE} (default), adds R2 to the
 #'   annotation label in addition to the Mantel r, p-value, and slope.
 #' @param point_color Character. Color of scatter points. Default
-#'   \code{"black"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}.
+#'   \code{"black"}.
 #' @param line_color Character. Color of the regression line. Default
-#'   \code{"#D55E00"}, matching \code{alpha_hill_corr_plot}/\code{alpha_decay_plot}'s
-#'   ungrouped color scheme. The confidence-interval ribbon uses that same
-#'   scheme's fill, \code{"#56B4E9"}.
+#'   \code{"#D55E00"}.
 #' @param point_size Numeric. Size of scatter points. Default \code{1}.
 #' @param point_alpha Numeric (0-1). Transparency of scatter points.
 #'   Default \code{0.5}.
@@ -52,8 +42,7 @@
 #' @param x_axis_title Character. X-axis label.
 #'   Default \code{"Spatial distance (km)"}.
 #' @param y_axis_title Character or \code{NULL}. Y-axis label. If \code{NULL}
-#'   (default), it is built automatically from the \code{distance} method,
-#'   e.g. \code{"Jaccard similarity (1 - dissimilarity)"}.
+#'   (default), it is built automatically.
 #' @param title Character or \code{NULL}. Plot title. Default
 #'   \code{NULL} (no title).
 #'
@@ -68,10 +57,6 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # beta_decay_plot requires lat/lon columns, which this bundled example
-#' # dataset doesn't have. These coordinates are synthetic (one made-up
-#' # point per 'Loc' site code) purely to demonstrate the function - use
-#' # your own metadata's real coordinates for an actual analysis.
 #' loc_coords <- data.frame(
 #'   Loc = 1:7,
 #'   lat = 19.0 + seq(0, 0.6, length.out = 7),
@@ -127,9 +112,9 @@ beta_decay_plot <- function(
     title           = NULL
 ) {
 
-  # ---- 0. Validate inputs ----
+  # inputs
   method   <- match.arg(tolower(method), c("spearman", "pearson"))
-  distance <- tolower(distance)  # vegan::vegdist matches names case-sensitively
+  distance <- tolower(distance) 
 
   if (!lat_col %in% colnames(metadata))
     stop("`lat_col` '", lat_col, "' not found in metadata.")
@@ -141,7 +126,6 @@ beta_decay_plot <- function(
   requireNamespace("vegan",     quietly = TRUE)
   requireNamespace("geosphere", quietly = TRUE)
 
-  # ---- 1. Extract and align abundance table ----
   sample_col <- colnames(metadata)[1]
   tax_idx    <- grep("^taxonomy$", colnames(table), ignore.case = TRUE)
   if (length(tax_idx) != 1)
@@ -154,33 +138,27 @@ beta_decay_plot <- function(
   if (length(common) == 0)
     stop("No matching sample names between table and metadata.")
 
-  # samples x taxa  (vegan expects rows = samples)
   otu_t        <- t(as.matrix(table[, common, drop = FALSE]))
   mode(otu_t)  <- "numeric"
 
-  # align metadata rows to the same order as otu_t
   meta_sub <- metadata[as.character(metadata[[sample_col]]) %in% common, ,
                        drop = FALSE]
   meta_sub <- meta_sub[match(rownames(otu_t),
                              as.character(meta_sub[[sample_col]])), ,
                        drop = FALSE]
 
-  # groups, aligned to the same sample order as otu_t/dis_mat/geo_mat
   groups <- if (!is.null(group_col)) as.character(meta_sub[[group_col]]) else NULL
 
-  # ---- 2. Pairwise dissimilarity matrix ----
   dis_mat <- vegan::vegdist(otu_t, method = distance)
 
-  # ---- 3. Geographic distance matrix (Haversine, km) ----
   coords  <- cbind(
     as.numeric(meta_sub[[lon_col]]),
     as.numeric(meta_sub[[lat_col]])
   )
-  geo_mat <- geosphere::distm(coords) / 1000   # metres -> km
+  geo_mat <- geosphere::distm(coords) / 1000
   rownames(geo_mat) <- rownames(otu_t)
   colnames(geo_mat) <- rownames(otu_t)
 
-  # ---- 4. Build long-format pairwise data frame ----
   snames       <- rownames(otu_t)
   dis_full     <- as.matrix(dis_mat)
 
@@ -194,8 +172,7 @@ beta_decay_plot <- function(
   )
   pairs$similarity <- 1 - pairs$dissim
 
-  # With group_col, keep only within-group pairs (cross-group pairs aren't
-  # part of any single group's Mantel test / regression).
+
   if (!is.null(group_col)) {
     g1 <- groups[idx[, 1]]
     g2 <- groups[idx[, 2]]
@@ -203,10 +180,8 @@ beta_decay_plot <- function(
     pairs <- pairs[!is.na(pairs$group), ]
   }
 
-  # remove pairs with NA coordinates
   pairs <- pairs[stats::complete.cases(pairs$similarity, pairs$geo_km), ]
 
-  # ---- 5. Mantel test + regression (global, or one per group) ----
   method_sym <- paste0(tools::toTitleCase(method), " r")
 
   .fmt_label <- function(mantel_res, slope, r2) {
@@ -223,8 +198,7 @@ beta_decay_plot <- function(
     }
   }
 
-  # samp_idx: indices (into dis_full/geo_mat) of the samples belonging to
-  # this group (or all samples, when ungrouped).
+
   .group_stats <- function(samp_idx, sub_pairs) {
     dis_sub <- stats::as.dist(dis_full[samp_idx, samp_idx, drop = FALSE])
     geo_sub <- stats::as.dist(geo_mat[samp_idx, samp_idx, drop = FALSE])
@@ -280,7 +254,6 @@ beta_decay_plot <- function(
       as.data.frame()
   }
 
-  # ---- 6. Y-axis label ----
   dist_labels <- c(
     jaccard    = "Jaccard",
     horn       = "Horn",
@@ -296,8 +269,8 @@ beta_decay_plot <- function(
   y_lab     <- if (!is.null(y_axis_title)) y_axis_title else
     paste0(dist_name, " similarity (1 - dissimilarity)")
 
-  # ---- 7. Build ggplot ----
-  aes_pts <- if (is.null(group_col)) {
+#plot
+    aes_pts <- if (is.null(group_col)) {
     ggplot2::aes(x = geo_km, y = similarity)
   } else {
     ggplot2::aes(x = geo_km, y = similarity, color = group)

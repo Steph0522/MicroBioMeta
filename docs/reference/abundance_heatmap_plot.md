@@ -1,14 +1,14 @@
 # Heatmap of relative abundance
 
-This function create a heatmap to visualize the relative abundance of
-ASV's, features o bacterial groups.
+Creates a heatmap using ComplexHeatmap to visualize the relative
+abundance of features or ASV's.
 
 ## Usage
 
 ``` r
 abundance_heatmap_plot(
   table,
-  metadata,
+  metadata = NULL,
   condition1 = NULL,
   condition2 = NULL,
   condition3 = NULL,
@@ -37,12 +37,14 @@ abundance_heatmap_plot(
 
 - table:
 
-  Data frame with taxonomy, where, the columns are the samples and rows
-  are ASV's or taxa.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  Data frame of characteristics or important information of the samples
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`). Optional: if `NULL`
+  (default), the heatmap has no sample annotations.
 
 - condition1:
 
@@ -111,20 +113,12 @@ abundance_heatmap_plot(
 - cell_size:
 
   Numeric or `NULL`. Side, in millimeters, of each (square) heatmap
-  cell. The Phylum and condition annotations use the same size, so every
-  tile in the figure has the same shape. If `NULL` (default), the
-  largest size that fits the current plotting device is used; when there
-  are too many samples for square cells to leave room for readable row
-  labels, cells keep the available width but are made just tall enough
-  for the labels. Increase the figure width (e.g. `fig.width` in R
-  Markdown) to get squarer cells with many samples.
+  cell.
 
 - annotation_height:
 
   Numeric or `NULL`. Height, in millimeters, of each column annotation
-  bar (condition1/condition2/condition3). If `NULL` (default), it
-  matches the cell height, so annotation tiles have exactly the same
-  size and shape as the heatmap cells.
+  bar (condition1/condition2/condition3).
 
 - save_table:
 
@@ -180,7 +174,6 @@ it can also be combined with other plots (e.g.
 ``` r
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
-
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
@@ -201,4 +194,28 @@ abundance_heatmap_plot(
 #> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
 #> 
 #> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
+
+# \donttest{
+heat <- abundance_heatmap_plot(
+  table                  = table,
+  metadata               = metadata,
+  condition1             = "Location",
+  condition2             = "Treatment",
+  top_n                  = 20,
+  show_column_names      = FALSE,
+  colors_condition1      = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+  colors_condition2      = c(Control          = "#CC6677",
+                             Moderate_drought = "#332288",
+                             Severe_drought   = "#999933"),
+  name_legend_condition1 = "Compartment",
+  feature_prefix         = "ASV",
+  max_label_length       = 30,
+  draw                   = FALSE
+)
+#> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
+#> 
+#> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
+heat  # printing the returned object draws the heatmap
+
+# }
 ```

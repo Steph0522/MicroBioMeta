@@ -295,6 +295,16 @@ alpha_hill_plot <- function(
       LETTERS[seq_len(n_rows_grid * n_cols_grid)]
     }
 
+    # same theme for every panel: built once, outside build_cell()
+    cell_theme <- .mbm_theme(
+      legend_position = legend_position,
+      extra = ggplot2::theme(
+        panel.grid   = ggplot2::element_blank(),
+        axis.text.x  = .mbm_x_text(x_label_angle),
+        axis.text.y  = ggplot2::element_text(size = 9, color = "black")
+      )
+    )
+
     build_cell <- function(row_idx, col_idx) {
       q_val  <- if (q_in_rows) row_levels[row_idx] else col_levels[col_idx]
       fb_val <- if (has_facet_by) row_levels[row_idx] else NULL
@@ -312,14 +322,7 @@ alpha_hill_plot <- function(
           y = if (q_in_rows || col_idx == 1) y_title_cell else NULL,
           fill = legend_title
         ) +
-        .mbm_theme(
-          legend_position = legend_position,
-          extra = ggplot2::theme(
-            panel.grid   = ggplot2::element_blank(),
-            axis.text.x  = .mbm_x_text(x_label_angle),
-            axis.text.y  = ggplot2::element_text(size = 9, color = "black")
-          )
-        )
+        cell_theme
       if (!is.null(aspect_ratio)) {
         p_cell <- p_cell + ggplot2::theme(aspect.ratio = aspect_ratio)
       }

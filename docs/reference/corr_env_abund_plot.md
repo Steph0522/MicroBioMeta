@@ -27,8 +27,7 @@ corr_env_abund_plot(
   p_adjust_method = "BH",
   x_label_angle = 45,
   save_table = FALSE,
-  table_filename = "corr.txt",
-  ...
+  table_filename = "corr.txt"
 )
 ```
 
@@ -139,11 +138,6 @@ corr_env_abund_plot(
 - table_filename:
 
   Character. Name of the output file used when save_table = TRUE.
-
-- ...:
-
-  Old names of renamed arguments (`env_table`, `cond_vect`), still
-  accepted with a warning. Any other extra argument is an error.
 
 ## Value
 

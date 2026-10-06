@@ -28,8 +28,6 @@
 #' @param save_table Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.
 #' @param table_filename Character. Base name for the saved table file. Default \code{"SAMPLE1"}.
 #'
-#' @param ... Old names of renamed arguments (\code{index}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A \code{patchwork} object with the three partition ordinations
 #'   (Jaccard/Sorensen, turnover, nestedness). It can still be modified:
 #'   \code{p & theme(...)} changes every panel, \code{p[[2]] + labs(...)} one.
@@ -63,11 +61,7 @@ beta_partition_ord_plot <- function(table, metadata,
                                 panel_labels = NULL,
                                 panel_label_bold = TRUE,
                                 save_table = FALSE,
-                                table_filename = "SAMPLE1",
-                                ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(index = "family"), "beta_partition_ord_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+                                table_filename = "SAMPLE1") {
 
 
   family <- tolower(family)               # accept "Jaccard"/"Sorensen" too

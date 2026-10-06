@@ -8,8 +8,8 @@ aldex_heatmap_plot(
   table,
   metadata,
   group_col,
-  effect_threshold = 0.8,
-  pval_threshold = NULL,
+  effect_threshold = 0,
+  pval_threshold = 0.05,
   p_adjust_method = "BH",
   cluster_rows = FALSE,
   cluster_columns = FALSE,
@@ -20,24 +20,26 @@ aldex_heatmap_plot(
   group_colors = NULL,
   save_table = FALSE,
   table_filename = "aldex_pval_effect.txt",
-  draw = TRUE,
-  ...
+  draw = TRUE
 )
 }
 \arguments{
-\item{table}{A data frame with taxa in rows and samples in columns. The last column must be named \code{taxonomy}, containing full taxonomic strings.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing sample metadata. Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{group_col}{Character. Name of the column in \code{metadata} that
 defines the two groups to compare. Exactly two unique values are required.}
 
-\item{effect_threshold}{Numeric. Minimum absolute effect size to retain
-(default \code{0.8}).}
+\item{effect_threshold}{Numeric. Minimum absolute effect size to retain.
+Default \code{0} (no effect-size filter), so by default the heatmap shows
+the same taxa that \code{aldex_volcano_plot} colors as significant.}
 
 \item{pval_threshold}{Numeric or NULL. Maximum p-value to retain (adjusted
-or not, depending on \code{p_adjust_method}). If NULL (default) only
-\code{effect_threshold} is applied.}
+or not, depending on \code{p_adjust_method}). Default \code{0.05}. If
+NULL only \code{effect_threshold} is applied.}
 
 \item{p_adjust_method}{\code{"BH"} (default) or \code{"none"}: whether
 \code{pval_threshold} and the p-value annotation use ALDEx2's
@@ -91,9 +93,6 @@ when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
 \item{draw}{Logical. If \code{TRUE} (default), the heatmap is drawn on the
 current device. Use \code{FALSE} to only build the returned grob without
 drawing it.}
-
-\item{...}{Old names of renamed arguments (\code{col_cond}, \code{pvalue_BH}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 Invisibly, a \code{gTree} (grid grob) with the heatmap. Printing it
@@ -113,15 +112,15 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
 # group_col must have exactly two groups; Location has two
-# (Rhizosphere and Roots) in the bundled example data. effect_threshold
-# alone (no pval_threshold) is used here since this small (46-sample) dataset
-# rarely has taxa that pass both an effect-size and a significance
-# threshold at once - combine both for a stricter, real analysis.
+# (Rhizosphere and Roots) in the bundled example data. Here taxa are
+# filtered by effect size alone (pval_threshold = NULL), since this small
+# (46-sample) dataset has few taxa with significant p-values.
 aldex_heatmap_plot(
   table            = table,
   metadata         = metadata,
-  group_col         = "Location",
-  effect_threshold = 0.5
+  group_col        = "Location",
+  effect_threshold = 0.5,
+  pval_threshold   = NULL
 )
 
 # All the colors have colorblind-friendly defaults, but each can be set by
@@ -134,6 +133,7 @@ aldex_heatmap_plot(
   metadata         = metadata,
   group_col        = "Location",
   effect_threshold = 0.5,
+  pval_threshold   = NULL,
   group_colors     = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
   effect_colors    = c("#0072B2", "white", "#E69F00"),
   pvalue_colors    = c("<0.001" = "black", "<0.01" = "grey30",

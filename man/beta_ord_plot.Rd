@@ -8,6 +8,7 @@ beta_ord_plot(
   table,
   metadata,
   distance = "compositional",
+  mc_samples = 1,
   ordination = "PCA",
   group_col = NULL,
   palette = "colorb",
@@ -30,6 +31,14 @@ beta_ord_plot(
 \code{"jaccard"}, \code{"sorensen"}, \code{"compositional"} (default; CLR/Aitchison via
 ALDEx2), \code{"aitchison"}, or \code{"robust.aitchison"}. Case-insensitive.
 Note: \code{ordination = "PCA"} requires \code{distance = "compositional"}.}
+
+\item{mc_samples}{Number of ALDEx2 Monte Carlo instances used when
+\code{distance = "compositional"}. With \code{1} (default) the clr values
+of one random instance are used: fast, but the result changes a little
+between runs (use \code{set.seed()}). With more, the clr values are
+averaged across instances, which gives an almost identical result in every
+run; \code{128} (ALDEx2's default) is suggested for final analyses, and
+takes longer. Ignored for other distances.}
 
 \item{ordination}{Ordination method: one of \code{"PCA"} (default), \code{"PCoA"}, or
 \code{"NMDS"}. Case-insensitive.}
@@ -91,9 +100,10 @@ This function computes beta diversity using several distance metrics and ordinat
 of color and shape aesthetics. It also supports compositional transformation via ALDEx2.
 }
 \details{
-\code{distance = "compositional"} draws a random Monte Carlo
-instance from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before
-the function to make the result reproducible.
+With \code{distance = "compositional"} and \code{mc_samples = 1},
+the clr values come from one random Monte Carlo instance of
+\code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
+to make the result reproducible, or use \code{mc_samples = 128}.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

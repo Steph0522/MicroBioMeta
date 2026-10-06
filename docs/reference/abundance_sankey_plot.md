@@ -1,6 +1,6 @@
-# Generate a Sankey diagram from an OTU table with taxonomic information
+# Sankey diagram of relative abundances
 
-Generate a Sankey diagram from an OTU table with taxonomic information
+Generate a Sankey diagram from a table with taxonomy
 
 ## Usage
 
@@ -22,8 +22,8 @@ abundance_sankey_plot(
 
 - table:
 
-  Data frame with one column for taxonomy and the other columns
-  correspond to samples.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - output_file:
 
@@ -84,5 +84,5 @@ abundance_sankey_plot(
   taxRanks     = c("P", "C", "G", "S"),
   taxonomy_db  = "silva"
 )
-#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\Rtmpa6aw2e/sankey_output.html
+#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\Rtmpkxiywq/sankey_output.html
 ```

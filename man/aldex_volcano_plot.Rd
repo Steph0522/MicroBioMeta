@@ -23,8 +23,7 @@ aldex_volcano_plot(
   label_size = 3.5,
   filter_uncultured = FALSE,
   save_table = FALSE,
-  table_filename = "aldex_pval_effect.txt",
-  ...
+  table_filename = "aldex_pval_effect.txt"
 )
 }
 \arguments{
@@ -81,9 +80,6 @@ keeping the volcano plot's text annotations to named taxa. Default
 shown so that positive means higher in \code{cond}.}
 
 \item{table_filename}{Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.}
-
-\item{...}{Old names of renamed arguments (\code{col_cond}, \code{cutoff.pval}, \code{adjusted_p}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ggplot} object with the selected plot.

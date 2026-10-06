@@ -190,6 +190,80 @@ columna a su <code>SampleID</code>:</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Polygon_num <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"Pol"</span>, <span class="st">""</span>, <span class="va">Polygon</span><span class="op">)</span><span class="op">)</span>, Site <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">Site</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">coord_meta</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Polygon_num"</span>, <span class="st">"Site"</span>, <span class="st">"Transecto"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Site <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">Site</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="empezar-desde-un-objeto-phyloseq-o-treesummarizedexperiment">🔄 Empezar desde un objeto phyloseq o TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#empezar-desde-un-objeto-phyloseq-o-treesummarizedexperiment"></a>
+</h3>
+<p><code>MicroBioMeta</code> trabaja con tablas simples, pero si tus
+datos ya están en un objeto <code>phyloseq</code> o en un
+<code>TreeSummarizedExperiment</code> (el contenedor de Bioconductor que
+usa la familia de paquetes <a href="https://bioconductor.org/packages/mia/" class="external-link"><code>mia</code></a>),
+<code><a href="../reference/from_phyloseq.html">from_phyloseq()</a></code> y <code><a href="../reference/from_tse.html">from_tse()</a></code> los convierten en
+la <code>table</code> (con la columna <code>taxonomy</code> al final) y
+la <code>metadata</code> (con <code>SAMPLEID</code> primero) que usamos
+en esta viñeta.</p>
+<p>Para mostrarlo, guardamos la tabla de Kraken2 en un
+<code>TreeSummarizedExperiment</code>, con una columna de taxonomía por
+rango, como lo haría <code>mia</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">table_meta</span><span class="op">[</span>, <span class="va">metadata_meta</span><span class="op">$</span><span class="va">SAMPLEID</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate.html" class="external-link">separate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"[kpcofgs]__"</span>, <span class="st">""</span>, <span class="va">table_meta</span><span class="op">$</span><span class="va">taxonomy</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="va">taxonomy</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, <span class="st">"Genus"</span>, <span class="st">"Species"</span><span class="op">)</span>,</span>
+<span>  sep <span class="op">=</span> <span class="st">"; "</span>, fill <span class="op">=</span> <span class="st">"right"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">table_meta</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">samples</span><span class="op">$</span><span class="va">SAMPLEID</span></span>
+<span></span>
+<span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">TreeSummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TreeSummarizedExperiment/man/TreeSummarizedExperiment-constructor.html" class="external-link">TreeSummarizedExperiment</a></span><span class="op">(</span></span>
+<span>  assays  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span><span class="op">)</span>,</span>
+<span>  rowData <span class="op">=</span> <span class="va">ranks</span>,</span>
+<span>  colData <span class="op">=</span> <span class="va">samples</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">tse</span></span></code></pre></div>
+<pre><code><span><span class="co">## class: TreeSummarizedExperiment </span></span>
+<span><span class="co">## dim: 87 36 </span></span>
+<span><span class="co">## metadata(0):</span></span>
+<span><span class="co">## assays(1): counts</span></span>
+<span><span class="co">## rownames(87): 101028 36050 ... 208348 27350</span></span>
+<span><span class="co">## rowData names(7): Kingdom Phylum ... Genus Species</span></span>
+<span><span class="co">## colnames(36): P1S1T1 P1S1T2 ... P6S2T2 P6S2T3</span></span>
+<span><span class="co">## colData names(34): SAMPLEID id_sequence ... Latitude Longitude</span></span>
+<span><span class="co">## reducedDimNames(0):</span></span>
+<span><span class="co">## mainExpName: NULL</span></span>
+<span><span class="co">## altExpNames(0):</span></span>
+<span><span class="co">## rowLinks: NULL</span></span>
+<span><span class="co">## rowTree: NULL</span></span>
+<span><span class="co">## colLinks: NULL</span></span>
+<span><span class="co">## colTree: NULL</span></span></code></pre>
+<p><code><a href="../reference/from_tse.html">from_tse()</a></code> regresa una lista con los dos data
+frames:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/from_tse.html">from_tse</a></span><span class="op">(</span><span class="va">tse</span>, assay_name <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mbm</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">mbm</span><span class="op">$</span><span class="va">table</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##        P1S1T1 P1S1T2</span></span>
+<span><span class="co">## 101028   1985   4341</span></span>
+<span><span class="co">## 36050     236    231</span></span>
+<span><span class="co">## 56646     175    151</span></span>
+<span><span class="co">##                                                                                                                  taxonomy</span></span>
+<span><span class="co">## 101028 k__Eukaryota; p__Ascomycota; c__Sordariomycetes; o__Hypocreales; f__Nectriaceae; g__Fusarium; s__pseudograminearum</span></span>
+<span><span class="co">## 36050               k__Eukaryota; p__Ascomycota; c__Sordariomycetes; o__Hypocreales; f__Nectriaceae; g__Fusarium; s__poae</span></span>
+<span><span class="co">## 56646          k__Eukaryota; p__Ascomycota; c__Sordariomycetes; o__Hypocreales; f__Nectriaceae; g__Fusarium; s__venenatum</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mbm</span><span class="op">$</span><span class="va">metadata</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##   SAMPLEID id_sequence id_metagenome Poligono Sitio</span></span>
+<span><span class="co">## 1   P1S1T1         111           140        1     1</span></span>
+<span><span class="co">## 2   P1S1T2         112           152        1     1</span></span>
+<span><span class="co">## 3   P1S1T3         113           164        1     1</span></span></code></pre>
+<p>y se pueden usar directo en cualquier función, por ejemplo
+<code>abundance_bar_plot(table = mbm$table, metadata = mbm$metadata, ...)</code>.</p>
+<p>Con un objeto <code>phyloseq</code> funciona igual:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/from_phyloseq.html">from_phyloseq</a></span><span class="op">(</span><span class="va">physeq</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="exploración-de-la-composición">📊 Exploración de la composición<a class="anchor" aria-label="anchor" href="#exploraci%C3%B3n-de-la-composici%C3%B3n"></a>
@@ -200,7 +274,7 @@ columna a su <code>SampleID</code>:</p>
 <p>Misma función que en la viñeta de amplicón; la única diferencia es
 <code>taxonomy_db = "Kraken2"</code>, que le indica a la lógica de
 parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                  taxonomy_db <span class="op">=</span> <span class="st">"Kraken2"</span>,</span>
@@ -218,13 +292,16 @@ parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.</p>
 </h3>
 <p>Los taxones de Kraken2/Bracken no son ASVs, así que aquí se usa
 <code>feature_prefix = "Taxon"</code> en vez del prefijo
-<code>"ASV"</code> por defecto para las etiquetas de fila.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code>"ASV"</code> por defecto para las etiquetas de fila.
+<code>condition2</code> agrega una segunda barra de anotación, aquí el
+sitio de muestreo dentro de cada polígono.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                  metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                  condition1 <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
+<span>                  condition2 <span class="op">=</span> <span class="st">"Site"</span>,</span>
 <span>                  feature_prefix <span class="op">=</span> <span class="st">"Taxon"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/heatmap-de-abundancia-8-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
@@ -232,20 +309,16 @@ parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.</p>
 <div class="section level2">
 <h2 id="diversidad-alfa">📊 Diversidad alfa<a class="anchor" aria-label="anchor" href="#diversidad-alfa"></a>
 </h2>
-<div class="section level3">
-<h3 id="correlación-entre-números-de-hill">📈 Correlación entre números de Hill<a class="anchor" aria-label="anchor" href="#correlaci%C3%B3n-entre-n%C3%BAmeros-de-hill"></a>
-</h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/correlaci-n-entre-n-meros-de-hill-9-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-</div>
+<p>Como en la viñeta de metabarcoding, primero se puede usar
+<code>alpha_hill_corr_plot(table = table_meta)</code> para revisar si
+los números de Hill dependen de la profundidad de secuenciación.</p>
 <div class="section level3">
 <h3 id="visualización-de-diversidad-alfa">📊 Visualización de diversidad alfa<a class="anchor" aria-label="anchor" href="#visualizaci%C3%B3n-de-diversidad-alfa"></a>
 </h3>
 <p><code>fill_col</code> es igual a <code>x_col</code> aquí, así que la
 leyenda solo repetiría las etiquetas del eje x -
 <code>show_legend = FALSE</code> la quita.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                x_col <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
@@ -266,7 +339,7 @@ diferencias entre bloques.</p>
 <div class="section level3">
 <h3 id="diversidad-alfa-a-lo-largo-de-un-gradiente-continuo">Diversidad alfa a lo largo de un gradiente continuo<a class="anchor" aria-label="anchor" href="#diversidad-alfa-a-lo-largo-de-un-gradiente-continuo"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_decay_plot.html">alpha_decay_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                 metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                 cont_var <span class="op">=</span> <span class="st">"pH"</span>,</span>
@@ -283,29 +356,71 @@ razón de efecto techo que arriba.</p>
 <div class="section level3">
 <h3 id="ordenación-de-la-composición-de-la-comunidad">Ordenación de la composición de la comunidad<a class="anchor" aria-label="anchor" href="#ordenaci%C3%B3n-de-la-composici%C3%B3n-de-la-comunidad"></a>
 </h3>
-<p>Podemos usar métricas que solo consideran presencia/ausencia como
-<strong>jaccard</strong>:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
+<p>Aquí usamos la disimilitud de <strong>Bray-Curtis</strong>, que toma
+en cuenta la abundancia de cada taxón, con una ordenación
+<strong>NMDS</strong>. NMDS parte de configuraciones al azar, así que
+usamos <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> para obtener siempre la misma figura:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>              metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
-<span>              distance <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
-<span>              ordination <span class="op">=</span> <span class="st">"PCoA"</span>,</span>
+<span>              distance <span class="op">=</span> <span class="st">"bray"</span>,</span>
+<span>              ordination <span class="op">=</span> <span class="st">"NMDS"</span>,</span>
 <span>              group_col <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Run 0 stress 0.109415 </span></span>
+<span><span class="co">## Run 1 stress 0.1100308 </span></span>
+<span><span class="co">## Run 2 stress 0.1436787 </span></span>
+<span><span class="co">## Run 3 stress 0.109415 </span></span>
+<span><span class="co">## ... New best solution</span></span>
+<span><span class="co">## ... Procrustes: rmse 4.898679e-05  max resid 0.0002427814 </span></span>
+<span><span class="co">## ... Similar to previous best</span></span>
+<span><span class="co">## Run 4 stress 0.1282595 </span></span>
+<span><span class="co">## Run 5 stress 0.109415 </span></span>
+<span><span class="co">## ... Procrustes: rmse 5.347491e-05  max resid 0.0002695176 </span></span>
+<span><span class="co">## ... Similar to previous best</span></span>
+<span><span class="co">## Run 6 stress 0.1100308 </span></span>
+<span><span class="co">## Run 7 stress 0.1360412 </span></span>
+<span><span class="co">## Run 8 stress 0.1426357 </span></span>
+<span><span class="co">## Run 9 stress 0.1100309 </span></span>
+<span><span class="co">## Run 10 stress 0.1360412 </span></span>
+<span><span class="co">## Run 11 stress 0.1095935 </span></span>
+<span><span class="co">## ... Procrustes: rmse 0.01783814  max resid 0.09869714 </span></span>
+<span><span class="co">## Run 12 stress 0.1095934 </span></span>
+<span><span class="co">## ... Procrustes: rmse 0.01783822  max resid 0.09870617 </span></span>
+<span><span class="co">## Run 13 stress 0.1282595 </span></span>
+<span><span class="co">## Run 14 stress 0.109415 </span></span>
+<span><span class="co">## ... Procrustes: rmse 2.319858e-05  max resid 0.0001086243 </span></span>
+<span><span class="co">## ... Similar to previous best</span></span>
+<span><span class="co">## Run 15 stress 0.1360412 </span></span>
+<span><span class="co">## Run 16 stress 0.109415 </span></span>
+<span><span class="co">## ... New best solution</span></span>
+<span><span class="co">## ... Procrustes: rmse 1.046168e-05  max resid 5.28883e-05 </span></span>
+<span><span class="co">## ... Similar to previous best</span></span>
+<span><span class="co">## Run 17 stress 0.109415 </span></span>
+<span><span class="co">## ... Procrustes: rmse 2.890036e-05  max resid 0.0001565367 </span></span>
+<span><span class="co">## ... Similar to previous best</span></span>
+<span><span class="co">## Run 18 stress 0.109415 </span></span>
+<span><span class="co">## ... Procrustes: rmse 1.762475e-05  max resid 8.27359e-05 </span></span>
+<span><span class="co">## ... Similar to previous best</span></span>
+<span><span class="co">## Run 19 stress 0.1095934 </span></span>
+<span><span class="co">## ... Procrustes: rmse 0.01783515  max resid 0.09870479 </span></span>
+<span><span class="co">## Run 20 stress 0.1100308 </span></span>
+<span><span class="co">## *** Best solution repeated 3 times</span></span></code></pre>
 <p><img src="metagenomic_es_files/figure-html/ordenaci-n-de-la-composici-n-de-la-comunidad-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="pruebas-estadísticas-para-diversidad-beta">Pruebas estadísticas para diversidad beta<a class="anchor" aria-label="anchor" href="#pruebas-estad%C3%ADsticas-para-diversidad-beta"></a>
 </h3>
-<p><code>distance = "jaccard"</code> coincide con el usado en la
-ordenación de arriba, de modo que la ordenación (vía el paquete
-<code>vegan</code> <span class="citation">(<a href="#ref-oksanen2024vegan"><span class="nocase">Oksanen et al.</span>
-2024</a>)</span>) y la prueba PERMANOVA <span class="citation">(<a href="#ref-anderson2001permanova">Anderson 2001</a>)</span> evalúan la
+<p><code>distance = "bray"</code> coincide con el usado en la ordenación
+de arriba, de modo que la ordenación (vía el paquete <code>vegan</code>
+<span class="citation">(<a href="#ref-oksanen2024vegan"><span class="nocase">Oksanen et al.</span> 2024</a>)</span>) y la prueba
+PERMANOVA <span class="citation">(<a href="#ref-anderson2001permanova">Anderson 2001</a>)</span> evalúan la
 misma noción de disimilitud.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>                formula_str <span class="op">=</span> <span class="st">"Polygon*Site"</span>,</span>
-<span>                distance <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>                distance <span class="op">=</span> <span class="st">"bray"</span>,</span>
 <span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
 <span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
@@ -316,20 +431,22 @@ misma noción de disimilitud.</p>
 <p><code><a href="../reference/beta_decay_plot.html">beta_decay_plot()</a></code> evalúa si las comunidades
 geográficamente más cercanas también son más similares en composición,
 mediante una prueba de Mantel <span class="citation">(<a href="#ref-mantel1967test">Mantel 1967</a>)</span>:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_decay_plot.html">beta_decay_plot</a></span><span class="op">(</span></span>
 <span>  table    <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>  lat_col  <span class="op">=</span> <span class="st">"Latitude"</span>,</span>
 <span>  lon_col  <span class="op">=</span> <span class="st">"Longitude"</span>,</span>
-<span>  distance <span class="op">=</span> <span class="st">"jaccard"</span></span>
+<span>  distance <span class="op">=</span> <span class="st">"bray"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/decaimiento-de-la-similitud-comunitaria-con-la-distancia-14-1.png" class="r-plt" alt="" width="70%" style="display: block; margin: auto;"></p>
 <p>Las comunidades geográficamente más cercanas son significativamente
-más similares (Mantel <em>r</em> ≈ 0.2, <em>p</em> = 0.002; el valor
-exacto varía ligeramente entre corridas ya que la prueba de Mantel se
-basa en permutaciones), una señal real de decaimiento con la distancia
-en estos suelos forestales. Se usa <code>jaccard</code> para ser
+más similares en composición (Mantel <em>r</em> ≈ 0.21, <em>p</em> ≈
+0.001; el valor p exacto varía ligeramente entre corridas ya que la
+prueba de Mantel se basa en permutaciones), una señal real de
+decaimiento con la distancia en estos suelos forestales. Sin embargo, la
+relación es débil: la distancia explica solo cerca del 4 % de la
+variación en la similitud (R² ≈ 0.04). Se usa <code>bray</code> para ser
 consistentes con la ordenación de arriba.</p>
 </div>
 </div>
@@ -341,17 +458,17 @@ ANCOMBC2 <span class="citation">(<a href="#ref-lin2020ancombc">Lin and
 Peddada 2020</a>)</span> necesitamos un subconjunto de 2 grupos del
 <code>Polygon</code> de 6 niveles; en esta parte compararemos Polygon 2
 y 5:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_meta_compar</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Polygon</span> <span class="op">==</span> <span class="st">"Pol2"</span> <span class="op">|</span> <span class="va">Polygon</span> <span class="op">==</span> <span class="st">"Pol5"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_meta_compar</span> <span class="op">&lt;-</span> <span class="va">table_meta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_meta_compar</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_meta</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">table_meta</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>                   metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
 <span>                   group_col <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-16-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
 <span>  table        <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>  metadata     <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
@@ -367,10 +484,10 @@ y 5:</p>
 <p><code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> usa un modelo Random
 Forest <span class="citation">(<a href="#ref-breiman2001randomforest">Breiman 2001</a>)</span> para
 encontrar los taxones que mejor predicen el polígono:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>, metadata <span class="op">=</span> <span class="va">metadata_meta</span>, top_n <span class="op">=</span> <span class="fl">10</span>, variable_to_predict <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metagenomic_es_files/figure-html/identificando-taxones-importantes-18-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
 <span>           metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
 <span>           group_col <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
@@ -386,7 +503,7 @@ encontrar los taxones que mejor predicen el polígono:</p>
 <p>Los metadatos ya traen las variables fisicoquímicas del suelo medidas
 para estas muestras, así que la tabla ambiental se construye de la misma
 forma que en la viñeta de amplicón:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">env_table_meta</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">SAMPLEID</span>, <span class="va">pH</span><span class="op">:</span><span class="va">ARENA</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">remove_rownames</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -394,7 +511,7 @@ forma que en la viñeta de amplicón:</p>
 <div class="section level3">
 <h3 id="correlación-entre-variables-ambientales-y-abundancia-taxonómica">Correlación entre variables ambientales y abundancia taxonómica<a class="anchor" aria-label="anchor" href="#correlaci%C3%B3n-entre-variables-ambientales-y-abundancia-taxon%C3%B3mica"></a>
 </h3>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                    env_data <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -408,10 +525,10 @@ forma que en la viñeta de amplicón:</p>
 <div class="section level3">
 <h3 id="ordenación-restringida-cca">Ordenación restringida (CCA)<a class="anchor" aria-label="anchor" href="#ordenaci%C3%B3n-restringida-cca"></a>
 </h3>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">env_table_meta</span> <span class="op">&lt;-</span> <span class="va">env_table_meta</span><span class="op">[</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_table_meta</span><span class="op">)</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>               env_data <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>               metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -475,7 +592,7 @@ Biology</em> 20: 257. <a href="https://doi.org/10.1186/s13059-019-1891-0" class=
 <div class="section level2">
 <h2 id="información-de-la-sesión">Información de la sesión<a class="anchor" aria-label="anchor" href="#informaci%C3%B3n-de-la-sesi%C3%B3n"></a>
 </h2>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.6.1 (2026-06-24 ucrt)</span></span>
 <span><span class="co">## Platform: x86_64-w64-mingw32/x64</span></span>
@@ -505,93 +622,94 @@ Biology</em> 20: 257. <a href="https://doi.org/10.1186/s13059-019-1891-0" class=
 <span><span class="co">## [13] tidyverse_2.0.0     MicroBioMeta_0.99.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] splines_4.6.1               cellranger_1.1.0           </span></span>
-<span><span class="co">##   [3] rpart_4.1.27                lifecycle_1.0.5            </span></span>
-<span><span class="co">##   [5] Rdpack_2.6.6                rstatix_1.1.0              </span></span>
-<span><span class="co">##   [7] doParallel_1.0.17           lattice_0.22-9             </span></span>
-<span><span class="co">##   [9] MASS_7.3-65                 backports_1.5.1            </span></span>
-<span><span class="co">##  [11] hillR_0.5.2                 magrittr_2.0.5             </span></span>
-<span><span class="co">##  [13] Hmisc_5.3-0                 sass_0.4.10                </span></span>
-<span><span class="co">##  [15] rmarkdown_2.32              jquerylib_0.1.4            </span></span>
-<span><span class="co">##  [17] yaml_2.3.12                 otel_0.2.0                 </span></span>
-<span><span class="co">##  [19] ggvenn_0.1.19               gld_2.6.8                  </span></span>
-<span><span class="co">##  [21] minqa_1.2.8                 cowplot_1.2.0              </span></span>
-<span><span class="co">##  [23] RColorBrewer_1.1-3          ade4_1.7-24                </span></span>
-<span><span class="co">##  [25] multcomp_1.4-32             abind_1.4-8                </span></span>
-<span><span class="co">##  [27] Rtsne_0.17                  quadprog_1.5-8             </span></span>
-<span><span class="co">##  [29] expm_1.0-1                  GenomicRanges_1.64.0       </span></span>
-<span><span class="co">##  [31] BiocGenerics_0.58.1         phyloseq_1.56.0            </span></span>
-<span><span class="co">##  [33] TH.data_1.1-5               nnet_7.3-20                </span></span>
-<span><span class="co">##  [35] sandwich_3.1-3              circlize_0.4.18            </span></span>
-<span><span class="co">##  [37] IRanges_2.46.0              S4Vectors_0.50.3           </span></span>
-<span><span class="co">##  [39] ggrepel_0.9.8               vegan_2.7-6                </span></span>
-<span><span class="co">##  [41] microbiome_1.34.0           pkgdown_2.2.1              </span></span>
-<span><span class="co">##  [43] permute_0.9-10              codetools_0.2-20           </span></span>
-<span><span class="co">##  [45] DelayedArray_0.38.2         energy_1.7-12              </span></span>
-<span><span class="co">##  [47] tidyselect_1.2.1            shape_1.4.6.1              </span></span>
-<span><span class="co">##  [49] farver_2.1.2                lme4_2.0-6                 </span></span>
-<span><span class="co">##  [51] viridis_0.6.5               matrixStats_1.5.0          </span></span>
-<span><span class="co">##  [53] stats4_4.6.1                base64enc_0.1-6            </span></span>
-<span><span class="co">##  [55] Seqinfo_1.2.0               ALDEx2_1.44.0              </span></span>
-<span><span class="co">##  [57] jsonlite_2.0.0              GetoptLong_1.1.1           </span></span>
-<span><span class="co">##  [59] multtest_2.68.0             e1071_1.7-17               </span></span>
-<span><span class="co">##  [61] Formula_1.2-6               survival_3.8-6             </span></span>
-<span><span class="co">##  [63] iterators_1.0.14            systemfonts_1.3.2          </span></span>
-<span><span class="co">##  [65] tools_4.6.1                 ragg_1.5.2                 </span></span>
-<span><span class="co">##  [67] DescTools_0.99.60           Rcpp_1.1.2                 </span></span>
-<span><span class="co">##  [69] ggVennDiagram_1.5.7         glue_1.8.1                 </span></span>
-<span><span class="co">##  [71] gridExtra_2.3.1             SparseArray_1.12.2         </span></span>
-<span><span class="co">##  [73] xfun_0.61                   mgcv_1.9-4                 </span></span>
-<span><span class="co">##  [75] MatrixGenerics_1.24.0       numDeriv_2016.8-1.1        </span></span>
-<span><span class="co">##  [77] withr_3.0.3                 fastmap_1.2.0              </span></span>
-<span><span class="co">##  [79] ggh4x_0.3.1                 latticeExtra_0.6-31        </span></span>
-<span><span class="co">##  [81] boot_1.3-32                 digest_0.6.39              </span></span>
-<span><span class="co">##  [83] truncnorm_1.0-9             timechange_0.4.0           </span></span>
-<span><span class="co">##  [85] R6_2.6.1                    textshaping_1.0.5          </span></span>
-<span><span class="co">##  [87] colorspace_2.1-3            Cairo_1.7-0                </span></span>
-<span><span class="co">##  [89] gtools_3.9.5                jpeg_0.1-11                </span></span>
-<span><span class="co">##  [91] dichromat_2.0-1             generics_0.1.4             </span></span>
-<span><span class="co">##  [93] data.table_1.18.6.1         class_7.3-23               </span></span>
-<span><span class="co">##  [95] httr_1.4.9                  htmlwidgets_1.6.4          </span></span>
-<span><span class="co">##  [97] S4Arrays_1.12.0             pkgconfig_2.0.3            </span></span>
-<span><span class="co">##  [99] gtable_0.3.6                Exact_3.3                  </span></span>
-<span><span class="co">## [101] zCompositions_1.6.2         ComplexHeatmap_2.28.0      </span></span>
-<span><span class="co">## [103] S7_0.2.2                    XVector_0.52.0             </span></span>
-<span><span class="co">## [105] htmltools_0.5.9             carData_3.0-6              </span></span>
-<span><span class="co">## [107] biomformat_1.40.0           zigg_0.0.2                 </span></span>
-<span><span class="co">## [109] clue_0.3-68                 scales_1.4.0               </span></span>
-<span><span class="co">## [111] Biobase_2.72.0              lmom_3.3                   </span></span>
-<span><span class="co">## [113] png_0.1-9                   reformulas_0.4.4           </span></span>
-<span><span class="co">## [115] ANCOMBC_2.14.0              knitr_1.52                 </span></span>
-<span><span class="co">## [117] rstudioapi_0.19.0           reshape2_1.4.5             </span></span>
-<span><span class="co">## [119] geosphere_1.6-8             tzdb_0.5.0                 </span></span>
-<span><span class="co">## [121] rjson_0.2.23                nloptr_2.2.1               </span></span>
-<span><span class="co">## [123] checkmate_2.3.4             nlme_3.1-169               </span></span>
-<span><span class="co">## [125] zoo_1.9-1                   proxy_0.4-29               </span></span>
-<span><span class="co">## [127] cachem_1.1.0                GlobalOptions_0.1.4        </span></span>
-<span><span class="co">## [129] rootSolve_1.8.2.4           parallel_4.6.1             </span></span>
-<span><span class="co">## [131] foreign_0.8-91              desc_1.4.3                 </span></span>
-<span><span class="co">## [133] pillar_1.11.1               grid_4.6.1                 </span></span>
-<span><span class="co">## [135] vctrs_0.7.3                 randomForest_4.7-1.2       </span></span>
-<span><span class="co">## [137] ggpubr_1.0.0                car_3.1-5                  </span></span>
-<span><span class="co">## [139] cluster_2.1.8.2             htmlTable_2.5.0            </span></span>
-<span><span class="co">## [141] evaluate_1.0.5              magick_2.9.1               </span></span>
-<span><span class="co">## [143] mvtnorm_1.4-2               cli_3.6.6                  </span></span>
-<span><span class="co">## [145] compiler_4.6.1              rlang_1.3.0                </span></span>
-<span><span class="co">## [147] crayon_1.5.3                ggsignif_0.6.4             </span></span>
-<span><span class="co">## [149] labeling_0.4.3              interp_1.1-6               </span></span>
-<span><span class="co">## [151] plyr_1.8.9                  fs_2.1.0                   </span></span>
-<span><span class="co">## [153] stringi_1.8.9               viridisLite_0.4.3          </span></span>
-<span><span class="co">## [155] deldir_2.0-4                BiocParallel_1.46.0        </span></span>
-<span><span class="co">## [157] Biostrings_2.80.2           lmerTest_3.2-1             </span></span>
-<span><span class="co">## [159] gsl_2.1-9                   Matrix_1.7-5               </span></span>
-<span><span class="co">## [161] hms_1.1.4                   patchwork_1.3.2            </span></span>
-<span><span class="co">## [163] NADA_1.6-1.2                SummarizedExperiment_1.42.0</span></span>
-<span><span class="co">## [165] haven_2.5.5                 rbibutils_2.4.1            </span></span>
-<span><span class="co">## [167] Rfast_2.1.5.2               igraph_2.3.3               </span></span>
-<span><span class="co">## [169] broom_1.0.13                RcppParallel_6.2.1         </span></span>
-<span><span class="co">## [171] bslib_0.12.0                directlabels_2026.8.27     </span></span>
-<span><span class="co">## [173] readxl_1.5.0.1              ape_5.8-1</span></span></code></pre>
+<span><span class="co">##   [1] splines_4.6.1                   cellranger_1.1.0               </span></span>
+<span><span class="co">##   [3] rpart_4.1.27                    lifecycle_1.0.5                </span></span>
+<span><span class="co">##   [5] Rdpack_2.6.6                    rstatix_1.1.0                  </span></span>
+<span><span class="co">##   [7] doParallel_1.0.17               lattice_0.22-9                 </span></span>
+<span><span class="co">##   [9] MASS_7.3-65                     backports_1.5.1                </span></span>
+<span><span class="co">##  [11] hillR_0.5.2                     magrittr_2.0.5                 </span></span>
+<span><span class="co">##  [13] Hmisc_5.3-0                     sass_0.4.10                    </span></span>
+<span><span class="co">##  [15] rmarkdown_2.32                  jquerylib_0.1.4                </span></span>
+<span><span class="co">##  [17] yaml_2.3.12                     otel_0.2.0                     </span></span>
+<span><span class="co">##  [19] ggvenn_0.1.19                   gld_2.6.8                      </span></span>
+<span><span class="co">##  [21] minqa_1.2.8                     cowplot_1.2.0                  </span></span>
+<span><span class="co">##  [23] RColorBrewer_1.1-3              multcomp_1.4-32                </span></span>
+<span><span class="co">##  [25] abind_1.4-8                     quadprog_1.5-8                 </span></span>
+<span><span class="co">##  [27] expm_1.0-1                      GenomicRanges_1.64.0           </span></span>
+<span><span class="co">##  [29] BiocGenerics_0.58.1             TH.data_1.1-5                  </span></span>
+<span><span class="co">##  [31] yulab.utils_0.2.5               nnet_7.3-20                    </span></span>
+<span><span class="co">##  [33] sandwich_3.1-3                  rappdirs_0.3.4                 </span></span>
+<span><span class="co">##  [35] circlize_0.4.18                 IRanges_2.46.0                 </span></span>
+<span><span class="co">##  [37] S4Vectors_0.50.3                ggrepel_0.9.8                  </span></span>
+<span><span class="co">##  [39] tidytree_0.4.8                  vegan_2.7-6                    </span></span>
+<span><span class="co">##  [41] pkgdown_2.2.1                   permute_0.9-10                 </span></span>
+<span><span class="co">##  [43] codetools_0.2-20                DelayedArray_0.38.2            </span></span>
+<span><span class="co">##  [45] energy_1.7-12                   tidyselect_1.2.1               </span></span>
+<span><span class="co">##  [47] shape_1.4.6.1                   farver_2.1.2                   </span></span>
+<span><span class="co">##  [49] lme4_2.0-6                      viridis_0.6.5                  </span></span>
+<span><span class="co">##  [51] matrixStats_1.5.0               stats4_4.6.1                   </span></span>
+<span><span class="co">##  [53] base64enc_0.1-6                 Seqinfo_1.2.0                  </span></span>
+<span><span class="co">##  [55] ALDEx2_1.44.0                   jsonlite_2.0.0                 </span></span>
+<span><span class="co">##  [57] GetoptLong_1.1.1                multtest_2.68.0                </span></span>
+<span><span class="co">##  [59] e1071_1.7-17                    Formula_1.2-6                  </span></span>
+<span><span class="co">##  [61] survival_3.8-6                  iterators_1.0.14               </span></span>
+<span><span class="co">##  [63] systemfonts_1.3.2               tools_4.6.1                    </span></span>
+<span><span class="co">##  [65] treeio_1.36.1                   ragg_1.5.2                     </span></span>
+<span><span class="co">##  [67] DescTools_0.99.60               Rcpp_1.1.2                     </span></span>
+<span><span class="co">##  [69] ggVennDiagram_1.5.7             glue_1.8.1                     </span></span>
+<span><span class="co">##  [71] gridExtra_2.3.1                 SparseArray_1.12.2             </span></span>
+<span><span class="co">##  [73] xfun_0.61                       mgcv_1.9-4                     </span></span>
+<span><span class="co">##  [75] MatrixGenerics_1.24.0           TreeSummarizedExperiment_2.20.0</span></span>
+<span><span class="co">##  [77] numDeriv_2016.8-1.1             withr_3.0.3                    </span></span>
+<span><span class="co">##  [79] fastmap_1.2.0                   ggh4x_0.3.1                    </span></span>
+<span><span class="co">##  [81] latticeExtra_0.6-31             boot_1.3-32                    </span></span>
+<span><span class="co">##  [83] digest_0.6.39                   truncnorm_1.0-9                </span></span>
+<span><span class="co">##  [85] timechange_0.4.0                R6_2.6.1                       </span></span>
+<span><span class="co">##  [87] textshaping_1.0.5               colorspace_2.1-3               </span></span>
+<span><span class="co">##  [89] Cairo_1.7-0                     gtools_3.9.5                   </span></span>
+<span><span class="co">##  [91] jpeg_0.1-11                     dichromat_2.0-1                </span></span>
+<span><span class="co">##  [93] generics_0.1.4                  data.table_1.18.6.1            </span></span>
+<span><span class="co">##  [95] class_7.3-23                    httr_1.4.9                     </span></span>
+<span><span class="co">##  [97] htmlwidgets_1.6.4               S4Arrays_1.12.0                </span></span>
+<span><span class="co">##  [99] pkgconfig_2.0.3                 gtable_0.3.6                   </span></span>
+<span><span class="co">## [101] Exact_3.3                       zCompositions_1.6.2            </span></span>
+<span><span class="co">## [103] ComplexHeatmap_2.28.0           S7_0.2.2                       </span></span>
+<span><span class="co">## [105] SingleCellExperiment_1.34.0     XVector_0.52.0                 </span></span>
+<span><span class="co">## [107] htmltools_0.5.9                 carData_3.0-6                  </span></span>
+<span><span class="co">## [109] zigg_0.0.2                      clue_0.3-68                    </span></span>
+<span><span class="co">## [111] scales_1.4.0                    Biobase_2.72.0                 </span></span>
+<span><span class="co">## [113] lmom_3.3                        png_0.1-9                      </span></span>
+<span><span class="co">## [115] reformulas_0.4.4                ANCOMBC_2.14.0                 </span></span>
+<span><span class="co">## [117] knitr_1.52                      rstudioapi_0.19.0              </span></span>
+<span><span class="co">## [119] reshape2_1.4.5                  geosphere_1.6-8                </span></span>
+<span><span class="co">## [121] tzdb_0.5.0                      rjson_0.2.23                   </span></span>
+<span><span class="co">## [123] nloptr_2.2.1                    checkmate_2.3.4                </span></span>
+<span><span class="co">## [125] nlme_3.1-169                    zoo_1.9-1                      </span></span>
+<span><span class="co">## [127] proxy_0.4-29                    cachem_1.1.0                   </span></span>
+<span><span class="co">## [129] GlobalOptions_0.1.4             rootSolve_1.8.2.4              </span></span>
+<span><span class="co">## [131] parallel_4.6.1                  foreign_0.8-91                 </span></span>
+<span><span class="co">## [133] desc_1.4.3                      pillar_1.11.1                  </span></span>
+<span><span class="co">## [135] grid_4.6.1                      vctrs_0.7.3                    </span></span>
+<span><span class="co">## [137] randomForest_4.7-1.2            ggpubr_1.0.0                   </span></span>
+<span><span class="co">## [139] car_3.1-5                       cluster_2.1.8.2                </span></span>
+<span><span class="co">## [141] htmlTable_2.5.0                 evaluate_1.0.5                 </span></span>
+<span><span class="co">## [143] magick_2.9.1                    mvtnorm_1.4-2                  </span></span>
+<span><span class="co">## [145] cli_3.6.6                       compiler_4.6.1                 </span></span>
+<span><span class="co">## [147] rlang_1.3.0                     crayon_1.5.3                   </span></span>
+<span><span class="co">## [149] ggsignif_0.6.4                  labeling_0.4.3                 </span></span>
+<span><span class="co">## [151] interp_1.1-6                    plyr_1.8.9                     </span></span>
+<span><span class="co">## [153] fs_2.1.0                        stringi_1.8.9                  </span></span>
+<span><span class="co">## [155] viridisLite_0.4.3               deldir_2.0-4                   </span></span>
+<span><span class="co">## [157] BiocParallel_1.46.0             lmerTest_3.2-1                 </span></span>
+<span><span class="co">## [159] gsl_2.1-9                       Biostrings_2.80.2              </span></span>
+<span><span class="co">## [161] lazyeval_0.2.3                  Matrix_1.7-5                   </span></span>
+<span><span class="co">## [163] hms_1.1.4                       patchwork_1.3.2                </span></span>
+<span><span class="co">## [165] NADA_1.6-1.2                    SummarizedExperiment_1.42.0    </span></span>
+<span><span class="co">## [167] haven_2.5.5                     rbibutils_2.4.1                </span></span>
+<span><span class="co">## [169] Rfast_2.1.5.2                   broom_1.0.13                   </span></span>
+<span><span class="co">## [171] RcppParallel_6.2.1              bslib_0.12.0                   </span></span>
+<span><span class="co">## [173] directlabels_2026.8.27          readxl_1.5.0.1                 </span></span>
+<span><span class="co">## [175] ape_5.8-1</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

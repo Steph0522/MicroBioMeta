@@ -19,17 +19,15 @@ ancombc_plot(
   y_axis_title = NULL,
   bar_colors = c("#56B4E9", "#E69F00"),
   save_table = FALSE,
-  table_filename = "ancombc_results.txt",
-  ...
+  table_filename = "ancombc_results.txt"
 )
 }
 \arguments{
-\item{table}{Data frame with taxa as rows and samples as columns. The last
-column must contain taxonomy strings (named "taxonomy", "Taxonomy",
-"taxon", "taxa", "Taxa", or "Taxon").}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame with samples as rows. The first column must
-contain sample IDs that match the column names of \code{table}.}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{group_col}{Character. Name of the column in \code{metadata} that
 defines the grouping variable. If this column is numeric (a continuous
@@ -41,7 +39,7 @@ increase rather than a group-vs-group comparison.}
 \item{level}{Character or \code{NULL}. Taxonomic level to agglomerate
 to before running \code{ancombc2} (e.g. \code{"genus"}, \code{"family"};
 case-insensitive). Default \code{"genus"}. Pass \code{NULL} to skip agglomeration and run
-ANCOMBC2 directly on the ASV/OTU-level table (rows of \code{table}, as-is).}
+ANCOMBC2 directly on the ASV/OTU/species-level table (rows of \code{table}, as-is).}
 
 \item{min_prevalence}{Numeric. Prevalence cut-off passed to \code{ancombc2}
 (default \code{0.1}). Lower values retain more taxa.}
@@ -88,20 +86,14 @@ table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"ancombc_results.txt"}.}
-
-\item{...}{Old names of renamed arguments (\code{col_cond}, \code{tax_level}, \code{prv_cut}, \code{p_adj_method}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
 (\eqn{\geq}3 groups).
 }
 \description{
-Runs ANCOMBC2 on a counts table and metadata, then visualizes differentially
-abundant taxa. For two-group comparisons a bar plot of log-fold changes is
-returned; for three or more groups a heatmap is returned; for a continuous
-\code{group_col} (e.g. \code{"dist_km"}) a bar plot of the effect size per
-unit increase is returned instead, colored by the direction of the effect.
+Runs ANCOMBC2 on a table and metadata, then visualizes differentially
+abundant taxa.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -112,9 +104,7 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
 # Not run automatically because ANCOMBC2's internal bias-correction step
-# can intermittently error on some random bootstrap draws (a known
-# ANCOMBC2 edge case, not specific to this dataset), which would make an
-# always-run example a flaky check. p_adjust_method = "BH" is less strict
+# p_adjust_method = "BH" is less strict
 # than the "holm" default; min_prevalence is raised above the 0.1 default to
 # filter out rare/sparse taxa before testing.
 \donttest{

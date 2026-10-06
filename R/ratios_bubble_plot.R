@@ -31,8 +31,6 @@
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ratios_bubble_table.txt"}.
 #'
-#' @param ... Old names of renamed arguments (\code{condition_col}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A ggplot2 object showing abundance ratios between the two
 #'   conditions.
 #'
@@ -69,11 +67,7 @@ ratios_bubble_plot <- function(table,
                                  legend_title = NULL,
                                  group_colors = NULL,
                                  save_table = FALSE,
-                                 table_filename = "ratios_bubble_table.txt",
-                                 ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(condition_col = "group_col"), "ratios_bubble_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+                                 table_filename = "ratios_bubble_table.txt") {
 
   # Filtrar metadatos a las condiciones deseadas
   metadata_sub <- metadata %>%

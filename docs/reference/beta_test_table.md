@@ -12,11 +12,11 @@ beta_test_table(
   distance = "euclidean",
   test = c("permanova", "betadisper"),
   permutations = 999,
+  mc_samples = 1,
   strata_var = NULL,
   digits = 3,
   save_table = FALSE,
-  table_filename = "beta_test_results.txt",
-  ...
+  table_filename = "beta_test_results.txt"
 )
 ```
 
@@ -63,6 +63,17 @@ beta_test_table(
 
   Number of permutations required
 
+- mc_samples:
+
+  Number of ALDEx2 Monte Carlo instances used when
+  `distance = "compositional"`. With `1` (default) the clr values of one
+  random instance are used: fast, but the result changes a little
+  between runs (use [`set.seed()`](https://rdrr.io/r/base/Random.html)).
+  With more, the clr values are averaged across instances, which gives
+  an almost identical result in every run; `128` (ALDEx2's default) is
+  suggested for final analyses, and takes longer. Ignored for other
+  distances.
+
 - strata_var:
 
   Group or variable within which permutations are restricted
@@ -80,24 +91,32 @@ beta_test_table(
   Character. File path/name for the saved table (used when
   `save_table = TRUE`). Default `"beta_test_results.txt"`.
 
-- ...:
-
-  Old names of renamed arguments (`method`, `decimales`), still accepted
-  with a warning. Any other extra argument is an error.
-
 ## Value
 
-A table with the results of R-squared, F and p value
+A data frame (class `mbm_test_table`) with the test results: one row per
+term and the columns returned by
+[`vegan::adonis2()`](https://vegandevs.github.io/vegan/reference/adonis.html)
+(`Df`, `SumOfSqs`, `R2`, `F`, `Pr(>F)`) or
+[`vegan::permutest()`](https://vegandevs.github.io/vegan/reference/anova.cca.html),
+plus `Term`. Printing it (e.g. typing its name) draws the formatted
+table figure;
+[`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+returns that figure as a `ggplot` object, e.g. to combine it with other
+plots
+([`cowplot::plot_grid()`](https://wilkelab.org/cowplot/reference/plot_grid.html),
+`patchwork`) or save it with
+[`ggplot2::ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html).
 
 ## Details
 
 The first column of `metadata` must hold the sample IDs; metadata rows
 are matched to the samples by ID, so their order doesn't matter. A
-precomputed distance is used as-is (`distance` is ignored).
-`distance = "compositional"` draws a random Monte Carlo instance from
+precomputed distance is used as-is (`distance` is ignored). With
+`distance = "compositional"` and `mc_samples = 1`, the clr values come
+from one random Monte Carlo instance of
 [`ALDEx2::aldex.clr()`](https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html);
 call [`set.seed()`](https://rdrr.io/r/base/Random.html) before the
-function to make the result reproducible.
+function to make the result reproducible, or use `mc_samples = 128`.
 
 ## Examples
 

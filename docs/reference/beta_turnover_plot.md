@@ -24,8 +24,7 @@ beta_turnover_plot(
   stat = NULL,
   p_adjust_method = "holm",
   save_table = FALSE,
-  table_filename = "betadiv_turnover.txt",
-  ...
+  table_filename = "betadiv_turnover.txt"
 )
 ```
 
@@ -155,11 +154,6 @@ beta_turnover_plot(
   Character. File path/name for the saved table (used when
   `save_table = TRUE`). Default `"betadiv_turnover.txt"`.
 
-- ...:
-
-  Old names of renamed arguments (`color_axis_x`, `color_facets_x`),
-  still accepted with a warning. Any other extra argument is an error.
-
 ## Value
 
 A ggplot2 figure with beta diversity partitions across conditions.
@@ -188,10 +182,4 @@ beta_turnover_plot(
   group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
                             "Rhizosphere_vs_Rhizosphere" = "#E69F00")
 )
-#> Warning: Some species in comm data were not observed in any site,
-#>  delete them...
-#> Warning: Some species in comm data were not observed in any site,
-#>  delete them...
-#> Warning: Some species in comm data were not observed in any site,
-#>  delete them...
 ```

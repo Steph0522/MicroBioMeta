@@ -8,10 +8,10 @@ taxa groups across samples or sample groups.
 ``` r
 abundance_bar_plot(
   table,
-  metadata,
+  metadata = NULL,
   taxonomy_db = "silva",
   level = "genus",
-  x_col,
+  x_col = NULL,
   facet_by = NULL,
   width_equal = FALSE,
   label = "taxonomy",
@@ -24,8 +24,7 @@ abundance_bar_plot(
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
-  table_filename = "relative_abundance.txt",
-  ...
+  table_filename = "relative_abundance.txt"
 )
 ```
 
@@ -33,13 +32,14 @@ abundance_bar_plot(
 
 - table:
 
-  A data frame with taxa in rows and samples in columns. The first
-  column must be named `taxonomy`, containing full taxonomic strings.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame containing sample metadata. Must include a `SAMPLEID`
-  column matching sample names in `table`.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`). Optional: if `NULL`
+  (default), one bar is drawn per sample.
 
 - taxonomy_db:
 
@@ -57,12 +57,12 @@ abundance_bar_plot(
 - x_col:
 
   Character. Column name in `metadata` to use for the x-axis (e.g.,
-  environment, condition).
+  environment, condition). If `NULL` (default), one bar per sample.
 
 - facet_by:
 
   Optional. Character. Column name in `metadata` to facet the plot by
-  (e.g., treatment group). Default is `NULL`.
+  (e.g., treatment). Default is `NULL`.
 
 - width_equal:
 
@@ -122,11 +122,6 @@ abundance_bar_plot(
 
   Character. File path/name for the saved table (used when
   `save_table = TRUE`). Default `"relative_abundance.txt"`.
-
-- ...:
-
-  Old names of renamed arguments (`facet_col`), still accepted with a
-  warning. Any other extra argument is an error.
 
 ## Value
 

@@ -22,8 +22,7 @@ ratios_bubble_plot(
   legend_title = NULL,
   group_colors = NULL,
   save_table = FALSE,
-  table_filename = "ratios_bubble_table.txt",
-  ...
+  table_filename = "ratios_bubble_table.txt"
 )
 ```
 
@@ -89,11 +88,6 @@ ratios_bubble_plot(
 
   Character. File path/name for the saved table (used when
   `save_table = TRUE`). Default `"ratios_bubble_table.txt"`.
-
-- ...:
-
-  Old names of renamed arguments (`condition_col`), still accepted with
-  a warning. Any other extra argument is an error.
 
 ## Value
 

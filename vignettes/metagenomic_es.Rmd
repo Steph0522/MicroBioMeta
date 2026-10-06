@@ -105,6 +105,50 @@ metadata_meta <- metadata_meta %>%
   dplyr::mutate(Site = as.character(Site))
 ```
 
+### 🔄 Empezar desde un objeto phyloseq o TreeSummarizedExperiment
+
+`MicroBioMeta` trabaja con tablas simples, pero si tus datos ya están en un objeto `phyloseq` o en un `TreeSummarizedExperiment` (el contenedor de Bioconductor que usa la familia de paquetes [`mia`](https://bioconductor.org/packages/mia/)), `from_phyloseq()` y `from_tse()` los convierten en la `table` (con la columna `taxonomy` al final) y la `metadata` (con `SAMPLEID` primero) que usamos en esta viñeta.
+
+Para mostrarlo, guardamos la tabla de Kraken2 en un `TreeSummarizedExperiment`, con una columna de taxonomía por rango, como lo haría `mia`:
+
+```{r from-objects-1, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE), message=FALSE}
+counts <- as.matrix(table_meta[, metadata_meta$SAMPLEID])
+
+ranks <- tidyr::separate(
+  data.frame(taxonomy = gsub("[kpcofgs]__", "", table_meta$taxonomy)),
+  taxonomy, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+  sep = "; ", fill = "right"
+)
+rownames(ranks) <- rownames(table_meta)
+
+samples <- metadata_meta
+rownames(samples) <- samples$SAMPLEID
+
+tse <- TreeSummarizedExperiment::TreeSummarizedExperiment(
+  assays  = list(counts = counts),
+  rowData = ranks,
+  colData = samples
+)
+tse
+```
+
+`from_tse()` regresa una lista con los dos data frames:
+
+```{r from-objects-2, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE)}
+mbm <- from_tse(tse, assay_name = "counts")
+
+mbm$table[1:3, c(1:2, ncol(mbm$table))]
+mbm$metadata[1:3, 1:5]
+```
+
+y se pueden usar directo en cualquier función, por ejemplo `abundance_bar_plot(table = mbm$table, metadata = mbm$metadata, ...)`.
+
+Con un objeto `phyloseq` funciona igual:
+
+```{r from-objects-3, eval=FALSE}
+mbm <- from_phyloseq(physeq)
+```
+
 ## 📊 Exploración de la composición
 ### 📊 Barplot de abundancia
 Misma función que en la viñeta de amplicón; la única diferencia es `taxonomy_db = "Kraken2"`, que le indica a la lógica de parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.
@@ -123,7 +167,7 @@ abundance_bar_plot(table = table_meta,
 ```
 
 ### 🖥️ Heatmap de abundancia
-Los taxones de Kraken2/Bracken no son ASVs, así que aquí se usa `feature_prefix = "Taxon"` en vez del prefijo `"ASV"` por defecto para las etiquetas de fila.
+Los taxones de Kraken2/Bracken no son ASVs, así que aquí se usa `feature_prefix = "Taxon"` en vez del prefijo `"ASV"` por defecto para las etiquetas de fila. `condition2` agrega una segunda barra de anotación, aquí el sitio de muestreo dentro de cada polígono.
 
 ```{r heatmap-de-abundancia-8, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
 abundance_heatmap_plot(table = table_meta,
@@ -131,14 +175,12 @@ abundance_heatmap_plot(table = table_meta,
                   top_n = 20,
                   show_column_names = FALSE,
                   condition1 = "Polygon",
+                  condition2 = "Site",
                   feature_prefix = "Taxon")
 ```
 
 ## 📊 Diversidad alfa
-### 📈 Correlación entre números de Hill
-```{r correlaci-n-entre-n-meros-de-hill-9, warning=FALSE, fig.width=12, fig.height=4.5}
-alpha_hill_corr_plot(table = table_meta)
-```
+Como en la viñeta de metabarcoding, primero se puede usar `alpha_hill_corr_plot(table = table_meta)` para revisar si los números de Hill dependen de la profundidad de secuenciación.
 
 ### 📊 Visualización de diversidad alfa
 `fill_col` es igual a `x_col` aquí, así que la leyenda solo repetiría las etiquetas del eje x - `show_legend = FALSE` la quita.
@@ -173,25 +215,26 @@ La diversidad en *q*=1 y *q*=2 aumenta significativamente con el pH del suelo; *
 
 ### Ordenación de la composición de la comunidad
 
-Podemos usar métricas que solo consideran presencia/ausencia como **jaccard**:
+Aquí usamos la disimilitud de **Bray-Curtis**, que toma en cuenta la abundancia de cada taxón, con una ordenación **NMDS**. NMDS parte de configuraciones al azar, así que usamos `set.seed()` para obtener siempre la misma figura:
 
 ```{r ordenaci-n-de-la-composici-n-de-la-comunidad-12, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+set.seed(123)
 beta_ord_plot(table = table_meta,
               metadata = metadata_meta,
-              distance = "jaccard",
-              ordination = "PCoA",
+              distance = "bray",
+              ordination = "NMDS",
               group_col = "Polygon")
 ```
 
 ### Pruebas estadísticas para diversidad beta
 
-`distance = "jaccard"` coincide con el usado en la ordenación de arriba, de modo que la ordenación (vía el paquete `vegan` [@oksanen2024vegan]) y la prueba PERMANOVA [@anderson2001permanova] evalúan la misma noción de disimilitud.
+`distance = "bray"` coincide con el usado en la ordenación de arriba, de modo que la ordenación (vía el paquete `vegan` [@oksanen2024vegan]) y la prueba PERMANOVA [@anderson2001permanova] evalúan la misma noción de disimilitud.
 
 ```{r pruebas-estad-sticas-para-diversidad-beta-13, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
                 metadata = metadata_meta,
                 formula_str = "Polygon*Site",
-                distance = "jaccard",
+                distance = "bray",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -207,11 +250,11 @@ beta_decay_plot(
   metadata = metadata_meta,
   lat_col  = "Latitude",
   lon_col  = "Longitude",
-  distance = "jaccard"
+  distance = "bray"
 )
 ```
 
-Las comunidades geográficamente más cercanas son significativamente más similares (Mantel *r* ≈ 0.2, *p* = 0.002; el valor exacto varía ligeramente entre corridas ya que la prueba de Mantel se basa en permutaciones), una señal real de decaimiento con la distancia en estos suelos forestales. Se usa `jaccard` para ser consistentes con la ordenación de arriba.
+Las comunidades geográficamente más cercanas son significativamente más similares en composición (Mantel *r* ≈ 0.21, *p* ≈ 0.001; el valor p exacto varía ligeramente entre corridas ya que la prueba de Mantel se basa en permutaciones), una señal real de decaimiento con la distancia en estos suelos forestales. Sin embargo, la relación es débil: la distancia explica solo cerca del 4 % de la variación en la similitud (R² ≈ 0.04). Se usa `bray` para ser consistentes con la ordenación de arriba.
 
 ## Análisis de abundancia diferencial
 

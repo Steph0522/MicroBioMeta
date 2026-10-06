@@ -10,6 +10,13 @@
 #'   `"jaccard"`, `"sorensen"`, `"compositional"` (default; CLR/Aitchison via
 #'   ALDEx2), `"aitchison"`, or `"robust.aitchison"`. Case-insensitive.
 #'   Note: `ordination = "PCA"` requires `distance = "compositional"`.
+#' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
+#'   \code{distance = "compositional"}. With \code{1} (default) the clr values
+#'   of one random instance are used: fast, but the result changes a little
+#'   between runs (use \code{set.seed()}). With more, the clr values are
+#'   averaged across instances, which gives an almost identical result in every
+#'   run; \code{128} (ALDEx2's default) is suggested for final analyses, and
+#'   takes longer. Ignored for other distances.
 #' @param ordination Ordination method: one of `"PCA"` (default), `"PCoA"`, or
 #'   `"NMDS"`. Case-insensitive.
 #' @param group_col Column in `metadata` to fill/color points. Its type
@@ -50,9 +57,10 @@
 #'   \code{"loading"}). Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.
-#' @details \code{distance = "compositional"} draws a random Monte Carlo
-#'   instance from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before
-#'   the function to make the result reproducible.
+#' @details With \code{distance = "compositional"} and \code{mc_samples = 1},
+#'   the clr values come from one random Monte Carlo instance of
+#'   \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
+#'   to make the result reproducible, or use \code{mc_samples = 128}.
 #'
 #' @return A `ggplot2` object.
 #' @export
@@ -76,6 +84,7 @@
 
 beta_ord_plot <- function(table, metadata,
                           distance = "compositional",
+                          mc_samples = 1,
                           ordination = "PCA",
                           group_col = NULL,
                           palette = "colorb",
@@ -144,9 +153,7 @@ beta_ord_plot <- function(table, metadata,
   otu_table <- otu_table[, metadata[[1]], drop = FALSE]
   
   if (distance == "compositional") {
-    aldex_obj <- ALDEx2::aldex.clr(otu_table, mc.samples = 128,
-                                   denom = "all", verbose = FALSE, useMC = FALSE)
-    otu_trans <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))
+    otu_trans <- .mbm_aldex_clr(otu_table, mc_samples)
     dist_matrix <- dist(otu_trans, method = "euclidean")
   } else if (distance %in% c("aitchison", "robust.aitchison")) {
     dist_matrix <- vegan::vegdist(t(otu_table), method = distance, pseudocount = 0.5)

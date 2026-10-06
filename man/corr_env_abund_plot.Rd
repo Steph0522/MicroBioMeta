@@ -22,8 +22,7 @@ corr_env_abund_plot(
   p_adjust_method = "BH",
   x_label_angle = 45,
   save_table = FALSE,
-  table_filename = "corr.txt",
-  ...
+  table_filename = "corr.txt"
 )
 }
 \arguments{
@@ -99,9 +98,6 @@ tab-delimited text file.}
 
 \item{table_filename}{Character. Name of the output file used when
 save_table = TRUE.}
-
-\item{...}{Old names of renamed arguments (\code{env_table}, \code{cond_vect}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 A ggplot2 object.

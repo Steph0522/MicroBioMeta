@@ -11,11 +11,11 @@ beta_test_table(
   distance = "euclidean",
   test = c("permanova", "betadisper"),
   permutations = 999,
+  mc_samples = 1,
   strata_var = NULL,
   digits = 3,
   save_table = FALSE,
-  table_filename = "beta_test_results.txt",
-  ...
+  table_filename = "beta_test_results.txt"
 )
 }
 \arguments{
@@ -43,6 +43,14 @@ is passed straight to \code{vegan::vegdist} on the raw values
 
 \item{permutations}{Number of permutations required}
 
+\item{mc_samples}{Number of ALDEx2 Monte Carlo instances used when
+\code{distance = "compositional"}. With \code{1} (default) the clr values
+of one random instance are used: fast, but the result changes a little
+between runs (use \code{set.seed()}). With more, the clr values are
+averaged across instances, which gives an almost identical result in every
+run; \code{128} (ALDEx2's default) is suggested for final analyses, and
+takes longer. Ignored for other distances.}
+
 \item{strata_var}{Group or variable within which permutations are restricted}
 
 \item{digits}{Number of decimal places for the numeric columns (except the p-value).}
@@ -52,12 +60,16 @@ Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
-
-\item{...}{Old names of renamed arguments (\code{method}, \code{decimales}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
-A table with the results of R-squared, F and p value
+A data frame (class \code{mbm_test_table}) with the test results:
+one row per term and the columns returned by \code{vegan::adonis2()}
+(\code{Df}, \code{SumOfSqs}, \code{R2}, \code{F}, \code{Pr(>F)}) or
+\code{vegan::permutest()}, plus \code{Term}. Printing it (e.g. typing its
+name) draws the formatted table figure; \code{ggplot2::autoplot()}
+returns that figure as a \code{ggplot} object, e.g. to combine it with
+other plots (\code{cowplot::plot_grid()}, \code{patchwork}) or save it
+with \code{ggplot2::ggsave()}.
 }
 \description{
 This function create a table with the results of permanova or betadisper
@@ -66,9 +78,10 @@ This function create a table with the results of permanova or betadisper
 The first column of \code{metadata} must hold the sample IDs;
 metadata rows are matched to the samples by ID, so their order doesn't
 matter. A precomputed distance is used as-is (\code{distance} is ignored).
-\code{distance = "compositional"} draws a random Monte Carlo instance
-from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the
-function to make the result reproducible.
+With \code{distance = "compositional"} and \code{mc_samples = 1}, the
+clr values come from one random Monte Carlo instance of
+\code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
+to make the result reproducible, or use \code{mc_samples = 128}.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

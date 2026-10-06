@@ -1,8 +1,6 @@
 # ALDEx2 differential abundance heatmap
 
-Runs ALDEx2 on a counts table and metadata and returns a ComplexHeatmap
-showing differentially abundant taxa, their effect size, p-value, and
-difference between groups.
+Runs ALDEx2 on a table and returns a ComplexHeatmap
 
 ## Usage
 
@@ -11,20 +9,19 @@ aldex_heatmap_plot(
   table,
   metadata,
   group_col,
-  effect_threshold = 0.8,
-  pval_threshold = NULL,
+  effect_threshold = 0,
+  pval_threshold = 0.05,
   p_adjust_method = "BH",
   cluster_rows = FALSE,
   cluster_columns = FALSE,
   heatmap_colors = NULL,
-  effect_colors = circlize::colorRamp2(c(-1.5, 0, 1.5), c("#009E73", "white", "#CC79A7")),
-  pvalue_colors = list(`p-value` = c(`<0.001` = "#000000", `<0.01` = "#D55E00", `<0.05` =
-    "#F0E442", `>0.05` = "grey85")),
+  effect_colors = c("#009E73", "white", "#CC79A7"),
+  pvalue_colors = c(`<0.001` = "#000000", `<0.01` = "#D55E00", `<0.05` = "#F0E442",
+    `>0.05` = "grey85"),
   group_colors = NULL,
   save_table = FALSE,
   table_filename = "aldex_pval_effect.txt",
-  draw = TRUE,
-  ...
+  draw = TRUE
 )
 ```
 
@@ -32,14 +29,13 @@ aldex_heatmap_plot(
 
 - table:
 
-  Data frame with taxa as rows and samples as columns. Must contain
-  exactly one taxonomy column (named "taxonomy", "Taxonomy", "taxon",
-  "taxa", "Taxa", or "Taxon").
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  Data frame with one row per sample. Must contain the column specified
-  in `group_col`.
+  A data frame containing sample metadata. Must include a `SAMPLEID`
+  column matching sample names in `table`.
 
 - group_col:
 
@@ -48,13 +44,15 @@ aldex_heatmap_plot(
 
 - effect_threshold:
 
-  Numeric. Minimum absolute effect size to retain (default `0.8`).
+  Numeric. Minimum absolute effect size to retain. Default `0` (no
+  effect-size filter), so by default the heatmap shows the same taxa
+  that `aldex_volcano_plot` colors as significant.
 
 - pval_threshold:
 
   Numeric or NULL. Maximum p-value to retain (adjusted or not, depending
-  on `p_adjust_method`). If NULL (default) only `effect_threshold` is
-  applied.
+  on `p_adjust_method`). Default `0.05`. If NULL only `effect_threshold`
+  is applied.
 
 - p_adjust_method:
 
@@ -85,15 +83,21 @@ aldex_heatmap_plot(
 
 - effect_colors:
 
-  Color function for the effect size annotation strip (default:
-  green-white-pink colorblind-friendly scale, distinct from the heatmap
-  body and p-value defaults).
+  Three colors for the effect size annotation strip: negative, zero and
+  positive effect (mapped to -1.5, 0 and 1.5). Default
+  `c("#009E73", "white", "#CC79A7")` (green-white-pink,
+  colorblind-friendly, distinct from the heatmap body and p-value
+  defaults). A
+  [`circlize::colorRamp2()`](https://rdrr.io/pkg/circlize/man/colorRamp2.html)
+  function is also accepted.
 
 - pvalue_colors:
 
-  Named list of colors for the p-value annotation strip (default:
-  black/vermillion/yellow/grey categorical scale, distinct from the
-  heatmap body and effect size defaults).
+  Named vector of colors for the p-value annotation strip, with names
+  `"<0.001"`, `"<0.01"`, `"<0.05"` and `">0.05"`. Default
+  black/vermillion/yellow/grey (distinct from the heatmap body and
+  effect size defaults). A list with one such vector named `"p-value"`
+  is also accepted.
 
 - group_colors:
 
@@ -125,11 +129,6 @@ aldex_heatmap_plot(
   device. Use `FALSE` to only build the returned grob without drawing
   it.
 
-- ...:
-
-  Old names of renamed arguments (`col_cond`, `pvalue_BH`), still
-  accepted with a warning. Any other extra argument is an error.
-
 ## Value
 
 Invisibly, a `gTree` (grid grob) with the heatmap. Printing it (e.g.
@@ -149,15 +148,15 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
 # group_col must have exactly two groups; Location has two
-# (Rhizosphere and Roots) in the bundled example data. effect_threshold
-# alone (no pval_threshold) is used here since this small (46-sample) dataset
-# rarely has taxa that pass both an effect-size and a significance
-# threshold at once - combine both for a stricter, real analysis.
+# (Rhizosphere and Roots) in the bundled example data. Here taxa are
+# filtered by effect size alone (pval_threshold = NULL), since this small
+# (46-sample) dataset has few taxa with significant p-values.
 aldex_heatmap_plot(
   table            = table,
   metadata         = metadata,
-  group_col         = "Location",
-  effect_threshold = 0.5
+  group_col        = "Location",
+  effect_threshold = 0.5,
+  pval_threshold   = NULL
 )
 #> aldex.clr: generating Monte-Carlo instances and clr values
 #> conditions vector supplied
@@ -166,4 +165,30 @@ aldex_heatmap_plot(
 #> aldex.ttest: doing t-test
 #> aldex.effect: calculating effect sizes
 
+
+# All the colors have colorblind-friendly defaults, but each can be set by
+# hand: group_colors (difference bars, named after the groups),
+# effect_colors (negative, zero and positive effect size), pvalue_colors
+# (one color per p-value class) and heatmap_colors (median clr values)
+# \donttest{
+aldex_heatmap_plot(
+  table            = table,
+  metadata         = metadata,
+  group_col        = "Location",
+  effect_threshold = 0.5,
+  pval_threshold   = NULL,
+  group_colors     = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+  effect_colors    = c("#0072B2", "white", "#E69F00"),
+  pvalue_colors    = c("<0.001" = "black", "<0.01" = "grey30",
+                       "<0.05" = "grey60", ">0.05" = "grey90"),
+  heatmap_colors   = "BuOr"
+)
+#> aldex.clr: generating Monte-Carlo instances and clr values
+#> conditions vector supplied
+#> operating in serial mode
+#> computing center with all features
+#> aldex.ttest: doing t-test
+#> aldex.effect: calculating effect sizes
+
+# }
 ```

@@ -1,9 +1,8 @@
 # Alpha diversity plot
 
-This function generates a boxplot or barplot to visualize alpha
-diversity Hill numbers (q = 0, 1, 2) for a given dataset, faceted by one
-or two categorical variables (e.g., sample type or treatment). It
-supports palette customization, faceting, and statistical comparison.
+Generates a boxplot or barplot to visualize alpha diversity Hill numbers
+(q = 0, 1, 2) for a given dataset, faceted by one or two categorical
+variables (e.g., sample type or treatment).
 
 ## Usage
 
@@ -46,13 +45,13 @@ alpha_hill_plot(
 
 - table:
 
-  A data frame or matrix with samples as columns and taxa as rows. The
-  first column must contain the OTUID, ASV, or species name.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame with metadata. The first column must match sample names
-  in `table`.
+  A data frame containing sample metadata. Must include a `SAMPLEID`
+  column matching sample names in `table`.
 
 - type:
 

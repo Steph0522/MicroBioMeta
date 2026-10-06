@@ -37,8 +37,6 @@
 #'   shown so that positive means higher in \code{cond}.
 #' @param table_filename Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.
 #'
-#' @param ... Old names of renamed arguments (\code{col_cond}, \code{cutoff.pval}, \code{adjusted_p}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A `ggplot` object with the selected plot.
 #' @export
 #'
@@ -83,11 +81,7 @@ aldex_volcano_plot <- function(table,
                                label_size = 3.5,
                                filter_uncultured = FALSE,
                                save_table = FALSE,
-                               table_filename = "aldex_pval_effect.txt",
-                               ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(col_cond = "group_col", cutoff.pval = "pval_threshold", adjusted_p = "p_adjust_method"), "aldex_volcano_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+                               table_filename = "aldex_pval_effect.txt") {
   # the old adjusted_p was TRUE/FALSE
   if (is.logical(p_adjust_method)) p_adjust_method <- if (isTRUE(p_adjust_method)) "BH" else "none"
 

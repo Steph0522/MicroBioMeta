@@ -123,7 +123,8 @@ cca_rda_biplot(
 ## Value
 
 A `ggplot` object displaying the biplot with sample scores and
-environmental vectors.
+environmental vectors. The axis titles show the percentage of the total
+variance (inertia) explained by each constrained axis.
 
 ## Details
 

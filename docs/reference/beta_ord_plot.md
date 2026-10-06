@@ -12,6 +12,7 @@ beta_ord_plot(
   table,
   metadata,
   distance = "compositional",
+  mc_samples = 1,
   ordination = "PCA",
   group_col = NULL,
   palette = "colorb",
@@ -44,6 +45,17 @@ beta_ord_plot(
   `"sorensen"`, `"compositional"` (default; CLR/Aitchison via ALDEx2),
   `"aitchison"`, or `"robust.aitchison"`. Case-insensitive. Note:
   `ordination = "PCA"` requires `distance = "compositional"`.
+
+- mc_samples:
+
+  Number of ALDEx2 Monte Carlo instances used when
+  `distance = "compositional"`. With `1` (default) the clr values of one
+  random instance are used: fast, but the result changes a little
+  between runs (use [`set.seed()`](https://rdrr.io/r/base/Random.html)).
+  With more, the clr values are averaged across instances, which gives
+  an almost identical result in every run; `128` (ALDEx2's default) is
+  suggested for final analyses, and takes longer. Ignored for other
+  distances.
 
 - ordination:
 
@@ -123,10 +135,11 @@ A `ggplot2` object.
 
 ## Details
 
-`distance = "compositional"` draws a random Monte Carlo instance from
+With `distance = "compositional"` and `mc_samples = 1`, the clr values
+come from one random Monte Carlo instance of
 [`ALDEx2::aldex.clr()`](https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html);
 call [`set.seed()`](https://rdrr.io/r/base/Random.html) before the
-function to make the result reproducible.
+function to make the result reproducible, or use `mc_samples = 128`.
 
 ## Examples
 
@@ -146,110 +159,109 @@ beta_ord_plot(
   group_col  = "Location",
   top_n      = 5
 )
-#> Loading required namespace: ggrepel
 #> Run 0 stress 0.1706715 
-#> Run 1 stress 0.2155698 
-#> Run 2 stress 0.1719696 
-#> Run 3 stress 0.1797951 
-#> Run 4 stress 0.1921148 
-#> Run 5 stress 0.1758142 
-#> Run 6 stress 0.1855761 
-#> Run 7 stress 0.1967478 
-#> Run 8 stress 0.199969 
-#> Run 9 stress 0.2152568 
-#> Run 10 stress 0.2089763 
-#> Run 11 stress 0.2131654 
-#> Run 12 stress 0.1803472 
-#> Run 13 stress 0.2118863 
-#> Run 14 stress 0.1978755 
-#> Run 15 stress 0.1734001 
-#> Run 16 stress 0.1707604 
-#> ... Procrustes: rmse 0.06080309  max resid 0.2272373 
-#> Run 17 stress 0.1842817 
-#> Run 18 stress 0.1866185 
-#> Run 19 stress 0.1982192 
-#> Run 20 stress 0.1770608 
-#> Run 21 stress 0.1892933 
-#> Run 22 stress 0.2027165 
-#> Run 23 stress 0.1918152 
-#> Run 24 stress 0.17325 
-#> Run 25 stress 0.1841278 
-#> Run 26 stress 0.1865108 
-#> Run 27 stress 0.1792333 
-#> Run 28 stress 0.1972452 
-#> Run 29 stress 0.1946402 
-#> Run 30 stress 0.1928708 
-#> Run 31 stress 0.1970503 
-#> Run 32 stress 0.2036613 
-#> Run 33 stress 0.1905785 
-#> Run 34 stress 0.192991 
-#> Run 35 stress 0.1805166 
-#> Run 36 stress 0.2113834 
-#> Run 37 stress 0.216324 
-#> Run 38 stress 0.1789651 
-#> Run 39 stress 0.181085 
-#> Run 40 stress 0.1851935 
-#> Run 41 stress 0.1784918 
-#> Run 42 stress 0.2196472 
-#> Run 43 stress 0.2044763 
-#> Run 44 stress 0.1951448 
-#> Run 45 stress 0.2058345 
-#> Run 46 stress 0.1960757 
-#> Run 47 stress 0.1933797 
-#> Run 48 stress 0.1881742 
-#> Run 49 stress 0.197731 
-#> Run 50 stress 0.1878218 
-#> Run 51 stress 0.218125 
-#> Run 52 stress 0.2055175 
-#> Run 53 stress 0.1813276 
-#> Run 54 stress 0.1964198 
-#> Run 55 stress 0.1840136 
-#> Run 56 stress 0.1823575 
-#> Run 57 stress 0.1730434 
-#> Run 58 stress 0.2047062 
-#> Run 59 stress 0.2042195 
-#> Run 60 stress 0.1974137 
-#> Run 61 stress 0.2030334 
-#> Run 62 stress 0.1824286 
-#> Run 63 stress 0.1793867 
-#> Run 64 stress 0.2050423 
-#> Run 65 stress 0.1849363 
-#> Run 66 stress 0.1798573 
-#> Run 67 stress 0.1929429 
-#> Run 68 stress 0.186958 
-#> Run 69 stress 0.2117428 
-#> Run 70 stress 0.1875919 
-#> Run 71 stress 0.1956884 
-#> Run 72 stress 0.1990089 
-#> Run 73 stress 0.1831598 
-#> Run 74 stress 0.2075504 
-#> Run 75 stress 0.1755164 
-#> Run 76 stress 0.1711051 
-#> ... Procrustes: rmse 0.05249739  max resid 0.2373464 
-#> Run 77 stress 0.2248077 
-#> Run 78 stress 0.2007224 
-#> Run 79 stress 0.1816515 
-#> Run 80 stress 0.2074464 
-#> Run 81 stress 0.204684 
-#> Run 82 stress 0.1771717 
-#> Run 83 stress 0.2066129 
-#> Run 84 stress 0.1810903 
-#> Run 85 stress 0.1727549 
-#> Run 86 stress 0.1905483 
-#> Run 87 stress 0.2087548 
-#> Run 88 stress 0.1912186 
-#> Run 89 stress 0.1964479 
-#> Run 90 stress 0.1805861 
-#> Run 91 stress 0.183507 
-#> Run 92 stress 0.1799765 
-#> Run 93 stress 0.198668 
-#> Run 94 stress 0.1713045 
-#> Run 95 stress 0.193281 
-#> Run 96 stress 0.1978412 
-#> Run 97 stress 0.1772173 
-#> Run 98 stress 0.1941517 
-#> Run 99 stress 0.1889278 
-#> Run 100 stress 0.1900375 
+#> Run 1 stress 0.1858971 
+#> Run 2 stress 0.1964941 
+#> Run 3 stress 0.2008229 
+#> Run 4 stress 0.2108036 
+#> Run 5 stress 0.2110827 
+#> Run 6 stress 0.2022634 
+#> Run 7 stress 0.1852785 
+#> Run 8 stress 0.2071095 
+#> Run 9 stress 0.1928814 
+#> Run 10 stress 0.1847932 
+#> Run 11 stress 0.2006323 
+#> Run 12 stress 0.1817891 
+#> Run 13 stress 0.1812133 
+#> Run 14 stress 0.1805684 
+#> Run 15 stress 0.1911592 
+#> Run 16 stress 0.1987114 
+#> Run 17 stress 0.2251462 
+#> Run 18 stress 0.1939527 
+#> Run 19 stress 0.1890742 
+#> Run 20 stress 0.1883558 
+#> Run 21 stress 0.1938252 
+#> Run 22 stress 0.2100218 
+#> Run 23 stress 0.1886366 
+#> Run 24 stress 0.1961417 
+#> Run 25 stress 0.1752081 
+#> Run 26 stress 0.1828438 
+#> Run 27 stress 0.2031569 
+#> Run 28 stress 0.1873056 
+#> Run 29 stress 0.196631 
+#> Run 30 stress 0.1971796 
+#> Run 31 stress 0.1968274 
+#> Run 32 stress 0.1890111 
+#> Run 33 stress 0.1953745 
+#> Run 34 stress 0.1822461 
+#> Run 35 stress 0.1864966 
+#> Run 36 stress 0.2013476 
+#> Run 37 stress 0.1775038 
+#> Run 38 stress 0.1702792 
+#> ... New best solution
+#> ... Procrustes: rmse 0.05496463  max resid 0.238398 
+#> Run 39 stress 0.1840863 
+#> Run 40 stress 0.1858768 
+#> Run 41 stress 0.1826098 
+#> Run 42 stress 0.1861802 
+#> Run 43 stress 0.2099587 
+#> Run 44 stress 0.207177 
+#> Run 45 stress 0.178743 
+#> Run 46 stress 0.1854874 
+#> Run 47 stress 0.1827463 
+#> Run 48 stress 0.186119 
+#> Run 49 stress 0.2163555 
+#> Run 50 stress 0.2081207 
+#> Run 51 stress 0.1938853 
+#> Run 52 stress 0.2120015 
+#> Run 53 stress 0.1733722 
+#> Run 54 stress 0.1733489 
+#> Run 55 stress 0.1835213 
+#> Run 56 stress 0.190806 
+#> Run 57 stress 0.2269347 
+#> Run 58 stress 0.2013745 
+#> Run 59 stress 0.1934049 
+#> Run 60 stress 0.2279811 
+#> Run 61 stress 0.2033342 
+#> Run 62 stress 0.2225681 
+#> Run 63 stress 0.1816522 
+#> Run 64 stress 0.1775682 
+#> Run 65 stress 0.1994683 
+#> Run 66 stress 0.1723301 
+#> Run 67 stress 0.1955567 
+#> Run 68 stress 0.2069365 
+#> Run 69 stress 0.2084881 
+#> Run 70 stress 0.1955151 
+#> Run 71 stress 0.183886 
+#> Run 72 stress 0.1966279 
+#> Run 73 stress 0.2066014 
+#> Run 74 stress 0.1855555 
+#> Run 75 stress 0.180835 
+#> Run 76 stress 0.1881507 
+#> Run 77 stress 0.190056 
+#> Run 78 stress 0.1993236 
+#> Run 79 stress 0.1837502 
+#> Run 80 stress 0.1737991 
+#> Run 81 stress 0.179853 
+#> Run 82 stress 0.1821538 
+#> Run 83 stress 0.1792971 
+#> Run 84 stress 0.1831922 
+#> Run 85 stress 0.2154851 
+#> Run 86 stress 0.1836506 
+#> Run 87 stress 0.1747959 
+#> Run 88 stress 0.2179816 
+#> Run 89 stress 0.2042863 
+#> Run 90 stress 0.1827904 
+#> Run 91 stress 0.1756128 
+#> Run 92 stress 0.1718132 
+#> Run 93 stress 0.2176935 
+#> Run 94 stress 0.2017589 
+#> Run 95 stress 0.1962462 
+#> Run 96 stress 0.1954244 
+#> Run 97 stress 0.1764035 
+#> Run 98 stress 0.2014986 
+#> Run 99 stress 0.1926154 
+#> Run 100 stress 0.2081464 
 #> *** Best solution was not repeated -- monoMDS stopping criteria:
 #>     19: no. of iterations >= maxit
 #>     81: stress ratio > sratmax

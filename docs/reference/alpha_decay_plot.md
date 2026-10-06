@@ -1,12 +1,10 @@
 # Alpha diversity along a continuous gradient
 
-Computes Hill numbers (q = 0, 1, 2) from an ASV/OTU table and plots them
-against a continuous metadata variable (e.g. distance to urban center,
-elevation, pH). Each Hill order is shown in its own facet panel with an
-ordinary least-squares regression line and an annotation reporting the
-Spearman rank correlation coefficient (rho, or Pearson r), its p-value,
-and optionally the linear regression R-squared and slope. An optional
-grouping variable adds per-group coloring and separate regression lines.
+Computes Hill numbers (q = 0, 1, 2) from table and plots them against a
+continuous metadata variable (e.g. distance to urban center, elevation,
+pH). It reports the Spearman rank correlation coefficient (rho, or
+Pearson r), its p-value, and optionally the linear regression R-squared
+and slope.
 
 ## Usage
 
@@ -42,13 +40,13 @@ alpha_decay_plot(
 
 - table:
 
-  A data frame with taxa as rows and samples as columns. Must contain a
-  column named `taxonomy` (any position).
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame whose **first column** contains sample identifiers
-  matching the column names of `table`.
+  A data frame containing sample metadata. Must include a `SAMPLEID`
+  column matching sample names in `table`.
 
 - cont_var:
 
@@ -58,7 +56,8 @@ alpha_decay_plot(
 - group_col:
 
   Character or `NULL`. Optional column in `metadata` used to color
-  points and fit separate regression lines per group (e.g. `"estado2"`).
+  points and fit separate regression lines per group (e.g.
+  `"treatment"`).
 
 - method:
 
@@ -165,12 +164,6 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# alpha_decay_plot expects a continuous environmental gradient (e.g.
-# distance, elevation, pH). This bundled example dataset doesn't include
-# one, so this creates an illustrative synthetic "distance to a reference
-# point" (km), spread across the 'Loc' site codes with a little
-# per-sample jitter - substitute your own real gradient variable.
-set.seed(1)
 loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
   stats::rnorm(nrow(metadata), sd = 0.3)

@@ -17,7 +17,8 @@ abundance_sankey_plot(
 )
 }
 \arguments{
-\item{table}{A data frame with taxa in rows and samples in columns. The last column must be named \code{taxonomy}, containing full taxonomic strings.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{output_file}{Character or \code{NULL}. Path of an HTML file to save
 the interactive diagram to. If \code{NULL} (default), nothing is written
@@ -49,7 +50,7 @@ is shown when printed). If \code{output_file} is given, it is also saved
 as an HTML file.
 }
 \description{
-Generate a Sankey diagram from a tale with taxonomy
+Generate a Sankey diagram from a table with taxonomy
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

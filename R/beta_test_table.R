@@ -27,17 +27,30 @@
 #'   Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.
+#' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
+#'   \code{distance = "compositional"}. With \code{1} (default) the clr values
+#'   of one random instance are used: fast, but the result changes a little
+#'   between runs (use \code{set.seed()}). With more, the clr values are
+#'   averaged across instances, which gives an almost identical result in every
+#'   run; \code{128} (ALDEx2's default) is suggested for final analyses, and
+#'   takes longer. Ignored for other distances.
 #'
 #' @details The first column of \code{metadata} must hold the sample IDs;
 #'   metadata rows are matched to the samples by ID, so their order doesn't
 #'   matter. A precomputed distance is used as-is (\code{distance} is ignored).
-#'   \code{distance = "compositional"} draws a random Monte Carlo instance
-#'   from \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the
-#'   function to make the result reproducible.
+#'   With \code{distance = "compositional"} and \code{mc_samples = 1}, the
+#'   clr values come from one random Monte Carlo instance of
+#'   \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
+#'   to make the result reproducible, or use \code{mc_samples = 128}.
 #'
-#' @param ... Old names of renamed arguments (\code{method}, \code{decimales}), still accepted
-#'   with a warning. Any other extra argument is an error.
-#' @return A table with the results of R-squared, F and p value
+#' @return A data frame (class \code{mbm_test_table}) with the test results:
+#'   one row per term and the columns returned by \code{vegan::adonis2()}
+#'   (\code{Df}, \code{SumOfSqs}, \code{R2}, \code{F}, \code{Pr(>F)}) or
+#'   \code{vegan::permutest()}, plus \code{Term}. Printing it (e.g. typing its
+#'   name) draws the formatted table figure; \code{ggplot2::autoplot()}
+#'   returns that figure as a \code{ggplot} object, e.g. to combine it with
+#'   other plots (\code{cowplot::plot_grid()}, \code{patchwork}) or save it
+#'   with \code{ggplot2::ggsave()}.
 #' @export
 #'
 #' @examples
@@ -86,14 +99,11 @@ beta_test_table <- function(table,
                             distance = "euclidean", 
                             test = c("permanova", "betadisper"),
                             permutations = 999,
+                            mc_samples = 1,
                             strata_var = NULL,
                             digits = 3,
                             save_table = FALSE,
-                            table_filename = "beta_test_results.txt",
-                            ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(method = "distance", decimales = "digits"), "beta_test_table")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+                            table_filename = "beta_test_results.txt") {
 
 
   # Accept `test` and `distance` case-insensitively (distance names are matched
@@ -185,9 +195,7 @@ beta_test_table <- function(table,
       stop("distance = 'compositional' requires a raw abundance table ",
            "(data frame with a taxonomy column), not a precomputed distance matrix.")
     }
-    aldex_obj   <- ALDEx2::aldex.clr(t(table), mc.samples = 128,
-                                     denom = "all", verbose = FALSE, useMC = FALSE)
-    clr_samples <- t(ALDEx2::getMonteCarloSample(aldex_obj, 1))
+    clr_samples <- .mbm_aldex_clr(t(table), mc_samples)
     dist_matrix <- stats::dist(clr_samples, method = "euclidean")
   } else if (distance %in% c("aitchison", "robust.aitchison")) {
     dist_matrix <- vegan::vegdist(table, method = distance, pseudocount = 0.5)
@@ -225,6 +233,7 @@ beta_test_table <- function(table,
   # every other figure in the package) instead of the fixed `digits`
   # rounding applied to the other numeric columns, since fixed decimals can
   # round small p-values (e.g. 0.0004) down to "0".
+  results <- tabla
   col_p_name <- grep("Pr", names(tabla), ignore.case = TRUE, value = TRUE)
   tabla <- tabla %>%
     dplyr::mutate(across(where(is.numeric) & !dplyr::any_of(col_p_name), ~ round(., digits))) %>%
@@ -287,7 +296,30 @@ beta_test_table <- function(table,
     }
   }
   
+  class(results) <- c("mbm_test_table", class(results))
+  attr(results, "plot") <- tab
+  results
+}
 
-  return(tab)
+#' @export
+print.mbm_test_table <- function(x, ...) {
+  print(attr(x, "plot"))
+  invisible(x)
+}
+
+# a subset of the table (e.g. x[1:2, ]) is a plain data frame, without the figure
+#' @export
+`[.mbm_test_table` <- function(x, ...) {
+  out <- NextMethod()
+  if (is.data.frame(out)) {
+    attr(out, "plot") <- NULL
+    class(out) <- setdiff(class(out), "mbm_test_table")
+  }
+  out
+}
+
+#' @exportS3Method ggplot2::autoplot
+autoplot.mbm_test_table <- function(object, ...) {
+  attr(object, "plot")
 }
 

@@ -333,6 +333,15 @@ alpha_diversity_plot <- function(
       LETTERS[seq_len(n_rows_grid * n_cols_grid)]
     }
 
+    # same theme for every panel: built once, outside build_cell()
+    cell_theme <- .mbm_theme(
+      legend_position = legend_position,
+      extra = ggplot2::theme(
+        panel.grid   = ggplot2::element_blank(),
+        axis.text.x  = .mbm_x_text(x_label_angle)
+      )
+    )
+
     build_cell <- function(row_idx, col_idx) {
       index_val <- col_levels[col_idx]
       fb_val    <- row_levels[row_idx]
@@ -352,13 +361,7 @@ alpha_diversity_plot <- function(
           y = if (col_idx == 1) y_title_cell else NULL,
           fill = legend_title
         ) +
-        .mbm_theme(
-          legend_position = legend_position,
-          extra = ggplot2::theme(
-            panel.grid   = ggplot2::element_blank(),
-            axis.text.x  = .mbm_x_text(x_label_angle)
-          )
-        )
+        cell_theme
       # Only applied when the user explicitly asks for a ratio: a fixed one
       # shrinks each cowplot cell's panel to fit its slot, leaving dead space
       # around it. Left NULL each panel stretches to fill its cell.

@@ -10,7 +10,8 @@ test_that("aldex_heatmap_plot returns a printable grob for a two-group compariso
     table            = toy$table,
     metadata         = toy$metadata,
     group_col         = "Group",
-    effect_threshold = 0.1
+    effect_threshold = 0.1,
+    pval_threshold   = NULL
   )
 
   expect_s3_class(ht, "gTree")
@@ -44,6 +45,7 @@ test_that("aldex_heatmap_plot saves the filtered results table when requested", 
     metadata         = toy$metadata,
     group_col         = "Group",
     effect_threshold = 0.1,
+    pval_threshold   = NULL,
     save_table       = TRUE,
     table_filename   = tmp
   )
@@ -57,7 +59,7 @@ test_that("aldex_heatmap_plot accepts plain color vectors for effect and p-value
   expect_s3_class(
     aldex_heatmap_plot(
       table = toy$table, metadata = toy$metadata, group_col = "Group",
-      effect_threshold = 0.1, draw = FALSE,
+      effect_threshold = 0.1, pval_threshold = NULL, draw = FALSE,
       effect_colors = c("#0072B2", "white", "#E69F00"),
       pvalue_colors = c("<0.001" = "black", "<0.01" = "grey30",
                         "<0.05" = "grey60", ">0.05" = "grey90")),

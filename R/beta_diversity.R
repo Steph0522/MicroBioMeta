@@ -64,8 +64,6 @@
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.
 #'
-#' @param ... Old names of renamed arguments (\code{color_axis_x}, \code{color_facets_x}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A ggplot2 figure with beta diversity partitions across conditions.
 #' @export
 #'
@@ -110,11 +108,7 @@ beta_turnover_plot <- function(table,
                       stat = NULL,
                       p_adjust_method = "holm",
                       save_table = FALSE,
-                      table_filename = "betadiv_turnover.txt",
-                      ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(color_axis_x = "group_colors", color_facets_x = "facet_colors"), "beta_turnover_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+                      table_filename = "betadiv_turnover.txt") {
 
 
   # Treat metadata's first column as the sample ID regardless of its original name
@@ -181,15 +175,8 @@ beta_turnover_plot <- function(table,
   beta_q_list <- list()
   for (q in c(0, 1, 2)) {
     beta_res <- tryCatch({
-      # hill_taxa_parti_pairwise() prints a raw pairwise-comparison progress
-      # bar straight to stdout (not via message()/warning()), which
-      # suppressMessages() can't catch - capture.output() discards it while
-      # still returning the function's actual result.
-      result <- NULL
-      utils::capture.output(
-        result <- hillR::hill_taxa_parti_pairwise(comm = otu_filter_t, q = q)
-      )
-      result %>%
+      # same values as hillR::hill_taxa_parti_pairwise(), all pairs at once
+      .mbm_hill_pairwise(otu_filter_t, q) %>%
         dplyr::mutate(Recambio = TD_beta - 1, q = q)
     }, error = function(e) {
       warning("Could not compute hill_taxa_parti_pairwise with q = ", q, ": ", e$message)

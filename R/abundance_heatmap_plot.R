@@ -4,8 +4,9 @@
 #'
 #' @param table A data frame with taxa in rows and samples in columns. 
 #' The last column must be named `taxonomy`, containing full taxonomic strings.
-#' @param metadata A data frame containing sample metadata. 
-#' Must include a `SAMPLEID` column matching sample names in `table`.
+#' @param metadata A data frame containing sample metadata. Its first column
+#'   must hold the sample IDs (the column names of `table`). Optional: if
+#'   `NULL` (default), the heatmap has no sample annotations.
 #' @param condition1 Variable of the first horizontal annotation
 #' @param condition2 Variable of the second horizontal annotation
 #' @param condition3 Variable of the third horizontal annotation
@@ -109,7 +110,7 @@
 #' }
 
 abundance_heatmap_plot <- function(table,
-                                   metadata,
+                                   metadata = NULL,
                                    condition1 = NULL,
                                    condition2 = NULL,
                                    condition3 = NULL,
@@ -134,8 +135,14 @@ abundance_heatmap_plot <- function(table,
   
   #Check for taxonomy column
   
+  .mbm_check_table(table)
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+  if (is.null(metadata)) {
+    if (!is.null(condition1) || !is.null(condition2) || !is.null(condition3))
+      stop("`condition1`/`condition2`/`condition3` need `metadata`.", call. = FALSE)
+    metadata <- data.frame(SAMPLEID = names(table)[-tax_col])
+  }
   
   
   # Delete taxonomy column
@@ -151,23 +158,28 @@ abundance_heatmap_plot <- function(table,
   phy.ra.complete <- t(t(table_counts)/colSums(table_counts)*100) %>%
     as.data.frame()
   
+  # label of each distinct taxonomy string (computed once per string, not per row)
+  tax_strings <- unique(table_tax$taxonomy)
+  tax_labels  <- dplyr::case_when(
+      grepl("g__[^;]*", tax_strings) & !grepl("g__uncultured|g__$", tax_strings) ~ sub(".*g__([^;]*).*", "\\1", tax_strings),
+      grepl("f__[^;]*", tax_strings) & !grepl("f__uncultured|f__$", tax_strings) ~ paste0("other ", stringr::str_extract(tax_strings, "f__[^;]*") %>% sub("f__", "", .)),
+      grepl("o__[^;]*", tax_strings) & !grepl("o__uncultured|o__$", tax_strings) ~ paste0("other ", stringr::str_extract(tax_strings, "o__[^;]*") %>% sub("o__", "", .)),
+      grepl("c__[^;]*", tax_strings) & !grepl("c__uncultured|c__$", tax_strings) ~ paste0("other ", stringr::str_extract(tax_strings, "c__[^;]*") %>% sub("c__", "", .)),
+      grepl("p__[^;]*", tax_strings) & !grepl("p__uncultured|p__$", tax_strings) ~ paste0("other ", stringr::str_extract(tax_strings, "p__[^;]*") %>% sub("p__", "", .)),
+      TRUE ~ "Unclassified")
+
   table_abundance <- phy.ra.complete %>%
     dplyr::mutate(abun = rowMeans(.)) %>%
     tibble::rownames_to_column(var="OTUID") %>%
     dplyr::left_join(table_tax, by = "OTUID")  %>%
-    dplyr::mutate(taxonomy2 = taxonomy) %>%
+    dplyr::mutate(taxonomy2 = taxonomy,
+                  taxonomy  = tax_labels[match(taxonomy, tax_strings)]) %>%
+    { if (exclude_unclassified) dplyr::filter(., taxonomy != "Unclassified") else . } %>%
+    dplyr::arrange(-abun) %>%
+    dplyr::slice(seq_len(top_n)) %>%
+    # ranks split only for the top_n rows that are plotted
     tidyr::separate(taxonomy2, into = c("dominio","phylum","clase","orden","familia","genero","especie"),
                     sep = ";", fill = "right", extra = "merge") %>%
-    dplyr::mutate(taxonomy = dplyr::case_when(
-      grepl("g__[^;]*", taxonomy) & !grepl("g__uncultured|g__$", taxonomy) ~ sub(".*g__([^;]*).*", "\\1", taxonomy),
-      grepl("f__[^;]*", taxonomy) & !grepl("f__uncultured|f__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "f__[^;]*") %>% sub("f__", "", .)),
-      grepl("o__[^;]*", taxonomy) & !grepl("o__uncultured|o__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "o__[^;]*") %>% sub("o__", "", .)),
-      grepl("c__[^;]*", taxonomy) & !grepl("c__uncultured|c__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "c__[^;]*") %>% sub("c__", "", .)),
-      grepl("p__[^;]*", taxonomy) & !grepl("p__uncultured|p__$", taxonomy) ~ paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
-      TRUE ~ "Unclassified")) %>%
-    { if (exclude_unclassified) dplyr::filter(., taxonomy != "Unclassified") else . } %>%
-    dplyr::arrange(-abun) %>%  
-    dplyr::slice(seq_len(top_n)) %>%
     dplyr::mutate(asv=paste0(feature_prefix, dplyr::row_number())) %>%
     tidyr::unite("taxa", asv, taxonomy, remove = FALSE) %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
@@ -206,20 +218,10 @@ abundance_heatmap_plot <- function(table,
     t() %>%
     as.data.frame() %>%
     dplyr::mutate(dplyr::across(dplyr::everything(), ~ as.numeric(.))) %>%
-    dplyr::mutate(dplyr::across(dplyr::everything(), ~ dplyr::case_when(
-      . <= 0.001 ~ 0,
-      . >  0.001 & .  <= 0.005 ~ 1,
-      . >  0.005 & .  <= 0.01 ~ 2,
-      . >  0.01 & .  <= 0.10 ~ 3,
-      . >  0.10 & .  <= 0.20 ~ 4,
-      . >  0.20 & .  <= 1.00 ~ 5,
-      . >  1.00 & .  <= 2.00 ~ 6,
-      . >  2.00 & .  <= 5.00 ~ 7,
-      . >  5.00 & .  <= 10.00 ~ 8,
-      . >  10.00 & .  <= 25.00 ~ 9,
-      . >  25.00 & .  <= 50.00 ~ 10,
-      . >  50.00 & .  <= 75.00 ~ 11,
-      . >  75.00 ~ 12))) 
+    # abundance classes 0-12: <= 0.001 % -> 0, (0.001, 0.005] -> 1, ..., > 75 % -> 12
+    dplyr::mutate(dplyr::across(dplyr::everything(), ~ as.numeric(findInterval(
+      ., c(0.001, 0.005, 0.01, 0.10, 0.20, 1, 2, 5, 10, 25, 50, 75),
+      left.open = TRUE))))
   
   heatmap <- as.matrix(heatmap)
   rownames(heatmap) <- .mbm_shorten_labels(ordered_taxa, max_label_length,

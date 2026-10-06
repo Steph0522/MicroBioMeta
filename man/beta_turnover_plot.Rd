@@ -23,8 +23,7 @@ beta_turnover_plot(
   stat = NULL,
   p_adjust_method = "holm",
   save_table = FALSE,
-  table_filename = "betadiv_turnover.txt",
-  ...
+  table_filename = "betadiv_turnover.txt"
 )
 }
 \arguments{
@@ -109,9 +108,6 @@ table to disk. Default \code{FALSE}.}
 
 \item{table_filename}{Character. File path/name for the saved table (used
 when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.}
-
-\item{...}{Old names of renamed arguments (\code{color_axis_x}, \code{color_facets_x}), still accepted
-with a warning. Any other extra argument is an error.}
 }
 \value{
 A ggplot2 figure with beta diversity partitions across conditions.

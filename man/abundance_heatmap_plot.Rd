@@ -6,7 +6,7 @@
 \usage{
 abundance_heatmap_plot(
   table,
-  metadata,
+  metadata = NULL,
   condition1 = NULL,
   condition2 = NULL,
   condition3 = NULL,
@@ -34,8 +34,9 @@ abundance_heatmap_plot(
 \item{table}{A data frame with taxa in rows and samples in columns.
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}). Optional: if
+\code{NULL} (default), the heatmap has no sample annotations.}
 
 \item{condition1}{Variable of the first horizontal annotation}
 
@@ -77,18 +78,10 @@ rows into the plot.}
 \item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
 
 \item{cell_size}{Numeric or \code{NULL}. Side, in millimeters, of each
-(square) heatmap cell. The Phylum and condition annotations use the same
-size, so every tile in the figure has the same shape. If \code{NULL}
-(default), the largest size that fits the current plotting device is
-used; when there are too many samples for square cells to leave room
-for readable row labels, cells keep the available width but are made
-just tall enough for the labels. Increase the figure width (e.g.
-\code{fig.width} in R Markdown) to get squarer cells with many samples.}
+(square) heatmap cell.}
 
 \item{annotation_height}{Numeric or \code{NULL}. Height, in millimeters,
-of each column annotation bar (condition1/condition2/condition3). If
-\code{NULL} (default), it matches the cell height, so annotation tiles
-have exactly the same size and shape as the heatmap cells.}
+of each column annotation bar (condition1/condition2/condition3).}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the underlying abundance
 table to disk. Default \code{FALSE}.}
@@ -134,7 +127,6 @@ Creates a heatmap using ComplexHeatmap to visualize the relative abundance of fe
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
-
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
@@ -152,16 +144,6 @@ abundance_heatmap_plot(
   name_legend_condition2 = "Treatment",
   name_legend_condition3 = "Plot"
 )
-
-# Every color has a colorblind-friendly default (Okabe-Ito for condition1,
-# "Safe" for condition2), but each annotation can be colored by hand: name
-# the colors after the values (any order), or give them unnamed, in
-# alphabetical order of the values. Other options: feature_prefix labels
-# the rows ("ASV1", "ASV2"...), cell_size fixes the cell side in mm
-# (by default it fits the plotting device; with many samples use a wide
-# device, e.g. cell_size = 4.5 and a 17-inch-wide figure),
-# max_label_length / composite_names control how long names are shortened,
-# and draw = FALSE only builds the grob (e.g. for cowplot::plot_grid()).
 \donttest{
 heat <- abundance_heatmap_plot(
   table                  = table,

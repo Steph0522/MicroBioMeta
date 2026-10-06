@@ -44,6 +44,8 @@ reference:
     contents:
       - collapse_table
       - merge_feature_taxonomy
+      - from_phyloseq
+      - from_tse
   - title: Abundance visualizations
     desc: Functions used for abundance visualizations.
     contents:

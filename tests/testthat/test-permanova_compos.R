@@ -10,10 +10,15 @@ test_that("beta_test_table runs a compositional PERMANOVA and returns a table fi
     permutations = 99
   )
 
-  # The result is the formatted results table rendered as a ggplot figure
-  # (via ggpubr::ggtexttable); the numeric table itself is exposed through
-  # save_table (checked below).
-  expect_s3_class(res, "ggplot")
+  # The result is the numeric results table; printing it draws the
+  # formatted table figure, which autoplot() returns as a ggplot
+  expect_s3_class(res, "mbm_test_table")
+  expect_s3_class(res, "data.frame")
+  expect_true(all(c("Term", "R2", "Pr(>F)") %in% names(res)))
+  expect_true(is.numeric(res$R2))
+  expect_s3_class(ggplot2::autoplot(res), "ggplot")
+  expect_no_error(print(res))
+  expect_output(print(res[1, ]), "Group")
 })
 
 test_that("beta_test_table saves a PERMANOVA table with the tested term, R2 and p-value", {
@@ -53,7 +58,7 @@ test_that("beta_test_table also accepts a plain ecological distance (bray)", {
     permutations = 99
   )
 
-  expect_s3_class(res, "ggplot")
+  expect_s3_class(ggplot2::autoplot(res), "ggplot")
 })
 
 test_that("beta_test_table uses a precomputed distance as-is", {
@@ -86,4 +91,41 @@ test_that("beta_test_table matches metadata to samples by ID, not by row order",
   }
 
   expect_equal(run(shuffled), run(toy$metadata))
+})
+test_that("mc_samples averages the clr values over the Monte Carlo instances", {
+  toy <- make_toy_community()
+  counts <- as.matrix(toy$table[, toy$metadata$SampleID])
+
+  set.seed(1)
+  one <- .mbm_aldex_clr(counts, mc_samples = 1)
+  expect_equal(dim(one), rev(dim(counts)))
+  expect_no_warning({set.seed(1); .mbm_aldex_clr(counts, mc_samples = 1)})
+
+  set.seed(1)
+  avg <- .mbm_aldex_clr(counts, mc_samples = 16)
+  set.seed(1)
+  obj <- suppressWarnings(ALDEx2::aldex.clr(counts, mc.samples = 16, denom = "all",
+                                            verbose = FALSE, useMC = FALSE))
+  manual <- t(sapply(ALDEx2::getMonteCarloInstances(obj), rowMeans))
+  expect_equal(avg, manual)
+  expect_equal(colnames(avg), rownames(counts))
+
+  expect_error(.mbm_aldex_clr(counts, mc_samples = 0), "mc_samples")
+})
+
+test_that("beta_test_table and beta_ord_plot take mc_samples", {
+  toy <- make_toy_community()
+  tmp <- tempfile(fileext = ".txt")
+  on.exit(unlink(tmp), add = TRUE)
+
+  set.seed(1)
+  beta_test_table(toy$table, toy$metadata, formula_str = "Group",
+                  distance = "compositional", permutations = 99, mc_samples = 16,
+                  save_table = TRUE, table_filename = tmp)
+  expect_true("Group" %in% utils::read.delim(tmp, check.names = FALSE)$Term)
+
+  set.seed(1)
+  expect_s3_class(
+    beta_ord_plot(toy$table, toy$metadata, group_col = "Group", mc_samples = 16, top_n = 2),
+    "ggplot")
 })

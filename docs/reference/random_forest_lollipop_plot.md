@@ -89,5 +89,6 @@ random_forest_lollipop_plot(
 #> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
 #>   - 'Proteobacteria' changed to 'Pseudomonadota'
 #>   - 'Actinobacteriota' changed to 'Actinomycetota'
+#>   - 'Firmicutes' changed to 'Bacillota'
 #> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
 ```

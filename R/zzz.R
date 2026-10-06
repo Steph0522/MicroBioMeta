@@ -55,6 +55,44 @@ utils::globalVariables(c(
   taxonomy
 }
 
+# --- Input check ---------------------------------------------------------------
+# A clear error when `table` is not a data frame (e.g. `table = table` with
+# no object called `table`, which passes R's table() function)
+.mbm_check_table <- function(table, arg = "table") {
+  if (!is.data.frame(table) && !is.matrix(table)) {
+    what <- if (is.function(table)) "a function" else
+      sprintf("of class '%s'", class(table)[1])
+    stop("`", arg, "` must be a data frame with taxa in rows and samples in ",
+         "columns, but it is ", what,
+         ". Check the name of the object you passed.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+# --- Compositional (clr) values from ALDEx2 ----------------------------------
+# Samples x features clr matrix for distance = "compositional". ALDEx2 draws
+# `mc_samples` Monte Carlo instances from a Dirichlet distribution; with one
+# instance it is used as is, with more the clr values are averaged across
+# instances (the expected clr, which barely changes between runs).
+.mbm_aldex_clr <- function(counts, mc_samples = 1) {
+  if (!is.numeric(mc_samples) || length(mc_samples) != 1 || mc_samples < 1)
+    stop("`mc_samples` must be a single number >= 1 (e.g. 1 or 128).", call. = FALSE)
+  # ALDEx2 warns that few instances give unreliable values; with one instance
+  # that is expected (and documented in `mc_samples`), so the warning is muffled
+  aldex_obj <- withCallingHandlers(
+    ALDEx2::aldex.clr(counts, mc.samples = mc_samples,
+                      denom = "all", verbose = FALSE, useMC = FALSE),
+    warning = function(w) {
+      if (grepl("so few MC smps", conditionMessage(w))) invokeRestart("muffleWarning")
+    })
+  if (mc_samples == 1) return(t(ALDEx2::getMonteCarloSample(aldex_obj, 1)))
+  # ALDEx2 drops all-zero features, so take the feature names from its output
+  instances <- ALDEx2::getMonteCarloInstances(aldex_obj)
+  clr_mean  <- vapply(instances, rowMeans, numeric(nrow(instances[[1]])))
+  rownames(clr_mean) <- rownames(instances[[1]])
+  t(clr_mean)
+}
+
 # --- Ordination "spider" plot data ------------------------------------------
 # Builds the site scores, group centroids and per-sample-to-centroid segments
 # needed for a ggplot2 spider plot from a vegan::betadisper() object - the
@@ -242,37 +280,6 @@ utils::globalVariables(c(
   )
 }
 
-# --- Renamed arguments ----------------------------------------------------------
-# Several arguments were renamed so the same thing has the same name across
-# the package (e.g. col_cond -> group_col). Functions take `...` and pass it
-# here: an old name still works, with a warning saying what to use instead,
-# and any other unknown argument is an error (so a typo isn't silently
-# swallowed by `...`).
-#   dots:    list(...) of the calling function.
-#   renames: named character vector, c(old_name = "new_name").
-#   fn:      the calling function's name, for the messages.
-# Returns a named list of the values to use, keyed by the new names.
-.mbm_renamed_args <- function(dots, renames, fn) {
-  if (length(dots) == 0) return(list())
-  nms <- names(dots)
-  if (is.null(nms) || any(nms == "")) {
-    stop("Unused unnamed argument(s) in ", fn, "().", call. = FALSE)
-  }
-  unknown <- setdiff(nms, names(renames))
-  if (length(unknown) > 0) {
-    stop("Unused argument(s) in ", fn, "(): ", paste(unknown, collapse = ", "),
-         call. = FALSE)
-  }
-  out <- list()
-  for (old in nms) {
-    new <- renames[[old]]
-    warning("In ", fn, "(), `", old, "` was renamed to `", new,
-            "`; please use `", new, "` instead.", call. = FALSE)
-    out[[new]] <- dots[[old]]
-  }
-  out
-}
-
 # --- Metadata / sample alignment ---------------------------------------------
 # Matches metadata rows to the samples of a table by ID, never by position,
 # since vegan::adonis2(), betadisper(), envfit(), ALDEx2 and randomForest all
@@ -319,7 +326,7 @@ utils::globalVariables(c(
   aligned[[1]] <- keep
 
   if (!identical(as.character(aligned[[1]]), keep)) {
-    stop("Internal error: metadata could not be aligned with the table.", call. = FALSE)
+    stop("Metadata could not be aligned with the table (internal problem).", call. = FALSE)
   }
   aligned
 }
@@ -329,7 +336,19 @@ utils::globalVariables(c(
 # legend_position: passed through from each function's parameter.
 # extra: additional theme() overrides specific to each plot type.
 .mbm_theme <- function(legend_position = "bottom", extra = NULL) {
-  base <- ggplot2::theme_bw(base_family = "serif") +
+  base <- .mbm_base_theme() + ggplot2::theme(legend.position = legend_position)
+  if (!is.null(extra)) base <- base + extra
+  base
+}
+
+# The package's base theme is built once per session and reused
+.mbm_cache <- new.env(parent = emptyenv())
+.mbm_base_theme <- function() {
+  if (is.null(.mbm_cache$theme)) .mbm_cache$theme <- .mbm_build_theme()
+  .mbm_cache$theme
+}
+.mbm_build_theme <- function() {
+  ggplot2::theme_bw(base_family = "serif") +
     ggplot2::theme(
       plot.title       = ggplot2::element_text(hjust = 0.5, face = "bold",
                                                size = 14, color = "black"),
@@ -339,7 +358,6 @@ utils::globalVariables(c(
       axis.text.y      = ggplot2::element_text(size = 12, color = "black"),
       axis.title.x     = ggplot2::element_text(size = 14, color = "black"),
       axis.title.y     = ggplot2::element_text(size = 14, color = "black"),
-      legend.position  = legend_position,
       legend.title     = ggplot2::element_text(size = 14, face = "bold",
                                                color = "black"),
       legend.text      = ggplot2::element_text(size = 12, color = "black"),
@@ -349,8 +367,6 @@ utils::globalVariables(c(
                                                color = "black"),
       panel.grid.minor = ggplot2::element_blank()
     )
-  if (!is.null(extra)) base <- base + extra
-  base
 }
 
 # --- Shared x-axis label element --------------------------------------------
@@ -622,3 +638,61 @@ utils::globalVariables(c(
   # random_forest_lollipop_plot row ids
   "row_id"
 ))
+
+# --- Pairwise Hill-number partition ------------------------------------------
+# Same values as hillR::hill_taxa_parti_pairwise(comm, q) (rel_then_pool =
+# TRUE, pairs = "unique", data.frame output), but computed with matrices for
+# all the pairs at once instead of calling hill_taxa_parti() pair by pair.
+# `comm` has samples in rows and taxa in columns.
+.mbm_hill_pairwise <- function(comm, q) {
+  comm  <- as.matrix(comm)
+  sites <- rownames(comm)
+  n     <- nrow(comm)
+  P     <- comm / rowSums(comm)      # relative abundances per sample
+
+  # alpha part of each sample (relative abundances pooled over the 2 samples)
+  if (q == 0) {
+    a_site <- rowSums(P > 0)
+  } else if (q == 1) {
+    a_site <- rowSums((P / 2) * log(P / 2), na.rm = TRUE)
+  } else {
+    a_site <- rowSums((P / 2)^q)
+  }
+
+  idx <- which(upper.tri(diag(n)), arr.ind = TRUE)   # site1 < site2, by site2
+  idx <- idx[order(idx[, "col"], idx[, "row"]), , drop = FALSE]
+  i <- idx[, "row"]; j <- idx[, "col"]
+
+  gamma <- numeric(nrow(idx))
+  for (s1 in unique(i)) {
+    k <- which(i == s1)
+    G <- (P[s1, ] + t(P[j[k], , drop = FALSE])) / 2  # taxa x pairs
+    G <- sweep(G, 2, colSums(G), "/")
+    gamma[k] <- if (q == 0) {
+      colSums(G > 0)
+    } else if (q == 1) {
+      exp(colSums(-G * log(G), na.rm = TRUE))
+    } else {
+      colSums(G^q)^(1 / (1 - q))
+    }
+  }
+
+  alpha <- if (q == 0) {
+    (a_site[i] + a_site[j]) / 2
+  } else if (q == 1) {
+    exp(-(a_site[i] + a_site[j])) / 2
+  } else {
+    (1 / 2) * (a_site[i] + a_site[j])^(1 / (1 - q))
+  }
+  beta <- gamma / alpha
+  if (q == 1) {
+    local  <- (log(2) - log(gamma) + log(alpha)) / log(2)
+    region <- local
+  } else {
+    local  <- (2^(1 - q) - beta^(1 - q)) / (2^(1 - q) - 1)
+    region <- ((1 / beta)^(1 - q) - (1 / 2)^(1 - q)) / (1 - (1 / 2)^(1 - q))
+  }
+  tibble::tibble(q = q, site1 = sites[i], site2 = sites[j],
+                 TD_gamma = gamma, TD_alpha = unname(alpha), TD_beta = unname(beta),
+                 local_similarity = unname(local), region_similarity = unname(region))
+}

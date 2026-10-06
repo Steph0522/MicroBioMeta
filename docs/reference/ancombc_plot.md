@@ -1,11 +1,7 @@
 # ANCOMBC2 differential abundance bar/heatmap plot
 
-Runs ANCOMBC2 on a counts table and metadata, then visualizes
-differentially abundant taxa. For two-group comparisons a bar plot of
-log-fold changes is returned; for three or more groups a heatmap is
-returned; for a continuous `group_col` (e.g. `"dist_km"`) a bar plot of
-the effect size per unit increase is returned instead, colored by the
-direction of the effect.
+Runs ANCOMBC2 on a table and metadata, then visualizes differentially
+abundant taxa.
 
 ## Usage
 
@@ -25,8 +21,7 @@ ancombc_plot(
   y_axis_title = NULL,
   bar_colors = c("#56B4E9", "#E69F00"),
   save_table = FALSE,
-  table_filename = "ancombc_results.txt",
-  ...
+  table_filename = "ancombc_results.txt"
 )
 ```
 
@@ -34,14 +29,13 @@ ancombc_plot(
 
 - table:
 
-  Data frame with taxa as rows and samples as columns. The last column
-  must contain taxonomy strings (named "taxonomy", "Taxonomy", "taxon",
-  "taxa", "Taxa", or "Taxon").
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  Data frame with samples as rows. The first column must contain sample
-  IDs that match the column names of `table`.
+  A data frame containing sample metadata. Must include a `SAMPLEID`
+  column matching sample names in `table`.
 
 - group_col:
 
@@ -57,7 +51,7 @@ ancombc_plot(
   Character or `NULL`. Taxonomic level to agglomerate to before running
   `ancombc2` (e.g. `"genus"`, `"family"`; case-insensitive). Default
   `"genus"`. Pass `NULL` to skip agglomeration and run ANCOMBC2 directly
-  on the ASV/OTU-level table (rows of `table`, as-is).
+  on the ASV/OTU/species-level table (rows of `table`, as-is).
 
 - min_prevalence:
 
@@ -122,12 +116,6 @@ ancombc_plot(
   Character. File path/name for the saved table (used when
   `save_table = TRUE`). Default `"ancombc_results.txt"`.
 
-- ...:
-
-  Old names of renamed arguments (`col_cond`, `tax_level`, `prv_cut`,
-  `p_adj_method`), still accepted with a warning. Any other extra
-  argument is an error.
-
 ## Value
 
 A `ggplot2` object: a bar plot (2 groups) or a heatmap (\\\geq\\3
@@ -144,9 +132,7 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
 # Not run automatically because ANCOMBC2's internal bias-correction step
-# can intermittently error on some random bootstrap draws (a known
-# ANCOMBC2 edge case, not specific to this dataset), which would make an
-# always-run example a flaky check. p_adjust_method = "BH" is less strict
+# p_adjust_method = "BH" is less strict
 # than the "holm" default; min_prevalence is raised above the 0.1 default to
 # filter out rare/sparse taxa before testing.
 # \donttest{
@@ -161,7 +147,8 @@ ancombc_plot(
 #>   method           from
 #>   na.action.merMod car 
 #> Checking the input data type ...
-#> The input data is of type: phyloseq
+#> The input data is of type: matrix
+#> The imported data is in a generic 'matrix'/'data.frame' format.
 #> PASS
 #> Checking the sample metadata ...
 #> The specified variables in the formula: Location

@@ -61,6 +61,7 @@ of color and shape aesthetics. It also supports compositional transformation via
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
 <span>  distance <span class="op">=</span> <span class="st">"compositional"</span>,</span>
+<span>  mc_samples <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ordination <span class="op">=</span> <span class="st">"PCA"</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"colorb"</span>,</span>
@@ -92,6 +93,16 @@ of color and shape aesthetics. It also supports compositional transformation via
 <code>"jaccard"</code>, <code>"sorensen"</code>, <code>"compositional"</code> (default; CLR/Aitchison via
 ALDEx2), <code>"aitchison"</code>, or <code>"robust.aitchison"</code>. Case-insensitive.
 Note: <code>ordination = "PCA"</code> requires <code>distance = "compositional"</code>.</p></dd>
+
+
+<dt id="arg-mc-samples">mc_samples<a class="anchor" aria-label="anchor" href="#arg-mc-samples"></a></dt>
+<dd><p>Number of ALDEx2 Monte Carlo instances used when
+<code>distance = "compositional"</code>. With <code>1</code> (default) the clr values
+of one random instance are used: fast, but the result changes a little
+between runs (use <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>). With more, the clr values are
+averaged across instances, which gives an almost identical result in every
+run; <code>128</code> (ALDEx2's default) is suggested for final analyses, and
+takes longer. Ignored for other distances.</p></dd>
 
 
 <dt id="arg-ordination">ordination<a class="anchor" aria-label="anchor" href="#arg-ordination"></a></dt>
@@ -171,9 +182,10 @@ when <code>save_table = TRUE</code>). Default <code>"ordination_scores.txt"</cod
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code>distance = "compositional"</code> draws a random Monte Carlo
-instance from <code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>; call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before
-the function to make the result reproducible.</p>
+    <p>With <code>distance = "compositional"</code> and <code>mc_samples = 1</code>,
+the clr values come from one random Monte Carlo instance of
+<code><a href="https://rdrr.io/pkg/ALDEx2/man/aldex.clr.function.html" class="external-link">ALDEx2::aldex.clr()</a></code>; call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before the function
+to make the result reproducible, or use <code>mc_samples = 128</code>.</p>
     </div>
 
     <div class="section level2">
@@ -194,108 +206,108 @@ the function to make the result reproducible.</p>
 <span class="r-in"><span>  top_n      <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Run 0 stress 0.1706715 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 1 stress 0.2155698 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 2 stress 0.1719696 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 3 stress 0.1797951 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 4 stress 0.1921148 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 5 stress 0.1758142 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 6 stress 0.1855761 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 7 stress 0.1967478 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 8 stress 0.199969 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 9 stress 0.2152568 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 10 stress 0.2089763 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 11 stress 0.2131654 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 12 stress 0.1803472 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 13 stress 0.2118863 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 14 stress 0.1978755 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 15 stress 0.1734001 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 16 stress 0.1707604 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Procrustes: rmse 0.06080309  max resid 0.2272373 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 17 stress 0.1842817 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 18 stress 0.1866185 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 19 stress 0.1982192 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 20 stress 0.1770608 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 21 stress 0.1892933 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 22 stress 0.2027165 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 23 stress 0.1918152 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 24 stress 0.17325 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 25 stress 0.1841278 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 26 stress 0.1865108 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 27 stress 0.1792333 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 28 stress 0.1972452 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 29 stress 0.1946402 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 30 stress 0.1928708 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 31 stress 0.1970503 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 32 stress 0.2036613 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 33 stress 0.1905785 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 34 stress 0.192991 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 35 stress 0.1805166 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 36 stress 0.2113834 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 37 stress 0.216324 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 38 stress 0.1789651 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 39 stress 0.181085 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 40 stress 0.1851935 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 41 stress 0.1784918 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 42 stress 0.2196472 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 43 stress 0.2044763 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 44 stress 0.1951448 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 45 stress 0.2058345 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 46 stress 0.1960757 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 47 stress 0.1933797 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 48 stress 0.1881742 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 49 stress 0.197731 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 50 stress 0.1878218 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 51 stress 0.218125 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 52 stress 0.2055175 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 53 stress 0.1813276 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 54 stress 0.1964198 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 55 stress 0.1840136 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 56 stress 0.1823575 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 57 stress 0.1730434 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 58 stress 0.2047062 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 59 stress 0.2042195 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 60 stress 0.1974137 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 61 stress 0.2030334 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 62 stress 0.1824286 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 63 stress 0.1793867 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 64 stress 0.2050423 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 65 stress 0.1849363 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 66 stress 0.1798573 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 67 stress 0.1929429 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 68 stress 0.186958 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 69 stress 0.2117428 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 70 stress 0.1875919 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 71 stress 0.1956884 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 72 stress 0.1990089 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 73 stress 0.1831598 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 74 stress 0.2075504 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 75 stress 0.1755164 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 76 stress 0.1711051 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Procrustes: rmse 0.05249739  max resid 0.2373464 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 77 stress 0.2248077 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 78 stress 0.2007224 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 79 stress 0.1816515 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 80 stress 0.2074464 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 81 stress 0.204684 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 82 stress 0.1771717 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 83 stress 0.2066129 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 84 stress 0.1810903 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 85 stress 0.1727549 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 86 stress 0.1905483 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 87 stress 0.2087548 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 88 stress 0.1912186 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 89 stress 0.1964479 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 90 stress 0.1805861 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 91 stress 0.183507 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 92 stress 0.1799765 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 93 stress 0.198668 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 94 stress 0.1713045 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 95 stress 0.193281 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 96 stress 0.1978412 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 97 stress 0.1772173 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 98 stress 0.1941517 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 99 stress 0.1889278 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Run 100 stress 0.1900375 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 1 stress 0.1858971 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 2 stress 0.1964941 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 3 stress 0.2008229 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 4 stress 0.2108036 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 5 stress 0.2110827 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 6 stress 0.2022634 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 7 stress 0.1852785 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 8 stress 0.2071095 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 9 stress 0.1928814 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 10 stress 0.1847932 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 11 stress 0.2006323 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 12 stress 0.1817891 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 13 stress 0.1812133 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 14 stress 0.1805684 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 15 stress 0.1911592 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 16 stress 0.1987114 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 17 stress 0.2251462 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 18 stress 0.1939527 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 19 stress 0.1890742 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 20 stress 0.1883558 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 21 stress 0.1938252 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 22 stress 0.2100218 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 23 stress 0.1886366 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 24 stress 0.1961417 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 25 stress 0.1752081 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 26 stress 0.1828438 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 27 stress 0.2031569 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 28 stress 0.1873056 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 29 stress 0.196631 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 30 stress 0.1971796 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 31 stress 0.1968274 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 32 stress 0.1890111 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 33 stress 0.1953745 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 34 stress 0.1822461 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 35 stress 0.1864966 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 36 stress 0.2013476 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 37 stress 0.1775038 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 38 stress 0.1702792 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... New best solution</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... Procrustes: rmse 0.05496463  max resid 0.238398 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 39 stress 0.1840863 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 40 stress 0.1858768 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 41 stress 0.1826098 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 42 stress 0.1861802 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 43 stress 0.2099587 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 44 stress 0.207177 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 45 stress 0.178743 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 46 stress 0.1854874 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 47 stress 0.1827463 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 48 stress 0.186119 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 49 stress 0.2163555 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 50 stress 0.2081207 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 51 stress 0.1938853 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 52 stress 0.2120015 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 53 stress 0.1733722 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 54 stress 0.1733489 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 55 stress 0.1835213 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 56 stress 0.190806 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 57 stress 0.2269347 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 58 stress 0.2013745 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 59 stress 0.1934049 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 60 stress 0.2279811 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 61 stress 0.2033342 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 62 stress 0.2225681 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 63 stress 0.1816522 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 64 stress 0.1775682 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 65 stress 0.1994683 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 66 stress 0.1723301 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 67 stress 0.1955567 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 68 stress 0.2069365 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 69 stress 0.2084881 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 70 stress 0.1955151 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 71 stress 0.183886 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 72 stress 0.1966279 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 73 stress 0.2066014 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 74 stress 0.1855555 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 75 stress 0.180835 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 76 stress 0.1881507 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 77 stress 0.190056 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 78 stress 0.1993236 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 79 stress 0.1837502 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 80 stress 0.1737991 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 81 stress 0.179853 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 82 stress 0.1821538 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 83 stress 0.1792971 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 84 stress 0.1831922 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 85 stress 0.2154851 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 86 stress 0.1836506 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 87 stress 0.1747959 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 88 stress 0.2179816 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 89 stress 0.2042863 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 90 stress 0.1827904 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 91 stress 0.1756128 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 92 stress 0.1718132 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 93 stress 0.2176935 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 94 stress 0.2017589 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 95 stress 0.1962462 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 96 stress 0.1954244 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 97 stress 0.1764035 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 98 stress 0.2014986 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 99 stress 0.1926154 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Run 100 stress 0.2081464 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> *** Best solution was not repeated -- monoMDS stopping criteria:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     19: no. of iterations &gt;= maxit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     81: stress ratio &gt; sratmax</span>

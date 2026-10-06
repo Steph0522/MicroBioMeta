@@ -63,8 +63,6 @@
 #' @param table_filename Character. Name of the output file used when
 #'   save_table = TRUE.
 #'
-#' @param ... Old names of renamed arguments (\code{env_table}, \code{cond_vect}), still accepted
-#'   with a warning. Any other extra argument is an error.
 #' @return A ggplot2 object.
 #' @export
 #'
@@ -114,11 +112,7 @@ corr_env_abund_plot <- function(table,
                                 p_adjust_method = "BH",
                                 x_label_angle = 45,
                                 save_table = FALSE,
-                                table_filename = "corr.txt",
-                                ...) {
-  # Old argument names still work, with a warning (see .mbm_renamed_args)
-  renamed <- .mbm_renamed_args(list(...), c(env_table = "env_data", cond_vect = "env_vars"), "corr_env_abund_plot")
-  for (nm in names(renamed)) assign(nm, renamed[[nm]])
+                                table_filename = "corr.txt") {
 
   geom <- match.arg(tolower(geom), c("tile", "circle"))
 
@@ -447,20 +441,8 @@ corr_env_abund_plot <- function(table,
   # --- Calcular p-values si se indica pval_threshold
   pval_mat <- NULL
   if (!is.null(pval_threshold) || save_table) {
-    pval_mat <- matrix(NA, 
-                       nrow = ncol(env), 
-                       ncol = nrow(abund),
-                       dimnames = list(colnames(env), rownames(abund)))
-    
-    for (env_var in colnames(env)) {
-      for (tax_id in rownames(abund)) {
-        test <- suppressWarnings(
-          cor.test(env[[env_var]], as.numeric(abund[tax_id, ]), method = method)
-        )
-        pval_mat[env_var, tax_id] <- test$p.value
-      }
-    }
-    
+    pval_mat <- .mbm_cor_pvalues(env, abund, method)
+
     # Every taxon x variable pair is a separate test, so correct for
     # multiple comparisons over the whole matrix before filtering.
     pval_raw <- pval_mat
@@ -587,4 +569,56 @@ corr_env_abund_plot <- function(table,
     ggplot2::coord_fixed()
   
   return(p)
+}
+
+# p-values of cor.test() for every environmental variable x taxon pair, as a
+# variables x taxa matrix. Pearson pairs, and Spearman pairs with ties (or
+# n >= 1290), use cor.test()'s t approximation, computed for all pairs at
+# once; the rest (exact Spearman, Kendall, pairs with missing values) call
+# cor.test() one by one, so the p-values are the same as before.
+.mbm_cor_pvalues <- function(env, abund, method) {
+  x <- as.matrix(env)
+  y <- t(abund)
+  pval <- matrix(NA_real_, ncol(x), ncol(y), dimnames = list(colnames(x), colnames(y)))
+
+  loop <- matrix(TRUE, ncol(x), ncol(y))
+  if (method %in% c("pearson", "spearman")) {
+    x_na <- colSums(is.na(x)) > 0
+    y_na <- colSums(is.na(y)) > 0
+    loop <- outer(x_na, y_na, "|")
+    n  <- nrow(x)
+    df <- n - 2
+    if (method == "spearman") {
+      x_ties <- apply(x, 2, anyDuplicated) > 0
+      y_ties <- apply(y, 2, anyDuplicated) > 0
+      exact  <- n <= 1290 & !outer(x_ties, y_ties, "|")
+      loop   <- loop | exact
+    }
+    fast <- !loop
+    if (any(fast)) {
+      if (method == "pearson") {
+        r <- suppressWarnings(stats::cor(x, y))
+        t_stat <- sqrt(df) * r / sqrt(1 - r^2)
+        p_fast <- 2 * pmin(stats::pt(t_stat, df), stats::pt(t_stat, df, lower.tail = FALSE))
+      } else {
+        # same steps as cor.test(method = "spearman") when there are ties
+        r <- suppressWarnings(stats::cor(apply(x, 2, rank), apply(y, 2, rank)))
+        q <- (n^3 - n) * (1 - r) / 6
+        r <- 1 - q / ((n * (n^2 - 1)) / 6)
+        t_stat <- r / sqrt((1 - r^2) / df)
+        p_fast <- ifelse(q > (n^3 - n) / 6,
+                         stats::pt(t_stat, df),
+                         stats::pt(t_stat, df, lower.tail = FALSE))
+        p_fast <- pmin(2 * p_fast, 1)
+      }
+      pval[fast] <- p_fast[fast]
+    }
+  }
+
+  for (k in which(loop)) {
+    i <- (k - 1) %% nrow(pval) + 1
+    j <- (k - 1) %/% nrow(pval) + 1
+    pval[k] <- suppressWarnings(stats::cor.test(x[, i], y[, j], method = method))$p.value
+  }
+  pval
 }

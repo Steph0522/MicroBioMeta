@@ -105,6 +105,50 @@ metadata_meta <- metadata_meta %>%
   dplyr::mutate(Site = as.character(Site))
 ```
 
+### 🔄 Starting from a phyloseq or TreeSummarizedExperiment object
+
+`MicroBioMeta` works with plain tables, but if your data are already in a `phyloseq` object or in a `TreeSummarizedExperiment` (the Bioconductor container used by the [`mia`](https://bioconductor.org/packages/mia/) family of packages), `from_phyloseq()` and `from_tse()` turn them into the `table` (with the `taxonomy` column last) and `metadata` (with `SAMPLEID` first) used in this vignette.
+
+To show it, we pack the Kraken2 table into a `TreeSummarizedExperiment`, with one taxonomy column per rank, as `mia` would:
+
+```{r from-objects-1, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE), message=FALSE}
+counts <- as.matrix(table_meta[, metadata_meta$SAMPLEID])
+
+ranks <- tidyr::separate(
+  data.frame(taxonomy = gsub("[kpcofgs]__", "", table_meta$taxonomy)),
+  taxonomy, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+  sep = "; ", fill = "right"
+)
+rownames(ranks) <- rownames(table_meta)
+
+samples <- metadata_meta
+rownames(samples) <- samples$SAMPLEID
+
+tse <- TreeSummarizedExperiment::TreeSummarizedExperiment(
+  assays  = list(counts = counts),
+  rowData = ranks,
+  colData = samples
+)
+tse
+```
+
+`from_tse()` returns a list with the two data frames:
+
+```{r from-objects-2, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE)}
+mbm <- from_tse(tse, assay_name = "counts")
+
+mbm$table[1:3, c(1:2, ncol(mbm$table))]
+mbm$metadata[1:3, 1:5]
+```
+
+and those can go straight into any function, e.g. `abundance_bar_plot(table = mbm$table, metadata = mbm$metadata, ...)`.
+
+With a `phyloseq` object it works the same way:
+
+```{r from-objects-3, eval=FALSE}
+mbm <- from_phyloseq(physeq)
+```
+
 ## 📊 Composition exploration
 ### 📊 Abundance barplot
 Same function as in the metabarcoding vignette; the only difference is `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to expect Kraken2/Bracken-style strings.
@@ -123,7 +167,7 @@ abundance_bar_plot(table = table_meta,
 ```
 
 ### 🖥️ Abundance heatmap
-Kraken2/Bracken taxa aren't ASVs, so `feature_prefix = "Taxon"` is used here instead of the default `"ASV"` row-label prefix.
+Kraken2/Bracken taxa aren't ASVs, so `feature_prefix = "Taxon"` is used here instead of the default `"ASV"` row-label prefix. `condition2` adds a second annotation bar, here the sampling site within each polygon.
 
 ```{r abundance-heatmap-8, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
 abundance_heatmap_plot(table = table_meta,
@@ -131,14 +175,12 @@ abundance_heatmap_plot(table = table_meta,
                   top_n = 20,
                   show_column_names = FALSE,
                   condition1 = "Polygon",
+                  condition2 = "Site",
                   feature_prefix = "Taxon")
 ```
 
 ## 📊 Alpha diversity
-### 📈 Correlation among Hill numbers
-```{r correlation-among-hill-numbers-9, warning=FALSE, fig.width=12, fig.height=4.5}
-alpha_hill_corr_plot(table = table_meta)
-```
+As in the metabarcoding vignette, `alpha_hill_corr_plot(table = table_meta)` can be used first to check whether the Hill numbers depend on sequencing depth.
 
 ### 📊 Alpha diversity visualization
 `fill_col` is the same as `x_col` here, so the legend would just repeat the x-axis tick labels - `show_legend = FALSE` drops it.
@@ -173,25 +215,26 @@ Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0 doesn't
 
 ### Ordination of community composition
 
-We can use metrics that consider only presence/absence like **jaccard**:
+Here we use **Bray-Curtis** dissimilarity, which takes into account the abundance of each taxon, with an **NMDS** ordination. NMDS starts from random configurations, so we use `set.seed()` to get the same plot every time:
 
 ```{r ordination-of-community-composition-12, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+set.seed(123)
 beta_ord_plot(table = table_meta,
               metadata = metadata_meta,
-              distance = "jaccard",
-              ordination = "PCoA",
+              distance = "bray",
+              ordination = "NMDS",
               group_col = "Polygon")
 ```
 
 ### Statistical tests for beta diversity
 
-`distance = "jaccard"` matches with the one used for the ordinatrion above, so the ordination (via the `vegan` package [@oksanen2024vegan]) and the PERMANOVA significance test [@anderson2001permanova] are evaluating the same notion of dissimilarity.
+`distance = "bray"` matches the one used for the ordination above, so the ordination (via the `vegan` package [@oksanen2024vegan]) and the PERMANOVA significance test [@anderson2001permanova] are evaluating the same notion of dissimilarity.
 
 ```{r statistical-tests-for-beta-diversity-13, fig.width=8, fig.height=4}
 beta_test_table(table = table_meta,
                 metadata = metadata_meta,
                 formula_str = "Polygon*Site",
-                distance = "jaccard",
+                distance = "bray",
                 test = "permanova",
                 permutations = 999)
 ```
@@ -207,11 +250,11 @@ beta_decay_plot(
   metadata = metadata_meta,
   lat_col  = "Latitude",
   lon_col  = "Longitude",
-  distance = "jaccard"
+  distance = "bray"
 )
 ```
 
-Communities that are geographically closer are significantly more similar (Mantel *r* ≈ 0.2, *p* = 0.002. the exact value jitters slightly between runs since the Mantel test is permutation-based), a real distance-decay signal across these forest soils. `jaccard` is used to be consistent with the ordination above. 
+Communities that are geographically closer are significantly more similar in composition (Mantel *r* ≈ 0.21, *p* ≈ 0.001; the exact p-value jitters slightly between runs since the Mantel test is permutation-based), a real distance-decay signal across these forest soils. The relationship is weak, though: distance explains only about 4 % of the variation in similarity (R² ≈ 0.04). `bray` is used to be consistent with the ordination above.
 
 ## Differential abundant analysis
 

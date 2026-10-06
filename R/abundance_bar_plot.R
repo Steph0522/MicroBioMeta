@@ -4,8 +4,9 @@
 #'
 #' @param table A data frame with taxa in rows and samples in columns. 
 #' The last column must be named `taxonomy`, containing full taxonomic strings.
-#' @param metadata A data frame containing sample metadata. 
-#' Must include a `SAMPLEID` column matching sample names in `table`.
+#' @param metadata A data frame containing sample metadata. Its first column
+#'   must hold the sample IDs (the column names of `table`). Optional: if
+#'   `NULL` (default), one bar is drawn per sample.
 #' @param taxonomy_db Character. Reference taxonomy database. One of
 #'   `"silva"` (default), `"gg2"` (Greengenes2; also accepts `"gg"` /
 #'   `"greengenes2"`), `"unite"` (fungal ITS), or `"Kraken2"` (also accepts
@@ -13,7 +14,8 @@
 #' @param level Character. Taxonomic level to collapse to. One of `"kingdom"`,
 #'   `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
 #'   `"species"`. Case-insensitive.
-#' @param x_col Character. Column name in `metadata` to use for the x-axis (e.g., environment, condition).
+#' @param x_col Character. Column name in `metadata` to use for the x-axis
+#'   (e.g., environment, condition). If `NULL` (default), one bar per sample.
 #' @param facet_by Optional. Character. Column name in `metadata` to facet the plot by (e.g., treatment). Default is `NULL`.
 #' @param label Character. Legend title for the taxa groups. Default is `"taxonomy"`.
 #' @param top_n Integer. Number of most abundant taxa groups to display. Default is `15`.
@@ -68,10 +70,10 @@
 
 
 abundance_bar_plot <- function(table,
-                              metadata,
+                              metadata = NULL,
                               taxonomy_db = "silva",
                               level = "genus",
-                              x_col,
+                              x_col = NULL,
                               facet_by = NULL,
                               width_equal = FALSE,
                               label = "taxonomy",
@@ -84,8 +86,7 @@ abundance_bar_plot <- function(table,
                               aspect_ratio = NULL,
                               add_remained = FALSE,
                               save_table = FALSE,
-                              table_filename = "relative_abundance.txt",
-                              ...) {
+                              table_filename = "relative_abundance.txt") {
   taxonomy_db <- switch(
     tolower(taxonomy_db),
     "silva"       = "silva",
@@ -101,11 +102,20 @@ abundance_bar_plot <- function(table,
   )
   level <- tolower(level)
 
-  # accept each firts name as sampleid
-  colnames(metadata)[1] <- "SAMPLEID"
-
+  .mbm_check_table(table)
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
+
+  # without metadata (or x_col), one bar per sample
+  if (is.null(metadata)) {
+    if (!is.null(facet_by)) stop("`facet_by` needs `metadata`.", call. = FALSE)
+    metadata <- data.frame(SAMPLEID = names(table)[-tax_col])
+  }
+  # accept each firts name as sampleid
+  colnames(metadata)[1] <- "SAMPLEID"
+  if (is.null(x_col)) x_col <- "SAMPLEID"
+  if (!x_col %in% names(metadata))
+    stop("`x_col` '", x_col, "' is not a column of metadata.", call. = FALSE)
 
   names(table)[tax_col] <- "taxonomy"
   
@@ -210,7 +220,7 @@ abundance_bar_plot <- function(table,
   table_long <- table %>%
     tidyr::pivot_longer(cols = -taxonomy, names_to = "SAMPLEID", values_to = "RelativeAbundance")
   
-  columns_to_join <- c("SAMPLEID", x_col, facet_by)
+  columns_to_join <- unique(c("SAMPLEID", x_col, facet_by))
   columns_to_join <- columns_to_join[!is.na(columns_to_join) & columns_to_join != "NULL"]
   table_long <- dplyr::left_join(
     table_long,

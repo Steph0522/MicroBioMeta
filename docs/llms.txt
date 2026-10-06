@@ -71,6 +71,10 @@ Functions used for pre process data.
   : Collapse table Collapse an OTU/ASV table by taxonomic level
 - [`merge_feature_taxonomy()`](https://steph0522.github.io/MicroBioMeta/reference/merge_feature_taxonomy.md)
   : Merge feature table and taxonomy
+- [`from_phyloseq()`](https://steph0522.github.io/MicroBioMeta/reference/from_phyloseq.md)
+  : Convert a phyloseq object to MicroBioMeta tables
+- [`from_tse()`](https://steph0522.github.io/MicroBioMeta/reference/from_tse.md)
+  : Convert a (Tree)SummarizedExperiment object to MicroBioMeta tables
 
 ## Abundance visualizations
 
@@ -81,8 +85,7 @@ Functions used for abundance visualizations.
 - [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md)
   : Heatmap of relative abundance
 - [`abundance_sankey_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_sankey_plot.md)
-  : Generate a Sankey diagram from an OTU table with taxonomic
-  information
+  : Sankey diagram of relative abundances
 
 ## Alpha diversity
 
@@ -110,7 +113,7 @@ Functions used for beta diversity analyses and visualizations.
 - [`beta_partition_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_partition_ord_plot.md)
   : Beta diversity partition (Jaccard/Sorensen)
 - [`beta_decay_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_decay_plot.md)
-  : Distance-decay of community similarity
+  : Distance-decay of community similarity plot
 - [`beta_test_table()`](https://steph0522.github.io/MicroBioMeta/reference/beta_test_table.md)
   : Table of Permanova or Betadisper
 
