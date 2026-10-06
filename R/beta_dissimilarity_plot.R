@@ -1,41 +1,32 @@
 #' Beta Diversity Boxplot
 #'
 #' This function calculates beta diversity (shared species, turnover, or nestedness)
-#' and generates a ggplot2 boxplot with facets and custom coloring. The user only
-#' needs to specify the metadata column(s) to be used for comparisons; the function
-#' constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
+#' and generates a ggplot2 boxplot with facets and custom coloring.
 #'
-#' @param table Abundance matrix (samples in columns, species/features in rows).
-#' @param metadata Data frame with sample metadata. First column must match sample names in table.
-#' @param comparison_condition1 Optional vector of comparison labels for the first condition.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param condition1_col Column name in metadata for the first condition.
-#' @param condition2_col Optional column name in metadata for the second
-#'   condition, used as facet. Each facet keeps only pairs of samples that
-#'   share that value (e.g. two samples of treatment TC), so comparisons are
-#'   split by the condition they come from instead of mixing them.
+#' @param condition2_col Optional column name in metadata for the second condition, used as facet. 
 #' @param facet_colors Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"} background.
-#' @param group_colors Optional named vector of colors for x-axis groups. Defaults to the package's
-#'   colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).
+#' @param group_colors Optional named vector of colors for x-axis groups. 
 #' @param x_axis_title Title for the x-axis.
-#' @param y_axis_title Title for the y-axis. Default \code{NULL}: built from
-#'   \code{partition} (e.g. \code{"Beta diversity (shared features)"}).
+#' @param y_axis_title Title for the y-axis. Default \code{NULL}: it is built automatically.
 #' @param partition Type of beta diversity to compute: `"shared"` (default),
 #'   `"turnover"`, or `"nestedness"`. Case-insensitive.
 #' @param family Dissimilarity family for the turnover/nestedness partition:
 #'   `"sorensen"` (default) or `"jaccard"`. Case-insensitive.
 #' @param stat Character or \code{NULL}. Statistical test to compare the
 #'   boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
-#'   compare every pair of boxes, each with its own bracket and p-value
-#'   (\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
-#'   give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
+#'   compare every pair, (\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
+#'   give one global p-value for more than 3 factors
 #'   Default \code{NULL} (no test shown).
 #' @param p_adjust_method Multiple-comparison correction for the pairwise
-#'   tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
-#'   each panel; any method of \code{stats::p.adjust()}. Default
+#'   any method of \code{stats::p.adjust()}. Default
 #'   \code{"holm"}; \code{"none"} shows the raw p-values.
 #' @param show_x_labels Logical. If \code{TRUE} (default), x-axis tick labels
-#'   are shown. The comparison groups are also in the legend, so set to
-#'   \code{FALSE} to hide the (often long) tick labels when that's redundant.
+#'   are shown. 
 #' @param x_label_angle Numeric. Rotation (in degrees) of the x-axis tick
 #'   labels when \code{show_x_labels = TRUE}. Default \code{0} (horizontal);
 #'   use e.g. \code{45} or \code{90} when comparison names are long enough to
@@ -93,7 +84,7 @@ beta_dissimilarity_plot <- function(
     table_filename = "betadiv_table.txt"
 ) {
   
-  # --- Remove taxonomy column if present ---
+#prepare data
   tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
   if(length(tax_col) == 1) table <- table[ , -tax_col]
   
@@ -116,12 +107,7 @@ beta_dissimilarity_plot <- function(
       beta_mat <- if(partition=="turnover") beta_pair$beta.sim else beta_pair$beta.sne
     }
   }
-  
-  # --- Convert to long format ---
-  # Both betapart.core()$shared and as.matrix(beta.pair()) are full symmetric
-  # n x n matrices: keep only the lower triangle, so each pair of samples
-  # appears once and the diagonal (a sample against itself; its richness in
-  # `shared`) is left out. Pairs with a value of 0 are real and are kept.
+
   beta_mat <- as.matrix(beta_mat)
   idx <- which(lower.tri(beta_mat), arr.ind = TRUE)
   beta_df <- data.frame(site1 = rownames(beta_mat)[idx[, "row"]],
@@ -141,24 +127,12 @@ beta_dissimilarity_plot <- function(
                                                      "_vs_",
                                                      pmax(c1_x, c1_y)))
   
-  # Filter if comparison_condition1 specified. Normalized the same way
-  # condition1_group was built above (pmin/pmax), so comparison_condition1
-  # matches regardless of which order the caller wrote each pair in - e.g.
-  # "Rhizosphere_vs_Bulk soil" still matches even though "Bulk soil" sorts
-  # first alphabetically and so is what condition1_group actually holds.
   if(!is.null(comparison_condition1)) {
     norm1 <- .mbm_normalize_pair(comparison_condition1)
     beta_df <- dplyr::filter(beta_df, condition1_group %in% norm1)
-    # Legend/x-axis order follows the order comparison_condition1 was
-    # written in, instead of first-appearance in the data (essentially
-    # arbitrary) - same ordering behavior as beta_turnover_plot().
     beta_df$condition1_group <- factor(beta_df$condition1_group, levels = unique(norm1))
   }
 
-  # condition2_col facets the plot: keep only pairs whose two samples share
-  # the same condition2 value, so each facet (e.g. TC) holds only
-  # comparisons within that treatment, never a TC sample against a TD one
-  # (same as beta_turnover_plot()).
   if (!is.null(condition2_col)) {
     c2_x <- as.character(beta_df[[paste0(condition2_col, ".x")]])
     c2_y <- as.character(beta_df[[paste0(condition2_col, ".y")]])
@@ -180,7 +154,6 @@ beta_dissimilarity_plot <- function(
     )
     message("Table saved as: ", table_filename)
   }
-  # --- Default palettes if missing ---
   n_groups <- length(unique(beta_df$condition1_group))
   if(is.null(group_colors)) {
     group_colors <- if (n_groups == 2) .mbm_colors_2group else rep_len(.mbm_colors, n_groups)
@@ -194,8 +167,6 @@ beta_dissimilarity_plot <- function(
   }
   
 
-  # The comparison groups are already named in the legend, so their tick
-  # labels are hidden when show_x_labels = FALSE (as in beta_turnover_plot).
   x_text  <- if (show_x_labels) .mbm_x_text(x_label_angle) else ggplot2::element_blank()
   x_ticks <- if (show_x_labels) ggplot2::element_line(colour = "black") else ggplot2::element_blank()
 
