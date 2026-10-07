@@ -1,23 +1,16 @@
 #' Table of Permanova or Betadisper 
 #' 
-#' This function create a table with the results of permanova or betadisper
+#' This function create a table (ggpubr object) with the results of PERMANOVA or betadisper.
 #' 
-#' 
-#' @param table A precomputed distance matrix (\code{matrix} or \code{dist}
-#'   object, e.g. from \code{vegan::vegdist}), or a data frame with taxonomy,
-#'   where the columns are the samples and rows are ASVs or taxa.
-#' @param metadata Data frame of characteristics or important information of the samples
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param formula_str Model formula
 #' @param distance Method for calculating pairwise distances. Same convention
 #'   as \code{beta_div_plot}'s \code{distance} argument: \code{"compositional"}
-#'   runs ALDEx2's CLR transform (\code{ALDEx2::aldex.clr}) on the raw counts
-#'   and then a Euclidean distance on the CLR values (requires \code{table} to
-#'   be a raw abundance data frame with a taxonomy column, not a precomputed
-#'   distance matrix); \code{"aitchison"}/\code{"robust.aitchison"} use
-#'   vegan's built-in Aitchison distance (\code{vegan::vegdist} with a
-#'   pseudocount); any other value (e.g. \code{"euclidean"}, \code{"bray"})
-#'   is passed straight to \code{vegan::vegdist} on the raw values
-#'   (\code{"euclidean"} default; case-insensitive).
+#'   runs ALDEx2's CLR transform; \code{"aitchison"}/\code{"robust.aitchison"}
+#'    any other value (e.g. \code{"euclidean"}, \code{"bray"}).
 #' @param test Statistical test to run: one of \code{"permanova"} (default) or
 #'   \code{"betadisper"}. Case-insensitive.
 #' @param permutations Number of permutations required
@@ -29,7 +22,7 @@
 #'   when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.
 #' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
 #'   \code{distance = "compositional"}. With \code{1} (default) the clr values
-#'   of one random instance are used: fast, but the result changes a little
+#'   of one random instance are used: fast, but the result changes 
 #'   between runs (use \code{set.seed()}). With more, the clr values are
 #'   averaged across instances, which gives an almost identical result in every
 #'   run; \code{128} (ALDEx2's default) is suggested for final analyses, and
@@ -38,19 +31,9 @@
 #' @details The first column of \code{metadata} must hold the sample IDs;
 #'   metadata rows are matched to the samples by ID, so their order doesn't
 #'   matter. A precomputed distance is used as-is (\code{distance} is ignored).
-#'   With \code{distance = "compositional"} and \code{mc_samples = 1}, the
-#'   clr values come from one random Monte Carlo instance of
-#'   \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
-#'   to make the result reproducible, or use \code{mc_samples = 128}.
+#'   code{set.seed()} before the function to make the result reproducible
 #'
-#' @return A data frame (class \code{mbm_test_table}) with the test results:
-#'   one row per term and the columns returned by \code{vegan::adonis2()}
-#'   (\code{Df}, \code{SumOfSqs}, \code{R2}, \code{F}, \code{Pr(>F)}) or
-#'   \code{vegan::permutest()}, plus \code{Term}. Printing it (e.g. typing its
-#'   name) draws the formatted table figure; \code{ggplot2::autoplot()}
-#'   returns that figure as a \code{ggplot} object, e.g. to combine it with
-#'   other plots (\code{cowplot::plot_grid()}, \code{patchwork}) or save it
-#'   with \code{ggplot2::ggsave()}.
+#' @return An ggpubr object with the test results
 #' @export
 #'
 #' @examples
@@ -106,14 +89,8 @@ beta_test_table <- function(table,
                             table_filename = "beta_test_results.txt") {
 
 
-  # Accept `test` and `distance` case-insensitively (distance names are matched
-  # case-sensitively by vegan::vegdist, so normalising here avoids a cryptic
-  # "invalid distance method" error from e.g. distance = "Bray").
   test   <- match.arg(tolower(test), c("permanova", "betadisper"))
   distance <- tolower(distance)
-  # A precomputed distance (a dist object, or a square symmetric matrix with
-  # a zero diagonal) is used as-is: no distance is computed and `distance` is
-  # ignored, instead of running vegdist() on the distances themselves.
   is_square_dist <- is.matrix(table) && nrow(table) == ncol(table) &&
     isSymmetric(unname(table)) && all(diag(table) == 0)
   precomputed <- inherits(table, "dist") || is_square_dist
@@ -127,13 +104,11 @@ beta_test_table <- function(table,
     dist_matrix <- stats::as.dist(table)
     sample_ids  <- labels(dist_matrix)
   } else if (is.data.frame(table)) {
-    # Si la ultima columna parece taxonomia, eliminarla
     tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
     if (length(tax_cols) > 0) {
       table <- table[, -tax_cols[1], drop = FALSE]
     }
 
-    # Convertir solo columnas numericas
     num_cols <- vapply(table, is.numeric, logical(1))
     if (!all(num_cols)) {
     }
@@ -142,8 +117,6 @@ beta_test_table <- function(table,
     stop("'table' must be a matrix, dataframe, or dist object")
   }
 
-  # --- Detectar orientacion ---
-  # Samples go in rows: transpose when the sample IDs are the column names.
   meta_ids <- trimws(as.character(metadata[[1]]))
   if (!precomputed) {
     n_cols_in_meta <- sum(colnames(table) %in% meta_ids)
@@ -155,7 +128,6 @@ beta_test_table <- function(table,
     sample_ids <- rownames(table)
   }
 
-  # --- Alinear metadata con las muestras (por ID, nunca por posicion) ---
   if (is.null(sample_ids)) {
     stop("table has no sample names; they are needed to match it with ",
          "the sample IDs in the first column of metadata.")
@@ -170,7 +142,6 @@ beta_test_table <- function(table,
     table <- table[keep, , drop = FALSE]
   }
 
-  # --- Verificaciones ---
   if (test == "permanova") {
     vars <- all.vars(as.formula(paste("~", formula_str)))
     vars_in_metadata <- vars %in% colnames(metadata)
@@ -187,9 +158,7 @@ beta_test_table <- function(table,
     strata <- metadata[[strata_var]]
   }
   
-  # --- Distancia (mismo criterio que beta_div_plot) ---
   if (precomputed) {
-    # dist_matrix already set above
   } else if (distance == "compositional") {
     if (!raw_input) {
       stop("distance = 'compositional' requires a raw abundance table ",
@@ -203,7 +172,6 @@ beta_test_table <- function(table,
     dist_matrix <- vegan::vegdist(table, method = distance)
   }
 
-  # --- PERMANOVA ---
   if (test == "permanova") {
     resultado <- vegan::adonis2(as.formula(paste("dist_matrix ~", formula_str)),
                                 data = metadata,
@@ -215,24 +183,16 @@ beta_test_table <- function(table,
     rownames(tabla) <- NULL
   }
 
-  # --- BETADISPER / PERMDISP ---
   if (test == "betadisper") {
     var_group <- all.vars(as.formula(paste("~", formula_str)))[1]
     disp <- vegan::betadisper(dist_matrix, metadata[[var_group]])
     perm <- vegan::permutest(disp, permutations = permutations)
     
     tabla <- as.data.frame(perm$tab)
-    # vegan::permutest() always labels the between-group row "Groups"; show
-    # the actual variable name being tested instead, for clarity.
     tabla$Term <- ifelse(rownames(tabla) == "Groups", var_group, rownames(tabla))
     rownames(tabla) <- NULL
   }
   
-  # --- Formato numerico ---
-  # The p-value column uses significant-figure formatting (consistent with
-  # every other figure in the package) instead of the fixed `digits`
-  # rounding applied to the other numeric columns, since fixed decimals can
-  # round small p-values (e.g. 0.0004) down to "0".
   results <- tabla
   col_p_name <- grep("Pr", names(tabla), ignore.case = TRUE, value = TRUE)
   tabla <- tabla %>%
@@ -246,12 +206,7 @@ beta_test_table <- function(table,
                        quote = FALSE, row.names = FALSE)
     message("Table saved as: ", table_filename)
   }
-
-  # --- Crear tabla visual ---
-  # vegan::adonis2()'s own column is literally named "R2"; only the
-  # displayed table gets the proper R-squared (superscript 2) - the saved
-  # table (save_table = TRUE) and the `tabla` data itself keep the plain
-  # "R2" name for compatibility with scripts that read it back in.
+  
   tabla_display <- tabla
   names(tabla_display)[names(tabla_display) == "R2"] <- "R\u00b2"
 
@@ -275,17 +230,13 @@ beta_test_table <- function(table,
                              )
   )
   
-  # --- Lineas bajo encabezado ---
   tab <- tab %>%
     ggpubr::tab_add_hline(at.row = 1, row.side = "top", linewidth = 4) %>%
     ggpubr::tab_add_hline(at.row = 2, row.side = "top", linewidth = 4)
   
-  # --- Resaltar p-valores ---
   col_p <- grep("Pr", names(tabla), ignore.case = TRUE)
   if (length(col_p) > 0) {
     p_text <- tabla[[col_p]]
-    # Values formatted as "<0.001" are significant by definition but would
-    # become NA under as.numeric(), so flag them separately.
     is_below_threshold <- startsWith(p_text, "<")
     p_values <- suppressWarnings(as.numeric(p_text))
     filas_signif <- which(is_below_threshold | (!is.na(p_values) & p_values < 0.05))
@@ -307,7 +258,6 @@ print.mbm_test_table <- function(x, ...) {
   invisible(x)
 }
 
-# a subset of the table (e.g. x[1:2, ]) is a plain data frame, without the figure
 #' @export
 `[.mbm_test_table` <- function(x, ...) {
   out <- NextMethod()
@@ -318,7 +268,7 @@ print.mbm_test_table <- function(x, ...) {
   out
 }
 
-#' @exportS3Method ggplot2::autoplot
+#' @exportS3Method 
 autoplot.mbm_test_table <- function(object, ...) {
   attr(object, "plot")
 }

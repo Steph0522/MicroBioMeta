@@ -3,10 +3,10 @@
 #' This function computes beta diversity partition (Jaccard or Sorensen) 
 #' using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
 #'
-#' @param table Abundance matrix or data frame with taxa/features as rows and
-#'   samples as columns (same orientation as the rest of the package). If a
-#'   taxonomy column is present it is detected and removed automatically.
-#' @param metadata Data frame with sample metadata. First column must be SampleID.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param family Dissimilarity family for the partition: `"jaccard"` (default)
 #'   or `"sorensen"`. Case-insensitive.
 #' @param group_col Column in metadata to use as color grouping.
@@ -29,8 +29,7 @@
 #' @param table_filename Character. Base name for the saved table file. Default \code{"SAMPLE1"}.
 #'
 #' @return A \code{patchwork} object with the three partition ordinations
-#'   (Jaccard/Sorensen, turnover, nestedness). It can still be modified:
-#'   \code{p & theme(...)} changes every panel, \code{p[[2]] + labs(...)} one.
+#'   (Jaccard/Sorensen, turnover, nestedness). 
 #' @export
 #'
 #' @examples
@@ -41,7 +40,6 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # Always tagged A/B/C (see panel_label_case and panel_labels to customize)
 #' beta_partition_ord_plot(
 #'   table      = table,
 #'   metadata   = metadata,
@@ -64,29 +62,24 @@ beta_partition_ord_plot <- function(table, metadata,
                                 table_filename = "SAMPLE1") {
 
 
-  family <- tolower(family)               # accept "Jaccard"/"Sorensen" too
+  family <- tolower(family)              
   panel_label_case <- tolower(panel_label_case)
 
   suppressWarnings({
 
-    # --- Also accept a data.frame as input, coercing it to a matrix ---
     if (is.data.frame(table)) {
 
-      # find the taxonomy column
       tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
 
       if (length(tax_cols) > 0) {
         table <- table[, -tax_cols[1], drop = FALSE]
       }
 
-      # keep only numeric columns
       table <- table[, vapply(table, is.numeric, logical(1)), drop = FALSE]
       
-      # convertir a matriz
       table <- as.matrix(table)
     }
   
-  # --- 1. Convert to presence/absence ---
   table_pa <- table
   table_pa[table_pa > 0] <- 1
   table_pa <- table_pa %>% 
@@ -98,7 +91,6 @@ beta_partition_ord_plot <- function(table, metadata,
   
   colnames(metadata)[1] <- "SampleID"
   
-  # --- 2. Beta diversity partition ---
   beta <- betapart::beta.pair(table_pa, index.family = family)
   if(family == "jaccard"){
     jac <- beta$beta.jac
@@ -112,50 +104,37 @@ beta_partition_ord_plot <- function(table, metadata,
     stop("Only 'jaccard' or 'sorensen' are supported for family")
   }
   
-  # --- 3. Merge with metadata ---
-  
-  #if (!"SampleID" %in% colnames(metadata)) {
-   # stop("La tabla metadata no contiene una columna llamada 'SampleID'")
-  #}
-  
   names(metadata)[1] <- "SampleID"
   
   env1 <- table_pa %>% tibble::as_tibble(rownames = "SampleID") %>%
     dplyr::inner_join(metadata, by = "SampleID")
   
-  # --- 4. betadisper for ordination ---
   jacs <- vegan::betadisper(jac, factor(env1[[group_col]]))
   jtus <- vegan::betadisper(jtu, factor(env1[[group_col]]))
   jnes <- vegan::betadisper(jne, factor(env1[[group_col]]))
   
-  # Guardar tabla si se solicita
   if (save_table) {
     
-    # convertir betadisper en data.frame
     betadisper_to_df <- function(bd_obj) {
       data.frame(
         SampleID = names(bd_obj$distances),
         Group = bd_obj$group,
         Distance_to_Centroid = bd_obj$distances,
-        bd_obj$vectors,  # coordenadas PCoA
+        bd_obj$vectors, 
         check.names = FALSE
       )
     }
     
-    # Crear los data frames
     jacs_df <- betadisper_to_df(jacs)
     jtus_df <- betadisper_to_df(jtus)
     jnes_df <- betadisper_to_df(jnes)
     
-    # Get base name without extension
     base_name <- tools::file_path_sans_ext(table_filename)
 
-    # Generate unique file names
     file_jacs <- paste0(base_name, "_jacs.txt")
     file_jtus <- paste0(base_name, "_jtus.txt")
     file_jnes <- paste0(base_name, "_jnes.txt")
     
-    # Guardar cada tabla
     utils::write.table(jacs_df, file = file_jacs, sep = "\t", quote = FALSE, row.names = FALSE)
     utils::write.table(jtus_df, file = file_jtus, sep = "\t", quote = FALSE, row.names = FALSE)
     utils::write.table(jnes_df, file = file_jnes, sep = "\t", quote = FALSE, row.names = FALSE)
@@ -170,7 +149,6 @@ beta_partition_ord_plot <- function(table, metadata,
   mean_turn <- round(mean(as.dist(jtu)), 3)
   mean_nes <- round(mean(as.dist(jne)), 3)
   
-  # --- 5. Internal plotting function ---
   function_plot_beta <- function(x, env){
     y <- .mbm_betadisper_spider_df(x, groups = env[[group_col]])
 
@@ -179,13 +157,6 @@ beta_partition_ord_plot <- function(table, metadata,
     
     z <- ggplot2::ggplot() + 
       ggplot2::geom_point(
-        # df_ord's own "Group" column (set by .mbm_betadisper_spider_df, only
-        # needed internally to compute the centroids below) is dropped before
-        # the join: when the user's own `group_col` happens to be named
-        # "Group" too (as in the example above), inner_join() would otherwise
-        # rename both to "Group.x"/"Group.y" to avoid the clash, so a plain
-        # "Group" column - the one `color = .data[[group_col]]` below looks
-        # for - would no longer exist in the joined data.
         data = y$df_ord %>% dplyr::select(-Group) %>%
           tibble::rownames_to_column(var = "SampleID") %>%
           dplyr::inner_join(env, by = "SampleID"),
@@ -222,9 +193,6 @@ beta_partition_ord_plot <- function(table, metadata,
       .mbm_theme(
         legend_position = "right",
         extra = ggplot2::theme(
-          # Horizontal (not stacked) so the color + shape legends fit inside
-          # the slim top strip reserved for them below (rel_heights = 0.12)
-          # instead of overflowing onto the panel titles.
           legend.box        = "horizontal",
           panel.grid.major  = ggplot2::element_blank(),
           plot.margin       = grid::unit(c(0, 0, 0, 0), "cm"),
@@ -237,17 +205,11 @@ beta_partition_ord_plot <- function(table, metadata,
       )
     
     
-    return(a)  # <- faltaba este return + cierre
+    return(a)  
   }
   
-  # --- 6. Generate plots ---
-  # The same legend settings on the three panels, so patchwork merges their
-  # (identical) legends into a single one, above the panels.
   legend_guides <- ggplot2::guides(
     colour = ggplot2::guide_legend(nrow = 1, title = if(!is.null(legend_title)) legend_title else group_col),
-    # Without an explicit title, ggplot falls back to deparsing the raw
-    # aes() expression used for `shape` (the `if (!is.null(shape_col)) ...`
-    # conditional itself) as the legend label, instead of the column name.
     shape  = ggplot2::guide_legend(nrow = 1, title = shape_col)
   )
   title_theme <- ggplot2::theme(
@@ -269,10 +231,6 @@ beta_partition_ord_plot <- function(table, metadata,
     panel_labels
   } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
 
-  # Joined with patchwork (see .mbm_patchwork_grid()), so the result stays
-  # modifiable: `p & theme(...)`, `p[[2]] + labs(...)`, `+ plot_annotation()`.
-  # The merged legend goes in its own row above the three panels (guide_area),
-  # not between the panel titles and the panels.
   combined_plot <- patchwork::wrap_plots(
       patchwork::guide_area(), plot_jac, plot_turn, plot_nes,
       design = "AAA\nBCD", heights = c(0.12, 1)) +
@@ -285,5 +243,5 @@ beta_partition_ord_plot <- function(table, metadata,
     )
 
   return(combined_plot)
-  })  # <- closes suppressWarnings
+  })  
 }

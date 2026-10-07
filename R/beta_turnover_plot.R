@@ -1,7 +1,24 @@
-#' Box plot of beta diversity
+#' Box plot of pairwise feature turnover (Hill numbers)
 #'
-#' @param table table Data frame where columns are samples and rows are ASVs or taxa.
-#' @param metadata  A data frame with sample metadata. The first column must match sample names in "table".
+#' Computes the pairwise beta diversity between samples with Hill numbers
+#' (q = 0, 1, 2; same values as \code{hillR::hill_taxa_parti_pairwise()}) and
+#' plots the proportion of feature turnover (\eqn{\beta - 1}, from 0 = identical
+#' to 1 = no shared features) as box plots, one facet row per Hill order.
+#' q = 0 weighs all features equally (presence/absence), q = 1 weighs them by
+#' their abundance and q = 2 gives more weight to dominant features.
+#'
+#' Each box is one group pair from \code{condition1_col}, so a between-group
+#' comparison (e.g. \code{"Rhizosphere_vs_Roots"}) can be contrasted with a
+#' within-group baseline (e.g. \code{"Rhizosphere_vs_Rhizosphere"}): if the
+#' between-group turnover is higher, the groups host distinct communities
+#' beyond the variability among replicates of the same group. An optional
+#' \code{condition2_col} keeps only pairs from the same level (e.g. the same
+#' treatment) and facets by it, so the comparison is not confounded by it.
+#'
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param comparison_condition1 Vector of \code{"A_vs_B"} group-pair labels to
 #'   keep (matched against the values of \code{condition1_col}). Matching
 #'   ignores order - listing \code{"A_vs_B"} also matches pairs the pairwise

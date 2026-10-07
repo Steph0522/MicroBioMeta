@@ -8,11 +8,7 @@
 #' @param metadata A data frame containing sample metadata. 
 #' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param group_col Character. Name of the column in \code{metadata} that
-#'   defines the grouping variable. If this column is numeric (a continuous
-#'   variable), it's treated as a covariate instead of a group: ANCOMBC2's
-#'   \code{group}/structural-zero machinery (which requires discrete groups)
-#'   is disabled, and the resulting plot shows the effect size per unit
-#'   increase rather than a group-vs-group comparison.
+#'   defines the grouping variable. If it is numeric, it's treated as a covariate.
 #' @param level Character or \code{NULL}. Taxonomic level to agglomerate
 #'   to before running \code{ancombc2} (e.g. \code{"genus"}, \code{"family"};
 #'   case-insensitive). Default \code{"genus"}. Pass \code{NULL} to skip agglomeration and run
@@ -31,7 +27,7 @@
 #' @param ref_level Character. Reference level for \code{group_col}. If
 #'   \code{NULL} (default) the first factor level is used as reference.
 #'   Use this to change which group appears as the baseline in comparisons
-#'   (e.g. \code{ref_level = "P2"} to compare all other groups against P2).
+#'   (e.g. \code{ref_level = "control"} to compare all other groups against P2).
 #' @param diverging_palette Character. Name of the colorblind-friendly
 #'   diverging palette used for the 3+-group heatmap's log-fold-change fill
 #'   scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
@@ -41,14 +37,9 @@
 #' @param x_axis_title,y_axis_title Titles for the x- and y-axis. Default
 #'   \code{NULL}: the log fold change of the comparison on x of the bar
 #'   plots, and no title otherwise.
-#' @param bar_colors Character vector of (at least) 2 colors used for the
-#'   bar plot (2-group or continuous \code{group_col}). First color is the
-#'   "positive" direction (the non-reference group / increases with the
-#'   variable); second color is the "negative" direction (the reference
-#'   group / decreases with the variable). Default \code{c("#56B4E9",
-#'   "#E69F00")} (the same colorblind-friendly blue/orange pairing used as
-#'   the 2-group default throughout the package). Ignored for the
-#'   3+-group heatmap, which uses \code{diverging_palette} instead.
+#' @param bar_colors Character vector of  2 colors used for the
+#'   bar plot. First color is the "positive" direction (the non-reference group), 
+#'   second color is the "negative" direction (the reference). 
 #' @param save_table Logical. If \code{TRUE}, saves the full ANCOMBC2 results
 #'   table to disk. Default \code{FALSE}.
 #' @param table_filename Character. File path/name for the saved table (used
@@ -65,10 +56,6 @@
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #' colnames(metadata)[1] <- "SampleID"
 #'
-#' # Not run automatically because ANCOMBC2's internal bias-correction step
-#' # p_adjust_method = "BH" is less strict
-#' # than the "holm" default; min_prevalence is raised above the 0.1 default to
-#' # filter out rare/sparse taxa before testing.
 #' \donttest{
 #' ancombc_plot(
 #'   table        = table,
@@ -119,7 +106,6 @@ ancombc_plot <- function(table,
 
   names(table)[tax_col] <- "taxonomy"
 
-  # count matrix, parsed taxonomy and metadata (sample IDs as row names)
   table_counts <- table %>% dplyr::select(-taxonomy)
   otumat  <- as.matrix(table_counts)
 
@@ -144,14 +130,10 @@ ancombc_plot <- function(table,
     }
   }
 
-  # drop taxa with constant counts
   keep   <- apply(otumat, 1, stats::var) > 0
   otumat <- otumat[keep, , drop = FALSE]
   taxmat <- taxmat[keep, , drop = FALSE]
 
-  # agglomerate to `level`, as microbiome::aggregate_taxa() does: missing
-  # names become "Unknown", and a name shared by different lineages (e.g.
-  # "uncultured") keeps its whole lineage joined by "_"
   agg_mat <- NULL
   if (!is.null(tax_rank)) {
     lineage <- taxmat[, seq_len(match(tax_rank, colnames(taxmat))), drop = FALSE]
@@ -343,9 +325,8 @@ ancombc_plot <- function(table,
         comparison = sub(paste0("^lfc_", term), "", comparison)
       )
 
-    lo  <- floor(min(df_long$lfc,  na.rm = TRUE))
-    up  <- ceiling(max(df_long$lfc, na.rm = TRUE))
-    mid <- (lo + up) / 2
+    # symmetric limits so white is LFC = 0 (no change)
+    lim <- ceiling(max(abs(df_long$lfc), na.rm = TRUE))
 
     df_long %>%
       ggplot2::ggplot(ggplot2::aes(x = comparison, y = taxon, fill = lfc)) +
@@ -354,7 +335,7 @@ ancombc_plot <- function(table,
         low      = .mbm_div_palettes[[diverging_palette]][1],
         mid      = "white",
         high     = .mbm_div_palettes[[diverging_palette]][3],
-        na.value = "white", midpoint = mid, limit = c(lo, up), name = "LFC"
+        na.value = "white", midpoint = 0, limit = c(-lim, lim), name = "LFC"
       ) +
       ggplot2::geom_text(ggplot2::aes(label = lfc), size = 3.5) +
       ggplot2::labs(
@@ -372,7 +353,7 @@ ancombc_plot <- function(table,
         )
       )
   }
-
+#plot
   plots <- list()
 
   for (term in all_terms) {

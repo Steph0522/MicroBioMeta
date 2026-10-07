@@ -28,28 +28,21 @@ beta_dissimilarity_plot(
 )
 }
 \arguments{
-\item{table}{Abundance matrix (samples in columns, species/features in rows).}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame with sample metadata. First column must match sample names in table.}
-
-\item{comparison_condition1}{Optional vector of comparison labels for the first condition.}
+\item{metadata}{A data frame containing sample metadata.
+Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{condition1_col}{Column name in metadata for the first condition.}
 
-\item{condition2_col}{Optional column name in metadata for the second
-condition, used as facet. Each facet keeps only pairs of samples that
-share that value (e.g. two samples of treatment TC), so comparisons are
-split by the condition they come from instead of mixing them.}
+\item{condition2_col}{Optional column name in metadata for the second condition, used as facet.}
 
-\item{facet_colors}{Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"} background.}
-
-\item{group_colors}{Optional named vector of colors for x-axis groups. Defaults to the package's
-colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
+\item{facet_colors}{Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"}.}
 
 \item{x_axis_title}{Title for the x-axis.}
 
-\item{y_axis_title}{Title for the y-axis. Default \code{NULL}: built from
-\code{partition} (e.g. \code{"Beta diversity (shared features)"}).}
+\item{y_axis_title}{Title for the y-axis. Default \code{NULL}: it is built automatically.}
 
 \item{partition}{Type of beta diversity to compute: \code{"shared"} (default),
 \code{"turnover"}, or \code{"nestedness"}. Case-insensitive.}
@@ -59,19 +52,16 @@ colorblind-friendly Okabe-Ito palette (\code{.mbm_colors}, orange/blue first).}
 
 \item{stat}{Character or \code{NULL}. Statistical test to compare the
 boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
-compare every pair of boxes, each with its own bracket and p-value
-(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
-give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
+compare every pair, (\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
+give one global p-value for more than 3 factors
 Default \code{NULL} (no test shown).}
 
 \item{p_adjust_method}{Multiple-comparison correction for the pairwise
-tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
-each panel; any method of \code{stats::p.adjust()}. Default
+any method of \code{stats::p.adjust()}. Default
 \code{"holm"}; \code{"none"} shows the raw p-values.}
 
 \item{show_x_labels}{Logical. If \code{TRUE} (default), x-axis tick labels
-are shown. The comparison groups are also in the legend, so set to
-\code{FALSE} to hide the (often long) tick labels when that's redundant.}
+are shown.}
 
 \item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
 labels when \code{show_x_labels = TRUE}. Default \code{0} (horizontal);
@@ -96,9 +86,7 @@ A ggplot2 figure object.
 }
 \description{
 This function calculates beta diversity (shared species, turnover, or nestedness)
-and generates a ggplot2 boxplot with facets and custom coloring. The user only
-needs to specify the metadata column(s) to be used for comparisons; the function
-constructs the comparison pairs internally and removes duplicates (A_vs_B = B_vs_A).
+and generates a ggplot2 boxplot with facets.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

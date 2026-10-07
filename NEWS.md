@@ -78,6 +78,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
 
+* Fixed the `ancombc_plot()` heatmap (3+ groups) centering its color scale
+  on the middle of the LFC range instead of 0, which made small negative
+  log fold changes look enriched. White is now LFC = 0, with symmetric limits.
 * Fixed a crash in `abundance_heatmap_plot()` when the phylum annotation
   contained `NA` values, when more than 8 groups were requested from
   `RColorBrewer`, and when annotation columns were numeric.

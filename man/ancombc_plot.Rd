@@ -30,11 +30,7 @@ The last column must be named \code{taxonomy}, containing full taxonomic strings
 Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 
 \item{group_col}{Character. Name of the column in \code{metadata} that
-defines the grouping variable. If this column is numeric (a continuous
-variable), it's treated as a covariate instead of a group: ANCOMBC2's
-\code{group}/structural-zero machinery (which requires discrete groups)
-is disabled, and the resulting plot shows the effect size per unit
-increase rather than a group-vs-group comparison.}
+defines the grouping variable. If it is numeric, it's treated as a covariate.}
 
 \item{level}{Character or \code{NULL}. Taxonomic level to agglomerate
 to before running \code{ancombc2} (e.g. \code{"genus"}, \code{"family"};
@@ -59,7 +55,7 @@ Default \code{NULL}.}
 \item{ref_level}{Character. Reference level for \code{group_col}. If
 \code{NULL} (default) the first factor level is used as reference.
 Use this to change which group appears as the baseline in comparisons
-(e.g. \code{ref_level = "P2"} to compare all other groups against P2).}
+(e.g. \code{ref_level = "control"} to compare all other groups against P2).}
 
 \item{diverging_palette}{Character. Name of the colorblind-friendly
 diverging palette used for the 3+-group heatmap's log-fold-change fill
@@ -72,14 +68,9 @@ scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
 \code{NULL}: the log fold change of the comparison on x of the bar
 plots, and no title otherwise.}
 
-\item{bar_colors}{Character vector of (at least) 2 colors used for the
-bar plot (2-group or continuous \code{group_col}). First color is the
-"positive" direction (the non-reference group / increases with the
-variable); second color is the "negative" direction (the reference
-group / decreases with the variable). Default \code{c("#56B4E9",
-"#E69F00")} (the same colorblind-friendly blue/orange pairing used as
-the 2-group default throughout the package). Ignored for the
-3+-group heatmap, which uses \code{diverging_palette} instead.}
+\item{bar_colors}{Character vector of  2 colors used for the
+bar plot. First color is the "positive" direction (the non-reference group),
+second color is the "negative" direction (the reference).}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the full ANCOMBC2 results
 table to disk. Default \code{FALSE}.}
@@ -103,10 +94,6 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 colnames(metadata)[1] <- "SampleID"
 
-# Not run automatically because ANCOMBC2's internal bias-correction step
-# p_adjust_method = "BH" is less strict
-# than the "holm" default; min_prevalence is raised above the 0.1 default to
-# filter out rare/sparse taxa before testing.
 \donttest{
 ancombc_plot(
   table        = table,

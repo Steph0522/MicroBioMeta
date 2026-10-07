@@ -18,8 +18,8 @@ alpha_hill_corr_plot(
 )
 }
 \arguments{
-\item{table}{A data frame or matrix with samples as columns and taxa as rows.
-The first column must contain the OTUID, ASV, or species name.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{method}{Character. Correlation method passed to
 \code{ggpubr::stat_cor}. One of \code{"spearman"} (default, rank-based
@@ -63,8 +63,7 @@ A ggplot object showing alpha diversity with Hill numbers.
 Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
 sequencing depth (total reads) as a scatter plot with a fitted regression
 line and correlation coefficient, combining the three plots (q0,
-q1, q2) into a single figure via \code{patchwork}, which stays modifiable
-(e.g. \code{p & ggplot2::theme(...)} changes every panel).
+q1, q2) into a single ggplot2 plot
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")

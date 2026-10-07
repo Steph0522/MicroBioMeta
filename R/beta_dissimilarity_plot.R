@@ -1,7 +1,7 @@
 #' Beta Diversity Boxplot
 #'
 #' This function calculates beta diversity (shared species, turnover, or nestedness)
-#' and generates a ggplot2 boxplot with facets and custom coloring.
+#' and generates a ggplot2 boxplot with facets.
 #'
 #' @param table A data frame with taxa in rows and samples in columns. 
 #' The last column must be named `taxonomy`, containing full taxonomic strings.
@@ -9,8 +9,7 @@
 #' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param condition1_col Column name in metadata for the first condition.
 #' @param condition2_col Optional column name in metadata for the second condition, used as facet. 
-#' @param facet_colors Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"} background.
-#' @param group_colors Optional named vector of colors for x-axis groups. 
+#' @param facet_colors Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"}.
 #' @param x_axis_title Title for the x-axis.
 #' @param y_axis_title Title for the y-axis. Default \code{NULL}: it is built automatically.
 #' @param partition Type of beta diversity to compute: `"shared"` (default),

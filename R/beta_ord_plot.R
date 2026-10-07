@@ -1,28 +1,26 @@
-#' Beta diversity plot with multiple distance and ordination methods
+#' Beta diversity ordination plot 
 #'
 #' This function computes beta diversity using several distance metrics and ordination methods
-#' (PCA, PCoA, NMDS). It requires an abundance table with taxonomy, metadata, and allows customization
-#' of color and shape aesthetics. It also supports compositional transformation via ALDEx2.
+#'It also supports compositional transformation via ALDEx2.
 #'
-#' @param table A data frame with abundances. The last column must contain taxonomy information.
-#' @param metadata A data frame with sample metadata. The first column must contain the sample IDs.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
+#' @param metadata A data frame containing sample metadata. 
+#' Must include a `SAMPLEID` column matching sample names in `table`.
 #' @param distance Distance method: one of `"euclidean"`, `"bray"`,
 #'   `"jaccard"`, `"sorensen"`, `"compositional"` (default; CLR/Aitchison via
 #'   ALDEx2), `"aitchison"`, or `"robust.aitchison"`. Case-insensitive.
 #'   Note: `ordination = "PCA"` requires `distance = "compositional"`.
 #' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
 #'   \code{distance = "compositional"}. With \code{1} (default) the clr values
-#'   of one random instance are used: fast, but the result changes a little
+#'   of one random instance are used: fast, but the result changes
 #'   between runs (use \code{set.seed()}). With more, the clr values are
 #'   averaged across instances, which gives an almost identical result in every
 #'   run; \code{128} (ALDEx2's default) is suggested for final analyses, and
 #'   takes longer. Ignored for other distances.
 #' @param ordination Ordination method: one of `"PCA"` (default), `"PCoA"`, or
 #'   `"NMDS"`. Case-insensitive.
-#' @param group_col Column in `metadata` to fill/color points. Its type
-#'   decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
-#'   get a continuous scale; character/factor columns (e.g. \code{"estado2"})
-#'   get a discrete qualitative scale.
+#' @param group_col Column in `metadata` to fill/color points. 
 #' @param palette Either a palette \strong{name} or a \strong{vector of fixed
 #'   colors}; which scale it produces depends on whether \code{group_col} is
 #'   discrete or continuous.
@@ -32,8 +30,7 @@
 #'       \code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
 #'     \item Named, continuous \code{group_col}: \code{"viridis"} (default;
 #'       \code{option = "cividis"}, matching the urban-distance map figure)
-#'       or \code{"gradient"} (colorblind-friendly blue-to-orange two-color
-#'       gradient).
+#'       or \code{"gradient"}
 #'     \item Vector of colors, discrete \code{group_col}: used as-is, one
 #'       color per level (\code{scale_*_manual}).
 #'     \item Vector of colors, continuous \code{group_col}: used as gradient
@@ -41,20 +38,16 @@
 #'   }
 #' @param shape_col Optional column in `metadata` to shape points.
 #' @param legend_title Optional legend title.
-#' @param taxonomy_db Character. Reference taxonomy database used to clean up
-#'   the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
-#'   \code{"unite"}, or \code{"Kraken2"} (case-insensitive). \code{"Kraken2"}
-#'   additionally concatenates genus + species (e.g. \code{"Aspergillus
-#'   flavus"}) instead of showing the species epithet alone. Ignored when
-#'   \code{ordination != "PCA"}.
+#' @param taxonomy_db Character. Reference taxonomy database. One of
+#'   `"silva"` (default), `"gg2"` (Greengenes2; also accepts `"gg"` /
+#'   `"greengenes2"`), `"unite"` (fungal ITS), or `"Kraken2"` (also accepts
+#'   `"kraken"`). Case-insensitive. Ignored when \code{ordination != "PCA"}.
 #' @param top_n Number of top contributing taxa to display as arrows in PCA.
 #' @param arrows_size Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.
 #' @param title Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
-#'   \code{NULL} shows no title; any other string is used as-is.
+#'   \code{NULL} shows no title; any other string or characters are used as-is.
 #' @param save_table Logical. If \code{TRUE}, saves a combined table of sample
-#'   ordination scores and (when \code{ordination = "PCA"}) taxon loadings to
-#'   disk, distinguished by a \code{type} column (\code{"site"} or
-#'   \code{"loading"}). Default \code{FALSE}.
+#'   ordination scores and loadings to disk.
 #' @param table_filename Character. File path/name for the saved table (used
 #'   when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.
 #' @details With \code{distance = "compositional"} and \code{mc_samples = 1},
@@ -103,15 +96,8 @@ beta_ord_plot <- function(table, metadata,
   requireNamespace("ALDEx2")
   requireNamespace("dplyr")
   requireNamespace("stringr")
-
-  # vegan::vegdist() matches its method argument case-sensitively (e.g.
-  # "Jaccard" errors with "invalid distance method" where "jaccard" works),
-  # which isn't obvious from the outside since every method name documented
-  # here happens to be lowercase - normalize case so any capitalization works.
   distance <- tolower(distance)
 
-  # Accept ordination case-insensitively, mapping to the exact spelling the
-  # code below switches on ("PCA"/"PCoA"/"NMDS").
   ordination <- switch(
     toupper(ordination),
     "PCA"  = "PCA",
@@ -159,9 +145,7 @@ beta_ord_plot <- function(table, metadata,
     dist_matrix <- vegan::vegdist(t(otu_table), method = distance, pseudocount = 0.5)
     otu_trans <- NULL
   } else if (distance == "sorensen") {
-    # vegdist() has no "sorensen" method, despite it being a documented
-    # option here - Sorensen dissimilarity is Bray-Curtis computed on
-    # presence/absence data, i.e. vegdist(..., method = "bray", binary = TRUE).
+
     dist_matrix <- vegan::vegdist(t(otu_table), method = "bray", binary = TRUE)
     otu_trans <- NULL
   } else {
@@ -215,9 +199,7 @@ beta_ord_plot <- function(table, metadata,
     .mbm_colors
   }
 
-  # `palette` can be a palette *name* (single string) or a *vector of fixed
-  # colors*; either way, is_continuous decides whether it becomes a
-  # gradient/gradientn scale or a discrete manual/qualitative one.
+
   is_named_palette <- is.character(palette) && length(palette) == 1
 
   .group_scale <- function(aesthetic) {
@@ -230,7 +212,6 @@ beta_ord_plot <- function(table, metadata,
         if (fill) ggplot2::scale_fill_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
         else ggplot2::scale_color_gradient(name = legend_name, low = "#0072B2", high = "#E69F00")
       } else {
-        # "viridis" (default) or any other name -> viridis cividis
         if (fill) ggplot2::scale_fill_viridis_c(name = legend_name, option = "cividis")
         else ggplot2::scale_color_viridis_c(name = legend_name, option = "cividis")
       }
@@ -246,7 +227,6 @@ beta_ord_plot <- function(table, metadata,
                       else ggplot2::scale_color_viridis_d(name = legend_name),
           "brewer"  = if (fill) ggplot2::scale_fill_brewer(name = legend_name, palette = "Set2")
                       else ggplot2::scale_color_brewer(name = legend_name, palette = "Set2"),
-          # "colorb" (default) or any other name -> package qualitative palette
           if (fill) ggplot2::scale_fill_manual(name = legend_name, values = colorb_default)
           else ggplot2::scale_color_manual(name = legend_name, values = colorb_default)
         )
@@ -281,7 +261,7 @@ beta_ord_plot <- function(table, metadata,
       x       = x_lab,
       y       = y_lab,
       title   = if (identical(title, "auto")) paste(ordination, "-", distance)
-                else title,   # NULL → no title; custom string → that text
+                else title,  
       caption = if (ordination == "NMDS") sprintf("Stress = %.3f", ord_res$stress) else NULL
     ) +
     .mbm_theme(
@@ -303,27 +283,17 @@ beta_ord_plot <- function(table, metadata,
     rot_df$PC1 <- rot_df$PC1 * arrows_size
     rot_df$PC2 <- rot_df$PC2 * arrows_size
     rot_df$Taxon <- taxonomy[match(rot_df$Feature.ID, feature_ids)]
-    #rot_df$label <- stringr::str_extract(rot_df$Taxon, "(?<=__)[^;]*$") 
-    #rot_df$label <- gsub(" ", "\n", rot_df$label)
-    
-    ###
+
+
     extract_clean_label <- function(taxon_string, taxonomy_db = "silva") {
       
-      # --- 1) Manejo de NA o vacio ---
       if (is.na(taxon_string) || taxon_string == "" || taxon_string == "Other") {
         return("Other")
       }
       
-      # --- 2) Separar por niveles taxonomicos ---
       levels <- unlist(strsplit(taxon_string, ";"))
       levels <- trimws(levels)
-      
-      # --- 3) Limpieza por base de datos ---
-      # Matched case-insensitively below - "Kraken2", "kraken2", "KRAKEN2"
-      # all need to hit the same branch, since the genus+species
-      # concatenation special case further down silently gets skipped
-      # (falling back to species-only) if this comparison is case-sensitive
-      # and the caller's casing doesn't match exactly.
+
       clean_by_db <- list(
 
         silva   = function(x) sub("^[a-zA-Z]__", "", x),
@@ -335,17 +305,13 @@ beta_ord_plot <- function(table, metadata,
       taxonomy_db_norm <- tolower(taxonomy_db)
       cleaner <- clean_by_db[[taxonomy_db_norm]]
       
-      # Si no existe el limpiador, usar limpieza generica
       if (is.null(cleaner)) {
         cleaner <- function(x) sub(".*__", "", x)
       }
       
-      # --- 4) Limpiar niveles ---
       levels_clean <- vapply(levels, cleaner, FUN.VALUE = character(1))
       levels_clean <- trimws(levels_clean)
       
-      
-      # --- 5) Seleccion del nivel mas especifico valido ---
       invalid_literals <- c("", " ", "NA", "na", "unclassified", "Unassigned",
                             "uncultured", "uncultured_soil", "metagenome", "__")
       
@@ -355,11 +321,9 @@ beta_ord_plot <- function(table, metadata,
         
         lvl <- levels_clean[i]
         
-        # ESTA ES LA LiNEA CORREGIDA
         if (!(lvl %in% invalid_literals) && 
             !any(grepl(invalid_regex, lvl, ignore.case = TRUE))) {
           
-          # > Regla especial: Kraken2 species -> concatenar "Genus species"
           if (taxonomy_db_norm == "kraken2" && grepl("s__", levels[i])) {
             
             genus_full <- stringr::str_extract(taxon_string, "g__[^;]*")
@@ -368,16 +332,13 @@ beta_ord_plot <- function(table, metadata,
               genus <- sub("g__", "", genus_full)
               species <- lvl
               
-              # Evitar errores por empties
               if (genus != "" && species != "") {
-                # opcional: reemplazar underscores
                 species <- gsub("_", " ", species)
                 return(paste(genus, species))
               }
             }
           }
           
-          # Nivel normal
           return(lvl)
         }
       }
@@ -388,16 +349,8 @@ beta_ord_plot <- function(table, metadata,
     
     
     rot_df$label <- vapply(rot_df$Taxon, extract_clean_label, character(1), taxonomy_db = taxonomy_db)
-    # Taxonomy strings use "_" as an internal word separator (e.g.
-    # "uncultured_Acidobacteriaceae"), which left as-is renders as one long
-    # unbroken label. Normalize it to a space before wrapping onto multiple
-    # lines, so long compound names read naturally. Hyphens are left alone -
-    # unlike "_", they're sometimes part of the taxon's actual name (e.g.
-    # "MB-A2-108", a real clade name), and wrapping on those splits a single
-    # name into unrelated-looking fragments.
     rot_df$label <- gsub("_", " ", rot_df$label)
     rot_df$label <- gsub(" ", "\n", rot_df$label)
-    ###
     rot_df_out <- rot_df
 
     p <- p +
@@ -413,13 +366,12 @@ beta_ord_plot <- function(table, metadata,
                                 inherit.aes = FALSE)
   }
   
-  # --- Centrar ejes simetricamente ---
   x_limits <- range(merged[[names(ord_df)[1]]], na.rm = TRUE)
   y_limits <- range(merged[[names(ord_df)[2]]], na.rm = TRUE)
   max_range <- max(abs(x_limits), abs(y_limits))
   p <- p + ggplot2::coord_cartesian(xlim = c(-max_range, max_range),
                                     ylim = c(-max_range, max_range)) +
-    ggplot2::coord_fixed()  # Mantiene proporcion 1:1
+    ggplot2::coord_fixed()  
 
   if (save_table) {
     site_out <- merged

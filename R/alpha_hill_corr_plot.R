@@ -3,11 +3,10 @@
 #' Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
 #' sequencing depth (total reads) as a scatter plot with a fitted regression
 #' line and correlation coefficient, combining the three plots (q0,
-#' q1, q2) into a single figure via \code{patchwork}, which stays modifiable
-#' (e.g. \code{p & ggplot2::theme(...)} changes every panel).
+#' q1, q2) into a single ggplot2 plot
 #'
-#' @param table A data frame or matrix with samples as columns and taxa as rows.
-#'              The first column must contain the OTUID, ASV, or species name.
+#' @param table A data frame with taxa in rows and samples in columns. 
+#' The last column must be named `taxonomy`, containing full taxonomic strings.
 #' @param method Character. Correlation method passed to
 #'   \code{ggpubr::stat_cor}. One of \code{"spearman"} (default, rank-based
 #'   and robust to non-linear/non-normal relationships), \code{"pearson"}, or
@@ -64,11 +63,9 @@ alpha_hill_corr_plot <- function(table,
                                 table_filename = "hill.txt",
                                 x_axis_title = "Sequencing depth (number of reads)") {
 
-  # --- Data preparation ---
   table <- table[, !colnames(table) %in% "taxonomy"]
   table <- data.frame(t(table))
 
-  # --- Compute Hill numbers ---
   q_data <- data.frame(
     SampleID = rownames(table),
     Frequency = rowSums(table),
@@ -83,7 +80,6 @@ alpha_hill_corr_plot <- function(table,
     message("Table saved as: ", table_filename)
   }
 
-  # --- Common base theme ---
   base_theme <- .mbm_theme(
     legend_position = "none",
     extra = ggplot2::theme(
@@ -91,15 +87,8 @@ alpha_hill_corr_plot <- function(table,
     )
   )
   
-  # --- Aspect ratio ---
-  # NULL in both orientations - a fixed ratio (e.g. 0.5) shrinks the panel to
-  # a thin strip inside whatever (often much taller) cell the caller's own
-  # grid gives it, leaving large empty margins and pushing the y-axis title
-  # into the panel letter. Left NULL, the panel fills its cell like the
-  # horizontal layout already does.
   aspect_ratio_theme <- NULL
   
-  # --- q0 plot ---
   q0_vs_depth <- ggpubr::ggscatter(
     q_data, x = "Frequency", y = "q0",
     xlab = x_axis_title,
@@ -121,7 +110,6 @@ alpha_hill_corr_plot <- function(table,
     ggplot2::labs(y = expression(paste(italic("q"), "=0", " (number of total features)"))) +
     ggplot2::theme(aspect.ratio = aspect_ratio_theme)
   
-  # --- q1 plot ---
   q1_vs_depth <- ggpubr::ggscatter(
     q_data, x = "Frequency", y = "q1",
     xlab = x_axis_title,
@@ -143,7 +131,6 @@ alpha_hill_corr_plot <- function(table,
     ggplot2::labs(y = expression(paste(italic("q"), "=1", " (number of frequent features)"))) +
     ggplot2::theme(aspect.ratio = aspect_ratio_theme)
   
-  # --- q2 plot ---
   q2_vs_depth <- ggpubr::ggscatter(
     q_data, x = "Frequency", y = "q2",
     xlab = x_axis_title,
@@ -165,10 +152,7 @@ alpha_hill_corr_plot <- function(table,
     ggplot2::labs(y = expression(paste(italic("q"), "=2", " (number of dominant features)"))) +
     ggplot2::theme(aspect.ratio = aspect_ratio_theme)
   
-  # --- Compose the three panels (patchwork) ---
-  # Joined with patchwork instead of cowplot, so the result stays modifiable:
-  # `p & theme(...)` changes every panel, `p[[2]] + labs(...)` a single one,
-  # `p + plot_annotation(...)` the whole figure.
+  
   resolved_labels <- if (!is.null(panel_labels)) {
     panel_labels
   } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")

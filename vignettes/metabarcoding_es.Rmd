@@ -743,6 +743,24 @@ ancombc_plot(
 )
 ```
 
+Con **3 o más grupos**, `ancombc_plot()` retorna en cambio un **heatmap**: una columna por grupo comparado contra el nivel de referencia (el primer nivel del factor, aquí **Bulk soil**; se puede cambiar con `ref_level`), y una fila por cada taxón significativo en al menos una comparación. Aquí mantenemos los tres compartimentos (quitando **Uncultivated**) y agrupamos a `"Phylum"` para que el heatmap sea legible:
+
+```{r ancombc2-como-m-todo-alternativo-44b, message=FALSE, warning=FALSE, fig.width=7, fig.height=4.5, out.width="60%"}
+metadata_bacteria_3 <- metadata_bacteria %>%
+  filter(Type_of_soil != "Uncultivated")
+
+table_bac_3 <- table_bac[, c(match(metadata_bacteria_3$SAMPLEID, colnames(table_bac)), ncol(table_bac))]
+
+ancombc_plot(
+  table           = table_bac_3,
+  metadata        = metadata_bacteria_3,
+  group_col       = "Type_of_soil",
+  level           = "Phylum",
+  min_prevalence  = 0.3,
+  p_adjust_method = "holm"
+)
+```
+
 ### 📊 Ejemplo: datos de hongos
 Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**, pero visualizamos los resultados con un **heatmap**. Esta función usa `ComplexHeatmap`.
 
