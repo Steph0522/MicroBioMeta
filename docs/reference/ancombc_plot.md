@@ -34,17 +34,13 @@ ancombc_plot(
 
 - metadata:
 
-  A data frame containing sample metadata. Must include a `SAMPLEID`
-  column matching sample names in `table`.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - group_col:
 
-  Character. Name of the column in `metadata` that defines the grouping
-  variable. If this column is numeric (a continuous variable), it's
-  treated as a covariate instead of a group: ANCOMBC2's
-  `group`/structural-zero machinery (which requires discrete groups) is
-  disabled, and the resulting plot shows the effect size per unit
-  increase rather than a group-vs-group comparison.
+  Character. Name of the column in `metadata` that defines the groups.
+  If it is numeric, it is treated as a continuous covariate.
 
 - level:
 
@@ -60,9 +56,11 @@ ancombc_plot(
 
 - p_adjust_method:
 
-  Character. Multiple-testing correction method passed to `ancombc2`
-  (default `"holm"`). Use `"BH"` for a less strict correction when
-  sample sizes are small.
+  Character. Multiple-testing correction for the ANCOMBC2 p-values of
+  the taxa (passed to `ancombc2()`), any method of
+  [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
+  `"holm"`; `"none"` uses the raw p-values. Use `"BH"` for a less strict
+  correction with few samples.
 
 - formula:
 
@@ -77,18 +75,17 @@ ancombc_plot(
 
 - ref_level:
 
-  Character. Reference level for `group_col`. If `NULL` (default) the
-  first factor level is used as reference. Use this to change which
-  group appears as the baseline in comparisons (e.g. `ref_level = "P2"`
-  to compare all other groups against P2).
+  Character. Reference level of `group_col`, the baseline of the
+  comparisons. If `NULL` (default), the first factor level is used (e.g.
+  `ref_level = "control"` compares every other group against control).
 
 - diverging_palette:
 
-  Character. Name of the colorblind-friendly diverging palette used for
-  the 3+-group heatmap's log-fold-change fill scale. One of `"BuOr"`
-  (blue-orange, default), `"BuVm"` (blue-vermillion), `"BuPk"`
-  (blue-pink), or `"GnPk"` (green-pink). Ignored for the 2-group /
-  continuous bar plot, which uses `bar_colors` instead.
+  Character. Colorblind-friendly diverging palette of the heatmap (3 or
+  more groups): `"BuOr"` (blue-orange, default), `"BuVm"`
+  (blue-vermillion), `"BuPk"` (blue-pink), `"GnPk"` (green-pink) or
+  `"PuYl"` (purple-yellow). Not used by the bar plot, which uses
+  `bar_colors`.
 
 - x_axis_title, y_axis_title:
 
@@ -97,29 +94,23 @@ ancombc_plot(
 
 - bar_colors:
 
-  Character vector of (at least) 2 colors used for the bar plot (2-group
-  or continuous `group_col`). First color is the "positive" direction
-  (the non-reference group / increases with the variable); second color
-  is the "negative" direction (the reference group / decreases with the
-  variable). Default `c("#56B4E9", "#E69F00")` (the same
-  colorblind-friendly blue/orange pairing used as the 2-group default
-  throughout the package). Ignored for the 3+-group heatmap, which uses
-  `diverging_palette` instead.
+  Character vector of two colors for the bar plot: the first for the
+  taxa higher in the non-reference group, the second for those higher in
+  the reference group. Default `c("#56B4E9", "#E69F00")`.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the full ANCOMBC2 results table to disk.
-  Default `FALSE`.
+  Logical. If `TRUE`, saves the full ANCOMBC2 results table as a
+  tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"ancombc_results.txt"`.
 
 ## Value
 
-A `ggplot2` object: a bar plot (2 groups) or a heatmap (\\\geq\\3
-groups).
+A ggplot object: a bar plot (2 groups) or a heatmap (3 or more groups).
 
 ## Examples
 
@@ -129,12 +120,7 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
-# Not run automatically because ANCOMBC2's internal bias-correction step
-# p_adjust_method = "BH" is less strict
-# than the "holm" default; min_prevalence is raised above the 0.1 default to
-# filter out rare/sparse taxa before testing.
 # \donttest{
 ancombc_plot(
   table        = table,

@@ -1,35 +1,44 @@
-#' Beta diversity partition (Jaccard/Sorensen) 
+#' Beta diversity partition ordination
 #'
-#' This function computes beta diversity partition (Jaccard or Sorensen) 
-#' using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
+#' Partitions the beta diversity (Jaccard or Sorensen) into its turnover and
+#' nestedness components with betapart, and plots a PCoA of each component
+#' (vegan::betadisper()) with the samples linked to their group centroid.
 #'
-#' @param table A data frame with taxa in rows and samples in columns. 
+#' @param table A data frame with taxa in rows and samples in columns.
 #' The last column must be named `taxonomy`, containing full taxonomic strings.
-#' @param metadata A data frame containing sample metadata. 
-#' Must include a `SAMPLEID` column matching sample names in `table`.
+#' @param metadata A data frame containing sample metadata.
+#' Its first column must hold the sample IDs (the column names of `table`).
 #' @param family Dissimilarity family for the partition: `"jaccard"` (default)
 #'   or `"sorensen"`. Case-insensitive.
-#' @param group_col Column in metadata to use as color grouping.
-#' @param shape_col Optional column in metadata for point shapes.
-#' @param legend_title Optional custom legend title.
-#' @param group_colors Optional named vector of colors for groups.
-#' @param point_size Numeric. Size of points in ordination plots. Default \code{3}.
-#' @param panel_label_case Character. Case of the auto-generated A/B/C panel
-#'   tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
-#'   ("a", "b", "c"). Ignored if \code{panel_labels} is supplied.
-#' @param panel_labels Optional character vector of 3 custom panel tags (one
-#'   per jaccard/turnover/nestedness panel), used as-is (e.g.
-#'   \code{c("(a)", "(b)", "(c)")} or \code{c("a.", "b.", "c.")}) — for
-#'   journal styles that \code{panel_label_case} alone can't produce.
-#'   Overrides \code{panel_label_case} when provided.
+#' @param group_col Character. Name of the column in \code{metadata} that
+#'   defines the groups. Required: the dispersion and the lines to the centroid
+#'   are computed per group.
+#' @param shape_col Character. Name of the column in \code{metadata} used for
+#'   the point shapes. Optional; \code{NULL} (default) for one shape.
+#' @param legend_title Character. Title of the legend. If \code{NULL}
+#'   (default), the name of \code{group_col} is used.
+#' @param group_colors Optional character vector of colors, one per group,
+#'   named after the groups or in their order. If \code{NULL} (default), the
+#'   colorblind-friendly Okabe-Ito palette is used.
+#' @param point_size Numeric. Size of the points. Default \code{3}.
+#' @param panel_label_case Character. Case of the panel tags: \code{"upper"}
+#'   (default; A, B, C) or \code{"lower"} (a, b, c). Ignored if
+#'   \code{panel_labels} is given.
+#' @param panel_labels Optional character vector of custom panel tags, one per
+#'   panel (Jaccard/Sorensen, turnover, nestedness), used as-is (e.g.
+#'   \code{c("(a)", "(b)", "(c)")}). Overrides \code{panel_label_case}.
 #' @param panel_label_bold Logical. If \code{TRUE} (default), panel tags are
 #'   bold. Set to \code{FALSE} for journals that require plain (non-bold)
 #'   panel tags.
-#' @param save_table Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.
-#' @param table_filename Character. Base name for the saved table file. Default \code{"SAMPLE1"}.
+#' @param save_table Logical. If \code{TRUE}, saves the PCoA coordinates of the
+#'   three ordinations as tab-delimited files. Default \code{FALSE}.
+#' @param table_filename Character. Base name or path of the saved files (used
+#'   when \code{save_table = TRUE}): three files, \code{<name>_jacs.txt},
+#'   \code{<name>_jtus.txt} and \code{<name>_jnes.txt}. Default
+#'   \code{"beta_partition"}.
 #'
-#' @return A \code{patchwork} object with the three partition ordinations
-#'   (Jaccard/Sorensen, turnover, nestedness). 
+#' @return A \code{patchwork} object with the three ordinations
+#'   (Jaccard/Sorensen, turnover and nestedness).
 #' @export
 #'
 #' @examples
@@ -38,210 +47,220 @@
 #'
 #' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
-#' colnames(metadata)[1] <- "SampleID"
 #'
 #' beta_partition_ord_plot(
-#'   table      = table,
-#'   metadata   = metadata,
-#'   group_col  = "Location",
-#'   point_size = 4
+#'     table      = table,
+#'     metadata   = metadata,
+#'     group_col  = "Location",
+#'     point_size = 4
 #' )
-
-
-beta_partition_ord_plot <- function(table, metadata, 
-                                family = "jaccard", 
-                                group_col = NULL, 
-                                shape_col = NULL, 
-                                legend_title = NULL,
-                                point_size = 3,
-                                group_colors = NULL,
-                                panel_label_case = "upper",
-                                panel_labels = NULL,
-                                panel_label_bold = TRUE,
-                                save_table = FALSE,
-                                table_filename = "SAMPLE1") {
-
-
-  family <- tolower(family)              
-  panel_label_case <- tolower(panel_label_case)
-
-  suppressWarnings({
-
-    if (is.data.frame(table)) {
-
-      tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
-
-      if (length(tax_cols) > 0) {
-        table <- table[, -tax_cols[1], drop = FALSE]
-      }
-
-      table <- table[, vapply(table, is.numeric, logical(1)), drop = FALSE]
-      
-      table <- as.matrix(table)
-    }
-  
-  table_pa <- table
-  table_pa[table_pa > 0] <- 1
-  table_pa <- table_pa %>% 
-    tibble::as_tibble(rownames = "SampleID") %>% 
-    dplyr::arrange(SampleID) %>% 
-    tibble::column_to_rownames(var = "SampleID") %>% 
-    dplyr::select_if(is.numeric) %>% 
-    t() %>% as.data.frame()
-  
-  colnames(metadata)[1] <- "SampleID"
-  
-  beta <- betapart::beta.pair(table_pa, index.family = family)
-  if(family == "jaccard"){
-    jac <- beta$beta.jac
-    jtu <- beta$beta.jtu
-    jne <- beta$beta.jne
-  } else if(family == "sorensen"){
-    jac <- beta$beta.sor
-    jtu <- beta$beta.sim
-    jne <- beta$beta.sne
-  } else {
-    stop("Only 'jaccard' or 'sorensen' are supported for family")
-  }
-  
-  names(metadata)[1] <- "SampleID"
-  
-  env1 <- table_pa %>% tibble::as_tibble(rownames = "SampleID") %>%
-    dplyr::inner_join(metadata, by = "SampleID")
-  
-  jacs <- vegan::betadisper(jac, factor(env1[[group_col]]))
-  jtus <- vegan::betadisper(jtu, factor(env1[[group_col]]))
-  jnes <- vegan::betadisper(jne, factor(env1[[group_col]]))
-  
-  if (save_table) {
-    
-    betadisper_to_df <- function(bd_obj) {
-      data.frame(
-        SampleID = names(bd_obj$distances),
-        Group = bd_obj$group,
-        Distance_to_Centroid = bd_obj$distances,
-        bd_obj$vectors, 
-        check.names = FALSE
-      )
-    }
-    
-    jacs_df <- betadisper_to_df(jacs)
-    jtus_df <- betadisper_to_df(jtus)
-    jnes_df <- betadisper_to_df(jnes)
-    
-    base_name <- tools::file_path_sans_ext(table_filename)
-
-    file_jacs <- paste0(base_name, "_jacs.txt")
-    file_jtus <- paste0(base_name, "_jtus.txt")
-    file_jnes <- paste0(base_name, "_jnes.txt")
-    
-    utils::write.table(jacs_df, file = file_jacs, sep = "\t", quote = FALSE, row.names = FALSE)
-    utils::write.table(jtus_df, file = file_jtus, sep = "\t", quote = FALSE, row.names = FALSE)
-    utils::write.table(jnes_df, file = file_jnes, sep = "\t", quote = FALSE, row.names = FALSE)
-    
-    message("Tables saved as:")
-    message(file_jacs)
-    message(file_jtus)
-    message(file_jnes)
-  }
-  
-  mean_jac <- round(mean(as.dist(jac)), 3)
-  mean_turn <- round(mean(as.dist(jtu)), 3)
-  mean_nes <- round(mean(as.dist(jne)), 3)
-  
-  function_plot_beta <- function(x, env){
-    y <- .mbm_betadisper_spider_df(x, groups = env[[group_col]])
-
-    xlabs <- y$xlab
-    ylabs <- y$ylab
-    
-    z <- ggplot2::ggplot() + 
-      ggplot2::geom_point(
-        data = y$df_ord %>% dplyr::select(-Group) %>%
-          tibble::rownames_to_column(var = "SampleID") %>%
-          dplyr::inner_join(env, by = "SampleID"),
-        ggplot2::aes(
-          x = x, y = y,
-          color = .data[[group_col]],
-          shape = if (!is.null(shape_col)) .data[[shape_col]] else NULL
-        ),
-        size = point_size
-      ) +
-      ggplot2::xlab(xlabs) + ggplot2::ylab(ylabs) +
-      ggplot2::geom_segment(
-        data = y$df_spiders,
-        ggplot2::aes(x = cntr.x, xend = x, y = cntr.y, yend = y, color = Group),
-        show.legend = FALSE
-      )
-    
-    color_scale <- if(!is.null(group_colors)) {
-      ggplot2::scale_color_manual(values = group_colors)
-    } else if (length(unique(env1[[group_col]])) == 2) {
-      ggplot2::scale_color_manual(values = .mbm_colors_2group)
-    } else {
-      ggplot2::scale_color_manual(values = .mbm_colors)
-    }
-    
-    a <- z +
-      ggplot2::geom_label(data = y$df_mean.ord, ggplot2::aes(x = x, y = y, label = Group),
-                          fill = "white", color = "black", family = "serif",
-                          fontface = "bold", size = 3.5) +
-      ggplot2::geom_vline(xintercept = 0, linetype = 2) +
-      ggplot2::geom_hline(yintercept = 0, linetype = 2) +
-      color_scale +
-      ggplot2::labs(color = if(!is.null(legend_title)) legend_title else group_col) +
-      .mbm_theme(
-        legend_position = "right",
-        extra = ggplot2::theme(
-          legend.box        = "horizontal",
-          panel.grid.major  = ggplot2::element_blank(),
-          plot.margin       = grid::unit(c(0, 0, 0, 0), "cm"),
-          aspect.ratio      = 3/10,
-          panel.border      = ggplot2::element_blank(),
-          axis.line         = ggplot2::element_line(),
-          axis.line.y.right = ggplot2::element_blank(),
-          axis.line.x.top   = ggplot2::element_blank()
+beta_partition_ord_plot <- function(table, metadata,
+                                    family = "jaccard",
+                                    group_col,
+                                    shape_col = NULL,
+                                    legend_title = NULL,
+                                    point_size = 3,
+                                    group_colors = NULL,
+                                    panel_label_case = "upper",
+                                    panel_labels = NULL,
+                                    panel_label_bold = TRUE,
+                                    save_table = FALSE,
+                                    table_filename = "beta_partition") {
+    if (missing(group_col) || is.null(group_col)) {
+        stop("`group_col` is required: the dispersion and the spider lines are ",
+            "computed per group.",
+            call. = FALSE
         )
-      )
-    
-    
-    return(a)  
-  }
-  
-  legend_guides <- ggplot2::guides(
-    colour = ggplot2::guide_legend(nrow = 1, title = if(!is.null(legend_title)) legend_title else group_col),
-    shape  = ggplot2::guide_legend(nrow = 1, title = shape_col)
-  )
-  title_theme <- ggplot2::theme(
-    plot.title = ggplot2::element_text(hjust = 0.5, size = 14, color = "black",
-                                       family = "serif", face = "bold"),
-    aspect.ratio = 10/10
-  )
-  plot_jac <- function_plot_beta(jacs, env1) + legend_guides + title_theme +
-    ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") +
-    ggplot2::ggtitle(paste0(family, " dissimilarity (mean = ", mean_jac, ")"))
-  plot_turn <- function_plot_beta(jtus, env1) + legend_guides + title_theme +
-    ggplot2::ylab("") + ggplot2::xlab("DIM1") +
-    ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")"))
-  plot_nes <- function_plot_beta(jnes, env1) + legend_guides + title_theme +
-    ggplot2::ylab("") + ggplot2::xlab("DIM1") +
-    ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")"))
+    }
 
-  resolved_labels <- if (!is.null(panel_labels)) {
-    panel_labels
-  } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
 
-  combined_plot <- patchwork::wrap_plots(
-      patchwork::guide_area(), plot_jac, plot_turn, plot_nes,
-      design = "AAA\nBCD", heights = c(0.12, 1)) +
-    patchwork::plot_layout(guides = "collect") +
-    patchwork::plot_annotation(tag_levels = list(resolved_labels)) &
-    ggplot2::theme(
-      legend.position = "top",
-      plot.tag = ggplot2::element_text(family = "serif", size = 14,
-                                       face = if (panel_label_bold) "bold" else "plain")
-    )
+    family <- tolower(family)
+    panel_label_case <- tolower(panel_label_case)
 
-  return(combined_plot)
-  })  
+    suppressWarnings({
+        if (is.data.frame(table)) {
+            tax_cols <- grep("taxonomy|taxon|Taxonomy|Taxa", names(table))
+
+            if (length(tax_cols) > 0) {
+                table <- table[, -tax_cols[1], drop = FALSE]
+            }
+
+            table <- table[, vapply(table, is.numeric, logical(1)), drop = FALSE]
+
+            table <- as.matrix(table)
+        }
+
+        table_pa <- table
+        table_pa[table_pa > 0] <- 1
+        table_pa <- table_pa %>%
+            tibble::as_tibble(rownames = "SampleID") %>%
+            dplyr::arrange(SampleID) %>%
+            tibble::column_to_rownames(var = "SampleID") %>%
+            dplyr::select_if(is.numeric) %>%
+            t() %>%
+            as.data.frame()
+
+        colnames(metadata)[1] <- "SampleID"
+
+        beta <- betapart::beta.pair(table_pa, index.family = family)
+        if (family == "jaccard") {
+            jac <- beta$beta.jac
+            jtu <- beta$beta.jtu
+            jne <- beta$beta.jne
+        } else if (family == "sorensen") {
+            jac <- beta$beta.sor
+            jtu <- beta$beta.sim
+            jne <- beta$beta.sne
+        } else {
+            stop("Only 'jaccard' or 'sorensen' are supported for family")
+        }
+
+        names(metadata)[1] <- "SampleID"
+
+        env1 <- table_pa %>%
+            tibble::as_tibble(rownames = "SampleID") %>%
+            dplyr::inner_join(metadata, by = "SampleID")
+
+        jacs <- vegan::betadisper(jac, factor(env1[[group_col]]))
+        jtus <- vegan::betadisper(jtu, factor(env1[[group_col]]))
+        jnes <- vegan::betadisper(jne, factor(env1[[group_col]]))
+
+        if (save_table) {
+            betadisper_to_df <- function(bd_obj) {
+                data.frame(
+                    SampleID = names(bd_obj$distances),
+                    Group = bd_obj$group,
+                    Distance_to_Centroid = bd_obj$distances,
+                    bd_obj$vectors,
+                    check.names = FALSE
+                )
+            }
+
+            jacs_df <- betadisper_to_df(jacs)
+            jtus_df <- betadisper_to_df(jtus)
+            jnes_df <- betadisper_to_df(jnes)
+
+            base_name <- tools::file_path_sans_ext(table_filename)
+
+            file_jacs <- paste0(base_name, "_jacs.txt")
+            file_jtus <- paste0(base_name, "_jtus.txt")
+            file_jnes <- paste0(base_name, "_jnes.txt")
+
+            utils::write.table(jacs_df, file = file_jacs, sep = "\t", quote = FALSE, row.names = FALSE)
+            utils::write.table(jtus_df, file = file_jtus, sep = "\t", quote = FALSE, row.names = FALSE)
+            utils::write.table(jnes_df, file = file_jnes, sep = "\t", quote = FALSE, row.names = FALSE)
+
+            message("Tables saved as:")
+            message(file_jacs)
+            message(file_jtus)
+            message(file_jnes)
+        }
+
+        mean_jac <- round(mean(as.dist(jac)), 3)
+        mean_turn <- round(mean(as.dist(jtu)), 3)
+        mean_nes <- round(mean(as.dist(jne)), 3)
+
+        function_plot_beta <- function(x, env) {
+            y <- .mbm_betadisper_spider_df(x, groups = env[[group_col]])
+
+            xlabs <- y$xlab
+            ylabs <- y$ylab
+
+            z <- ggplot2::ggplot() +
+                ggplot2::geom_point(
+                    data = y$df_ord %>% dplyr::select(-Group) %>%
+                        tibble::rownames_to_column(var = "SampleID") %>%
+                        dplyr::inner_join(env, by = "SampleID"),
+                    ggplot2::aes(
+                        x = x, y = y,
+                        color = .data[[group_col]],
+                        shape = if (!is.null(shape_col)) .data[[shape_col]] else NULL
+                    ),
+                    size = point_size
+                ) +
+                ggplot2::xlab(xlabs) +
+                ggplot2::ylab(ylabs) +
+                ggplot2::geom_segment(
+                    data = y$df_spiders,
+                    ggplot2::aes(x = cntr.x, xend = x, y = cntr.y, yend = y, color = Group),
+                    show.legend = FALSE
+                )
+
+            color_scale <- if (!is.null(group_colors)) {
+                ggplot2::scale_color_manual(values = group_colors)
+            } else if (length(unique(env1[[group_col]])) == 2) {
+                ggplot2::scale_color_manual(values = .mbm_colors_2group)
+            } else {
+                ggplot2::scale_color_manual(values = .mbm_colors)
+            }
+
+            a <- z +
+                ggplot2::geom_label(
+                    data = y$df_mean.ord, ggplot2::aes(x = x, y = y, label = Group),
+                    fill = "white", color = "black", family = "serif",
+                    fontface = "bold", size = 3.5
+                ) +
+                ggplot2::geom_vline(xintercept = 0, linetype = 2) +
+                ggplot2::geom_hline(yintercept = 0, linetype = 2) +
+                color_scale +
+                ggplot2::labs(color = if (!is.null(legend_title)) legend_title else group_col) +
+                .mbm_theme(
+                    legend_position = "right",
+                    extra = ggplot2::theme(
+                        legend.box        = "horizontal",
+                        panel.grid.major  = ggplot2::element_blank(),
+                        plot.margin       = grid::unit(c(0, 0, 0, 0), "cm"),
+                        aspect.ratio      = 3 / 10,
+                        panel.border      = ggplot2::element_blank(),
+                        axis.line         = ggplot2::element_line(),
+                        axis.line.y.right = ggplot2::element_blank(),
+                        axis.line.x.top   = ggplot2::element_blank()
+                    )
+                )
+
+
+            return(a)
+        }
+
+        legend_guides <- ggplot2::guides(
+            colour = ggplot2::guide_legend(nrow = 1, title = if (!is.null(legend_title)) legend_title else group_col),
+            shape  = ggplot2::guide_legend(nrow = 1, title = shape_col)
+        )
+        title_theme <- ggplot2::theme(
+            plot.title = ggplot2::element_text(
+                hjust = 0.5, size = 14, color = "black",
+                family = "serif", face = "bold"
+            ),
+            aspect.ratio = 10 / 10
+        )
+        plot_jac <- function_plot_beta(jacs, env1) + legend_guides + title_theme +
+            ggplot2::ylab("DIM2") + ggplot2::xlab("DIM1") +
+            ggplot2::ggtitle(paste0(family, " dissimilarity (mean = ", mean_jac, ")"))
+        plot_turn <- function_plot_beta(jtus, env1) + legend_guides + title_theme +
+            ggplot2::ylab("") + ggplot2::xlab("DIM1") +
+            ggplot2::ggtitle(paste0("Turnover component (mean = ", mean_turn, ")"))
+        plot_nes <- function_plot_beta(jnes, env1) + legend_guides + title_theme +
+            ggplot2::ylab("") + ggplot2::xlab("DIM1") +
+            ggplot2::ggtitle(paste0("Nestedness component (mean = ", mean_nes, ")"))
+
+        resolved_labels <- if (!is.null(panel_labels)) {
+            panel_labels
+        } else if (identical(panel_label_case, "lower")) c("a", "b", "c") else c("A", "B", "C")
+
+        combined_plot <- patchwork::wrap_plots(
+            patchwork::guide_area(), plot_jac, plot_turn, plot_nes,
+            design = "AAA\nBCD", heights = c(0.12, 1)
+        ) +
+            patchwork::plot_layout(guides = "collect") +
+            patchwork::plot_annotation(tag_levels = list(resolved_labels)) &
+            ggplot2::theme(
+                legend.position = "top",
+                plot.tag = ggplot2::element_text(
+                    family = "serif", size = 14,
+                    face = if (panel_label_bold) "bold" else "plain"
+                )
+            )
+
+        return(combined_plot)
+    })
 }

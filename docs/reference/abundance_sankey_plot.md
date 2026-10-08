@@ -1,6 +1,7 @@
 # Sankey diagram of relative abundances
 
-Generate a Sankey diagram from a table with taxonomy
+Creates an interactive Sankey diagram (with networkD3) of how the
+relative abundance flows across taxonomic ranks.
 
 ## Usage
 
@@ -10,7 +11,7 @@ abundance_sankey_plot(
   output_file = NULL,
   maxn = 25,
   taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
-  taxonomy_db = "gg",
+  taxonomy_db = "silva",
   width = NULL,
   height = NULL,
   save_table = FALSE,
@@ -33,20 +34,19 @@ abundance_sankey_plot(
 
 - maxn:
 
-  Maximum number of taxa per level to include in the diagram (default:
-  25).
+  Integer. Maximum number of taxa per rank. Default `25`.
 
 - taxRanks:
 
-  Taxonomic levels to display (default:
-  c("D","K","P","C","O","F","G","S")).
+  Character vector of the ranks to show, as one-letter codes: `"D"`
+  (domain), `"K"` (kingdom), `"P"`, `"C"`, `"O"`, `"F"`, `"G"` and
+  `"S"`. Default all of them.
 
 - taxonomy_db:
 
-  Reference taxonomy database whose prefix style the taxonomy strings
-  follow. One of `"gg"` (default; Greengenes, also accepts `"gg2"` /
-  `"greengenes2"`), `"silva"`, `"unite"`, or `"kraken2"`.
-  Case-insensitive.
+  Character. Database the taxonomy strings come from: `"silva"`
+  (default), `"gg2"` (Greengenes2, also `"gg"`), `"unite"` or
+  `"Kraken2"` (also `"kraken"`). Case-insensitive.
 
 - width, height:
 
@@ -56,13 +56,13 @@ abundance_sankey_plot(
 
 - save_table:
 
-  Logical. If `TRUE`, saves a combined table of the Sankey nodes and
-  links to disk, distinguished by a `table_type` column (`"node"` or
-  `"link"`). Default `FALSE`.
+  Logical. If `TRUE`, saves the Sankey nodes and links (one table, with
+  a `table_type` column: `"node"` or `"link"`) as a tab-delimited file.
+  Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"sankey_nodes_links.txt"`.
 
 ## Value
@@ -84,5 +84,5 @@ abundance_sankey_plot(
   taxRanks     = c("P", "C", "G", "S"),
   taxonomy_db  = "silva"
 )
-#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\Rtmpkxiywq/sankey_output.html
+#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpyaHdP0/sankey_output.html
 ```

@@ -27,10 +27,11 @@ ancombc_plot(
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
 \item{group_col}{Character. Name of the column in \code{metadata} that
-defines the grouping variable. If it is numeric, it's treated as a covariate.}
+defines the groups. If it is numeric, it is treated as a continuous
+covariate.}
 
 \item{level}{Character or \code{NULL}. Taxonomic level to agglomerate
 to before running \code{ancombc2} (e.g. \code{"genus"}, \code{"family"};
@@ -40,9 +41,10 @@ ANCOMBC2 directly on the ASV/OTU/species-level table (rows of \code{table}, as-i
 \item{min_prevalence}{Numeric. Prevalence cut-off passed to \code{ancombc2}
 (default \code{0.1}). Lower values retain more taxa.}
 
-\item{p_adjust_method}{Character. Multiple-testing correction method passed to
-\code{ancombc2} (default \code{"holm"}). Use \code{"BH"} for a less
-strict correction when sample sizes are small.}
+\item{p_adjust_method}{Character. Multiple-testing correction for the
+ANCOMBC2 p-values of the taxa (passed to \code{ancombc2()}), any method of
+\code{stats::p.adjust()}. Default \code{"holm"}; \code{"none"} uses the raw
+p-values. Use \code{"BH"} for a less strict correction with few samples.}
 
 \item{formula}{Character. Right-hand side of the fixed-effects formula
 passed to \code{ancombc2} (e.g. \code{"group + age"}). If \code{NULL}
@@ -52,35 +54,35 @@ passed to \code{ancombc2} (e.g. \code{"group + age"}). If \code{NULL}
 \code{ancombc2} for mixed models (e.g. \code{"~ 1 | subject_id"}).
 Default \code{NULL}.}
 
-\item{ref_level}{Character. Reference level for \code{group_col}. If
-\code{NULL} (default) the first factor level is used as reference.
-Use this to change which group appears as the baseline in comparisons
-(e.g. \code{ref_level = "control"} to compare all other groups against P2).}
+\item{ref_level}{Character. Reference level of \code{group_col}, the
+baseline of the comparisons. If \code{NULL} (default), the first factor
+level is used (e.g. \code{ref_level = "control"} compares every other group
+against control).}
 
-\item{diverging_palette}{Character. Name of the colorblind-friendly
-diverging palette used for the 3+-group heatmap's log-fold-change fill
-scale. One of \code{"BuOr"} (blue-orange, default), \code{"BuVm"}
-(blue-vermillion), \code{"BuPk"} (blue-pink), or \code{"GnPk"}
-(green-pink). Ignored for the 2-group / continuous bar plot, which uses
-\code{bar_colors} instead.}
+\item{diverging_palette}{Character. Colorblind-friendly diverging palette of
+the heatmap (3 or more groups): \code{"BuOr"} (blue-orange, default),
+\code{"BuVm"} (blue-vermillion), \code{"BuPk"} (blue-pink), \code{"GnPk"}
+(green-pink) or \code{"PuYl"} (purple-yellow). Not used by the bar plot,
+which uses \code{bar_colors}.}
 
 \item{x_axis_title, y_axis_title}{Titles for the x- and y-axis. Default
 \code{NULL}: the log fold change of the comparison on x of the bar
 plots, and no title otherwise.}
 
-\item{bar_colors}{Character vector of  2 colors used for the
-bar plot. First color is the "positive" direction (the non-reference group),
-second color is the "negative" direction (the reference).}
+\item{bar_colors}{Character vector of two colors for the bar plot: the first
+for the taxa higher in the non-reference group, the second for those higher
+in the reference group. Default \code{c("#56B4E9", "#E69F00")}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the full ANCOMBC2 results
-table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ANCOMBC2 results
+table (log fold change, standard error, p- and q-values and \code{diff_}
+of each term) as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"ancombc_results.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"ancombc_results.txt"}.}
 }
 \value{
-A \code{ggplot2} object: a bar plot (2 groups) or a heatmap
-(\eqn{\geq}3 groups).
+A ggplot object: a bar plot (2 groups) or a heatmap (3 or more
+groups).
 }
 \description{
 Runs ANCOMBC2 on a table and metadata, then visualizes differentially
@@ -92,15 +94,14 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 \donttest{
 ancombc_plot(
-  table        = table,
-  metadata     = metadata,
-  group_col     = "Location",
-  min_prevalence      = 0.3,
-  p_adjust_method = "BH"
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    min_prevalence = 0.3,
+    p_adjust_method = "BH"
 )
 }
 }

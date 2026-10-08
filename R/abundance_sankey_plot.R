@@ -1,23 +1,25 @@
 #' Sankey diagram of relative abundances
 #'
-#' Generate a Sankey diagram from a table with taxonomy
+#' Creates an interactive Sankey diagram (with networkD3) of how the relative
+#' abundance flows across taxonomic ranks.
 #'
-#' @param table A data frame with taxa in rows and samples in columns. 
+#' @param table A data frame with taxa in rows and samples in columns.
 #' The last column must be named `taxonomy`, containing full taxonomic strings.
 #' @param output_file Character or \code{NULL}. Path of an HTML file to save
 #'   the interactive diagram to. If \code{NULL} (default), nothing is written
 #'   to disk; the diagram is only returned.
-#' @param maxn Maximum number of taxa per level to include in the diagram (default: 25).
-#' @param taxRanks Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).
-#' @param taxonomy_db Reference taxonomy database whose prefix style the
-#'   taxonomy strings follow. One of `"gg"` (default; Greengenes, also accepts
-#'   `"gg2"` / `"greengenes2"`), `"silva"`, `"unite"`, or `"kraken2"`.
-#'   Case-insensitive.
-#' @param save_table Logical. If \code{TRUE}, saves a combined table of the
-#'   Sankey nodes and links to disk, distinguished by a \code{table_type}
-#'   column (\code{"node"} or \code{"link"}). Default \code{FALSE}.
-#' @param table_filename Character. File path/name for the saved table (used
-#'   when \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.
+#' @param maxn Integer. Maximum number of taxa per rank. Default \code{25}.
+#' @param taxRanks Character vector of the ranks to show, as one-letter codes:
+#'   \code{"D"} (domain), \code{"K"} (kingdom), \code{"P"}, \code{"C"},
+#'   \code{"O"}, \code{"F"}, \code{"G"} and \code{"S"}. Default all of them.
+#' @param taxonomy_db Character. Database the taxonomy strings come from:
+#'   \code{"silva"} (default), \code{"gg2"} (Greengenes2, also \code{"gg"}),
+#'   \code{"unite"} or \code{"Kraken2"} (also \code{"kraken"}). Case-insensitive.
+#' @param save_table Logical. If \code{TRUE}, saves the Sankey nodes and links
+#'   (one table, with a \code{table_type} column: \code{"node"} or \code{"link"})
+#'   as a tab-delimited file. Default \code{FALSE}.
+#' @param table_filename Character. Name or path of the saved file (used when
+#'   \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.
 #'
 #' @param width,height Numeric or \code{NULL}. Width and height of the
 #'   diagram in pixels. If \code{NULL} (default), the widget's default size
@@ -32,214 +34,209 @@
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' abundance_sankey_plot(
-#'   table        = table,
-#'   output_file  = file.path(tempdir(), "sankey_output.html"),
-#'   maxn         = 10,
-#'   taxRanks     = c("P", "C", "G", "S"),
-#'   taxonomy_db  = "silva"
+#'     table        = table,
+#'     output_file  = file.path(tempdir(), "sankey_output.html"),
+#'     maxn         = 10,
+#'     taxRanks     = c("P", "C", "G", "S"),
+#'     taxonomy_db  = "silva"
 #' )
-
-
 abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
-                                  taxRanks = c("D","K","P","C","O","F","G","S"),
-                                  taxonomy_db = "gg",
+                                  taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
+                                  taxonomy_db = "silva",
                                   width = NULL,
                                   height = NULL,
                                   save_table = FALSE,
                                   table_filename = "sankey_nodes_links.txt") {
+    taxonomy_db <- .mbm_taxonomy_db(taxonomy_db)
 
-  if (!requireNamespace("networkD3", quietly = TRUE)) {
-    stop(
-      "Package 'networkD3' is required but not installed.\n",
-      "Install it with: install.packages(\"networkD3\")",
-      call. = FALSE
-    )
-  }
-
-  #relative abundance function
-  relabunda <- function(x) as.data.frame(t(t(x) / colSums(x))) * 100
-
-  #taxoonomy check
-  tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
-  if(length(tax_col) != 1) stop("There is no taxonomy column in the table")
-  
-  table <- table[, c(setdiff(seq_len(ncol(table)), tax_col), tax_col)]
-  
-  otu_mat <- table[, -ncol(table)]
-  rownames(otu_mat) <- rownames(table)
-  otu_rel <- relabunda(otu_mat)
-  otu_rel$taxonomy <- table[[ncol(table)]]
-  
-  otu_rel_parse <- otu_rel %>%
-    tibble::rownames_to_column("Feature.ID") %>%
-    tidyr::separate(taxonomy, into = c("k","p","c","o","f","g","s"), sep = ";", fill = "right") %>%
-    dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_trim(.)))
-  if(tolower(taxonomy_db) == "silva") {
-    otu_rel_parse <- otu_rel_parse %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
-      dplyr::mutate(s = stringr::str_trim(s),
-                    s = stringr::str_replace(s, "^\\s*[a-zA-Z]+__", "")) %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_replace_all(., "_", " ")))
-  }else if (tolower(taxonomy_db) == "unite") {
-    otu_rel_parse <- otu_rel_parse %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ ifelse(grepl("incertae sedis", .), ., stringr::str_remove(., "^[a-zA-Z]+__")))) %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_replace_all(., "_", " ")))
-  
-  
-  } else if (tolower(taxonomy_db) %in% c("gg", "gg2", "greengenes2")) {
-    
-    otu_rel_parse <- otu_rel_parse %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g,s), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
-      dplyr::mutate(dplyr::across(c(p,c,o,f,g), ~ stringr::str_replace(., "_[A-Z](_\\d+)?$", ""))) %>%
-      dplyr::mutate(dplyr::across(c(k,p,c,o,f,g), ~ stringr::str_replace_all(., "_", " "))) %>%
-      
-      # limpiar la especie
-      dplyr::mutate(
-        s = stringr::str_replace(s, "^s__", ""),                   
-        s = stringr::str_replace(s, "_[A-Z](_\\d+)?$", ""),       
-        s = stringr::str_replace_all(s, "_", " "),               
-        s = stringr::str_trim(s)                                   
-      )
-  
-  
-  }else if(tolower(taxonomy_db) == "kraken2") {
-    otu_rel_parse <- otu_rel_parse %>%
-      dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_extract(., "[^_]+$")),
-                    s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g,s,sep=" "), s))
-  }
-
-  is_incertae_sedis <- function(x) {
-    !is.na(x) & grepl("^(incertae[\\s_]+sedis|uncultured)$", x, ignore.case = TRUE, perl = TRUE)
-  }
-  rank_cols <- c("k","p","c","o","f","g","s")
-  for (i in seq(2, length(rank_cols))) {
-    this_col <- rank_cols[i]
-    parent_col <- rank_cols[i - 1]
-    hit <- is_incertae_sedis(otu_rel_parse[[this_col]])
-    parent_val <- otu_rel_parse[[parent_col]][hit]
-    already_other <- grepl("^other ", parent_val)
-    otu_rel_parse[[this_col]][hit] <- ifelse(already_other, parent_val, paste("other", parent_val))
-  }
-  otu_rel_parse[rank_cols] <- lapply(otu_rel_parse[rank_cols], .mbm_composite_genus)
-
-  get_level_data <- function(df, level, unite_cols) {
-    df %>%
-      tidyr::unite(col = !!level, all_of(unite_cols), remove = FALSE) %>%
-      dplyr::mutate(!!level := ifelse(grepl("_+$", .data[[level]]) | .data[[level]] == "", NA, .data[[level]])) %>%
-      tidyr::drop_na(all_of(level)) %>%
-      dplyr::select(c(all_of(level), names(df)[vapply(df, is.numeric, logical(1))])) %>%
-      dplyr::group_by(across(all_of(level))) %>%
-      dplyr::summarise(dplyr::across(where(is.numeric), sum), .groups = "drop") %>%
-      tibble::column_to_rownames(var = level) %>%
-      t() %>%
-      as.data.frame() %>%
-      colMeans() %>%
-      as.data.frame() %>%
-      dplyr::rename(abund = ".") %>%
-      dplyr::mutate(taxRank = toupper(substr(level,1,1))) %>%
-      tibble::rownames_to_column("Taxon") %>%
-      dplyr::mutate(
-        Taxon = gsub("Firmicutes","Bacillota-D",Taxon),
-        Taxon = gsub("Proteobacteria","Pseudomonadota",Taxon),
-        Taxon = gsub("Actinobacteriota","Actinomycetota",Taxon),
-        Taxon = gsub("Cyanobacteria","Cyanobacteriota",Taxon)
-      ) %>%
-      dplyr::filter(!endsWith(Taxon,"NA")) %>%
-      tibble::column_to_rownames("Taxon")
-  }
-  
-  #resume levels
-  bacterias <- get_level_data(otu_rel_parse, "kingdom", "k")
-  phylum   <- get_level_data(otu_rel_parse, "phylum", c("k","p"))
-  class     <- get_level_data(otu_rel_parse, "class", c("k","p","c"))
-  order     <- get_level_data(otu_rel_parse, "order", c("k","p","c","o"))
-  family    <- get_level_data(otu_rel_parse, "family", c("k","p","c","o","f"))
-  genus     <- get_level_data(otu_rel_parse, "genus", c("k","p","c","o","f","g"))
-  specie    <- get_level_data(otu_rel_parse, "specie", c("k","p","c","o","f","g","s"))
-  
-  my_report <- dplyr::bind_rows(bacterias, phylum, class, order, family, genus, specie) %>%
-    tibble::rownames_to_column("ids") %>%
-    dplyr::mutate(name = stringr::str_extract(ids, "[^_]+$")) %>%
-    dplyr::filter(!name %in% c("NA","Bacteria","Bacteria_Patescibacteria")) %>%
-    dplyr::filter(taxRank %in% taxRanks) %>%
-    dplyr::group_by(taxRank) %>%
-    dplyr::slice_max(order_by = abund, n = maxn, with_ties = FALSE) %>%
-    dplyr::ungroup()
-  
-  # Construct nodes and links
-  splits <- strsplit(my_report$ids,"_")
-  sel <- vapply(splits, length, integer(1)) >= 3
-  splits <- splits[sel]
-  
-  links <- data.frame(do.call(rbind,
-                              lapply(splits, function(x) utils::tail(x[x %in% my_report$name], 2))),
-                      stringsAsFactors = FALSE)
-  colnames(links) <- c("source","target")
-  
-  links$value <- vapply(seq_len(nrow(links)), function(i) {
-    val <- my_report$abund[my_report$name == links$target[i]]
-    if(length(val) == 1) val else NA_real_
-  }, numeric(1))
-  
-  links <- links[!is.na(links$value) & links$value>0, ]
-  
-  # deepness
-  valid_ranks <- taxRanks[taxRanks %in% unique(my_report$taxRank)]
-  taxRank_to_depth <- setNames(seq_along(valid_ranks)-1, valid_ranks)
-  
-  nodes <- data.frame(
-    name = my_report$name,
-    depth = taxRank_to_depth[my_report$taxRank],
-    value = my_report$abund,
-    stringsAsFactors = FALSE
-  )
-  
-  names_id <- setNames(seq_len(nrow(nodes))-1, nodes$name)
-  links$source <- names_id[links$source]
-  links$target <- names_id[links$target]
-  links <- links[!is.na(links$source) & !is.na(links$target), ]
-  links <- links[links$source != links$target, ]
-  
-  nodes$name <- sub("^._","",nodes$name)
-  links$type <- sub(" .*","",nodes[links$source + 1,"name"])
-
-  #save optional
-  if (save_table) {
-    nodes_out <- nodes
-    nodes_out$table_type <- "node"
-    links_out <- links
-    links_out$table_type <- "link"
-    combined_table <- dplyr::bind_rows(nodes_out, links_out)
-    utils::write.table(combined_table, file = table_filename, sep = "\t",
-                       quote = FALSE, row.names = FALSE)
-    message("Table saved as: ", table_filename)
-  }
-
-  sankey <- networkD3::sankeyNetwork(
-    Links = links,
-    Nodes = nodes,
-    Source = "source",
-    Target = "target",
-    Value = "value",
-    NodeID = "name",
-    NodeGroup = "name",
-    LinkGroup = "type",
-    units = "abund",
-    fontFamily = "serif",
-    fontSize = 12,
-    nodeWidth = 15,
-    iterations = 64,
-    width = width,
-    height = height
-  )
-
-  if (!is.null(output_file)) {
-    networkD3::saveNetwork(sankey, file = output_file)
-    if (grepl("[.]html?$", output_file)) {
-      unlink(sub("[.]html?$", "_files", output_file), recursive = TRUE)
+    if (!requireNamespace("networkD3", quietly = TRUE)) {
+        stop(
+            "Package 'networkD3' is required but not installed.\n",
+            "Install it with: install.packages(\"networkD3\")",
+            call. = FALSE
+        )
     }
-    message("Sankey diagram saved to: ", output_file)
-  }
 
-  invisible(sankey)
+    relabunda <- function(x) as.data.frame(t(t(x) / colSums(x))) * 100
+
+    tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
+    if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
+
+    table <- table[, c(setdiff(seq_len(ncol(table)), tax_col), tax_col)]
+
+    otu_mat <- table[, -ncol(table)]
+    rownames(otu_mat) <- rownames(table)
+    otu_rel <- relabunda(otu_mat)
+    otu_rel$taxonomy <- table[[ncol(table)]]
+
+    otu_rel_parse <- otu_rel %>%
+        tibble::rownames_to_column("Feature.ID") %>%
+        tidyr::separate(taxonomy, into = c("k", "p", "c", "o", "f", "g", "s"), sep = ";", fill = "right") %>%
+        dplyr::mutate(dplyr::across(c(k, p, c, o, f, g, s), ~ stringr::str_trim(.)))
+    if (tolower(taxonomy_db) == "silva") {
+        otu_rel_parse <- otu_rel_parse %>%
+            dplyr::mutate(dplyr::across(c(k, p, c, o, f, g), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
+            dplyr::mutate(
+                s = stringr::str_trim(s),
+                s = stringr::str_replace(s, "^\\s*[a-zA-Z]+__", "")
+            ) %>%
+            dplyr::mutate(dplyr::across(c(k, p, c, o, f, g, s), ~ stringr::str_replace_all(., "_", " ")))
+    } else if (tolower(taxonomy_db) == "unite") {
+        otu_rel_parse <- otu_rel_parse %>%
+            dplyr::mutate(dplyr::across(c(k, p, c, o, f, g, s), ~ ifelse(grepl("incertae sedis", .), ., stringr::str_remove(., "^[a-zA-Z]+__")))) %>%
+            dplyr::mutate(dplyr::across(c(k, p, c, o, f, g, s), ~ stringr::str_replace_all(., "_", " ")))
+    } else if (tolower(taxonomy_db) %in% c("gg", "gg2", "greengenes2")) {
+        otu_rel_parse <- otu_rel_parse %>%
+            dplyr::mutate(dplyr::across(c(k, p, c, o, f, g, s), ~ stringr::str_remove(., "^[a-zA-Z]+__"))) %>%
+            dplyr::mutate(dplyr::across(c(p, c, o, f, g), ~ stringr::str_replace(., "_[A-Z](_\\d+)?$", ""))) %>%
+            dplyr::mutate(dplyr::across(c(k, p, c, o, f, g), ~ stringr::str_replace_all(., "_", " "))) %>%
+            dplyr::mutate(
+                s = stringr::str_replace(s, "^s__", ""),
+                s = stringr::str_replace(s, "_[A-Z](_\\d+)?$", ""),
+                s = stringr::str_replace_all(s, "_", " "),
+                s = stringr::str_trim(s)
+            )
+    } else if (tolower(taxonomy_db) == "kraken2") {
+        otu_rel_parse <- otu_rel_parse %>%
+            dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_extract(., "[^_]+$")),
+                s = ifelse(!is.na(g) & !is.na(s) & s != "NA", paste(g, s, sep = " "), s)
+            )
+    }
+
+    is_incertae_sedis <- function(x) {
+        !is.na(x) & grepl("^(incertae[\\s_]+sedis|uncultured)$", x, ignore.case = TRUE, perl = TRUE)
+    }
+    rank_cols <- c("k", "p", "c", "o", "f", "g", "s")
+    for (i in seq(2, length(rank_cols))) {
+        this_col <- rank_cols[i]
+        parent_col <- rank_cols[i - 1]
+        hit <- is_incertae_sedis(otu_rel_parse[[this_col]])
+        parent_val <- otu_rel_parse[[parent_col]][hit]
+        already_other <- grepl("^other ", parent_val)
+        otu_rel_parse[[this_col]][hit] <- ifelse(already_other, parent_val, paste("other", parent_val))
+    }
+    otu_rel_parse[rank_cols] <- lapply(otu_rel_parse[rank_cols], .mbm_composite_genus)
+
+    get_level_data <- function(df, level, unite_cols) {
+        df %>%
+            tidyr::unite(col = !!level, all_of(unite_cols), remove = FALSE) %>%
+            dplyr::mutate(!!level := ifelse(grepl("_+$", .data[[level]]) | .data[[level]] == "", NA, .data[[level]])) %>%
+            tidyr::drop_na(all_of(level)) %>%
+            dplyr::select(c(all_of(level), names(df)[vapply(df, is.numeric, logical(1))])) %>%
+            dplyr::group_by(across(all_of(level))) %>%
+            dplyr::summarise(dplyr::across(where(is.numeric), sum), .groups = "drop") %>%
+            tibble::column_to_rownames(var = level) %>%
+            t() %>%
+            as.data.frame() %>%
+            colMeans() %>%
+            as.data.frame() %>%
+            dplyr::rename(abund = ".") %>%
+            dplyr::mutate(taxRank = toupper(substr(level, 1, 1))) %>%
+            tibble::rownames_to_column("Taxon") %>%
+            dplyr::mutate(
+                Taxon = gsub("Firmicutes", "Bacillota-D", Taxon),
+                Taxon = gsub("Proteobacteria", "Pseudomonadota", Taxon),
+                Taxon = gsub("Actinobacteriota", "Actinomycetota", Taxon),
+                Taxon = gsub("Cyanobacteria", "Cyanobacteriota", Taxon)
+            ) %>%
+            dplyr::filter(!endsWith(Taxon, "NA")) %>%
+            tibble::column_to_rownames("Taxon")
+    }
+
+    bacterias <- get_level_data(otu_rel_parse, "kingdom", "k")
+    phylum <- get_level_data(otu_rel_parse, "phylum", c("k", "p"))
+    class <- get_level_data(otu_rel_parse, "class", c("k", "p", "c"))
+    order <- get_level_data(otu_rel_parse, "order", c("k", "p", "c", "o"))
+    family <- get_level_data(otu_rel_parse, "family", c("k", "p", "c", "o", "f"))
+    genus <- get_level_data(otu_rel_parse, "genus", c("k", "p", "c", "o", "f", "g"))
+    specie <- get_level_data(otu_rel_parse, "specie", c("k", "p", "c", "o", "f", "g", "s"))
+
+    my_report <- dplyr::bind_rows(bacterias, phylum, class, order, family, genus, specie) %>%
+        tibble::rownames_to_column("ids") %>%
+        dplyr::mutate(name = stringr::str_extract(ids, "[^_]+$")) %>%
+        dplyr::filter(!name %in% c("NA", "Bacteria", "Bacteria_Patescibacteria")) %>%
+        dplyr::filter(taxRank %in% taxRanks) %>%
+        dplyr::group_by(taxRank) %>%
+        dplyr::slice_max(order_by = abund, n = maxn, with_ties = FALSE) %>%
+        dplyr::ungroup()
+
+    splits <- strsplit(my_report$ids, "_")
+    sel <- vapply(splits, length, integer(1)) >= 3
+    splits <- splits[sel]
+
+    links <- data.frame(
+        do.call(
+            rbind,
+            lapply(splits, function(x) utils::tail(x[x %in% my_report$name], 2))
+        ),
+        stringsAsFactors = FALSE
+    )
+    colnames(links) <- c("source", "target")
+
+    links$value <- vapply(seq_len(nrow(links)), function(i) {
+        val <- my_report$abund[my_report$name == links$target[i]]
+        if (length(val) == 1) val else NA_real_
+    }, numeric(1))
+
+    links <- links[!is.na(links$value) & links$value > 0, ]
+
+    valid_ranks <- taxRanks[taxRanks %in% unique(my_report$taxRank)]
+    taxRank_to_depth <- setNames(seq_along(valid_ranks) - 1, valid_ranks)
+
+    nodes <- data.frame(
+        name = my_report$name,
+        depth = taxRank_to_depth[my_report$taxRank],
+        value = my_report$abund,
+        stringsAsFactors = FALSE
+    )
+
+    names_id <- setNames(seq_len(nrow(nodes)) - 1, nodes$name)
+    links$source <- names_id[links$source]
+    links$target <- names_id[links$target]
+    links <- links[!is.na(links$source) & !is.na(links$target), ]
+    links <- links[links$source != links$target, ]
+
+    nodes$name <- sub("^._", "", nodes$name)
+    links$type <- sub(" .*", "", nodes[links$source + 1, "name"])
+
+    if (save_table) {
+        nodes_out <- nodes
+        nodes_out$table_type <- "node"
+        links_out <- links
+        links_out$table_type <- "link"
+        combined_table <- dplyr::bind_rows(nodes_out, links_out)
+        utils::write.table(combined_table,
+            file = table_filename, sep = "\t",
+            quote = FALSE, row.names = FALSE
+        )
+        message("Table saved as: ", table_filename)
+    }
+
+    sankey <- networkD3::sankeyNetwork(
+        Links = links,
+        Nodes = nodes,
+        Source = "source",
+        Target = "target",
+        Value = "value",
+        NodeID = "name",
+        NodeGroup = "name",
+        LinkGroup = "type",
+        units = "abund",
+        fontFamily = "serif",
+        fontSize = 12,
+        nodeWidth = 15,
+        iterations = 64,
+        width = width,
+        height = height
+    )
+
+    if (!is.null(output_file)) {
+        networkD3::saveNetwork(sankey, file = output_file)
+        if (grepl("[.]html?$", output_file)) {
+            unlink(sub("[.]html?$", "_files", output_file), recursive = TRUE)
+        }
+        message("Sankey diagram saved to: ", output_file)
+    }
+
+    invisible(sankey)
 }

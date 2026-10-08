@@ -1,6 +1,13 @@
-# Box plot of beta diversity
+# Box plot of pairwise feature turnover (Hill numbers)
 
-Box plot of beta diversity
+Computes the pairwise beta diversity between samples with Hill numbers
+(q = 0, 1, 2; same values as
+[`hillR::hill_taxa_parti_pairwise()`](https://rdrr.io/pkg/hillR/man/hill_taxa_parti_pairwise.html))
+and plots the proportion of feature turnover (\\\beta - 1\\, from 0 =
+identical to 1 = no shared features) as box plots, one facet row per
+Hill order. q = 0 weighs all features equally (presence/absence), q = 1
+weighs them by their abundance and q = 2 gives more weight to dominant
+features.
 
 ## Usage
 
@@ -32,41 +39,32 @@ beta_turnover_plot(
 
 - table:
 
-  table Data frame where columns are samples and rows are ASVs or taxa.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame with sample metadata. The first column must match sample
-  names in "table".
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - comparison_condition1:
 
-  Vector of `"A_vs_B"` group-pair labels to keep (matched against the
-  values of `condition1_col`). Matching ignores order - listing
-  `"A_vs_B"` also matches pairs the pairwise self-join happened to
-  record as `"B_vs_A"`, so each pair only needs to be listed once. Each
-  matched pair becomes one x-axis/fill group, labelled exactly as
-  written (e.g. `"Rhizosphere_vs_Roots"`), same as `condition1_group` in
-  [`beta_dissimilarity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_dissimilarity_plot.md).
+  Character vector with the pairs of groups of `condition1_col` to show
+  (e.g. `"Rhizosphere_vs_Roots"`, `"Rhizosphere_vs_Rhizosphere"`; the
+  order of the two groups does not matter). Each pair is one box,
+  labeled as written.
 
 - comparison_condition2:
 
-  Optional. Same as `comparison_condition1`, for the values of
-  `condition2_col` (e.g. `"TC_vs_TC"` to keep only within-group pairs of
-  a given treatment). condition1 stays the main comparison
-  (x-axis/legend); condition2 is the secondary one - supplying it both
-  filters to the named pairs *and* facets the plot by them (one panel
-  per pair, e.g. `"TC_vs_TC"`, `"TD_vs_TD"`), the same role
-  `condition2_col` plays in
-  [`beta_dissimilarity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_dissimilarity_plot.md).
-  Default `NULL`: every pair matching `comparison_condition1` is kept
-  and the plot only facets by q.
+  Optional character vector with the pairs of groups of `condition2_col`
+  to keep (e.g. `"TC_vs_TC"`); the plot is faceted by them. Requires
+  `condition2_col`. If `NULL` (default), no pairs are filtered by
+  `condition2_col`.
 
 - condition1_col:
 
-  Metadata column (e.g. `"Type_of_soil"`) used to build
-  `comparison_condition1`'s group pairs, same as `condition1_col` in
-  [`beta_dissimilarity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_dissimilarity_plot.md).
+  Character. Name of the column in `metadata` whose groups are compared
+  (the pairs of `comparison_condition1`).
 
 - condition2_col:
 
@@ -78,41 +76,38 @@ beta_turnover_plot(
 
 - facet_colors:
 
-  Optional color vector for facet strips. Defaults to a neutral
-  `"grey85"` background for each facet, like
-  [`beta_dissimilarity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_dissimilarity_plot.md)'s
-  `facet_colors`.
+  Optional character vector of background colors for the facet strips.
+  If `NULL` (default), a neutral `"grey85"` is used.
 
 - group_colors:
 
-  Optional named color vector for x-axis groups. Defaults to the
-  package's colorblind-friendly Okabe-Ito palette (`.mbm_colors`,
-  orange/blue first), like
-  [`beta_dissimilarity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_dissimilarity_plot.md)'s
-  `group_colors`.
+  Optional character vector of colors, one per comparison on the x-axis,
+  named after them or in their order. If `NULL` (default), the
+  colorblind-friendly Okabe-Ito palette is used.
 
 - x_axis_title:
 
-  Title for the x-axis. Default `"Section"`.
+  Character. Title of the x-axis. Default `"Section"`.
 
 - y_axis_title:
 
-  Title for the y-axis. Default `"Proportion of feature turnover"`.
+  Character. Title of the y-axis. Default
+  `"Proportion of feature turnover"`.
 
 - show_x_labels:
 
-  Logical. If `TRUE`, x-axis tick labels are shown. Default `FALSE`,
-  since the same groups are already named in the legend.
+  Logical. If `TRUE`, the x-axis labels are shown. Default `FALSE`,
+  since the groups are already named in the legend.
 
 - x_label_angle:
 
-  Numeric. Rotation (in degrees) of the x-axis tick labels when
-  `show_x_labels = TRUE`. Default `0` (horizontal).
+  Numeric. Rotation (degrees) of the x-axis labels (when
+  `show_x_labels = TRUE`). Default `0` (horizontal); use `45` or `90` if
+  they overlap.
 
 - strip_text_bold:
 
-  Logical. If `TRUE`, facet strip labels are bold. Default `FALSE`
-  (plain).
+  Logical. If `TRUE`, the facet strip labels are bold. Default `FALSE`.
 
 - strip_text_color:
 
@@ -129,8 +124,8 @@ beta_turnover_plot(
 - stat:
 
   Character or `NULL`. Statistical test to compare the boxes within each
-  panel/facet. `"wilcox.test"` or `"t.test"` compare every pair of
-  boxes, each with its own bracket and p-value
+  panel. `"wilcox.test"` or `"t.test"` compare every pair of boxes, each
+  with its own bracket and p-value
   ([`ggpubr::stat_pwc()`](https://rpkgs.datanovia.com/ggpubr/reference/geom_pwc.html));
   `"kruskal.test"` or `"anova"` give one global p-value per panel
   ([`ggpubr::stat_compare_means()`](https://rpkgs.datanovia.com/ggpubr/reference/stat_compare_means.html)).
@@ -138,25 +133,35 @@ beta_turnover_plot(
 
 - p_adjust_method:
 
-  Multiple-comparison correction for the pairwise tests
-  (`stat = "wilcox.test"` or `"t.test"`), applied within each panel; any
+  Character. Multiple-testing correction for the pairwise tests
+  (`stat = "wilcox.test"` or `"t.test"`), applied within each panel, any
   method of
   [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
-  `"holm"`; `"none"` shows the raw p-values.
+  `"holm"`; `"none"` uses the raw p-values.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the underlying turnover table to disk.
+  Logical. If `TRUE`, saves the turnover table as a tab-delimited file.
   Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"betadiv_turnover.txt"`.
 
 ## Value
 
-A ggplot2 figure with beta diversity partitions across conditions.
+A ggplot object.
+
+## Details
+
+Each box is one group pair from `condition1_col`, so a between-group
+comparison (e.g. `"Rhizosphere_vs_Roots"`) can be contrasted with a
+within-group baseline (e.g. `"Rhizosphere_vs_Rhizosphere"`): if the
+between-group turnover is higher, the groups host distinct communities
+beyond the variability among replicates of the same group. An optional
+`condition2_col` keeps only pairs from the same level (e.g. the same
+treatment) and facets by it, so the comparison is not confounded by it.
 
 ## Examples
 

@@ -2,11 +2,11 @@
 % Please edit documentation in R/corr_env_abund_plot.R
 \name{corr_env_abund_plot}
 \alias{corr_env_abund_plot}
-\title{Plot Correlation Between Environmental Variables and Taxonomic Groups}
+\title{Correlation between environmental variables and taxa}
 \usage{
 corr_env_abund_plot(
   table,
-  env_data,
+  env_data = NULL,
   metadata = NULL,
   env_vars = NULL,
   method = "spearman",
@@ -26,86 +26,81 @@ corr_env_abund_plot(
 )
 }
 \arguments{
-\item{table}{A data frame containing a taxonomic abundance table with a
-taxonomy column and sample columns with numeric counts.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{env_data}{A data frame or matrix of environmental variables, with
-samples as row names.}
+\item{env_data}{Optional data frame of environmental variables, with row
+names matching the sample names in \code{table}. Default \code{NULL}:
+the variables named in \code{env_vars} are taken from \code{metadata}.
+Use it only when the variables are in a separate table.}
 
-\item{metadata}{A data frame containing sample metadata. The first column
-must correspond to sample identifiers.}
+\item{metadata}{A data frame containing sample metadata.
+Its first column must hold the sample IDs (the column names of \code{table}).
+The environmental variables can be columns of \code{metadata} (see \code{env_vars}).}
 
 \item{env_vars}{Character vector of environmental variables to include in
-the correlation analysis. If NULL, all available variables are used.}
+the correlation analysis (columns of \code{metadata}, or of
+\code{env_data} if given). Required when \code{env_data} is \code{NULL};
+with a separate \code{env_data}, \code{NULL} uses all its variables.}
 
-\item{method}{Character. Correlation method passed to stats::cor and
-stats::cor.test. Supported options include ("spearman", "pearson", "kendall").}
+\item{method}{Character. Correlation method: \code{"spearman"} (default),
+\code{"pearson"} or \code{"kendall"}.}
 
-\item{hc.order}{Logical. If TRUE, applies hierarchical clustering to
-reorder taxa and environmental variables in the plot.}
+\item{hc.order}{Logical. If \code{TRUE} (default), taxa and variables are
+reordered by hierarchical clustering.}
 
 \item{geom}{Character. Type of visualization to generate: \code{"tile"}
 (heatmap, default) or \code{"circle"} (bubble plot). Case-insensitive.}
 
-\item{show_labels}{Logical. If TRUE, displays correlation values on
-the plot.}
+\item{show_labels}{Logical. If \code{TRUE} (default), the correlation values
+are shown.}
 
-\item{col_palette}{Character vector defining the color palette for correlation
-values. If NULL, the palette is chosen via \code{diverging_palette}.}
+\item{col_palette}{Optional character vector of colors for the correlation
+scale. If \code{NULL} (default), \code{diverging_palette} is used.}
 
-\item{diverging_palette}{Character. Name of a built-in colorblind-friendly
-diverging palette to use when \code{col_palette} is NULL. One of
-\code{"BuOr"} (default; blue-white-orange, the same Okabe-Ito blue/
-orange pairing used for the two-group color convention elsewhere in the
-package, e.g. \code{aldex_volcano_plot}'s col_inf/col_sup and the
-Rhizosphere/Roots colors in the bundled examples), \code{"BuVm"}
-(blue-vermillion), \code{"BuPk"} (blue-pink), \code{"GnPk"}
-(green-pink), \code{"PuYl"} (purple-white-yellow, viridis endpoints);
-or \code{"viridis"} for the plain sequential purple-to-yellow scale
-used in \code{aldex_heatmap_plot} (no neutral midpoint - not
-recommended for correlations, where 0 should look distinct from either
-extreme). All presets have a true white midpoint at 0 except
-\code{"viridis"}.}
+\item{diverging_palette}{Character. Colorblind-friendly diverging palette,
+used when \code{col_palette} is \code{NULL}: \code{"BuOr"} (blue-orange,
+default), \code{"BuVm"} (blue-vermillion), \code{"BuPk"} (blue-pink),
+\code{"GnPk"} (green-pink) or \code{"PuYl"} (purple-yellow); or
+\code{"viridis"}, a sequential scale without a neutral midpoint (not
+recommended for correlations).}
 
-\item{invert_axes}{Logical. If TRUE, swaps x and y axes in the plot.}
+\item{invert_axes}{Logical. If \code{TRUE} (default), taxa and variables
+swap axes.}
 
-\item{taxonomy_db}{Character. Taxonomic database whose prefix style is used
-for parsing/annotation. One of \code{"silva"} (default), \code{"gg2"} (also accepts
-\code{"gg"} / \code{"greengenes2"}), \code{"unite"}, or \code{"Kraken2"} (also accepts
-\code{"kraken"}). Case-insensitive.}
+\item{taxonomy_db}{Character. Database the taxonomy strings come from:
+\code{"silva"} (default), \code{"gg2"} (Greengenes2, also \code{"gg"}),
+\code{"unite"} or \code{"Kraken2"} (also \code{"kraken"}). Case-insensitive.}
 
-\item{level}{Character. Taxonomic level to collapse taxa to. One of
-\code{"kingdom"}, \code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"}
-(default), or \code{"species"}. Case-insensitive.}
+\item{level}{Character. Taxonomic level: \code{"kingdom"}, \code{"phylum"},
+\code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default) or
+\code{"species"}. Case-insensitive.}
 
-\item{pval_threshold}{Numeric. Optional p-value threshold to retain only taxa
-showing significant correlations with at least one environmental variable.
-If \code{NULL}, no significance filtering is applied.}
+\item{pval_threshold}{Numeric or \code{NULL}. P-value cutoff (after
+\code{p_adjust_method}) to keep only taxa with a significant correlation
+with at least one variable. Default \code{NULL} (no filtering).}
 
-\item{p_adjust_method}{Multiple-comparison correction applied to the
-p-values of all taxon x variable correlations before filtering with
-\code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
-\code{"BH"} (false discovery rate); \code{"none"} uses the raw p-values.}
+\item{p_adjust_method}{Character. Multiple-testing correction for the
+p-values of all taxon x variable correlations, any method of
+\code{stats::p.adjust()}. Default \code{"BH"}; \code{"none"} uses the raw
+p-values.}
 
-\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis labels,
-so long variable or taxon names don't overlap. Default \code{45};
-\code{0} for horizontal labels.}
+\item{x_label_angle}{Numeric. Rotation (degrees) of the x-axis labels.
+Default \code{45}; \code{0} for horizontal labels.}
 
-\item{save_table}{Logical. If TRUE, saves the plotted correlations (one row
-per taxon and variable, with the taxon name, raw p-value and p-value
-adjusted with \code{p_adjust_method}) as a
-tab-delimited text file.}
+\item{save_table}{Logical. If \code{TRUE}, saves the plotted correlations
+(one row per taxon and variable, with the raw and adjusted p-values) as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. Name of the output file used when
-save_table = TRUE.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"corr.txt"}.}
 }
 \value{
-A ggplot2 object.
+A ggplot object.
 }
 \description{
-This function calculates the relative abundances of taxa at a specified taxonomic level
-(phylum, genus, or species) from a count table, computes correlations between these
-abundances and environmental variables, and visualizes the results as either a heatmap
+Computes the relative abundance of the taxa at a taxonomic level, correlates
+it with environmental variables, and shows the correlations as a heatmap
 (tile) or a bubble plot (circle).
 }
 \examples{
@@ -114,26 +109,17 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
-# env_data must have rownames matching the sample names in `table`
-env_data <- metadata
-rownames(env_data) <- env_data$SampleID
-
-# Uses the default colorblind-friendly diverging palette (purple-white-yellow)
 corr_env_abund_plot(
-  table          = table,
-  env_data      = env_data,
-  metadata       = metadata,
-  env_vars      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
-  method         = "pearson",
-  geom           = "tile",
-  hc.order       = FALSE,
-  invert_axes    = TRUE,
-  show_labels    = FALSE,
-  level          = "phylum",
-  taxonomy_db    = "silva"
+    table = table,
+    metadata = metadata,
+    env_vars = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
+    method = "pearson",
+    geom = "tile",
+    hc.order = FALSE,
+    invert_axes = TRUE,
+    show_labels = FALSE,
+    level = "phylum",
+    taxonomy_db = "silva"
 )
-# pval_threshold = 0.05 would keep only taxa with a significant correlation
-# after the p_adjust_method correction (BH by default).
 }

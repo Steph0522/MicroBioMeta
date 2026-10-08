@@ -1,6 +1,8 @@
-# Generate a Lollipop plot from random forest results
+# Random forest feature importance plot
 
-Generate a Lollipop plot from random forest results
+Fits a random forest (randomForest) that predicts a metadata variable
+from the abundances, and plots the most important features as a lollipop
+plot colored by phylum.
 
 ## Usage
 
@@ -23,51 +25,60 @@ random_forest_lollipop_plot(
 
 - table:
 
-  Data frame where columns are samples and rows are ASVs or taxa.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  Data frame containing sample metadata.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - top_n:
 
-  Number of top features to plot (default = 15).
+  Integer. Number of most important features to show. Default `15`.
 
 - size:
 
-  the size of the point of the lollipop.
+  Numeric. Size of the lollipop points. Default `8`.
 
 - variable_to_predict:
 
-  Variable to predict from the metadata.
+  Character. Name of the column in `metadata` to predict (a categorical
+  variable).
 
 - group_colors:
 
-  Custom color palette (optional).
+  Optional character vector of colors, one per phylum (recycled if
+  shorter). If `NULL` (default), the package palette is used.
 
 - title:
 
-  Main title for the figure.
+  Character. Plot title. `NULL` (default) shows no title.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the feature-importance table to disk.
-  Default `FALSE`.
+  Logical. If `TRUE`, saves the feature-importance table as a
+  tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"randomforest_importance.txt"`.
 
 - x_axis_title:
 
-  Title for the horizontal (importance) axis. Default
+  Character. Title of the x-axis (feature importance). Default
   `"Feature importance (MeanDecreaseGini)"`.
 
 ## Value
 
-A lollipop plot showing top important features from random forest
-analysis.
+A ggplot object.
+
+## Details
+
+The random forest is random; call
+[`set.seed()`](https://rdrr.io/r/base/Random.html) before the function
+to make the result reproducible.
 
 ## Examples
 
@@ -77,7 +88,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 random_forest_lollipop_plot(
   table               = table,

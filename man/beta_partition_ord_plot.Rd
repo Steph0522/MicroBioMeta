@@ -2,13 +2,13 @@
 % Please edit documentation in R/beta_partition_ord_plot.R
 \name{beta_partition_ord_plot}
 \alias{beta_partition_ord_plot}
-\title{Beta diversity partition (Jaccard/Sorensen)}
+\title{Beta diversity partition ordination}
 \usage{
 beta_partition_ord_plot(
   table,
   metadata,
   family = "jaccard",
-  group_col = NULL,
+  group_col,
   shape_col = NULL,
   legend_title = NULL,
   point_size = 3,
@@ -17,55 +17,63 @@ beta_partition_ord_plot(
   panel_labels = NULL,
   panel_label_bold = TRUE,
   save_table = FALSE,
-  table_filename = "SAMPLE1"
+  table_filename = "beta_partition"
 )
 }
 \arguments{
-\item{table}{Abundance matrix or data frame with taxa/features as rows and
-samples as columns (same orientation as the rest of the package). If a
-taxonomy column is present it is detected and removed automatically.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame with sample metadata. First column must be SampleID.}
+\item{metadata}{A data frame containing sample metadata.
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
 \item{family}{Dissimilarity family for the partition: \code{"jaccard"} (default)
 or \code{"sorensen"}. Case-insensitive.}
 
-\item{group_col}{Column in metadata to use as color grouping.}
+\item{group_col}{Character. Name of the column in \code{metadata} that
+defines the groups. Required: the dispersion and the lines to the centroid
+are computed per group.}
 
-\item{shape_col}{Optional column in metadata for point shapes.}
+\item{shape_col}{Character. Name of the column in \code{metadata} used for
+the point shapes. Optional; \code{NULL} (default) for one shape.}
 
-\item{legend_title}{Optional custom legend title.}
+\item{legend_title}{Character. Title of the legend. If \code{NULL}
+(default), the name of \code{group_col} is used.}
 
-\item{point_size}{Numeric. Size of points in ordination plots. Default \code{3}.}
+\item{point_size}{Numeric. Size of the points. Default \code{3}.}
 
-\item{group_colors}{Optional named vector of colors for groups.}
+\item{group_colors}{Optional character vector of colors, one per group,
+named after the groups or in their order. If \code{NULL} (default), the
+colorblind-friendly Okabe-Ito palette is used.}
 
-\item{panel_label_case}{Character. Case of the auto-generated A/B/C panel
-tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
-("a", "b", "c"). Ignored if \code{panel_labels} is supplied.}
+\item{panel_label_case}{Character. Case of the panel tags: \code{"upper"}
+(default; A, B, C) or \code{"lower"} (a, b, c). Ignored if
+\code{panel_labels} is given.}
 
-\item{panel_labels}{Optional character vector of 3 custom panel tags (one
-per jaccard/turnover/nestedness panel), used as-is (e.g.
-\code{c("(a)", "(b)", "(c)")} or \code{c("a.", "b.", "c.")}) — for
-journal styles that \code{panel_label_case} alone can't produce.
-Overrides \code{panel_label_case} when provided.}
+\item{panel_labels}{Optional character vector of custom panel tags, one per
+panel (Jaccard/Sorensen, turnover, nestedness), used as-is (e.g.
+\code{c("(a)", "(b)", "(c)")}). Overrides \code{panel_label_case}.}
 
 \item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
 bold. Set to \code{FALSE} for journals that require plain (non-bold)
 panel tags.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the dissimilarity table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the PCoA coordinates of the
+three ordinations as tab-delimited files. Default \code{FALSE}.}
 
-\item{table_filename}{Character. Base name for the saved table file. Default \code{"SAMPLE1"}.}
+\item{table_filename}{Character. Base name or path of the saved files (used
+when \code{save_table = TRUE}): three files, \code{<name>_jacs.txt},
+\code{<name>_jtus.txt} and \code{<name>_jnes.txt}. Default
+\code{"beta_partition"}.}
 }
 \value{
-A \code{patchwork} object with the three partition ordinations
-(Jaccard/Sorensen, turnover, nestedness). It can still be modified:
-\code{p & theme(...)} changes every panel, \code{p[[2]] + labs(...)} one.
+A \code{patchwork} object with the three ordinations
+(Jaccard/Sorensen, turnover and nestedness).
 }
 \description{
-This function computes beta diversity partition (Jaccard or Sorensen)
-using the betapart package, and plots the ordination (PCoA/NMDS) with gg_ordiplot.
+Partitions the beta diversity (Jaccard or Sorensen) into its turnover and
+nestedness components with betapart, and plots a PCoA of each component
+(vegan::betadisper()) with the samples linked to their group centroid.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -73,13 +81,11 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
-# Always tagged A/B/C (see panel_label_case and panel_labels to customize)
 beta_partition_ord_plot(
-  table      = table,
-  metadata   = metadata,
-  group_col  = "Location",
-  point_size = 4
+    table      = table,
+    metadata   = metadata,
+    group_col  = "Location",
+    point_size = 4
 )
 }

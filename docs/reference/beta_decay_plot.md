@@ -1,9 +1,9 @@
 # Distance-decay of community similarity plot
 
-Computes pairwise community dissimilarity (Jaccard, Horn/Morisita-Horn,
-Bray-Curtis, or other) and pairwise geographic distances from sample
-coordinates stored in `metadata`. It runs a Mantel test to evaluate the
-relationship between community similarity and geographic distance
+Computes the pairwise community dissimilarity (Jaccard, Morisita-Horn,
+Bray-Curtis or another vegdist method) and the pairwise geographic
+distance from the sample coordinates in metadata, and tests their
+relationship with a Mantel test.
 
 ## Usage
 
@@ -39,9 +39,9 @@ beta_decay_plot(
 
 - metadata:
 
-  A data frame containing sample metadata. Must include a `SAMPLEID`
-  column matching sample names in `table`. Must also contain latitude
-  and longitude columns
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`). It must also have the
+  latitude and longitude columns.
 
 - lat_col:
 
@@ -55,13 +55,15 @@ beta_decay_plot(
 
 - group_col:
 
-  Character or `NULL`. Optional categorical column in `metadata`
+  Character. Name of the column in `metadata` that defines the groups.
+  If given, only pairs of samples from the same group are kept, with one
+  color per group. Optional; `NULL` (default) for no groups.
 
 - palette:
 
-  Only used when `group_col` is supplied. Either a palette name
-  (`"colorb"` default, `"grey"`, `"viridis"`, `"brewer"`) or a vector of
-  fixed colors, one per group level.
+  Palette name (`"colorb"` (default), `"grey"`, `"viridis"` or
+  `"brewer"`) or a vector of colors, one per group. Only used when
+  `group_col` is given.
 
 - distance:
 
@@ -82,7 +84,7 @@ beta_decay_plot(
 
 - show_lm_stats:
 
-  Logical. If `TRUE` (default), adds R2 to the annotation label in
+  Logical. If `TRUE` (default), adds \\R^2\\ to the annotation label in
   addition to the Mantel r, p-value, and slope.
 
 - point_color:
@@ -95,11 +97,11 @@ beta_decay_plot(
 
 - point_size:
 
-  Numeric. Size of scatter points. Default `1`.
+  Numeric. Size of the points. Default `1`.
 
 - point_alpha:
 
-  Numeric (0-1). Transparency of scatter points. Default `0.5`.
+  Numeric (0-1). Transparency of the points. Default `0.5`.
 
 - annotation_size:
 
@@ -107,20 +109,20 @@ beta_decay_plot(
 
 - x_axis_title:
 
-  Character. X-axis label. Default `"Spatial distance (km)"`.
+  Character. Title of the x-axis. Default `"Spatial distance (km)"`.
 
 - y_axis_title:
 
-  Character or `NULL`. Y-axis label. If `NULL` (default), it is built
+  Character. Title of the y-axis. If `NULL` (default), it is built
   automatically.
 
 - title:
 
-  Character or `NULL`. Plot title. Default `NULL` (no title).
+  Character. Plot title. `NULL` (default) shows no title.
 
 ## Value
 
-A `ggplot` object.
+A ggplot object.
 
 ## Examples
 
@@ -130,7 +132,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 loc_coords <- data.frame(
   Loc = 1:7,

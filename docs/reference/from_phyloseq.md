@@ -14,8 +14,8 @@ from_phyloseq(physeq)
 
 - physeq:
 
-  A `phyloseq` object with an OTU table and, ideally, a taxonomy table
-  and sample data.
+  A `phyloseq` object with an OTU table and a taxonomy table and sample
+  data.
 
 ## Value
 

@@ -18,27 +18,28 @@ merge_feature_taxonomy(
 
 - table:
 
-  A data frame or matrix with samples as columns and taxa (features) as
-  rows. Row names must contain OTUIDs, ASVs, or species names.
+  A data frame with features in rows and samples in columns. Row names
+  must hold the feature IDs (OTUs, ASVs, species...).
 
 - taxonomy:
 
-  A data frame or matrix with taxonomy information. Row names must match
-  the identifiers in the table.
+  A data frame or matrix with the taxonomy. Row names must match the
+  feature IDs of `table`.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the merged table to disk. Default `FALSE`.
+  Logical. If `TRUE`, saves the merged table as a tab-delimited file.
+  Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"merged_feature_taxonomy.txt"`.
 
 ## Value
 
-A data frame with counts and taxonomy merged. If only one column in the
-taxonomy is present, it will be renamed to 'taxonomy'.
+A data frame with the counts of `table` and the taxonomy columns. A
+single taxonomy column is renamed to `taxonomy`.
 
 ## Examples
 
@@ -46,8 +47,6 @@ taxonomy is present, it will be renamed to 'taxonomy'.
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 full_table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-# Split the combined table into a counts-only feature table and a
-# separate taxonomy data frame, as merge_feature_taxonomy expects them
 feature_table <- full_table[, setdiff(colnames(full_table), "taxonomy")]
 taxonomy_df <- full_table[, "taxonomy", drop = FALSE]
 

@@ -11,6 +11,7 @@ aldex_heatmap_plot(
   effect_threshold = 0,
   pval_threshold = 0.05,
   p_adjust_method = "BH",
+  mc_samples = 128,
   cluster_rows = FALSE,
   cluster_columns = FALSE,
   heatmap_colors = NULL,
@@ -28,23 +29,29 @@ aldex_heatmap_plot(
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
 \item{group_col}{Character. Name of the column in \code{metadata} that
-defines the two groups to compare. Exactly two unique values are required.}
+defines the groups. It must have exactly two groups.}
 
 \item{effect_threshold}{Numeric. Minimum absolute effect size to retain.
 Default \code{0} (no effect-size filter), so by default the heatmap shows
 the same taxa that \code{aldex_volcano_plot} colors as significant.}
 
-\item{pval_threshold}{Numeric or NULL. Maximum p-value to retain (adjusted
-or not, depending on \code{p_adjust_method}). Default \code{0.05}. If
-NULL only \code{effect_threshold} is applied.}
+\item{pval_threshold}{Numeric or \code{NULL}. P-value cutoff (after
+\code{p_adjust_method}) to keep only significant taxa. Default \code{0.05}.
+If \code{NULL}, only \code{effect_threshold} is applied.}
 
-\item{p_adjust_method}{\code{"BH"} (default) or \code{"none"}: whether
-\code{pval_threshold} and the p-value annotation use ALDEx2's
-Benjamini-Hochberg adjusted p-values (\code{wi.eBH}) or the raw ones
-(\code{wi.ep}). ALDEx2 only computes the BH correction.}
+\item{p_adjust_method}{Character. \code{"BH"} (default) or \code{"none"}:
+use the Benjamini-Hochberg adjusted p-values of ALDEx2 (\code{wi.eBH}) or
+the raw ones (\code{wi.ep}) for \code{pval_threshold} and the p-value
+annotation. ALDEx2 only computes the BH correction.}
+
+\item{mc_samples}{Integer. Number of ALDEx2 Monte Carlo instances. Default
+\code{128} (ALDEx2's default), recommended for final analyses. Fewer
+instances are faster but the p-values and effect sizes are less stable (e.g.
+\code{16} for a quick look); call \code{set.seed()} before the function to
+make the result reproducible.}
 
 \item{cluster_rows}{Logical. Cluster heatmap rows (default \code{FALSE}).}
 
@@ -54,7 +61,7 @@ Benjamini-Hochberg adjusted p-values (\code{wi.eBH}) or the raw ones
 Three options: \code{NULL} (default, same as \code{"viridis"}) uses a sequential
 colorblind-friendly viridis scale (the same family used in
 \code{abundance_heatmap_plot}), with range computed automatically from the data;
-a preset name string — \code{"viridis"} or one of the diverging presets
+a preset name string: \code{"viridis"} or one of the diverging presets
 \code{"BuOr"} (blue-orange), \code{"BuVm"} (blue-vermillion), \code{"BuPk"}
 (blue-pink), \code{"GnPk"} (green-pink); or a \code{circlize::colorRamp2}
 function for full manual control.}
@@ -71,24 +78,20 @@ strip, with names \code{"<0.001"}, \code{"<0.01"}, \code{"<0.05"} and
 heatmap body and effect size defaults). A list with one such vector named
 \code{"p-value"} is also accepted.}
 
-\item{group_colors}{Optional character vector of colors for the difference
-barplot annotation, either named after the conditions (e.g.
-\code{c(Rhizosphere = "#56B4E9", Roots = "#009E73")}) or one color per
-condition in the order they appear in
-\code{metadata[[group_col]]}. If \code{NULL} (default) an orange/blue
-colorblind-friendly palette is used (matching the col_sup/col_inf
-convention used elsewhere, e.g. \code{aldex_volcano_plot}), cycling
-through the rest of the Okabe-Ito palette as needed
-for more than two groups.}
+\item{group_colors}{Optional character vector of colors for the group
+annotation, one per group, named after the groups or in their order. If
+\code{NULL} (default), the colorblind-friendly Okabe-Ito palette is used
+(orange/blue for two groups).}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the underlying ALDEx2
-results table (filtered taxa, effect size, diff.btw, p-value category)
-to disk. Default \code{FALSE}. \code{effect} and \code{diff.btw} are
-saved as ALDEx2 returns them (alphabetically second group minus the
-first); the \code{seccion} column says in which group each taxon is higher.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 results of the
+plotted taxa (effect size, \code{diff.btw} and p-value category) as a
+tab-delimited file. Default \code{FALSE}. \code{effect} and \code{diff.btw}
+are saved as ALDEx2 returns them (second group in alphabetical order minus
+the first); the \code{seccion} column says in which group each taxon is
+higher.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
 
 \item{draw}{Logical. If \code{TRUE} (default), the heatmap is drawn on the
 current device. Use \code{FALSE} to only build the returned grob without
@@ -101,7 +104,9 @@ other plots (e.g. \code{cowplot::plot_grid()},
 \code{patchwork::wrap_elements()}).
 }
 \description{
-Runs ALDEx2 on a table and returns a ComplexHeatmap
+Runs ALDEx2 between two groups and shows the differentially abundant taxa as
+a heatmap (with ComplexHeatmap) of their CLR values, annotated with the
+effect size and the p-value.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -109,18 +114,18 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 # group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data. Here taxa are
 # filtered by effect size alone (pval_threshold = NULL), since this small
 # (46-sample) dataset has few taxa with significant p-values.
 aldex_heatmap_plot(
-  table            = table,
-  metadata         = metadata,
-  group_col        = "Location",
-  effect_threshold = 0.5,
-  pval_threshold   = NULL
+    table            = table,
+    metadata         = metadata,
+    group_col        = "Location",
+    mc_samples       = 16,
+    effect_threshold = 0.5,
+    pval_threshold   = NULL
 )
 
 # All the colors have colorblind-friendly defaults, but each can be set by
@@ -129,16 +134,19 @@ aldex_heatmap_plot(
 # (one color per p-value class) and heatmap_colors (median clr values)
 \donttest{
 aldex_heatmap_plot(
-  table            = table,
-  metadata         = metadata,
-  group_col        = "Location",
-  effect_threshold = 0.5,
-  pval_threshold   = NULL,
-  group_colors     = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
-  effect_colors    = c("#0072B2", "white", "#E69F00"),
-  pvalue_colors    = c("<0.001" = "black", "<0.01" = "grey30",
-                       "<0.05" = "grey60", ">0.05" = "grey90"),
-  heatmap_colors   = "BuOr"
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    mc_samples = 16,
+    effect_threshold = 0.5,
+    pval_threshold = NULL,
+    group_colors = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+    effect_colors = c("#0072B2", "white", "#E69F00"),
+    pvalue_colors = c(
+        "<0.001" = "black", "<0.01" = "grey30",
+        "<0.05" = "grey60", ">0.05" = "grey90"
+    ),
+    heatmap_colors = "BuOr"
 )
 }
 

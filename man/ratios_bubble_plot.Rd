@@ -21,53 +21,54 @@ ratios_bubble_plot(
 )
 }
 \arguments{
-\item{table}{A data frame containing a taxonomic abundance table with a
-taxonomy column and sample columns with numeric counts.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing sample metadata. The first column must
-correspond to sample IDs and include a column defining the experimental
-conditions.}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}).}
 
-\item{group_col}{Character. Name of the metadata column defining the
-experimental condition.}
+\item{group_col}{Character. Name of the column in \code{metadata} that
+defines the groups. \code{condition_A} and \code{condition_B} are two of its
+values.}
 
 \item{condition_A}{Character. Name of the first condition to compare.}
 
 \item{condition_B}{Character. Name of the second condition to compare.}
 
-\item{taxonomy_db}{Character. Taxonomic database used for annotation.
-("silva","Kraken2").}
+\item{taxonomy_db}{Character. Database the taxonomy strings come from:
+\code{"silva"} (default), \code{"gg2"} (Greengenes2, also \code{"gg"}),
+\code{"unite"} or \code{"Kraken2"} (also \code{"kraken"}). Case-insensitive.}
 
-\item{top_n}{Integer. Number of taxa with the highest mean abundance to display.}
+\item{top_n}{Integer. Number of taxa with the highest mean abundance to
+show. Default \code{30}.}
 
-\item{level}{Character. Taxonomic level to use for comparison
-(e.g. "phylum", "genus", "species").}
+\item{level}{Character. Taxonomic level: \code{"kingdom"}, \code{"phylum"},
+\code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default) or
+\code{"species"}. Case-insensitive.}
 
-\item{x_axis_title}{Character. Label for the x-axis (taxon names).}
+\item{x_axis_title}{Character. Title of the x-axis (taxon names). Default
+\code{"Taxon"}.}
 
-\item{legend_title}{Character. Title for the fill legend and the axis
-showing the dominant condition. Defaults to \code{group_col} when
-\code{NULL} (default).}
+\item{legend_title}{Character. Title of the legend and of the axis showing
+the dominant condition. If \code{NULL} (default), the name of
+\code{group_col} is used.}
 
-\item{group_colors}{Character vector of colors used to represent the dominant
-condition.}
+\item{group_colors}{Optional character vector of two colors, one per
+condition. If \code{NULL} (default), the package's orange/blue pair is used.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the underlying ratio table
-to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ratio table as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"ratios_bubble_table.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"ratios_bubble_table.txt"}.}
 }
 \value{
-A ggplot2 object showing abundance ratios between the two
-conditions.
+A ggplot object.
 }
 \description{
 Computes relative abundances from a taxonomic abundance table and compares
 two experimental conditions by calculating a directional abundance ratio
-for each taxon. Taxa are ranked by mean abundance and visualized as a bubble
-plot, where bubble size represents mean relative abundance and color indicates
-the dominant condition.
+for each taxon.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -75,16 +76,15 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 ratios_bubble_plot(
-  table         = table,
-  metadata      = metadata,
-  group_col = "Location",
-  condition_A   = "Rhizosphere",
-  condition_B   = "Roots",
-  taxonomy_db   = "silva",
-  level         = "genus",
-  top_n         = 20
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    condition_A = "Rhizosphere",
+    condition_B = "Roots",
+    taxonomy_db = "silva",
+    level = "genus",
+    top_n = 20
 )
 }

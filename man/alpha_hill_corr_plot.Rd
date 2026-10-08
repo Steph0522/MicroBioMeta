@@ -2,13 +2,13 @@
 % Please edit documentation in R/alpha_hill_corr_plot.R
 \name{alpha_hill_corr_plot}
 \alias{alpha_hill_corr_plot}
-\title{Alpha diversity correlation plot}
+\title{Alpha diversity vs sequencing depth}
 \usage{
 alpha_hill_corr_plot(
   table,
   method = "spearman",
   facet_orientation = "horizontal",
-  title = "default",
+  title = "auto",
   panel_label_case = "upper",
   panel_labels = NULL,
   panel_label_bold = TRUE,
@@ -26,44 +26,41 @@ The last column must be named \code{taxonomy}, containing full taxonomic strings
 and robust to non-linear/non-normal relationships), \code{"pearson"}, or
 \code{"kendall"}.}
 
-\item{facet_orientation}{Whether the three q0/q1/q2 panels are arranged in
-a row ("horizontal", default) or a column ("vertical").}
+\item{facet_orientation}{Character. \code{"horizontal"} (default) puts the
+three q0/q1/q2 panels in a row; \code{"vertical"} in a column.}
 
-\item{title}{Character. Title for the combined figure. \code{"default"}
-(default) shows "Alpha diversity vs sequencing depth"; \code{"none"}
-shows no title; any other string is used as-is.}
+\item{title}{Character. Plot title. \code{"auto"} (default) shows
+\code{"Alpha diversity vs sequencing depth"}; \code{NULL} shows no title;
+any other text is used as the title.}
 
-\item{panel_label_case}{Character. Case of the auto-generated A/B/C panel
-tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
-("a", "b", "c"). Ignored if \code{panel_labels} is supplied.}
+\item{panel_label_case}{Character. Case of the panel tags: \code{"upper"}
+(default; A, B, C) or \code{"lower"} (a, b, c). Ignored if
+\code{panel_labels} is given.}
 
-\item{panel_labels}{Optional character vector of 3 custom panel tags (one
-per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
-\code{c("a.", "b.", "c.")}) — for journal styles that
-\code{panel_label_case} alone can't produce. Overrides
-\code{panel_label_case} when provided.}
+\item{panel_labels}{Optional character vector of custom panel tags, one per
+panel (q0, q1, q2), used as-is (e.g. \code{c("(a)", "(b)", "(c)")}).
+Overrides \code{panel_label_case}.}
 
 \item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
 bold. Set to \code{FALSE} for journals that require plain (non-bold)
 panel tags.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the Hill numbers table to
-disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the Hill numbers table as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"hill.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"hill.txt"}.}
 
-\item{x_axis_title}{Title for the x-axis of the three panels. Default
-\code{"Sequencing depth (number of reads)"}.}
+\item{x_axis_title}{Character. Title of the x-axis of the three panels.
+Default \code{"Sequencing depth (number of reads)"}.}
 }
 \value{
-A ggplot object showing alpha diversity with Hill numbers.
+A \code{patchwork} object with the three q0/q1/q2 panels.
 }
 \description{
-Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
-sequencing depth (total reads) as a scatter plot with a fitted regression
-line and correlation coefficient, combining the three plots (q0,
-q1, q2) into a single ggplot2 plot
+Computes the Hill numbers (q = 0, 1, 2) of each sample and plots each
+against the sequencing depth (total reads), with a regression line and the
+correlation coefficient, combining the three panels in one figure.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -71,13 +68,13 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 # Always tagged A/B/C (see panel_label_case and panel_labels to customize)
 alpha_hill_corr_plot(
-  table             = table,
-  facet_orientation = "horizontal"
+    table             = table,
+    facet_orientation = "horizontal"
 )
 
 ## Using Pearson correlation instead of the default Spearman
 alpha_hill_corr_plot(
-  table  = table,
-  method = "pearson"
+    table  = table,
+    method = "pearson"
 )
 }

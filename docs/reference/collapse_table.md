@@ -1,17 +1,16 @@
-# Collapse table Collapse an OTU/ASV table by taxonomic level
+# Collapse table
 
-Collapses an abundance table by a specified taxonomic rank (e.g. genus,
-family, phylum), summing counts across features that share the same
-taxonomy. Features with lower taxonomic resolution than the selected
-level are retained unchanged. Optionally converts counts to relative
-abundance and exports the collapsed table to a tab-delimited file.
+Collapses an abundance table to a taxonomic level (e.g. genus, family,
+phylum), summing the counts of the features that share the same
+taxonomy. Features not resolved to that level are kept as they are.
+Optionally converts the counts to relative abundance and saves the
+collapsed table.
 
 ## Usage
 
 ``` r
 collapse_table(
   table,
-  metadata,
   level = "genus",
   rel_abun = FALSE,
   save_table = FALSE,
@@ -23,34 +22,29 @@ collapse_table(
 
 - table:
 
-  A data frame containing an OTU/ASV abundance table. Must include a
-  column with OTUID, one with taxonomy and sample columns with numeric
-  counts.
-
-- metadata:
-
-  A data frame containing sample metadata. The first column is used to
-  define the order of samples in the output table.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings. All the
+  other columns are taken as samples, in the order of the table.
 
 - level:
 
-  Character. Taxonomic level to collapse to. One of `"kingdom"`,
-  `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
-  `"species"`. Case-insensitive.
+  Character. Taxonomic level: `"kingdom"`, `"phylum"`, `"class"`,
+  `"order"`, `"family"`, `"genus"` (default) or `"species"`.
+  Case-insensitive.
 
 - rel_abun:
 
-  Logical. If TRUE, converts counts to relative abundance (%) per
-  sample.
+  Logical. If `TRUE`, converts the counts to relative abundance (%) per
+  sample. Default `FALSE`.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the collapsed table to disk. Default
-  `FALSE`.
+  Logical. If `TRUE`, saves the collapsed table as a tab-delimited file.
+  Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"collapsed_table.txt"`.
 
 ## Value
@@ -65,13 +59,8 @@ taxon/sample combination).
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
-
 collapse_table(
   table      = table,
-  metadata   = metadata,
   level      = "genus",
   rel_abun   = FALSE,
   save_table = FALSE

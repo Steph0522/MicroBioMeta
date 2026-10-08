@@ -563,7 +563,6 @@ visualize genera shared.</p></li>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">table_genus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/collapse_table.html">collapse_table</a></span><span class="op">(</span></span>
 <span>  table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"genus"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -762,6 +761,10 @@ table or an element obtain in each function</strong>.</p>
 (<code>compositional</code> for bacteria, <code>bray</code> for fungi),
 so the significance test evaluates the same notion of dissimilarity
 shown in the plot.</p>
+<p>The result is a table figure (a ggplot), so it can be combined with
+other plots (e.g. <code><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">cowplot::plot_grid()</a></code>) or saved with
+<code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code>. Use <code>save_table = TRUE</code> to
+also get the results as a text file.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
@@ -1088,6 +1091,29 @@ before testing and avoids it.</p>
 <span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
+<p>With <strong>3 or more groups</strong>, <code><a href="../reference/ancombc_plot.html">ancombc_plot()</a></code>
+returns a <strong>heatmap</strong> instead: one column per group
+compared against the reference level (the first factor level, here
+<strong>Bulk soil</strong>; it can be changed with
+<code>ref_level</code>), and one row per taxon that is significant in at
+least one comparison. Here we keep the three compartments (dropping
+<strong>Uncultivated</strong>) and group to <code>"Phylum"</code> so the
+heatmap stays readable:</p>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metadata_bacteria_3</span> <span class="op">&lt;-</span> <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">!=</span> <span class="st">"Uncultivated"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table_bac_3</span> <span class="op">&lt;-</span> <span class="va">table_bac</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_bacteria_3</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_bac</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">table_bac</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
+<span>  table           <span class="op">=</span> <span class="va">table_bac_3</span>,</span>
+<span>  metadata        <span class="op">=</span> <span class="va">metadata_bacteria_3</span>,</span>
+<span>  group_col       <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>  level           <span class="op">=</span> <span class="st">"Phylum"</span>,</span>
+<span>  min_prevalence  <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"holm"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44b-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="example-fungal-data">📊 Example: Fungal data<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
@@ -1096,7 +1122,7 @@ before testing and avoids it.</p>
 and <strong>Roots</strong>, but visualize the results with a
 <strong>heatmap</strong>. This funtcions uses
 <code>ComplexHeatmap</code>.</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_fungi_compar</span> <span class="op">&lt;-</span>  <span class="va">metadata_fungi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Bulk soil"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span><span class="st">"Roots"</span><span class="op">)</span></span>
 <span></span>
@@ -1112,7 +1138,7 @@ Benjamini-Hochberg adjusted p-value below 0.05
 additionally filter by effect size. Each row shows the median clr values
 per group, with side annotations for the effect size, the p-value class
 and the difference between groups:</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung_compar</span>,</span>
 <span>                   metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
@@ -1128,7 +1154,7 @@ that contribute most strongly to the observed differences between
 conditions.</p>
 <p>For example, a <strong>Random Forest model</strong> can be used to
 identify the taxa that best predict the soil compartment:</p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span></span>
 <span>  table <span class="op">=</span> <span class="va">table_bac</span>, </span>
 <span>  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>, </span>
@@ -1141,7 +1167,7 @@ identify the taxa that best predict the soil compartment:</p>
 <p><img src="metabarcoding_files/figure-html/identifying-important-taxa-47-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 <p>Alternatively, taxa with the strongest <strong>log-ratio differences
 between two conditions</strong> can be visualized using:</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung_compar</span>,</span>
 <span>           metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
 <span>           group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
@@ -1165,16 +1191,17 @@ using <strong>Canonical Correspondence Analysis (CCA)</strong> or
 <strong>Redundancy Analysis (RDA)</strong>.</p></li>
 </ul>
 <div class="section level4">
-<h4 id="preparing-the-environmental-table">🖥️ Preparing the environmental table<a class="anchor" aria-label="anchor" href="#preparing-the-environmental-table"></a>
+<h4 id="choosing-the-environmental-variables">🖥️ Choosing the environmental variables<a class="anchor" aria-label="anchor" href="#choosing-the-environmental-variables"></a>
 </h4>
-<p>Environmental variables must be organized in a <strong>data frame
-where rows correspond to samples and columns correspond to environmental
-variables</strong>.</p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">env_table_fung</span> <span class="op">&lt;-</span> <span class="va">metadata_fungi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">SAMPLEID</span>, <span class="va">pH</span><span class="op">:</span><span class="va">Arbus_per</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">remove_rownames</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"SAMPLEID"</span><span class="op">)</span></span></code></pre></div>
+<p>The environmental variables are read directly from the
+<strong>metadata</strong> (one column per variable), so no separate
+table is needed: just pass the names of the columns to use in
+<code>env_vars</code>. If your variables are in a different table, give
+it in <code>env_data</code> (rows = samples, as row names).</p>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">env_vars_fung</span> <span class="op">&lt;-</span> <span class="va">metadata_fungi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pH</span><span class="op">:</span><span class="va">Arbus_per</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="correlation-between-environmental-variables-and-taxonomic-abundance">🖥️ Correlation between environmental variables and taxonomic
@@ -1186,10 +1213,10 @@ correlations between <strong>environmental variables</strong> and
 level and returns a <strong>correlation heatmap</strong> showing how
 environmental variables relate to taxonomic abundances.</p>
 <p>Example using <strong>phylum-level abundances</strong>:</p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                    env_data <span class="op">=</span> <span class="va">env_table_fung</span>,</span>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>                    env_vars <span class="op">=</span> <span class="va">env_vars_fung</span>,</span>
 <span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/correlation-between-environmental-variables-and-taxonomic-abundance-50-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
@@ -1199,10 +1226,10 @@ environmental variables relate to taxonomic abundances.</p>
 </h3>
 <p>Correlations can also be displayed using circle markers instead of
 tiles:</p>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                    env_data <span class="op">=</span> <span class="va">env_table_fung</span>,</span>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>                    env_vars <span class="op">=</span> <span class="va">env_vars_fung</span>,</span>
 <span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    geom <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span></code></pre></div>
@@ -1213,16 +1240,10 @@ tiles:</p>
 <p>The function <code><a href="../reference/cca_rda_biplot.html">cca_rda_biplot()</a></code> performs a constrained
 ordination analysis to evaluate how environmental variables explain
 variation in microbial community composition.</p>
-<p>Before running the analysis, ensure that the <strong>sample order in
-the environmental table matches the metadata</strong>:</p>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">env_table_fung</span> <span class="op">&lt;-</span> <span class="va">env_table_fung</span><span class="op">[</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_fungi</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_table_fung</span><span class="op">)</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></code></pre></div>
 <p><code>scale_arrows</code> is a parameter that helps you to visualize
 better the environmental vectors:</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>               env_data <span class="op">=</span> <span class="va">env_table_fung</span>,</span>
 <span>               metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>               env_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>,<span class="st">"TN"</span>,<span class="st">"WHC"</span>, <span class="st">"EC"</span>, <span class="st">"Clay"</span><span class="op">)</span>,</span>
 <span>               analysis <span class="op">=</span> <span class="st">"RDA"</span>,</span>

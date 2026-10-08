@@ -1,7 +1,7 @@
-# This function generates either an effect size plot or a volcano plot based on ALDEx2 results.
+# ALDEx2 volcano or effect size plot
 
-This function generates either an effect size plot or a volcano plot
-based on ALDEx2 results.
+Runs ALDEx2 between two groups and plots the results as a volcano plot
+or an effect size plot.
 
 ## Usage
 
@@ -33,17 +33,18 @@ aldex_volcano_plot(
 
 - table:
 
-  Data frame with count data; columns represent samples, rows represent
-  features.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  Data frame containing metadata for the samples.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - group_col:
 
-  Name of the column in `metadata` that contains the experimental
-  conditions.
+  Character. Name of the column in `metadata` that defines the groups.
+  It must have exactly two groups.
 
 - type:
 
@@ -52,21 +53,23 @@ aldex_volcano_plot(
 
 - col_inf:
 
-  Color for points lower than threshold. Default `'#56B4E9'` (Okabe-Ito
-  blue, matching the package's 2-group default).
+  Character. Color of the taxa lower in `cond`. Default `"#56B4E9"`
+  (Okabe-Ito blue).
 
 - col_sup:
 
-  Color for points higher than threshold. Default `'#E69F00'` (Okabe-Ito
-  orange).
+  Character. Color of the taxa higher in `cond`. Default `"#E69F00"`
+  (Okabe-Ito orange).
 
 - threshold_lower:
 
-  Lower threshold for effect size/difference (x-axis).
+  Numeric. Lower cutoff on the x-axis (effect size or difference between
+  groups), drawn as a dashed line. Default `-1.5`.
 
 - threshold_upper:
 
-  Upper threshold for effect size/difference (x-axis).
+  Numeric. Upper cutoff on the x-axis (effect size or difference between
+  groups), drawn as a dashed line. Default `1.5`.
 
 - cond:
 
@@ -76,26 +79,26 @@ aldex_volcano_plot(
 
 - pval_threshold:
 
-  p-value cutoff for significance (default = 0.05), drawn as the dashed
-  horizontal line.
+  Numeric. P-value cutoff (after `p_adjust_method`), drawn as the dashed
+  horizontal line. Default `0.05`.
 
 - p_adjust_method:
 
-  `"BH"` (default) or `"none"`. With `"BH"`, the y-axis and the
-  significance cutoff use ALDEx2's Benjamini-Hochberg adjusted p-values
-  (`wi.eBH`), since thousands of taxa are tested at once; `"none"` uses
-  the raw p-values (`wi.ep`). ALDEx2 only computes the BH correction, so
-  no other method is available here.
+  Character. `"BH"` (default) or `"none"`: use the Benjamini-Hochberg
+  adjusted p-values of ALDEx2 (`wi.eBH`) or the raw ones (`wi.ep`) for
+  the y-axis and `pval_threshold`. ALDEx2 only computes the BH
+  correction.
 
 - show_labels:
 
-  Logical. Whether to display "Higher/Lower in cond" labels (for
-  "effect" plot only, default is TRUE).
+  Logical. If `TRUE` (default), shows the "Higher in"/"Lower in" `cond`
+  labels (only for `type = "effect"`).
 
 - taxa:
 
-  Data frame with taxonomic information (required for "volcano" plot
-  only).
+  Optional data frame with columns `Feature.ID` and `Taxon`, used to
+  label the taxa. If `NULL` (default), the `taxonomy` column of `table`
+  is used.
 
 - x_axis_title, y_axis_title:
 
@@ -116,19 +119,19 @@ aldex_volcano_plot(
 
 - save_table:
 
-  Logical. If `TRUE`, saves the ALDEx2 result table to disk. Default
-  `FALSE`. `effect` and `diff.btw` are saved as ALDEx2 returns them
-  (alphabetically second group minus the first); in the plot they are
-  shown so that positive means higher in `cond`.
+  Logical. If `TRUE`, saves the ALDEx2 results table as a tab-delimited
+  file. Default `FALSE`. `effect` and `diff.btw` are saved as ALDEx2
+  returns them (second group in alphabetical order minus the first); in
+  the plot, positive means higher in `cond`.
 
 - table_filename:
 
-  Character. File path/name for the saved table. Default
-  `"aldex_pval_effect.txt"`.
+  Character. Name or path of the saved file (used when
+  `save_table = TRUE`). Default `"aldex_pval_effect.txt"`.
 
 ## Value
 
-A `ggplot` object with the selected plot.
+A ggplot object with the selected plot.
 
 ## Examples
 
@@ -138,7 +141,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 # group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data

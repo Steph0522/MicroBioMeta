@@ -9,15 +9,46 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+* `aldex_volcano_plot()` and `aldex_heatmap_plot()` gain `mc_samples`, the
+  number of ALDEx2 Monte Carlo instances. The default, `128` (ALDEx2's
+  default), gives the same results as before; fewer instances are faster
+  (e.g. `16` for a quick look) but less stable.
+* `ancombc_plot()` is about 2.5 times faster: it no longer runs the ANCOMBC2
+  sensitivity analysis (`pseudo_sens`), which the plot did not use. The
+  plotted taxa are the same; the saved table no longer has the `passed_ss_*`
+  and `diff_robust_*` columns.
+* `abundance_heatmap_plot()`: `top_n` now defaults to `15`, as in
+  `abundance_bar_plot()` (before it had no default).
+* `beta_partition_ord_plot()`: `group_col` is required (the dispersion and the
+  lines to the centroid are computed per group; before, its `NULL` default
+  failed with an unclear error), and `table_filename` defaults to
+  `"beta_partition"` (files `beta_partition_jacs.txt`, `_jtus.txt`, `_jnes.txt`)
+  instead of `"SAMPLE1"`.
+* `venn_plot()`: `merge_by` is required (its `NULL` default failed with an
+  unclear error).
+* `taxonomy_db` and `level` work the same way in every function that has
+  them: the same accepted values and aliases (`"silva"`, `"gg2"`/`"gg"`,
+  `"unite"`, `"Kraken2"`/`"kraken"`; kingdom to species, case-insensitive)
+  and a clear error for anything else. `ratios_bubble_plot()` now names taxa
+  like `abundance_bar_plot()` at every level and for every database (before,
+  `level = "species"` only worked for Kraken2, and class, order and family
+  kept the full taxonomy string). `abundance_sankey_plot()` defaults to
+  `taxonomy_db = "silva"`, like the other functions.
+* `alpha_hill_corr_plot()`: `title = "auto"` (default) shows the default
+  title and `NULL` shows none, as in `beta_ord_plot()` and `cca_rda_biplot()`
+  (before, `"default"` and `"none"`).
+* `collapse_table()` no longer takes `metadata` (it was only used to order
+  the sample columns): it keeps every sample column of the table, in its
+  order. Call it as `collapse_table(table, level = ...)`.
+* `cca_rda_biplot()` and `corr_env_abund_plot()` take the environmental
+  variables directly from `metadata`: `env_data` is now optional (default
+  `NULL`) and `env_vars` names the metadata columns to use, so there is no
+  need to build a separate table with row names and the same sample order.
+  A separate `env_data` table still works as before.
 * `abundance_bar_plot()` and `abundance_heatmap_plot()` no longer need
   `metadata`: without it (or without `x_col`), they show one bar or column
   per sample. Passing something that is not a table (e.g. R's `table()`
   function by mistake) now gives a clear error.
-* `beta_test_table()` now returns the results as a data frame (columns
-  `Df`, `SumOfSqs`, `R2`, `F`, `Pr(>F)`, `Term`) instead of only an image.
-  Printing it draws the same table figure as before, and
-  `ggplot2::autoplot()` returns the figure as a ggplot to combine with other
-  plots or save it.
 * `beta_ord_plot()` and `beta_test_table()` gain `mc_samples` for
   `distance = "compositional"`: the number of ALDEx2 Monte Carlo instances.
   `1` (default) uses one random instance, as before, but only that one is
@@ -78,6 +109,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
 
+* `beta_ord_plot()` works without `group_col` (all points in one color);
+  before it failed although `group_col` defaults to `NULL`.
 * Fixed the `ancombc_plot()` heatmap (3+ groups) centering its color scale
   on the middle of the LFC range instead of 0, which made small negative
   log fold changes look enriched. White is now LFC = 0, with symmetric limits.
@@ -123,6 +156,10 @@ BUG FIXES
 
 OTHER
 
+* Fewer dependencies: `reshape2`, `purrr`, `tidyselect`, `RColorBrewer` and
+  `viridis` were removed from Imports (their few uses are now done with
+  `tidyr`, base R and `scales`, with identical results).
+* Code restyled with 4-space indentation (styler).
 * Removed all `install.packages()` calls from within functions; missing
   Suggested/Imported packages now fail with an informative `stop()` message
   instead of installing silently, per Bioconductor guidelines.

@@ -84,16 +84,13 @@ The last column must be named <code>taxonomy</code>, containing full taxonomic s
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
 <dd><p>A data frame containing sample metadata.
-Must include a <code>SAMPLEID</code> column matching sample names in <code>table</code>.</p></dd>
+Its first column must hold the sample IDs (the column names of <code>table</code>).</p></dd>
 
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
 <dd><p>Character. Name of the column in <code>metadata</code> that
-defines the grouping variable. If this column is numeric (a continuous
-variable), it's treated as a covariate instead of a group: ANCOMBC2's
-<code>group</code>/structural-zero machinery (which requires discrete groups)
-is disabled, and the resulting plot shows the effect size per unit
-increase rather than a group-vs-group comparison.</p></dd>
+defines the groups. If it is numeric, it is treated as a continuous
+covariate.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
@@ -109,9 +106,10 @@ ANCOMBC2 directly on the ASV/OTU/species-level table (rows of <code>table</code>
 
 
 <dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
-<dd><p>Character. Multiple-testing correction method passed to
-<code>ancombc2</code> (default <code>"holm"</code>). Use <code>"BH"</code> for a less
-strict correction when sample sizes are small.</p></dd>
+<dd><p>Character. Multiple-testing correction for the
+ANCOMBC2 p-values of the taxa (passed to <code>ancombc2()</code>), any method of
+<code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default <code>"holm"</code>; <code>"none"</code> uses the raw
+p-values. Use <code>"BH"</code> for a less strict correction with few samples.</p></dd>
 
 
 <dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
@@ -127,19 +125,18 @@ Default <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-ref-level">ref_level<a class="anchor" aria-label="anchor" href="#arg-ref-level"></a></dt>
-<dd><p>Character. Reference level for <code>group_col</code>. If
-<code>NULL</code> (default) the first factor level is used as reference.
-Use this to change which group appears as the baseline in comparisons
-(e.g. <code>ref_level = "P2"</code> to compare all other groups against P2).</p></dd>
+<dd><p>Character. Reference level of <code>group_col</code>, the
+baseline of the comparisons. If <code>NULL</code> (default), the first factor
+level is used (e.g. <code>ref_level = "control"</code> compares every other group
+against control).</p></dd>
 
 
 <dt id="arg-diverging-palette">diverging_palette<a class="anchor" aria-label="anchor" href="#arg-diverging-palette"></a></dt>
-<dd><p>Character. Name of the colorblind-friendly
-diverging palette used for the 3+-group heatmap's log-fold-change fill
-scale. One of <code>"BuOr"</code> (blue-orange, default), <code>"BuVm"</code>
-(blue-vermillion), <code>"BuPk"</code> (blue-pink), or <code>"GnPk"</code>
-(green-pink). Ignored for the 2-group / continuous bar plot, which uses
-<code>bar_colors</code> instead.</p></dd>
+<dd><p>Character. Colorblind-friendly diverging palette of
+the heatmap (3 or more groups): <code>"BuOr"</code> (blue-orange, default),
+<code>"BuVm"</code> (blue-vermillion), <code>"BuPk"</code> (blue-pink), <code>"GnPk"</code>
+(green-pink) or <code>"PuYl"</code> (purple-yellow). Not used by the bar plot,
+which uses <code>bar_colors</code>.</p></dd>
 
 
 <dt id="arg-x-axis-title-y-axis-title">x_axis_title, y_axis_title<a class="anchor" aria-label="anchor" href="#arg-x-axis-title-y-axis-title"></a></dt>
@@ -149,30 +146,25 @@ plots, and no title otherwise.</p></dd>
 
 
 <dt id="arg-bar-colors">bar_colors<a class="anchor" aria-label="anchor" href="#arg-bar-colors"></a></dt>
-<dd><p>Character vector of (at least) 2 colors used for the
-bar plot (2-group or continuous <code>group_col</code>). First color is the
-"positive" direction (the non-reference group / increases with the
-variable); second color is the "negative" direction (the reference
-group / decreases with the variable). Default <code>c("#56B4E9",
-"#E69F00")</code> (the same colorblind-friendly blue/orange pairing used as
-the 2-group default throughout the package). Ignored for the
-3+-group heatmap, which uses <code>diverging_palette</code> instead.</p></dd>
+<dd><p>Character vector of two colors for the bar plot: the first
+for the taxa higher in the non-reference group, the second for those higher
+in the reference group. Default <code>c("#56B4E9", "#E69F00")</code>.</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, saves the full ANCOMBC2 results
-table to disk. Default <code>FALSE</code>.</p></dd>
+table as a tab-delimited file. Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
-<dd><p>Character. File path/name for the saved table (used
-when <code>save_table = TRUE</code>). Default <code>"ancombc_results.txt"</code>.</p></dd>
+<dd><p>Character. Name or path of the saved file (used when
+<code>save_table = TRUE</code>). Default <code>"ancombc_results.txt"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>ggplot2</code> object: a bar plot (2 groups) or a heatmap
-(\(\geq\)3 groups).</p>
+    <p>A ggplot object: a bar plot (2 groups) or a heatmap (3 or more
+groups).</p>
     </div>
 
     <div class="section level2">
@@ -182,12 +174,7 @@ when <code>save_table = TRUE</code>). Default <code>"ancombc_results.txt"</code>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Not run automatically because ANCOMBC2's internal bias-correction step</span></span></span>
-<span class="r-in"><span><span class="co"># p_adjust_method = "BH" is less strict</span></span></span>
-<span class="r-in"><span><span class="co"># than the "holm" default; min_prevalence is raised above the 0.1 default to</span></span></span>
-<span class="r-in"><span><span class="co"># filter out rare/sparse taxa before testing.</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu">ancombc_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table        <span class="op">=</span> <span class="va">table</span>,</span></span>

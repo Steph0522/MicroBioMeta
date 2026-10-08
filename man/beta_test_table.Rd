@@ -2,7 +2,7 @@
 % Please edit documentation in R/beta_test_table.R
 \name{beta_test_table}
 \alias{beta_test_table}
-\title{Table of Permanova or Betadisper}
+\title{PERMANOVA or betadisper results table}
 \usage{
 beta_test_table(
   table,
@@ -19,69 +19,64 @@ beta_test_table(
 )
 }
 \arguments{
-\item{table}{A precomputed distance matrix (\code{matrix} or \code{dist}
-object, e.g. from \code{vegan::vegdist}), or a data frame with taxonomy,
-where the columns are the samples and rows are ASVs or taxa.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame of characteristics or important information of the samples}
+\item{metadata}{A data frame containing sample metadata.
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
-\item{formula_str}{Model formula}
+\item{formula_str}{Character. Right-hand side of the model formula, with
+columns of \code{metadata} (e.g. \code{"Type_of_soil*Treatment"}).}
 
-\item{distance}{Method for calculating pairwise distances. Same convention
-as \code{beta_div_plot}'s \code{distance} argument: \code{"compositional"}
-runs ALDEx2's CLR transform (\code{ALDEx2::aldex.clr}) on the raw counts
-and then a Euclidean distance on the CLR values (requires \code{table} to
-be a raw abundance data frame with a taxonomy column, not a precomputed
-distance matrix); \code{"aitchison"}/\code{"robust.aitchison"} use
-vegan's built-in Aitchison distance (\code{vegan::vegdist} with a
-pseudocount); any other value (e.g. \code{"euclidean"}, \code{"bray"})
-is passed straight to \code{vegan::vegdist} on the raw values
-(\code{"euclidean"} default; case-insensitive).}
+\item{distance}{Character. Distance metric: \code{"compositional"} (CLR with
+ALDEx2), \code{"aitchison"}, \code{"robust.aitchison"} or any other method
+of \code{vegan::vegdist()} (e.g. \code{"bray"}, \code{"jaccard"}). Default
+\code{"euclidean"}. Case-insensitive. Ignored when \code{table} is already a
+distance.}
 
 \item{test}{Statistical test to run: one of \code{"permanova"} (default) or
 \code{"betadisper"}. Case-insensitive.}
 
-\item{permutations}{Number of permutations required}
+\item{permutations}{Integer. Number of permutations for the test. Default
+\code{999}.}
 
 \item{mc_samples}{Number of ALDEx2 Monte Carlo instances used when
 \code{distance = "compositional"}. With \code{1} (default) the clr values
-of one random instance are used: fast, but the result changes a little
+of one random instance are used: fast, but the result changes
 between runs (use \code{set.seed()}). With more, the clr values are
 averaged across instances, which gives an almost identical result in every
 run; \code{128} (ALDEx2's default) is suggested for final analyses, and
 takes longer. Ignored for other distances.}
 
-\item{strata_var}{Group or variable within which permutations are restricted}
+\item{strata_var}{Character. Name of a column in \code{metadata} within
+which the permutations are restricted (strata). Optional; \code{NULL}
+(default) for none.}
 
-\item{digits}{Number of decimal places for the numeric columns (except the p-value).}
+\item{digits}{Integer. Decimal places of the numeric columns (except the
+p-value). Default \code{3}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the results table to disk.
-Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the results table as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
 }
 \value{
-A data frame (class \code{mbm_test_table}) with the test results:
-one row per term and the columns returned by \code{vegan::adonis2()}
-(\code{Df}, \code{SumOfSqs}, \code{R2}, \code{F}, \code{Pr(>F)}) or
-\code{vegan::permutest()}, plus \code{Term}. Printing it (e.g. typing its
-name) draws the formatted table figure; \code{ggplot2::autoplot()}
-returns that figure as a \code{ggplot} object, e.g. to combine it with
-other plots (\code{cowplot::plot_grid()}, \code{patchwork}) or save it
-with \code{ggplot2::ggsave()}.
+A ggplot object (\code{ggpubr::ggtexttable()}) with the results
+table; significant p-values are in bold. Use \code{save_table = TRUE}
+to get the results as a tab-delimited file.
 }
 \description{
-This function create a table with the results of permanova or betadisper
+Runs a PERMANOVA (vegan::adonis2()) or a test of homogeneity of dispersions
+(vegan::betadisper()) on the distances between samples and returns the
+results as a table figure.
 }
 \details{
 The first column of \code{metadata} must hold the sample IDs;
 metadata rows are matched to the samples by ID, so their order doesn't
 matter. A precomputed distance is used as-is (\code{distance} is ignored).
-With \code{distance = "compositional"} and \code{mc_samples = 1}, the
-clr values come from one random Monte Carlo instance of
-\code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
-to make the result reproducible, or use \code{mc_samples = 128}.
+The p-values come from permutations; call \code{set.seed()} before the
+function to make the result reproducible.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -89,38 +84,37 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 # Example using a data frame
 beta_test_table(
-  table       = table,
-  metadata    = metadata,
-  formula_str = "Location*Treatment",
-  distance    = "bray",
-  test        = "permanova",
-  permutations = 999,
-  strata_var  = "Plot"
+    table = table,
+    metadata = metadata,
+    formula_str = "Location*Treatment",
+    distance = "bray",
+    test = "permanova",
+    permutations = 999,
+    strata_var = "Plot"
 )
 
 # Example using a distance matrix
 dist_matrix <- vegan::vegdist(
-  t(table[, setdiff(colnames(table), "taxonomy")]),
-  method = "bray"
+    t(table[, setdiff(colnames(table), "taxonomy")]),
+    method = "bray"
 )
 beta_test_table(
-  table       = dist_matrix,
-  metadata    = metadata,
-  formula_str = "Location",
-  test        = "betadisper"
+    table       = dist_matrix,
+    metadata    = metadata,
+    formula_str = "Location",
+    test        = "betadisper"
 )
 
 # Compositional PERMANOVA (CLR via ALDEx2, then Euclidean)
 beta_test_table(
-  table       = table,
-  metadata    = metadata,
-  formula_str = "Location",
-  distance    = "compositional",
-  test        = "permanova",
-  permutations = 999
+    table = table,
+    metadata = metadata,
+    formula_str = "Location",
+    distance = "compositional",
+    test = "permanova",
+    permutations = 999
 )
 }

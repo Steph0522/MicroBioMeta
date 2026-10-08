@@ -9,7 +9,7 @@ abundance_sankey_plot(
   output_file = NULL,
   maxn = 25,
   taxRanks = c("D", "K", "P", "C", "O", "F", "G", "S"),
-  taxonomy_db = "gg",
+  taxonomy_db = "silva",
   width = NULL,
   height = NULL,
   save_table = FALSE,
@@ -24,25 +24,26 @@ The last column must be named \code{taxonomy}, containing full taxonomic strings
 the interactive diagram to. If \code{NULL} (default), nothing is written
 to disk; the diagram is only returned.}
 
-\item{maxn}{Maximum number of taxa per level to include in the diagram (default: 25).}
+\item{maxn}{Integer. Maximum number of taxa per rank. Default \code{25}.}
 
-\item{taxRanks}{Taxonomic levels to display (default: c("D","K","P","C","O","F","G","S")).}
+\item{taxRanks}{Character vector of the ranks to show, as one-letter codes:
+\code{"D"} (domain), \code{"K"} (kingdom), \code{"P"}, \code{"C"},
+\code{"O"}, \code{"F"}, \code{"G"} and \code{"S"}. Default all of them.}
 
-\item{taxonomy_db}{Reference taxonomy database whose prefix style the
-taxonomy strings follow. One of \code{"gg"} (default; Greengenes, also accepts
-\code{"gg2"} / \code{"greengenes2"}), \code{"silva"}, \code{"unite"}, or \code{"kraken2"}.
-Case-insensitive.}
+\item{taxonomy_db}{Character. Database the taxonomy strings come from:
+\code{"silva"} (default), \code{"gg2"} (Greengenes2, also \code{"gg"}),
+\code{"unite"} or \code{"Kraken2"} (also \code{"kraken"}). Case-insensitive.}
 
 \item{width, height}{Numeric or \code{NULL}. Width and height of the
 diagram in pixels. If \code{NULL} (default), the widget's default size
 is used (it fills the available width).}
 
-\item{save_table}{Logical. If \code{TRUE}, saves a combined table of the
-Sankey nodes and links to disk, distinguished by a \code{table_type}
-column (\code{"node"} or \code{"link"}). Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the Sankey nodes and links
+(one table, with a \code{table_type} column: \code{"node"} or \code{"link"})
+as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"sankey_nodes_links.txt"}.}
 }
 \value{
 Invisibly returns the Sankey diagram object (an htmlwidget that
@@ -50,17 +51,18 @@ is shown when printed). If \code{output_file} is given, it is also saved
 as an HTML file.
 }
 \description{
-Generate a Sankey diagram from a table with taxonomy
+Creates an interactive Sankey diagram (with networkD3) of how the relative
+abundance flows across taxonomic ranks.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 abundance_sankey_plot(
-  table        = table,
-  output_file  = file.path(tempdir(), "sankey_output.html"),
-  maxn         = 10,
-  taxRanks     = c("P", "C", "G", "S"),
-  taxonomy_db  = "silva"
+    table        = table,
+    output_file  = file.path(tempdir(), "sankey_output.html"),
+    maxn         = 10,
+    taxRanks     = c("P", "C", "G", "S"),
+    taxonomy_db  = "silva"
 )
 }

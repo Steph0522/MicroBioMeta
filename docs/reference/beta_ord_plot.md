@@ -1,9 +1,8 @@
-# Beta diversity plot with multiple distance and ordination methods
+# Beta diversity ordination plot
 
-This function computes beta diversity using several distance metrics and
-ordination methods (PCA, PCoA, NMDS). It requires an abundance table
-with taxonomy, metadata, and allows customization of color and shape
-aesthetics. It also supports compositional transformation via ALDEx2.
+Computes the beta diversity between samples with several distance
+metrics (including the compositional CLR/Aitchison distance via ALDEx2)
+and plots a PCA, PCoA or NMDS ordination.
 
 ## Usage
 
@@ -31,13 +30,13 @@ beta_ord_plot(
 
 - table:
 
-  A data frame with abundances. The last column must contain taxonomy
-  information.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame with sample metadata. The first column must contain the
-  sample IDs.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - distance:
 
@@ -50,12 +49,11 @@ beta_ord_plot(
 
   Number of ALDEx2 Monte Carlo instances used when
   `distance = "compositional"`. With `1` (default) the clr values of one
-  random instance are used: fast, but the result changes a little
-  between runs (use [`set.seed()`](https://rdrr.io/r/base/Random.html)).
-  With more, the clr values are averaged across instances, which gives
-  an almost identical result in every run; `128` (ALDEx2's default) is
-  suggested for final analyses, and takes longer. Ignored for other
-  distances.
+  random instance are used: fast, but the result changes between runs
+  (use [`set.seed()`](https://rdrr.io/r/base/Random.html)). With more,
+  the clr values are averaged across instances, which gives an almost
+  identical result in every run; `128` (ALDEx2's default) is suggested
+  for final analyses, and takes longer. Ignored for other distances.
 
 - ordination:
 
@@ -64,10 +62,9 @@ beta_ord_plot(
 
 - group_col:
 
-  Column in `metadata` to fill/color points. Its type decides the scale
-  automatically: numeric columns (e.g. `"dist_km"`) get a continuous
-  scale; character/factor columns (e.g. `"estado2"`) get a discrete
-  qualitative scale.
+  Character. Name of the column in `metadata` used to color the points;
+  if it is numeric, a continuous color scale is used. Optional; `NULL`
+  (default) for no groups.
 
 - palette:
 
@@ -79,9 +76,7 @@ beta_ord_plot(
     (`"Set2"`).
 
   - Named, continuous `group_col`: `"viridis"` (default;
-    `option = "cividis"`, matching the urban-distance map figure) or
-    `"gradient"` (colorblind-friendly blue-to-orange two-color
-    gradient).
+    `option = "cividis"`) or `"gradient"`
 
   - Vector of colors, discrete `group_col`: used as-is, one color per
     level (`scale_*_manual`).
@@ -91,19 +86,20 @@ beta_ord_plot(
 
 - shape_col:
 
-  Optional column in `metadata` to shape points.
+  Character. Name of the column in `metadata` used for the point shapes.
+  Optional; `NULL` (default) for one shape.
 
 - legend_title:
 
-  Optional legend title.
+  Character. Title of the legend. If `NULL` (default), the name of
+  `group_col` is used.
 
 - taxonomy_db:
 
-  Character. Reference taxonomy database used to clean up the PCA
-  loading-arrow labels: one of `"silva"` (default), `"gg"`, `"unite"`,
-  or `"Kraken2"` (case-insensitive). `"Kraken2"` additionally
-  concatenates genus + species (e.g. `"Aspergillus flavus"`) instead of
-  showing the species epithet alone. Ignored when `ordination != "PCA"`.
+  Character. Database the taxonomy strings come from: `"silva"`
+  (default), `"gg2"` (Greengenes2, also `"gg"`), `"unite"` or
+  `"Kraken2"` (also `"kraken"`). Case-insensitive. Only used when
+  `ordination = "PCA"`.
 
 - arrows_size:
 
@@ -111,27 +107,28 @@ beta_ord_plot(
 
 - top_n:
 
-  Number of top contributing taxa to display as arrows in PCA.
+  Integer. Number of taxa that contribute most to the PCA, drawn as
+  arrows. Default `5`.
 
 - title:
 
-  Plot title. `"auto"` (default) generates `"Ordination - distance"`;
-  `NULL` shows no title; any other string is used as-is.
+  Character. Plot title. `"auto"` (default) shows
+  `"Ordination - <distance>"`; `NULL` shows no title; any other text is
+  used as the title.
 
 - save_table:
 
-  Logical. If `TRUE`, saves a combined table of sample ordination scores
-  and (when `ordination = "PCA"`) taxon loadings to disk, distinguished
-  by a `type` column (`"site"` or `"loading"`). Default `FALSE`.
+  Logical. If `TRUE`, saves the ordination scores and loadings (one
+  table) as a tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"ordination_scores.txt"`.
 
 ## Value
 
-A `ggplot2` object.
+A ggplot object.
 
 ## Details
 
@@ -149,7 +146,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 beta_ord_plot(
   table      = table,

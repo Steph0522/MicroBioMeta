@@ -33,52 +33,56 @@ The last column must be named \code{taxonomy}, containing full taxonomic strings
 must hold the sample IDs (the column names of \code{table}). Optional: if
 \code{NULL} (default), one bar is drawn per sample.}
 
-\item{taxonomy_db}{Character. Reference taxonomy database. One of
-\code{"silva"} (default), \code{"gg2"} (Greengenes2; also accepts \code{"gg"} /
-\code{"greengenes2"}), \code{"unite"} (fungal ITS), or \code{"Kraken2"} (also accepts
-\code{"kraken"}). Case-insensitive.}
+\item{taxonomy_db}{Character. Database the taxonomy strings come from:
+\code{"silva"} (default), \code{"gg2"} (Greengenes2, also \code{"gg"}),
+\code{"unite"} or \code{"Kraken2"} (also \code{"kraken"}). Case-insensitive.}
 
-\item{level}{Character. Taxonomic level to collapse to. One of \code{"kingdom"},
-\code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default), or
+\item{level}{Character. Taxonomic level: \code{"kingdom"}, \code{"phylum"},
+\code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default) or
 \code{"species"}. Case-insensitive.}
 
-\item{x_col}{Character. Column name in \code{metadata} to use for the x-axis
-(e.g., environment, condition). If \code{NULL} (default), one bar per sample.}
+\item{x_col}{Character. Name of the column in \code{metadata} for the
+x-axis. If \code{NULL} (default), one bar per sample.}
 
-\item{facet_by}{Optional. Character. Column name in \code{metadata} to facet the plot by (e.g., treatment). Default is \code{NULL}.}
+\item{facet_by}{Character. Name of the column in \code{metadata} to facet
+the plot by. Optional; \code{NULL} (default) for no facets.}
 
 \item{width_equal}{Logical. If \code{TRUE}, all bars have equal width regardless of sample count per group. Default \code{FALSE}.}
 
-\item{label}{Character. Legend title for the taxa groups. Default is \code{"taxonomy"}.}
+\item{label}{Character. Title of the taxa legend. Default \code{"taxonomy"}.}
 
-\item{top_n}{Integer. Number of most abundant taxa groups to display. Default is \code{15}.}
+\item{top_n}{Integer. Number of most abundant taxa to show. Default
+\code{15}.}
 
-\item{x_axis_title}{Character. The title for the x-axis (default = "Samples")}
+\item{x_axis_title}{Character. Title of the x-axis. Default
+\code{"Samples"}.}
 
-\item{y_axis_title}{Character. The title for the y-axis (default =
-"Relative abundance (\%)").}
+\item{y_axis_title}{Character. Title of the y-axis. Default \code{"Relative
+abundance (\%)"}.}
 
-\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
-labels. Default \code{0} (horizontal); set to \code{45} or \code{90} when
-sample names are long enough to overlap.}
+\item{x_label_angle}{Numeric. Rotation (degrees) of the x-axis labels.
+Default \code{0} (horizontal); use \code{45} or \code{90} if they overlap.}
 
-\item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold.
-Default \code{FALSE} (plain).}
+\item{strip_text_bold}{Logical. If \code{TRUE}, the facet strip labels are
+bold. Default \code{FALSE}.}
 
-\item{strip_color}{Background color of facet strips (only used when
-\code{facet_by} is set). Default: \code{"grey"}.}
+\item{strip_color}{Character. Background color of the facet strips (used
+when \code{facet_by} is set). Default \code{"grey"}.}
 
-\item{aspect_ratio}{Numeric. Aspect ratio (height/width) of the panel.
+\item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}
 
-\item{add_remained}{Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.}
+\item{add_remained}{Logical. If \code{TRUE}, adds an "Other" category with
+the sum of the remaining taxa. Default \code{FALSE}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the relative-abundance
+table as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used when \code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"relative_abundance.txt"}.}
 }
 \value{
-A \code{ggplot2} object showing a stacked barplot of relative abundances.
+A ggplot object with the stacked bar plot of relative abundances.
 }
 \description{
 Generates a bar plot of relative abundance (\%) for the most abundant taxa groups across samples or sample groups.
@@ -86,11 +90,11 @@ Generates a bar plot of relative abundance (\%) for the most abundant taxa group
 \details{
 \itemize{
 \item Relative abundances are calculated per sample (\%).
-\item Taxa names are collapsed to the specified taxonomic \code{level} ("genus" or "phylum").
+\item Taxa are collapsed to the taxonomic \code{level}; taxa not resolved to that level are shown as "other \if{html}{\out{<rank>}}".
 \item Only the top \code{top_n} taxa are shown; others are filtered out.
 \item Samples are grouped and ordered according to \code{x_col}.
 \item Optional faceting by \code{facet_by} if provided.
-\item Taxonomic strings matching \code{"d__Bacteria;__;__;__;__;__"} are automatically removed.
+\item Features assigned only to a kingdom/domain (e.g. \code{"d__Bacteria;__;__;__;__;__"}) or \code{"Unassigned"} are removed.
 }
 }
 \examples{
@@ -99,17 +103,16 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 abundance_bar_plot(
-  table        = table,
-  metadata     = metadata,
-  taxonomy_db  = "silva",
-  level        = "genus",
-  x_col        = "Location",
-  label        = "Genus",
-  facet_by    = "Treatment",
-  top_n        = 30,
-  add_remained = TRUE
+    table = table,
+    metadata = metadata,
+    taxonomy_db = "silva",
+    level = "genus",
+    x_col = "Location",
+    label = "Genus",
+    facet_by = "Treatment",
+    top_n = 30,
+    add_remained = TRUE
 )
 }

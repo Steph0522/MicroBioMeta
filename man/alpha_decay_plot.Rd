@@ -35,82 +35,83 @@ alpha_decay_plot(
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
 \item{cont_var}{Character. Name of the continuous variable column in
 \code{metadata} to place on the x-axis (e.g. \code{"dist_km"}).}
 
-\item{group_col}{Character or \code{NULL}. Optional column in
-\code{metadata} used to color points and fit separate regression lines
-per group (e.g. \code{"treatment"}).}
+\item{group_col}{Character. Name of the column in \code{metadata} that
+defines the groups, used to color the points and fit one regression line per
+group. Optional; \code{NULL} (default) for no groups.}
 
 \item{method}{Character. Correlation method for the statistic annotation.
 One of \code{"spearman"} (default) or \code{"pearson"}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R-squared and slope
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds \eqn{R^2} and slope
 from the linear model to the annotation label.}
 
-\item{facet_orientation}{Character. \code{"horizontal"} (default) places
-q-panels in a single row; \code{"vertical"} stacks them in one column.}
+\item{facet_orientation}{Character. \code{"horizontal"} (default) puts the
+three q0/q1/q2 panels in a row; \code{"vertical"} in a column.}
 
-\item{palette}{Character. Built-in palette name: \code{"colorb"}
-(default), \code{"grey"}, \code{"viridis"}, or \code{"brewer"}.}
+\item{palette}{Character. Palette name: \code{"colorb"} (default,
+colorblind-friendly Okabe-Ito), \code{"grey"}, \code{"viridis"} or
+\code{"brewer"}.}
 
-\item{group_colors}{A named or unnamed character vector of colors.
-Overrides \code{palette} when provided.}
+\item{group_colors}{Optional character vector of colors, one per group,
+named after the groups or in their order. Overrides \code{palette}.}
 
-\item{x_axis_title}{Character. X-axis label. Defaults to the value of
-\code{cont_var}.}
+\item{x_axis_title}{Character. Title of the x-axis. If \code{NULL}
+(default), the name of \code{cont_var} is used.}
 
-\item{y_axis_title}{Character. Y-axis label.
-Default: \code{"Effective number of features"}.}
+\item{y_axis_title}{Character. Title of the y-axis. Default \code{"Effective
+number of features"}.}
 
-\item{title}{Character or \code{NULL}. Overall plot title.}
+\item{title}{Character. Plot title. \code{NULL} (default) shows no title.}
 
-\item{show_legend}{Logical. Show the color legend? Default \code{TRUE}.}
+\item{show_legend}{Logical. If \code{TRUE} (default), the legend is shown.}
 
-\item{legend_position}{Character. Legend position: \code{"bottom"}
-(default), \code{"top"}, \code{"right"}, or \code{"left"}.}
+\item{legend_position}{Character. Position of the legend: \code{"bottom"}
+(default), \code{"top"}, \code{"right"} or \code{"left"}.}
 
-\item{free_y}{Logical. Use free y-axis scales across facets?
-Default \code{TRUE}.}
+\item{free_y}{Logical. If \code{TRUE}, the y-axis scale is free across
+facets. Default \code{TRUE}.}
 
-\item{point_size}{Numeric. Size of scatter points. Default \code{2}.}
+\item{point_size}{Numeric. Size of the points. Default \code{2}.}
 
 \item{line_width}{Numeric. Width of regression lines. Default \code{0.9}.}
 
-\item{point_alpha}{Numeric (0-1). Transparency of points. Default \code{0.8}.}
+\item{point_alpha}{Numeric (0-1). Transparency of the points. Default
+\code{0.8}.}
 
 \item{annotation_size}{Numeric. Font size for the stats annotation.
 Default \code{3.5}.}
 
-\item{panel_label_case}{Character. Case of the auto-generated A/B/C panel
-tags. One of \code{"upper"} (default, "A", "B", "C") or \code{"lower"}
-("a", "b", "c"). Ignored if \code{panel_labels} is supplied.}
+\item{panel_label_case}{Character. Case of the panel tags: \code{"upper"}
+(default; A, B, C) or \code{"lower"} (a, b, c). Ignored if
+\code{panel_labels} is given.}
 
-\item{panel_labels}{Optional character vector of 3 custom panel tags (one
-per q0/q1/q2 panel), used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
-\code{c("a.", "b.", "c.")}) -- for journal styles that
-\code{panel_label_case} alone can't produce. Overrides
-\code{panel_label_case} when provided.}
+\item{panel_labels}{Optional character vector of custom panel tags, one per
+panel (q0, q1, q2), used as-is (e.g. \code{c("(a)", "(b)", "(c)")}).
+Overrides \code{panel_label_case}.}
 
 \item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
 bold. Set to \code{FALSE} for journals that require plain (non-bold)
 panel tags.}
 
-\item{strip_text_bold}{Logical. If \code{TRUE}, the q0/q1/q2 facet strip
-labels are bold. Default \code{FALSE} (plain), as in the other functions.}
+\item{strip_text_bold}{Logical. If \code{TRUE}, the facet strip labels are
+bold. Default \code{FALSE}.}
 }
 \value{
-A \code{patchwork} object joining the three q0/q1/q2 panels
-(always tagged A/B/C). It can still be modified: \code{p & theme(...)}
-changes every panel, \code{p[[2]] + labs(...)} a single one.
+A \code{patchwork} object with the three q0/q1/q2 panels, tagged as
+set by \code{panel_label_case} or \code{panel_labels}. It can still be
+modified: \code{p & theme(...)} changes every panel, \code{p[[2]] +
+  labs(...)} a single one.
 }
 \description{
 Computes Hill numbers (q = 0, 1, 2) from table and plots them
 against a continuous metadata variable (e.g. distance to urban center,
 elevation, pH). It reports the Spearman rank correlation coefficient (rho, or Pearson r),
-its p-value, and optionally the linear regression R-squared and slope.
+its p-value, and optionally the linear regression \eqn{R^2} and slope.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -118,27 +119,26 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
-  stats::rnorm(nrow(metadata), sd = 0.3)
+    stats::rnorm(nrow(metadata), sd = 0.3)
 
 # All samples, no grouping. Always tagged A/B/C (see panel_label_case and
 # panel_labels to customize)
 alpha_decay_plot(
-  table        = table,
-  metadata     = metadata,
-  cont_var     = "dist_km",
-  x_axis_title = "Distance (km)"
+    table        = table,
+    metadata     = metadata,
+    cont_var     = "dist_km",
+    x_axis_title = "Distance (km)"
 )
 
 # Separate regression lines by location
 alpha_decay_plot(
-  table        = table,
-  metadata     = metadata,
-  cont_var     = "dist_km",
-  x_axis_title = "Distance (km)",
-  group_col    = "Location"
+    table        = table,
+    metadata     = metadata,
+    cont_var     = "dist_km",
+    x_axis_title = "Distance (km)",
+    group_col    = "Location"
 )
 }

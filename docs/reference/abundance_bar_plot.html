@@ -89,25 +89,25 @@ must hold the sample IDs (the column names of <code>table</code>). Optional: if
 
 
 <dt id="arg-taxonomy-db">taxonomy_db<a class="anchor" aria-label="anchor" href="#arg-taxonomy-db"></a></dt>
-<dd><p>Character. Reference taxonomy database. One of
-<code>"silva"</code> (default), <code>"gg2"</code> (Greengenes2; also accepts <code>"gg"</code> /
-<code>"greengenes2"</code>), <code>"unite"</code> (fungal ITS), or <code>"Kraken2"</code> (also accepts
-<code>"kraken"</code>). Case-insensitive.</p></dd>
+<dd><p>Character. Database the taxonomy strings come from:
+<code>"silva"</code> (default), <code>"gg2"</code> (Greengenes2, also <code>"gg"</code>),
+<code>"unite"</code> or <code>"Kraken2"</code> (also <code>"kraken"</code>). Case-insensitive.</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
-<dd><p>Character. Taxonomic level to collapse to. One of <code>"kingdom"</code>,
-<code>"phylum"</code>, <code>"class"</code>, <code>"order"</code>, <code>"family"</code>, <code>"genus"</code> (default), or
+<dd><p>Character. Taxonomic level: <code>"kingdom"</code>, <code>"phylum"</code>,
+<code>"class"</code>, <code>"order"</code>, <code>"family"</code>, <code>"genus"</code> (default) or
 <code>"species"</code>. Case-insensitive.</p></dd>
 
 
 <dt id="arg-x-col">x_col<a class="anchor" aria-label="anchor" href="#arg-x-col"></a></dt>
-<dd><p>Character. Column name in <code>metadata</code> to use for the x-axis
-(e.g., environment, condition). If <code>NULL</code> (default), one bar per sample.</p></dd>
+<dd><p>Character. Name of the column in <code>metadata</code> for the
+x-axis. If <code>NULL</code> (default), one bar per sample.</p></dd>
 
 
 <dt id="arg-facet-by">facet_by<a class="anchor" aria-label="anchor" href="#arg-facet-by"></a></dt>
-<dd><p>Optional. Character. Column name in <code>metadata</code> to facet the plot by (e.g., treatment). Default is <code>NULL</code>.</p></dd>
+<dd><p>Character. Name of the column in <code>metadata</code> to facet
+the plot by. Optional; <code>NULL</code> (default) for no facets.</p></dd>
 
 
 <dt id="arg-width-equal">width_equal<a class="anchor" aria-label="anchor" href="#arg-width-equal"></a></dt>
@@ -115,68 +115,72 @@ must hold the sample IDs (the column names of <code>table</code>). Optional: if
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>Character. Legend title for the taxa groups. Default is <code>"taxonomy"</code>.</p></dd>
+<dd><p>Character. Title of the taxa legend. Default <code>"taxonomy"</code>.</p></dd>
 
 
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
-<dd><p>Integer. Number of most abundant taxa groups to display. Default is <code>15</code>.</p></dd>
+<dd><p>Integer. Number of most abundant taxa to show. Default
+<code>15</code>.</p></dd>
 
 
 <dt id="arg-x-axis-title">x_axis_title<a class="anchor" aria-label="anchor" href="#arg-x-axis-title"></a></dt>
-<dd><p>Character. The title for the x-axis (default = "Samples")</p></dd>
+<dd><p>Character. Title of the x-axis. Default
+<code>"Samples"</code>.</p></dd>
 
 
 <dt id="arg-y-axis-title">y_axis_title<a class="anchor" aria-label="anchor" href="#arg-y-axis-title"></a></dt>
-<dd><p>Character. The title for the y-axis (default =
-"Relative abundance (%)").</p></dd>
+<dd><p>Character. Title of the y-axis. Default <code>"Relative
+abundance (%)"</code>.</p></dd>
 
 
 <dt id="arg-x-label-angle">x_label_angle<a class="anchor" aria-label="anchor" href="#arg-x-label-angle"></a></dt>
-<dd><p>Numeric. Rotation (in degrees) of the x-axis tick
-labels. Default <code>0</code> (horizontal); set to <code>45</code> or <code>90</code> when
-sample names are long enough to overlap.</p></dd>
+<dd><p>Numeric. Rotation (degrees) of the x-axis labels.
+Default <code>0</code> (horizontal); use <code>45</code> or <code>90</code> if they overlap.</p></dd>
 
 
 <dt id="arg-strip-text-bold">strip_text_bold<a class="anchor" aria-label="anchor" href="#arg-strip-text-bold"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, facet strip labels are bold.
-Default <code>FALSE</code> (plain).</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the facet strip labels are
+bold. Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-strip-color">strip_color<a class="anchor" aria-label="anchor" href="#arg-strip-color"></a></dt>
-<dd><p>Background color of facet strips (only used when
-<code>facet_by</code> is set). Default: <code>"grey"</code>.</p></dd>
+<dd><p>Character. Background color of the facet strips (used
+when <code>facet_by</code> is set). Default <code>"grey"</code>.</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect_ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>
-<dd><p>Numeric. Aspect ratio (height/width) of the panel.
+<dd><p>Numeric. Aspect ratio (height/width) of each panel.
 Default <code>NULL</code> (automatic).</p></dd>
 
 
 <dt id="arg-add-remained">add_remained<a class="anchor" aria-label="anchor" href="#arg-add-remained"></a></dt>
-<dd><p>Logical indicating whether to include an "Other" category to sum remaining groups; default is FALSE.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, adds an "Other" category with
+the sum of the remaining taxa. Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, saves the relative-abundance table to disk. Default <code>FALSE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, saves the relative-abundance
+table as a tab-delimited file. Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
-<dd><p>Character. File path/name for the saved table (used when <code>save_table = TRUE</code>). Default <code>"relative_abundance.txt"</code>.</p></dd>
+<dd><p>Character. Name or path of the saved file (used when
+<code>save_table = TRUE</code>). Default <code>"relative_abundance.txt"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>ggplot2</code> object showing a stacked barplot of relative abundances.</p>
+    <p>A ggplot object with the stacked bar plot of relative abundances.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
 <ul><li><p>Relative abundances are calculated per sample (%).</p></li>
-<li><p>Taxa names are collapsed to the specified taxonomic <code>level</code> ("genus" or "phylum").</p></li>
+<li><p>Taxa are collapsed to the taxonomic <code>level</code>; taxa not resolved to that level are shown as "other <rank>".</rank></p></li>
 <li><p>Only the top <code>top_n</code> taxa are shown; others are filtered out.</p></li>
 <li><p>Samples are grouped and ordered according to <code>x_col</code>.</p></li>
 <li><p>Optional faceting by <code>facet_by</code> if provided.</p></li>
-<li><p>Taxonomic strings matching <code>"d__Bacteria;__;__;__;__;__"</code> are automatically removed.</p></li>
+<li><p>Features assigned only to a kingdom/domain (e.g. <code>"d__Bacteria;__;__;__;__;__"</code>) or <code>"Unassigned"</code> are removed.</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -186,7 +190,6 @@ Default <code>NULL</code> (automatic).</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metadata_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"SampleID"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">abundance_bar_plot</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  table        <span class="op">=</span> <span class="va">table</span>,</span></span>

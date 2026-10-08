@@ -31,29 +31,20 @@ beta_turnover_plot(
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
-\item{comparison_condition1}{Vector of \code{"A_vs_B"} group-pair labels to
-keep (matched against the values of \code{condition1_col}). Matching
-ignores order - listing \code{"A_vs_B"} also matches pairs the pairwise
-self-join happened to record as \code{"B_vs_A"}, so each pair only needs
-to be listed once. Each matched pair becomes one x-axis/fill group,
-labelled exactly as written (e.g. \code{"Rhizosphere_vs_Roots"}), same
-as \code{condition1_group} in \code{beta_dissimilarity_plot()}.}
+\item{comparison_condition1}{Character vector with the pairs of groups of
+\code{condition1_col} to show (e.g. \code{"Rhizosphere_vs_Roots"},
+\code{"Rhizosphere_vs_Rhizosphere"}; the order of the two groups does not
+matter). Each pair is one box, labeled as written.}
 
-\item{comparison_condition2}{Optional. Same as \code{comparison_condition1},
-for the values of \code{condition2_col} (e.g. \code{"TC_vs_TC"}
-to keep only within-group pairs of a given treatment). condition1 stays
-the main comparison (x-axis/legend); condition2 is the secondary one -
-supplying it both filters to the named pairs \emph{and} facets the plot
-by them (one panel per pair, e.g. \code{"TC_vs_TC"}, \code{"TD_vs_TD"}),
-the same role \code{condition2_col} plays in \code{beta_dissimilarity_plot()}.
-Default \code{NULL}: every pair matching \code{comparison_condition1} is
-kept and the plot only facets by q.}
+\item{comparison_condition2}{Optional character vector with the pairs of
+groups of \code{condition2_col} to keep (e.g. \code{"TC_vs_TC"}); the plot
+is faceted by them. Requires \code{condition2_col}. If \code{NULL}
+(default), no pairs are filtered by \code{condition2_col}.}
 
-\item{condition1_col}{Metadata column (e.g. \code{"Type_of_soil"}) used to
-build \code{comparison_condition1}'s group pairs, same as
-\code{condition1_col} in \code{beta_dissimilarity_plot()}.}
+\item{condition1_col}{Character. Name of the column in \code{metadata} whose
+groups are compared (the pairs of \code{comparison_condition1}).}
 
 \item{condition2_col}{Optional. Metadata column used to build
 \code{comparison_condition2}'s group pairs, and to facet the plot.
@@ -62,28 +53,28 @@ Required when \code{comparison_condition2} is set. If given without
 pairs of samples with the same value (e.g. \code{"TC_vs_TC"},
 \code{"TD_vs_TD"}).}
 
-\item{facet_colors}{Optional color vector for facet strips. Defaults to
-a neutral \code{"grey85"} background for each facet, like
-\code{beta_dissimilarity_plot()}'s \code{facet_colors}.}
+\item{facet_colors}{Optional character vector of background colors for the
+facet strips. If \code{NULL} (default), a neutral \code{"grey85"} is used.}
 
-\item{group_colors}{Optional named color vector for x-axis groups.
-Defaults to the package's colorblind-friendly Okabe-Ito palette
-(\code{.mbm_colors}, orange/blue first), like
-\code{beta_dissimilarity_plot()}'s \code{group_colors}.}
+\item{group_colors}{Optional character vector of colors, one per comparison
+on the x-axis, named after them or in their order. If \code{NULL} (default),
+the colorblind-friendly Okabe-Ito palette is used.}
 
-\item{x_axis_title}{Title for the x-axis. Default \code{"Section"}.}
+\item{x_axis_title}{Character. Title of the x-axis. Default
+\code{"Section"}.}
 
-\item{y_axis_title}{Title for the y-axis. Default
+\item{y_axis_title}{Character. Title of the y-axis. Default
 \code{"Proportion of feature turnover"}.}
 
-\item{show_x_labels}{Logical. If \code{TRUE}, x-axis tick labels are shown.
-Default \code{FALSE}, since the same groups are already named in the legend.}
+\item{show_x_labels}{Logical. If \code{TRUE}, the x-axis labels are shown.
+Default \code{FALSE}, since the groups are already named in the legend.}
 
-\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick labels
-when \code{show_x_labels = TRUE}. Default \code{0} (horizontal).}
+\item{x_label_angle}{Numeric. Rotation (degrees) of the x-axis labels (when
+\code{show_x_labels = TRUE}). Default \code{0} (horizontal); use \code{45}
+or \code{90} if they overlap.}
 
-\item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold.
-Default \code{FALSE} (plain).}
+\item{strip_text_bold}{Logical. If \code{TRUE}, the facet strip labels are
+bold. Default \code{FALSE}.}
 
 \item{strip_text_color}{Color of the top (x) facet strip labels, which sit on
 the \code{facet_colors} backgrounds. Default \code{"white"}, unless
@@ -93,26 +84,26 @@ in which case this defaults to \code{"black"} instead so it stays legible.}
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}
 
-\item{stat}{Character or \code{NULL}. Statistical test to compare the
-boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
-compare every pair of boxes, each with its own bracket and p-value
-(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
-give one global p-value per panel (\code{ggpubr::stat_compare_means()}).
-Default \code{NULL} (no test shown).}
+\item{stat}{Character or \code{NULL}. Statistical test to compare the boxes
+within each panel. \code{"wilcox.test"} or \code{"t.test"} compare every
+pair of boxes, each with its own bracket and p-value
+(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"} give
+one global p-value per panel (\code{ggpubr::stat_compare_means()}). Default
+\code{NULL} (no test shown).}
 
-\item{p_adjust_method}{Multiple-comparison correction for the pairwise
-tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
-each panel; any method of \code{stats::p.adjust()}. Default
-\code{"holm"}; \code{"none"} shows the raw p-values.}
+\item{p_adjust_method}{Character. Multiple-testing correction for the
+pairwise tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied
+within each panel, any method of \code{stats::p.adjust()}. Default
+\code{"holm"}; \code{"none"} uses the raw p-values.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the underlying turnover
-table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the turnover table as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"betadiv_turnover.txt"}.}
 }
 \value{
-A ggplot2 figure with beta diversity partitions across conditions.
+A ggplot object.
 }
 \description{
 Computes the pairwise beta diversity between samples with Hill numbers
@@ -143,14 +134,16 @@ colnames(metadata)[1] <- "OTUID"
 # "Rhizosphere_vs_Roots" also catches pairs the self-join recorded the
 # other way around ("Roots_vs_Rhizosphere") - no need to list both.
 beta_turnover_plot(
-  table                 = table,
-  metadata              = metadata,
-  comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
-  comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
-  condition1_col        = "Location",
-  condition2_col        = "Treatment",
-  facet_colors        = c("#5D478B", "#8B668B"),
-  group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
-                            "Rhizosphere_vs_Rhizosphere" = "#E69F00")
+    table = table,
+    metadata = metadata,
+    comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
+    comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
+    condition1_col = "Location",
+    condition2_col = "Treatment",
+    facet_colors = c("#5D478B", "#8B668B"),
+    group_colors = c(
+        "Rhizosphere_vs_Roots" = "#56B4E9",
+        "Rhizosphere_vs_Rhizosphere" = "#E69F00"
+    )
 )
 }

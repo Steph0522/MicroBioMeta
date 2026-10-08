@@ -43,7 +43,7 @@ A couple of examples in the **Tutorials** use packages that aren't required by t
 - **[`qiime2R`](https://github.com/jbisanz/qiime2R)** (GitHub-only) — used in the Metabarcoding/Amplicón tutorial to import `.qza` artifacts exported from QIIME2:
 
   ```{r}
-  devtools::install_github("jbisanz/qiime2R")
+devtools::install_github("jbisanz/qiime2R")
   ```
 
   This is only needed if your own data comes from QIIME2 as `.qza` files. If you already have plain `.txt`/`.csv` tables, you can skip it entirely and read those directly with `read.delim()`/`read.csv()`.
@@ -51,7 +51,7 @@ A couple of examples in the **Tutorials** use packages that aren't required by t
 - **[`networkD3`](https://CRAN.R-project.org/package=networkD3)** (CRAN) — used by `abundance_sankey_plot()` for the interactive Sankey diagram:
 
   ```{r}
-  install.packages("networkD3")
+install.packages("networkD3")
   ```
 
 ## Troubleshooting Bioconductor packages

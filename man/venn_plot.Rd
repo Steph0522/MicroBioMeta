@@ -2,12 +2,12 @@
 % Please edit documentation in R/venn_plot.R
 \name{venn_plot}
 \alias{venn_plot}
-\title{Generate a Venn diagram of taxa shared between sample groups}
+\title{Venn diagram of taxa shared between sample groups}
 \usage{
 venn_plot(
   table,
   metadata,
-  merge_by = NULL,
+  merge_by,
   selected_samples = NULL,
   min_prevalence = 0,
   title = NULL,
@@ -18,38 +18,43 @@ venn_plot(
 )
 }
 \arguments{
-\item{table}{A data frame containing taxonomic abundance data with a column named \code{taxonomy} and subsequent columns as sample IDs.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing metadata with a column named \code{SAMPLEID} that matches the sample columns in \code{table}.}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}).}
 
-\item{merge_by}{A character string specifying the metadata column by which to group and merge samples.}
+\item{merge_by}{Character. Name of the column in \code{metadata} that
+defines the groups (one set of taxa per group).}
 
-\item{selected_samples}{Optional character vector specifying a subset of sample IDs to include in the analysis.}
+\item{selected_samples}{Optional character vector of the sample IDs to use.
+If \code{NULL} (default), all samples are used.}
 
-\item{min_prevalence}{Optional numeric value (0-1) to filter taxa based on minimum prevalence across groups.}
+\item{min_prevalence}{Numeric (0-1). Minimum fraction of the samples of a
+group where a taxon must be present to count it in that group. Default
+\code{0} (present in at least one sample).}
 
-\item{title}{Optional character string for the title of the plot.}
+\item{title}{Character. Plot title. \code{NULL} (default) shows no title.}
 
 \item{method}{Character. Package used to draw the Venn diagram: \code{"ggvenn"}
 (default) or \code{"ggVennDiagram"}. Case-insensitive.}
 
-\item{group_colors}{Optional vector of colors for the groups, either named
-after the groups or in the order of the groups. If NULL, the
+\item{group_colors}{Optional character vector of colors, one per group,
+named after the groups or in their order. If \code{NULL} (default), the
 colorblind-friendly Okabe-Ito palette is used.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves a long-format table of taxa
-membership per group to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the taxa of each group
+(long format) as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"venn_taxa_sets.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"venn_taxa_sets.txt"}.}
 }
 \value{
-A ggplot object or other plot depending on the method.
+A ggplot object.
 }
 \description{
-This function creates a Venn diagram using either the \code{ggVennDiagram} or \code{ggenn} package
-based on the user's preference. It includes additional customization options like
-minimum prevalence filtering and custom group color scales (manual).
+Creates a Venn diagram of the taxa shared between groups of samples, with
+ggvenn or ggVennDiagram.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -57,29 +62,28 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SAMPLEID"
 
 venn_plot(
-  table          = table,
-  metadata       = metadata,
-  merge_by       = "Location",
-  min_prevalence = 0
+    table          = table,
+    metadata       = metadata,
+    merge_by       = "Location",
+    min_prevalence = 0
 )
 
 ## Filtering taxa by prevalence
 venn_plot(
-  table          = table,
-  metadata       = metadata,
-  merge_by       = "Location",
-  min_prevalence = 0.2
+    table          = table,
+    metadata       = metadata,
+    merge_by       = "Location",
+    min_prevalence = 0.2
 )
 
 ## Custom colors
 venn_plot(
-  table          = table,
-  metadata       = metadata,
-  merge_by       = "Location",
-  min_prevalence = 0,
-  group_colors   = c("#1B9E77", "#D95F02")
+    table          = table,
+    metadata       = metadata,
+    merge_by       = "Location",
+    min_prevalence = 0,
+    group_colors   = c("#1B9E77", "#D95F02")
 )
 }

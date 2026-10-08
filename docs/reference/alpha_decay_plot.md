@@ -3,7 +3,7 @@
 Computes Hill numbers (q = 0, 1, 2) from table and plots them against a
 continuous metadata variable (e.g. distance to urban center, elevation,
 pH). It reports the Spearman rank correlation coefficient (rho, or
-Pearson r), its p-value, and optionally the linear regression R-squared
+Pearson r), its p-value, and optionally the linear regression \\R^2\\
 and slope.
 
 ## Usage
@@ -45,8 +45,8 @@ alpha_decay_plot(
 
 - metadata:
 
-  A data frame containing sample metadata. Must include a `SAMPLEID`
-  column matching sample names in `table`.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - cont_var:
 
@@ -55,9 +55,9 @@ alpha_decay_plot(
 
 - group_col:
 
-  Character or `NULL`. Optional column in `metadata` used to color
-  points and fit separate regression lines per group (e.g.
-  `"treatment"`).
+  Character. Name of the column in `metadata` that defines the groups,
+  used to color the points and fit one regression line per group.
+  Optional; `NULL` (default) for no groups.
 
 - method:
 
@@ -66,52 +66,55 @@ alpha_decay_plot(
 
 - show_lm_stats:
 
-  Logical. If `TRUE` (default), adds R-squared and slope from the linear
+  Logical. If `TRUE` (default), adds \\R^2\\ and slope from the linear
   model to the annotation label.
 
 - facet_orientation:
 
-  Character. `"horizontal"` (default) places q-panels in a single row;
-  `"vertical"` stacks them in one column.
+  Character. `"horizontal"` (default) puts the three q0/q1/q2 panels in
+  a row; `"vertical"` in a column.
 
 - palette:
 
-  Character. Built-in palette name: `"colorb"` (default), `"grey"`,
-  `"viridis"`, or `"brewer"`.
+  Character. Palette name: `"colorb"` (default, colorblind-friendly
+  Okabe-Ito), `"grey"`, `"viridis"` or `"brewer"`.
 
 - group_colors:
 
-  A named or unnamed character vector of colors. Overrides `palette`
-  when provided.
+  Optional character vector of colors, one per group, named after the
+  groups or in their order. Overrides `palette`.
 
 - x_axis_title:
 
-  Character. X-axis label. Defaults to the value of `cont_var`.
+  Character. Title of the x-axis. If `NULL` (default), the name of
+  `cont_var` is used.
 
 - y_axis_title:
 
-  Character. Y-axis label. Default: `"Effective number of features"`.
+  Character. Title of the y-axis. Default
+  `"Effective number of features"`.
 
 - title:
 
-  Character or `NULL`. Overall plot title.
+  Character. Plot title. `NULL` (default) shows no title.
 
 - show_legend:
 
-  Logical. Show the color legend? Default `TRUE`.
+  Logical. If `TRUE` (default), the legend is shown.
 
 - legend_position:
 
-  Character. Legend position: `"bottom"` (default), `"top"`, `"right"`,
-  or `"left"`.
+  Character. Position of the legend: `"bottom"` (default), `"top"`,
+  `"right"` or `"left"`.
 
 - free_y:
 
-  Logical. Use free y-axis scales across facets? Default `TRUE`.
+  Logical. If `TRUE`, the y-axis scale is free across facets. Default
+  `TRUE`.
 
 - point_size:
 
-  Numeric. Size of scatter points. Default `2`.
+  Numeric. Size of the points. Default `2`.
 
 - line_width:
 
@@ -119,7 +122,7 @@ alpha_decay_plot(
 
 - point_alpha:
 
-  Numeric (0-1). Transparency of points. Default `0.8`.
+  Numeric (0-1). Transparency of the points. Default `0.8`.
 
 - annotation_size:
 
@@ -127,16 +130,14 @@ alpha_decay_plot(
 
 - panel_label_case:
 
-  Character. Case of the auto-generated A/B/C panel tags. One of
-  `"upper"` (default, "A", "B", "C") or `"lower"` ("a", "b", "c").
-  Ignored if `panel_labels` is supplied.
+  Character. Case of the panel tags: `"upper"` (default; A, B, C) or
+  `"lower"` (a, b, c). Ignored if `panel_labels` is given.
 
 - panel_labels:
 
-  Optional character vector of 3 custom panel tags (one per q0/q1/q2
-  panel), used as-is (e.g. `c("(a)", "(b)", "(c)")` or
-  `c("a.", "b.", "c.")`) – for journal styles that `panel_label_case`
-  alone can't produce. Overrides `panel_label_case` when provided.
+  Optional character vector of custom panel tags, one per panel (q0, q1,
+  q2), used as-is (e.g. `c("(a)", "(b)", "(c)")`). Overrides
+  `panel_label_case`.
 
 - panel_label_bold:
 
@@ -145,14 +146,13 @@ alpha_decay_plot(
 
 - strip_text_bold:
 
-  Logical. If `TRUE`, the q0/q1/q2 facet strip labels are bold. Default
-  `FALSE` (plain), as in the other functions.
+  Logical. If `TRUE`, the facet strip labels are bold. Default `FALSE`.
 
 ## Value
 
-A `patchwork` object joining the three q0/q1/q2 panels (always tagged
-A/B/C). It can still be modified: `p & theme(...)` changes every panel,
-`p[[2]] + labs(...)` a single one.
+A `patchwork` object with the three q0/q1/q2 panels, tagged as set by
+`panel_label_case` or `panel_labels`. It can still be modified:
+`p & theme(...)` changes every panel, `p[[2]] + labs(...)` a single one.
 
 ## Examples
 
@@ -162,7 +162,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +

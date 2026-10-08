@@ -1,17 +1,15 @@
-# Plot Correlation Between Environmental Variables and Taxonomic Groups
+# Correlation between environmental variables and taxa
 
-This function calculates the relative abundances of taxa at a specified
-taxonomic level (phylum, genus, or species) from a count table, computes
-correlations between these abundances and environmental variables, and
-visualizes the results as either a heatmap (tile) or a bubble plot
-(circle).
+Computes the relative abundance of the taxa at a taxonomic level,
+correlates it with environmental variables, and shows the correlations
+as a heatmap (tile) or a bubble plot (circle).
 
 ## Usage
 
 ``` r
 corr_env_abund_plot(
   table,
-  env_data,
+  env_data = NULL,
   metadata = NULL,
   env_vars = NULL,
   method = "spearman",
@@ -35,34 +33,38 @@ corr_env_abund_plot(
 
 - table:
 
-  A data frame containing a taxonomic abundance table with a taxonomy
-  column and sample columns with numeric counts.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - env_data:
 
-  A data frame or matrix of environmental variables, with samples as row
-  names.
+  Optional data frame of environmental variables, with row names
+  matching the sample names in `table`. Default `NULL`: the variables
+  named in `env_vars` are taken from `metadata`. Use it only when the
+  variables are in a separate table.
 
 - metadata:
 
-  A data frame containing sample metadata. The first column must
-  correspond to sample identifiers.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`). The environmental
+  variables can be columns of `metadata` (see `env_vars`).
 
 - env_vars:
 
   Character vector of environmental variables to include in the
-  correlation analysis. If NULL, all available variables are used.
+  correlation analysis (columns of `metadata`, or of `env_data` if
+  given). Required when `env_data` is `NULL`; with a separate
+  `env_data`, `NULL` uses all its variables.
 
 - method:
 
-  Character. Correlation method passed to stats::cor and
-  stats::cor.test. Supported options include ("spearman", "pearson",
-  "kendall").
+  Character. Correlation method: `"spearman"` (default), `"pearson"` or
+  `"kendall"`.
 
 - hc.order:
 
-  Logical. If TRUE, applies hierarchical clustering to reorder taxa and
-  environmental variables in the plot.
+  Logical. If `TRUE` (default), taxa and variables are reordered by
+  hierarchical clustering.
 
 - geom:
 
@@ -71,77 +73,69 @@ corr_env_abund_plot(
 
 - show_labels:
 
-  Logical. If TRUE, displays correlation values on the plot.
+  Logical. If `TRUE` (default), the correlation values are shown.
 
 - col_palette:
 
-  Character vector defining the color palette for correlation values. If
-  NULL, the palette is chosen via `diverging_palette`.
+  Optional character vector of colors for the correlation scale. If
+  `NULL` (default), `diverging_palette` is used.
 
 - diverging_palette:
 
-  Character. Name of a built-in colorblind-friendly diverging palette to
-  use when `col_palette` is NULL. One of `"BuOr"` (default;
-  blue-white-orange, the same Okabe-Ito blue/ orange pairing used for
-  the two-group color convention elsewhere in the package, e.g.
-  `aldex_volcano_plot`'s col_inf/col_sup and the Rhizosphere/Roots
-  colors in the bundled examples), `"BuVm"` (blue-vermillion), `"BuPk"`
-  (blue-pink), `"GnPk"` (green-pink), `"PuYl"` (purple-white-yellow,
-  viridis endpoints); or `"viridis"` for the plain sequential
-  purple-to-yellow scale used in `aldex_heatmap_plot` (no neutral
-  midpoint - not recommended for correlations, where 0 should look
-  distinct from either extreme). All presets have a true white midpoint
-  at 0 except `"viridis"`.
+  Character. Colorblind-friendly diverging palette, used when
+  `col_palette` is `NULL`: `"BuOr"` (blue-orange, default), `"BuVm"`
+  (blue-vermillion), `"BuPk"` (blue-pink), `"GnPk"` (green-pink) or
+  `"PuYl"` (purple-yellow); or `"viridis"`, a sequential scale without a
+  neutral midpoint (not recommended for correlations).
 
 - invert_axes:
 
-  Logical. If TRUE, swaps x and y axes in the plot.
+  Logical. If `TRUE` (default), taxa and variables swap axes.
 
 - taxonomy_db:
 
-  Character. Taxonomic database whose prefix style is used for
-  parsing/annotation. One of `"silva"` (default), `"gg2"` (also accepts
-  `"gg"` / `"greengenes2"`), `"unite"`, or `"Kraken2"` (also accepts
-  `"kraken"`). Case-insensitive.
+  Character. Database the taxonomy strings come from: `"silva"`
+  (default), `"gg2"` (Greengenes2, also `"gg"`), `"unite"` or
+  `"Kraken2"` (also `"kraken"`). Case-insensitive.
 
 - level:
 
-  Character. Taxonomic level to collapse taxa to. One of `"kingdom"`,
-  `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
-  `"species"`. Case-insensitive.
+  Character. Taxonomic level: `"kingdom"`, `"phylum"`, `"class"`,
+  `"order"`, `"family"`, `"genus"` (default) or `"species"`.
+  Case-insensitive.
 
 - pval_threshold:
 
-  Numeric. Optional p-value threshold to retain only taxa showing
-  significant correlations with at least one environmental variable. If
-  `NULL`, no significance filtering is applied.
+  Numeric or `NULL`. P-value cutoff (after `p_adjust_method`) to keep
+  only taxa with a significant correlation with at least one variable.
+  Default `NULL` (no filtering).
 
 - p_adjust_method:
 
-  Multiple-comparison correction applied to the p-values of all taxon x
-  variable correlations before filtering with `pval_threshold`; any
-  method of
+  Character. Multiple-testing correction for the p-values of all taxon x
+  variable correlations, any method of
   [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
-  `"BH"` (false discovery rate); `"none"` uses the raw p-values.
+  `"BH"`; `"none"` uses the raw p-values.
 
 - x_label_angle:
 
-  Numeric. Rotation (in degrees) of the x-axis labels, so long variable
-  or taxon names don't overlap. Default `45`; `0` for horizontal labels.
+  Numeric. Rotation (degrees) of the x-axis labels. Default `45`; `0`
+  for horizontal labels.
 
 - save_table:
 
-  Logical. If TRUE, saves the plotted correlations (one row per taxon
-  and variable, with the taxon name, raw p-value and p-value adjusted
-  with `p_adjust_method`) as a tab-delimited text file.
+  Logical. If `TRUE`, saves the plotted correlations (one row per taxon
+  and variable, with the raw and adjusted p-values) as a tab-delimited
+  file. Default `FALSE`.
 
 - table_filename:
 
-  Character. Name of the output file used when save_table = TRUE.
+  Character. Name or path of the saved file (used when
+  `save_table = TRUE`). Default `"corr.txt"`.
 
 ## Value
 
-A ggplot2 object.
+A ggplot object.
 
 ## Examples
 
@@ -151,16 +145,9 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
-# env_data must have rownames matching the sample names in `table`
-env_data <- metadata
-rownames(env_data) <- env_data$SampleID
-
-# Uses the default colorblind-friendly diverging palette (purple-white-yellow)
 corr_env_abund_plot(
   table          = table,
-  env_data      = env_data,
   metadata       = metadata,
   env_vars      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
   method         = "pearson",
@@ -171,7 +158,4 @@ corr_env_abund_plot(
   level          = "phylum",
   taxonomy_db    = "silva"
 )
-
-# pval_threshold = 0.05 would keep only taxa with a significant correlation
-# after the p_adjust_method correction (BH by default).
 ```

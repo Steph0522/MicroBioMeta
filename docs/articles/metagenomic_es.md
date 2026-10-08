@@ -402,6 +402,14 @@ modo que la ordenación (vía el paquete `vegan` ([Oksanen et al.
 2001](#ref-anderson2001permanova)) evalúan la misma noción de
 disimilitud.
 
+El resultado es una figura de la tabla (un ggplot), así que se puede
+combinar con otros gráficos (p. ej.
+[`cowplot::plot_grid()`](https://wilkelab.org/cowplot/reference/plot_grid.html))
+o guardar con
+[`ggplot2::ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html).
+Usa `save_table = TRUE` para obtener también los resultados en un
+archivo de texto.
+
 ``` r
 
 beta_test_table(table = table_meta,
@@ -510,15 +518,15 @@ ratios_bubble_plot(table = table_meta_compar,
 ## Análisis ambientales
 
 Los metadatos ya traen las variables fisicoquímicas del suelo medidas
-para estas muestras, así que la tabla ambiental se construye de la misma
-forma que en la viñeta de amplicón:
+para estas muestras, así que, como en la viñeta de amplicón, las
+variables se eligen por nombre con `env_vars` (no hace falta una tabla
+ambiental aparte):
 
 ``` r
 
-env_table_meta <- metadata_meta %>%
-  dplyr::select(SAMPLEID, pH:ARENA) %>%
-  remove_rownames() %>%
-  column_to_rownames(var = "SAMPLEID")
+env_vars_meta <- metadata_meta %>%
+  dplyr::select(pH:ARENA) %>%
+  colnames()
 ```
 
 ### Correlación entre variables ambientales y abundancia taxonómica
@@ -526,14 +534,14 @@ env_table_meta <- metadata_meta %>%
 ``` r
 
 corr_env_abund_plot(table = table_meta,
-                    env_data = env_table_meta,
                     metadata = metadata_meta,
+                    env_vars = env_vars_meta,
                     taxonomy_db = "Kraken2",
                     level = "phylum",
                     save_table = FALSE)
 ```
 
-    ## Warning in corr_env_abund_plot(table = table_meta, env_data = env_table_meta, :
+    ## Warning in corr_env_abund_plot(table = table_meta, metadata = metadata_meta, :
     ## Dropping non-numeric columns from `env_data`: type, type2
 
 ![](metagenomic_es_files/figure-html/correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21-1.png)
@@ -542,14 +550,7 @@ corr_env_abund_plot(table = table_meta,
 
 ``` r
 
-env_table_meta <- env_table_meta[
-  match(metadata_meta$SAMPLEID, rownames(env_table_meta)), , drop = FALSE]
-```
-
-``` r
-
 cca_rda_biplot(table = table_meta,
-               env_data = env_table_meta,
                metadata = metadata_meta,
                env_vars = c("pH", "MO", "N", "P", "K"),
                analysis = "CCA",

@@ -43,26 +43,25 @@ abundance_bar_plot(
 
 - taxonomy_db:
 
-  Character. Reference taxonomy database. One of `"silva"` (default),
-  `"gg2"` (Greengenes2; also accepts `"gg"` / `"greengenes2"`),
-  `"unite"` (fungal ITS), or `"Kraken2"` (also accepts `"kraken"`).
-  Case-insensitive.
+  Character. Database the taxonomy strings come from: `"silva"`
+  (default), `"gg2"` (Greengenes2, also `"gg"`), `"unite"` or
+  `"Kraken2"` (also `"kraken"`). Case-insensitive.
 
 - level:
 
-  Character. Taxonomic level to collapse to. One of `"kingdom"`,
-  `"phylum"`, `"class"`, `"order"`, `"family"`, `"genus"` (default), or
-  `"species"`. Case-insensitive.
+  Character. Taxonomic level: `"kingdom"`, `"phylum"`, `"class"`,
+  `"order"`, `"family"`, `"genus"` (default) or `"species"`.
+  Case-insensitive.
 
 - x_col:
 
-  Character. Column name in `metadata` to use for the x-axis (e.g.,
-  environment, condition). If `NULL` (default), one bar per sample.
+  Character. Name of the column in `metadata` for the x-axis. If `NULL`
+  (default), one bar per sample.
 
 - facet_by:
 
-  Optional. Character. Column name in `metadata` to facet the plot by
-  (e.g., treatment). Default is `NULL`.
+  Character. Name of the column in `metadata` to facet the plot by.
+  Optional; `NULL` (default) for no facets.
 
 - width_equal:
 
@@ -71,68 +70,64 @@ abundance_bar_plot(
 
 - label:
 
-  Character. Legend title for the taxa groups. Default is `"taxonomy"`.
+  Character. Title of the taxa legend. Default `"taxonomy"`.
 
 - top_n:
 
-  Integer. Number of most abundant taxa groups to display. Default is
-  `15`.
+  Integer. Number of most abundant taxa to show. Default `15`.
 
 - x_axis_title:
 
-  Character. The title for the x-axis (default = "Samples")
+  Character. Title of the x-axis. Default `"Samples"`.
 
 - y_axis_title:
 
-  Character. The title for the y-axis (default = "Relative abundance
-  (%)").
+  Character. Title of the y-axis. Default `"Relative abundance (%)"`.
 
 - x_label_angle:
 
-  Numeric. Rotation (in degrees) of the x-axis tick labels. Default `0`
-  (horizontal); set to `45` or `90` when sample names are long enough to
-  overlap.
+  Numeric. Rotation (degrees) of the x-axis labels. Default `0`
+  (horizontal); use `45` or `90` if they overlap.
 
 - strip_text_bold:
 
-  Logical. If `TRUE`, facet strip labels are bold. Default `FALSE`
-  (plain).
+  Logical. If `TRUE`, the facet strip labels are bold. Default `FALSE`.
 
 - strip_color:
 
-  Background color of facet strips (only used when `facet_by` is set).
-  Default: `"grey"`.
+  Character. Background color of the facet strips (used when `facet_by`
+  is set). Default `"grey"`.
 
 - aspect_ratio:
 
-  Numeric. Aspect ratio (height/width) of the panel. Default `NULL`
+  Numeric. Aspect ratio (height/width) of each panel. Default `NULL`
   (automatic).
 
 - add_remained:
 
-  Logical indicating whether to include an "Other" category to sum
-  remaining groups; default is FALSE.
+  Logical. If `TRUE`, adds an "Other" category with the sum of the
+  remaining taxa. Default `FALSE`.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the relative-abundance table to disk.
-  Default `FALSE`.
+  Logical. If `TRUE`, saves the relative-abundance table as a
+  tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"relative_abundance.txt"`.
 
 ## Value
 
-A `ggplot2` object showing a stacked barplot of relative abundances.
+A ggplot object with the stacked bar plot of relative abundances.
 
 ## Details
 
 - Relative abundances are calculated per sample (%).
 
-- Taxa names are collapsed to the specified taxonomic `level` ("genus"
-  or "phylum").
+- Taxa are collapsed to the taxonomic `level`; taxa not resolved to that
+  level are shown as "other ".
 
 - Only the top `top_n` taxa are shown; others are filtered out.
 
@@ -140,8 +135,8 @@ A `ggplot2` object showing a stacked barplot of relative abundances.
 
 - Optional faceting by `facet_by` if provided.
 
-- Taxonomic strings matching `"d__Bacteria;__;__;__;__;__"` are
-  automatically removed.
+- Features assigned only to a kingdom/domain (e.g.
+  `"d__Bacteria;__;__;__;__;__"`) or `"Unassigned"` are removed.
 
 ## Examples
 
@@ -151,7 +146,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 abundance_bar_plot(
   table        = table,

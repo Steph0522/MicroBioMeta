@@ -2,7 +2,7 @@
 % Please edit documentation in R/beta_dissimilarity_plot.R
 \name{beta_dissimilarity_plot}
 \alias{beta_dissimilarity_plot}
-\title{Beta Diversity Boxplot}
+\title{Beta diversity boxplot}
 \usage{
 beta_dissimilarity_plot(
   table,
@@ -32,17 +32,32 @@ beta_dissimilarity_plot(
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
 \item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
-\item{condition1_col}{Column name in metadata for the first condition.}
+\item{comparison_condition1}{Optional character vector with the pairs of
+groups of \code{condition1_col} to show (e.g. \code{"Rhizosphere_vs_Roots"};
+the order of the two groups does not matter). If \code{NULL} (default), all
+pairs are shown.}
 
-\item{condition2_col}{Optional column name in metadata for the second condition, used as facet.}
+\item{condition1_col}{Character. Name of the column in \code{metadata} whose
+groups are compared: each box is one pair of groups.}
 
-\item{facet_colors}{Optional vector of colors for facet strips. Defaults to a neutral \code{"grey85"}.}
+\item{condition2_col}{Character. Name of a second column in \code{metadata}.
+If given, only pairs of samples with the same value are kept, and the plot
+is faceted by it. Optional; \code{NULL} (default) for none.}
 
-\item{x_axis_title}{Title for the x-axis.}
+\item{facet_colors}{Optional character vector of background colors for the
+facet strips. If \code{NULL} (default), a neutral \code{"grey85"} is used.}
 
-\item{y_axis_title}{Title for the y-axis. Default \code{NULL}: it is built automatically.}
+\item{group_colors}{Optional character vector of colors, one per comparison
+on the x-axis, named after them or in their order. If \code{NULL} (default),
+the colorblind-friendly Okabe-Ito palette is used.}
+
+\item{x_axis_title}{Character. Title of the x-axis. Default
+\code{"Condition"}.}
+
+\item{y_axis_title}{Character. Title of the y-axis. If \code{NULL}
+(default), it is built automatically.}
 
 \item{partition}{Type of beta diversity to compute: \code{"shared"} (default),
 \code{"turnover"}, or \code{"nestedness"}. Case-insensitive.}
@@ -50,43 +65,49 @@ Must include a \code{SAMPLEID} column matching sample names in \code{table}.}
 \item{family}{Dissimilarity family for the turnover/nestedness partition:
 \code{"sorensen"} (default) or \code{"jaccard"}. Case-insensitive.}
 
-\item{stat}{Character or \code{NULL}. Statistical test to compare the
-boxes within each panel/facet. \code{"wilcox.test"} or \code{"t.test"}
-compare every pair, (\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"}
-give one global p-value for more than 3 factors
-Default \code{NULL} (no test shown).}
+\item{stat}{Character or \code{NULL}. Statistical test to compare the boxes
+within each panel. \code{"wilcox.test"} or \code{"t.test"} compare every
+pair of boxes, each with its own bracket and p-value
+(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"} give
+one global p-value per panel (\code{ggpubr::stat_compare_means()}). Default
+\code{NULL} (no test shown).}
 
-\item{p_adjust_method}{Multiple-comparison correction for the pairwise
-any method of \code{stats::p.adjust()}. Default
-\code{"holm"}; \code{"none"} shows the raw p-values.}
+\item{p_adjust_method}{Character. Multiple-testing correction for the
+pairwise tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied
+within each panel, any method of \code{stats::p.adjust()}. Default
+\code{"holm"}; \code{"none"} uses the raw p-values.}
 
-\item{show_x_labels}{Logical. If \code{TRUE} (default), x-axis tick labels
+\item{show_x_labels}{Logical. If \code{TRUE} (default), the x-axis labels
 are shown.}
 
-\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
-labels when \code{show_x_labels = TRUE}. Default \code{0} (horizontal);
-use e.g. \code{45} or \code{90} when comparison names are long enough to
-overlap.}
+\item{x_label_angle}{Numeric. Rotation (degrees) of the x-axis labels (when
+\code{show_x_labels = TRUE}). Default \code{0} (horizontal); use \code{45}
+or \code{90} if they overlap.}
 
-\item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold. Default \code{FALSE}.}
+\item{strip_text_bold}{Logical. If \code{TRUE}, the facet strip labels are
+bold. Default \code{FALSE}.}
 
 \item{strip_text_color}{Color of the facet strip labels, which sit on the
 \code{facet_colors} backgrounds. Default \code{"black"} (the default
 \code{facet_colors} is a light \code{"grey85"}; pass \code{"white"} if
 you supply darker \code{facet_colors}).}
 
-\item{aspect_ratio}{Numeric. Sets the aspect ratio (height/width) of each panel. Default \code{NULL} (automatic).}
+\item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
+Default \code{NULL} (automatic).}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the beta diversity table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the beta diversity table as
+a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table. Default \code{"betadiv_table.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"betadiv_table.txt"}.}
 }
 \value{
-A ggplot2 figure object.
+A ggplot object.
 }
 \description{
-This function calculates beta diversity (shared species, turnover, or nestedness)
-and generates a ggplot2 boxplot with facets.
+Computes the pairwise beta diversity between samples (shared features,
+turnover or nestedness) and plots it as box plots, one box per pair of
+groups.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -94,16 +115,15 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 beta_dissimilarity_plot(
-  table                = table,
-  metadata             = metadata,
-  comparison_condition1 = c("Rhizosphere_vs_Roots"),
-  condition1_col       = "Location",
-  condition2_col       = "Treatment",
-  x_axis_title         = "Samples",
-  partition            = "shared",
-  family               = "sorensen"
+    table = table,
+    metadata = metadata,
+    comparison_condition1 = c("Rhizosphere_vs_Roots"),
+    condition1_col = "Location",
+    condition2_col = "Treatment",
+    x_axis_title = "Samples",
+    partition = "shared",
+    family = "sorensen"
 )
 }

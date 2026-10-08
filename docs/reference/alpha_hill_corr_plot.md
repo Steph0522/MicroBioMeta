@@ -1,10 +1,8 @@
-# Alpha diversity correlation plot
+# Alpha diversity vs sequencing depth
 
-Computes Hill numbers (q = 0, 1, 2) per sample and plots each against
-sequencing depth (total reads) as a scatter plot with a fitted
-regression line and correlation coefficient, combining the three plots
-(q0, q1, q2) into a single figure via `patchwork`, which stays
-modifiable (e.g. `p & ggplot2::theme(...)` changes every panel).
+Computes the Hill numbers (q = 0, 1, 2) of each sample and plots each
+against the sequencing depth (total reads), with a regression line and
+the correlation coefficient, combining the three panels in one figure.
 
 ## Usage
 
@@ -13,7 +11,7 @@ alpha_hill_corr_plot(
   table,
   method = "spearman",
   facet_orientation = "horizontal",
-  title = "default",
+  title = "auto",
   panel_label_case = "upper",
   panel_labels = NULL,
   panel_label_bold = TRUE,
@@ -27,8 +25,8 @@ alpha_hill_corr_plot(
 
 - table:
 
-  A data frame or matrix with samples as columns and taxa as rows. The
-  first column must contain the OTUID, ASV, or species name.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - method:
 
@@ -39,27 +37,25 @@ alpha_hill_corr_plot(
 
 - facet_orientation:
 
-  Whether the three q0/q1/q2 panels are arranged in a row ("horizontal",
-  default) or a column ("vertical").
+  Character. `"horizontal"` (default) puts the three q0/q1/q2 panels in
+  a row; `"vertical"` in a column.
 
 - title:
 
-  Character. Title for the combined figure. `"default"` (default) shows
-  "Alpha diversity vs sequencing depth"; `"none"` shows no title; any
-  other string is used as-is.
+  Character. Plot title. `"auto"` (default) shows
+  `"Alpha diversity vs sequencing depth"`; `NULL` shows no title; any
+  other text is used as the title.
 
 - panel_label_case:
 
-  Character. Case of the auto-generated A/B/C panel tags. One of
-  `"upper"` (default, "A", "B", "C") or `"lower"` ("a", "b", "c").
-  Ignored if `panel_labels` is supplied.
+  Character. Case of the panel tags: `"upper"` (default; A, B, C) or
+  `"lower"` (a, b, c). Ignored if `panel_labels` is given.
 
 - panel_labels:
 
-  Optional character vector of 3 custom panel tags (one per q0/q1/q2
-  panel), used as-is (e.g. `c("(a)", "(b)", "(c)")` or
-  `c("a.", "b.", "c.")`) — for journal styles that `panel_label_case`
-  alone can't produce. Overrides `panel_label_case` when provided.
+  Optional character vector of custom panel tags, one per panel (q0, q1,
+  q2), used as-is (e.g. `c("(a)", "(b)", "(c)")`). Overrides
+  `panel_label_case`.
 
 - panel_label_bold:
 
@@ -68,22 +64,22 @@ alpha_hill_corr_plot(
 
 - save_table:
 
-  Logical. If `TRUE`, saves the Hill numbers table to disk. Default
-  `FALSE`.
+  Logical. If `TRUE`, saves the Hill numbers table as a tab-delimited
+  file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"hill.txt"`.
 
 - x_axis_title:
 
-  Title for the x-axis of the three panels. Default
+  Character. Title of the x-axis of the three panels. Default
   `"Sequencing depth (number of reads)"`.
 
 ## Value
 
-A ggplot object showing alpha diversity with Hill numbers.
+A `patchwork` object with the three q0/q1/q2 panels.
 
 ## Examples
 

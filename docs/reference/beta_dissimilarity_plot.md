@@ -1,10 +1,8 @@
-# Beta Diversity Boxplot
+# Beta diversity boxplot
 
-This function calculates beta diversity (shared species, turnover, or
-nestedness) and generates a ggplot2 boxplot with facets and custom
-coloring. The user only needs to specify the metadata column(s) to be
-used for comparisons; the function constructs the comparison pairs
-internally and removes duplicates (A_vs_B = B_vs_A).
+Computes the pairwise beta diversity between samples (shared features,
+turnover or nestedness) and plots it as box plots, one box per pair of
+groups.
 
 ## Usage
 
@@ -37,47 +35,50 @@ beta_dissimilarity_plot(
 
 - table:
 
-  Abundance matrix (samples in columns, species/features in rows).
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  Data frame with sample metadata. First column must match sample names
-  in table.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - comparison_condition1:
 
-  Optional vector of comparison labels for the first condition.
+  Optional character vector with the pairs of groups of `condition1_col`
+  to show (e.g. `"Rhizosphere_vs_Roots"`; the order of the two groups
+  does not matter). If `NULL` (default), all pairs are shown.
 
 - condition1_col:
 
-  Column name in metadata for the first condition.
+  Character. Name of the column in `metadata` whose groups are compared:
+  each box is one pair of groups.
 
 - condition2_col:
 
-  Optional column name in metadata for the second condition, used as
-  facet. Each facet keeps only pairs of samples that share that value
-  (e.g. two samples of treatment TC), so comparisons are split by the
-  condition they come from instead of mixing them.
+  Character. Name of a second column in `metadata`. If given, only pairs
+  of samples with the same value are kept, and the plot is faceted by
+  it. Optional; `NULL` (default) for none.
 
 - facet_colors:
 
-  Optional vector of colors for facet strips. Defaults to a neutral
-  `"grey85"` background.
+  Optional character vector of background colors for the facet strips.
+  If `NULL` (default), a neutral `"grey85"` is used.
 
 - group_colors:
 
-  Optional named vector of colors for x-axis groups. Defaults to the
-  package's colorblind-friendly Okabe-Ito palette (`.mbm_colors`,
-  orange/blue first).
+  Optional character vector of colors, one per comparison on the x-axis,
+  named after them or in their order. If `NULL` (default), the
+  colorblind-friendly Okabe-Ito palette is used.
 
 - x_axis_title:
 
-  Title for the x-axis.
+  Character. Title of the x-axis. Default `"Condition"`.
 
 - y_axis_title:
 
-  Title for the y-axis. Default `NULL`: built from `partition` (e.g.
-  `"Beta diversity (shared features)"`).
+  Character. Title of the y-axis. If `NULL` (default), it is built
+  automatically.
 
 - partition:
 
@@ -92,8 +93,8 @@ beta_dissimilarity_plot(
 - stat:
 
   Character or `NULL`. Statistical test to compare the boxes within each
-  panel/facet. `"wilcox.test"` or `"t.test"` compare every pair of
-  boxes, each with its own bracket and p-value
+  panel. `"wilcox.test"` or `"t.test"` compare every pair of boxes, each
+  with its own bracket and p-value
   ([`ggpubr::stat_pwc()`](https://rpkgs.datanovia.com/ggpubr/reference/geom_pwc.html));
   `"kruskal.test"` or `"anova"` give one global p-value per panel
   ([`ggpubr::stat_compare_means()`](https://rpkgs.datanovia.com/ggpubr/reference/stat_compare_means.html)).
@@ -101,27 +102,25 @@ beta_dissimilarity_plot(
 
 - p_adjust_method:
 
-  Multiple-comparison correction for the pairwise tests
-  (`stat = "wilcox.test"` or `"t.test"`), applied within each panel; any
+  Character. Multiple-testing correction for the pairwise tests
+  (`stat = "wilcox.test"` or `"t.test"`), applied within each panel, any
   method of
   [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
-  `"holm"`; `"none"` shows the raw p-values.
+  `"holm"`; `"none"` uses the raw p-values.
 
 - show_x_labels:
 
-  Logical. If `TRUE` (default), x-axis tick labels are shown. The
-  comparison groups are also in the legend, so set to `FALSE` to hide
-  the (often long) tick labels when that's redundant.
+  Logical. If `TRUE` (default), the x-axis labels are shown.
 
 - x_label_angle:
 
-  Numeric. Rotation (in degrees) of the x-axis tick labels when
-  `show_x_labels = TRUE`. Default `0` (horizontal); use e.g. `45` or
-  `90` when comparison names are long enough to overlap.
+  Numeric. Rotation (degrees) of the x-axis labels (when
+  `show_x_labels = TRUE`). Default `0` (horizontal); use `45` or `90` if
+  they overlap.
 
 - strip_text_bold:
 
-  Logical. If `TRUE`, facet strip labels are bold. Default `FALSE`.
+  Logical. If `TRUE`, the facet strip labels are bold. Default `FALSE`.
 
 - strip_text_color:
 
@@ -131,22 +130,22 @@ beta_dissimilarity_plot(
 
 - aspect_ratio:
 
-  Numeric. Sets the aspect ratio (height/width) of each panel. Default
-  `NULL` (automatic).
+  Numeric. Aspect ratio (height/width) of each panel. Default `NULL`
+  (automatic).
 
 - save_table:
 
-  Logical. If `TRUE`, saves the beta diversity table to disk. Default
-  `FALSE`.
+  Logical. If `TRUE`, saves the beta diversity table as a tab-delimited
+  file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table. Default
-  `"betadiv_table.txt"`.
+  Character. Name or path of the saved file (used when
+  `save_table = TRUE`). Default `"betadiv_table.txt"`.
 
 ## Value
 
-A ggplot2 figure object.
+A ggplot object.
 
 ## Examples
 
@@ -156,7 +155,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 beta_dissimilarity_plot(
   table                = table,

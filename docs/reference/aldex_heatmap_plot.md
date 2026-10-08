@@ -1,6 +1,8 @@
 # ALDEx2 differential abundance heatmap
 
-Runs ALDEx2 on a table and returns a ComplexHeatmap
+Runs ALDEx2 between two groups and shows the differentially abundant
+taxa as a heatmap (with ComplexHeatmap) of their CLR values, annotated
+with the effect size and the p-value.
 
 ## Usage
 
@@ -34,13 +36,13 @@ aldex_heatmap_plot(
 
 - metadata:
 
-  A data frame containing sample metadata. Must include a `SAMPLEID`
-  column matching sample names in `table`.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - group_col:
 
-  Character. Name of the column in `metadata` that defines the two
-  groups to compare. Exactly two unique values are required.
+  Character. Name of the column in `metadata` that defines the groups.
+  It must have exactly two groups.
 
 - effect_threshold:
 
@@ -50,16 +52,16 @@ aldex_heatmap_plot(
 
 - pval_threshold:
 
-  Numeric or NULL. Maximum p-value to retain (adjusted or not, depending
-  on `p_adjust_method`). Default `0.05`. If NULL only `effect_threshold`
-  is applied.
+  Numeric or `NULL`. P-value cutoff (after `p_adjust_method`) to keep
+  only significant taxa. Default `0.05`. If `NULL`, only
+  `effect_threshold` is applied.
 
 - p_adjust_method:
 
-  `"BH"` (default) or `"none"`: whether `pval_threshold` and the p-value
-  annotation use ALDEx2's Benjamini-Hochberg adjusted p-values
-  (`wi.eBH`) or the raw ones (`wi.ep`). ALDEx2 only computes the BH
-  correction.
+  Character. `"BH"` (default) or `"none"`: use the Benjamini-Hochberg
+  adjusted p-values of ALDEx2 (`wi.eBH`) or the raw ones (`wi.ep`) for
+  `pval_threshold` and the p-value annotation. ALDEx2 only computes the
+  BH correction.
 
 - cluster_rows:
 
@@ -75,7 +77,7 @@ aldex_heatmap_plot(
   options: `NULL` (default, same as `"viridis"`) uses a sequential
   colorblind-friendly viridis scale (the same family used in
   `abundance_heatmap_plot`), with range computed automatically from the
-  data; a preset name string — `"viridis"` or one of the diverging
+  data; a preset name string: `"viridis"` or one of the diverging
   presets `"BuOr"` (blue-orange), `"BuVm"` (blue-vermillion), `"BuPk"`
   (blue-pink), `"GnPk"` (green-pink); or a
   [`circlize::colorRamp2`](https://rdrr.io/pkg/circlize/man/colorRamp2.html)
@@ -101,26 +103,22 @@ aldex_heatmap_plot(
 
 - group_colors:
 
-  Optional character vector of colors for the difference barplot
-  annotation, either named after the conditions (e.g.
-  `c(Rhizosphere = "#56B4E9", Roots = "#009E73")`) or one color per
-  condition in the order they appear in `metadata[[group_col]]`. If
-  `NULL` (default) an orange/blue colorblind-friendly palette is used
-  (matching the col_sup/col_inf convention used elsewhere, e.g.
-  `aldex_volcano_plot`), cycling through the rest of the Okabe-Ito
-  palette as needed for more than two groups.
+  Optional character vector of colors for the group annotation, one per
+  group, named after the groups or in their order. If `NULL` (default),
+  the colorblind-friendly Okabe-Ito palette is used (orange/blue for two
+  groups).
 
 - save_table:
 
-  Logical. If `TRUE`, saves the underlying ALDEx2 results table
-  (filtered taxa, effect size, diff.btw, p-value category) to disk.
-  Default `FALSE`. `effect` and `diff.btw` are saved as ALDEx2 returns
-  them (alphabetically second group minus the first); the `seccion`
-  column says in which group each taxon is higher.
+  Logical. If `TRUE`, saves the ALDEx2 results of the plotted taxa
+  (effect size, `diff.btw` and p-value category) as a tab-delimited
+  file. Default `FALSE`. `effect` and `diff.btw` are saved as ALDEx2
+  returns them (second group in alphabetical order minus the first); the
+  `seccion` column says in which group each taxon is higher.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"aldex_pval_effect.txt"`.
 
 - draw:
@@ -145,7 +143,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 # group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data. Here taxa are

@@ -2,7 +2,7 @@
 % Please edit documentation in R/beta_ord_plot.R
 \name{beta_ord_plot}
 \alias{beta_ord_plot}
-\title{Beta diversity plot with multiple distance and ordination methods}
+\title{Beta diversity ordination plot}
 \usage{
 beta_ord_plot(
   table,
@@ -23,9 +23,11 @@ beta_ord_plot(
 )
 }
 \arguments{
-\item{table}{A data frame with abundances. The last column must contain taxonomy information.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame with sample metadata. The first column must contain the sample IDs.}
+\item{metadata}{A data frame containing sample metadata.
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
 \item{distance}{Distance method: one of \code{"euclidean"}, \code{"bray"},
 \code{"jaccard"}, \code{"sorensen"}, \code{"compositional"} (default; CLR/Aitchison via
@@ -34,7 +36,7 @@ Note: \code{ordination = "PCA"} requires \code{distance = "compositional"}.}
 
 \item{mc_samples}{Number of ALDEx2 Monte Carlo instances used when
 \code{distance = "compositional"}. With \code{1} (default) the clr values
-of one random instance are used: fast, but the result changes a little
+of one random instance are used: fast, but the result changes
 between runs (use \code{set.seed()}). With more, the clr values are
 averaged across instances, which gives an almost identical result in every
 run; \code{128} (ALDEx2's default) is suggested for final analyses, and
@@ -43,10 +45,9 @@ takes longer. Ignored for other distances.}
 \item{ordination}{Ordination method: one of \code{"PCA"} (default), \code{"PCoA"}, or
 \code{"NMDS"}. Case-insensitive.}
 
-\item{group_col}{Column in \code{metadata} to fill/color points. Its type
-decides the scale automatically: numeric columns (e.g. \code{"dist_km"})
-get a continuous scale; character/factor columns (e.g. \code{"estado2"})
-get a discrete qualitative scale.}
+\item{group_col}{Character. Name of the column in \code{metadata} used to
+color the points; if it is numeric, a continuous color scale is used.
+Optional; \code{NULL} (default) for no groups.}
 
 \item{palette}{Either a palette \strong{name} or a \strong{vector of fixed
 colors}; which scale it produces depends on whether \code{group_col} is
@@ -56,48 +57,47 @@ discrete or continuous.
 (default; qualitative colorblind-friendly palette), \code{"grey"},
 \code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
 \item Named, continuous \code{group_col}: \code{"viridis"} (default;
-\code{option = "cividis"}, matching the urban-distance map figure)
-or \code{"gradient"} (colorblind-friendly blue-to-orange two-color
-gradient).
+\code{option = "cividis"})
+or \code{"gradient"}
 \item Vector of colors, discrete \code{group_col}: used as-is, one
 color per level (\code{scale_*_manual}).
 \item Vector of colors, continuous \code{group_col}: used as gradient
 stops (\code{scale_*_gradientn}).
 }}
 
-\item{shape_col}{Optional column in \code{metadata} to shape points.}
+\item{shape_col}{Character. Name of the column in \code{metadata} used for
+the point shapes. Optional; \code{NULL} (default) for one shape.}
 
-\item{legend_title}{Optional legend title.}
+\item{legend_title}{Character. Title of the legend. If \code{NULL}
+(default), the name of \code{group_col} is used.}
 
-\item{taxonomy_db}{Character. Reference taxonomy database used to clean up
-the PCA loading-arrow labels: one of \code{"silva"} (default), \code{"gg"},
-\code{"unite"}, or \code{"Kraken2"} (case-insensitive). \code{"Kraken2"}
-additionally concatenates genus + species (e.g. \code{"Aspergillus
-flavus"}) instead of showing the species epithet alone. Ignored when
-\code{ordination != "PCA"}.}
+\item{taxonomy_db}{Character. Database the taxonomy strings come from:
+\code{"silva"} (default), \code{"gg2"} (Greengenes2, also \code{"gg"}),
+\code{"unite"} or \code{"Kraken2"} (also \code{"kraken"}). Case-insensitive.
+Only used when \code{ordination = "PCA"}.}
 
 \item{arrows_size}{Numeric. Size/length scaling factor for biplot arrows. Default \code{10}.}
 
-\item{top_n}{Number of top contributing taxa to display as arrows in PCA.}
+\item{top_n}{Integer. Number of taxa that contribute most to the PCA, drawn
+as arrows. Default \code{5}.}
 
-\item{title}{Plot title. \code{"auto"} (default) generates \code{"Ordination - distance"};
-\code{NULL} shows no title; any other string is used as-is.}
+\item{title}{Character. Plot title. \code{"auto"} (default) shows
+\code{"Ordination - <distance>"}; \code{NULL} shows no title; any other text
+is used as the title.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves a combined table of sample
-ordination scores and (when \code{ordination = "PCA"}) taxon loadings to
-disk, distinguished by a \code{type} column (\code{"site"} or
-\code{"loading"}). Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ordination scores and
+loadings (one table) as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.}
 }
 \value{
-A \code{ggplot2} object.
+A ggplot object.
 }
 \description{
-This function computes beta diversity using several distance metrics and ordination methods
-(PCA, PCoA, NMDS). It requires an abundance table with taxonomy, metadata, and allows customization
-of color and shape aesthetics. It also supports compositional transformation via ALDEx2.
+Computes the beta diversity between samples with several distance metrics
+(including the compositional CLR/Aitchison distance via ALDEx2) and plots a
+PCA, PCoA or NMDS ordination.
 }
 \details{
 With \code{distance = "compositional"} and \code{mc_samples = 1},
@@ -111,14 +111,13 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 beta_ord_plot(
-  table      = table,
-  metadata   = metadata,
-  distance   = "aitchison",
-  ordination = "NMDS",
-  group_col  = "Location",
-  top_n      = 5
+    table      = table,
+    metadata   = metadata,
+    distance   = "aitchison",
+    ordination = "NMDS",
+    group_col  = "Location",
+    top_n      = 5
 )
 }

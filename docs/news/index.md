@@ -11,6 +11,50 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+- [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md):
+  `top_n` now defaults to `15`, as in
+  [`abundance_bar_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_bar_plot.md)
+  (before it had no default).
+- [`beta_partition_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_partition_ord_plot.md):
+  `group_col` is required (the dispersion and the lines to the centroid
+  are computed per group; before, its `NULL` default failed with an
+  unclear error), and `table_filename` defaults to `"beta_partition"`
+  (files `beta_partition_jacs.txt`, `_jtus.txt`, `_jnes.txt`) instead of
+  `"SAMPLE1"`.
+- [`venn_plot()`](https://steph0522.github.io/MicroBioMeta/reference/venn_plot.md):
+  `merge_by` is required (its `NULL` default failed with an unclear
+  error).
+- `taxonomy_db` and `level` work the same way in every function that has
+  them: the same accepted values and aliases (`"silva"`, `"gg2"`/`"gg"`,
+  `"unite"`, `"Kraken2"`/`"kraken"`; kingdom to species,
+  case-insensitive) and a clear error for anything else.
+  [`ratios_bubble_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ratios_bubble_plot.md)
+  now names taxa like
+  [`abundance_bar_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_bar_plot.md)
+  at every level and for every database (before, `level = "species"`
+  only worked for Kraken2, and class, order and family kept the full
+  taxonomy string).
+  [`abundance_sankey_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_sankey_plot.md)
+  defaults to `taxonomy_db = "silva"`, like the other functions.
+- [`alpha_hill_corr_plot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_hill_corr_plot.md):
+  `title = "auto"` (default) shows the default title and `NULL` shows
+  none, as in
+  [`beta_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_ord_plot.md)
+  and
+  [`cca_rda_biplot()`](https://steph0522.github.io/MicroBioMeta/reference/cca_rda_biplot.md)
+  (before, `"default"` and `"none"`).
+- [`collapse_table()`](https://steph0522.github.io/MicroBioMeta/reference/collapse_table.md)
+  no longer takes `metadata` (it was only used to order the sample
+  columns): it keeps every sample column of the table, in its order.
+  Call it as `collapse_table(table, level = ...)`.
+- [`cca_rda_biplot()`](https://steph0522.github.io/MicroBioMeta/reference/cca_rda_biplot.md)
+  and
+  [`corr_env_abund_plot()`](https://steph0522.github.io/MicroBioMeta/reference/corr_env_abund_plot.md)
+  take the environmental variables directly from `metadata`: `env_data`
+  is now optional (default `NULL`) and `env_vars` names the metadata
+  columns to use, so there is no need to build a separate table with row
+  names and the same sample order. A separate `env_data` table still
+  works as before.
 - [`abundance_bar_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_bar_plot.md)
   and
   [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md)
@@ -18,12 +62,6 @@ SIGNIFICANT USER-VISIBLE CHANGES
   one bar or column per sample. Passing something that is not a table
   (e.g. R’s [`table()`](https://rdrr.io/r/base/table.html) function by
   mistake) now gives a clear error.
-- [`beta_test_table()`](https://steph0522.github.io/MicroBioMeta/reference/beta_test_table.md)
-  now returns the results as a data frame (columns `Df`, `SumOfSqs`,
-  `R2`, `F`, `Pr(>F)`, `Term`) instead of only an image. Printing it
-  draws the same table figure as before, and
-  [`ggplot2::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
-  returns the figure as a ggplot to combine with other plots or save it.
 - [`beta_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_ord_plot.md)
   and
   [`beta_test_table()`](https://steph0522.github.io/MicroBioMeta/reference/beta_test_table.md)
@@ -110,6 +148,14 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
 
+- [`beta_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_ord_plot.md)
+  works without `group_col` (all points in one color); before it failed
+  although `group_col` defaults to `NULL`.
+- Fixed the
+  [`ancombc_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ancombc_plot.md)
+  heatmap (3+ groups) centering its color scale on the middle of the LFC
+  range instead of 0, which made small negative log fold changes look
+  enriched. White is now LFC = 0, with symmetric limits.
 - Fixed a crash in
   [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md)
   when the phylum annotation contained `NA` values, when more than 8

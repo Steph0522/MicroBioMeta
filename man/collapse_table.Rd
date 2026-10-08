@@ -2,12 +2,10 @@
 % Please edit documentation in R/collapse_table.R
 \name{collapse_table}
 \alias{collapse_table}
-\title{Collapse table
-Collapse an OTU/ASV table by taxonomic level}
+\title{Collapse table}
 \usage{
 collapse_table(
   table,
-  metadata,
   level = "genus",
   rel_abun = FALSE,
   save_table = FALSE,
@@ -15,24 +13,22 @@ collapse_table(
 )
 }
 \arguments{
-\item{table}{A data frame containing an OTU/ASV abundance table. Must include
-a column with OTUID, one with taxonomy and sample columns with numeric counts.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.
+All the other columns are taken as samples, in the order of the table.}
 
-\item{metadata}{A data frame containing sample metadata. The first column is
-used to define the order of samples in the output table.}
+\item{level}{Character. Taxonomic level: \code{"kingdom"}, \code{"phylum"},
+\code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"} (default) or
+\code{"species"}. Case-insensitive.}
 
-\item{level}{Character. Taxonomic level to collapse to. One of
-\code{"kingdom"}, \code{"phylum"}, \code{"class"}, \code{"order"}, \code{"family"}, \code{"genus"}
-(default), or \code{"species"}. Case-insensitive.}
+\item{rel_abun}{Logical. If \code{TRUE}, converts the counts to relative
+abundance (\%) per sample. Default \code{FALSE}.}
 
-\item{rel_abun}{Logical. If TRUE, converts counts to relative abundance
-(\%) per sample.}
+\item{save_table}{Logical. If \code{TRUE}, saves the collapsed table as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the collapsed table to
-disk. Default \code{FALSE}.}
-
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"collapsed_table.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"collapsed_table.txt"}.}
 }
 \value{
 A list with two elements: \code{collapsed_table} (wide format,
@@ -40,25 +36,19 @@ one row per collapsed taxon) and \code{long_format} (the same data
 pivoted to one row per taxon/sample combination).
 }
 \description{
-Collapses an abundance table by a specified taxonomic rank (e.g. genus,
-family, phylum), summing counts across features that share the same taxonomy.
-Features with lower taxonomic resolution than the selected level are retained
-unchanged. Optionally converts counts to relative abundance and exports the
-collapsed table to a tab-delimited file.
+Collapses an abundance table to a taxonomic level (e.g. genus, family,
+phylum), summing the counts of the features that share the same taxonomy.
+Features not resolved to that level are kept as they are. Optionally
+converts the counts to relative abundance and saves the collapsed table.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
-metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
-
 collapse_table(
-  table      = table,
-  metadata   = metadata,
-  level      = "genus",
-  rel_abun   = FALSE,
-  save_table = FALSE
+    table      = table,
+    level      = "genus",
+    rel_abun   = FALSE,
+    save_table = FALSE
 )
 }

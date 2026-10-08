@@ -1,9 +1,7 @@
-# Generate a Venn diagram of taxa shared between sample groups
+# Venn diagram of taxa shared between sample groups
 
-This function creates a Venn diagram using either the `ggVennDiagram` or
-`ggenn` package based on the user's preference. It includes additional
-customization options like minimum prevalence filtering and custom group
-color scales (manual).
+Creates a Venn diagram of the taxa shared between groups of samples,
+with ggvenn or ggVennDiagram.
 
 ## Usage
 
@@ -11,7 +9,7 @@ color scales (manual).
 venn_plot(
   table,
   metadata,
-  merge_by = NULL,
+  merge_by,
   selected_samples = NULL,
   min_prevalence = 0,
   title = NULL,
@@ -26,32 +24,33 @@ venn_plot(
 
 - table:
 
-  A data frame containing taxonomic abundance data with a column named
-  `taxonomy` and subsequent columns as sample IDs.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame containing metadata with a column named `SAMPLEID` that
-  matches the sample columns in `table`.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - merge_by:
 
-  A character string specifying the metadata column by which to group
-  and merge samples.
+  Character. Name of the column in `metadata` that defines the groups
+  (one set of taxa per group).
 
 - selected_samples:
 
-  Optional character vector specifying a subset of sample IDs to include
-  in the analysis.
+  Optional character vector of the sample IDs to use. If `NULL`
+  (default), all samples are used.
 
 - min_prevalence:
 
-  Optional numeric value (0-1) to filter taxa based on minimum
-  prevalence across groups.
+  Numeric (0-1). Minimum fraction of the samples of a group where a
+  taxon must be present to count it in that group. Default `0` (present
+  in at least one sample).
 
 - title:
 
-  Optional character string for the title of the plot.
+  Character. Plot title. `NULL` (default) shows no title.
 
 - method:
 
@@ -60,23 +59,23 @@ venn_plot(
 
 - group_colors:
 
-  Optional vector of colors for the groups, either named after the
-  groups or in the order of the groups. If NULL, the colorblind-friendly
+  Optional character vector of colors, one per group, named after the
+  groups or in their order. If `NULL` (default), the colorblind-friendly
   Okabe-Ito palette is used.
 
 - save_table:
 
-  Logical. If `TRUE`, saves a long-format table of taxa membership per
-  group to disk. Default `FALSE`.
+  Logical. If `TRUE`, saves the taxa of each group (long format) as a
+  tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"venn_taxa_sets.txt"`.
 
 ## Value
 
-A ggplot object or other plot depending on the method.
+A ggplot object.
 
 ## Examples
 
@@ -86,7 +85,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SAMPLEID"
 
 venn_plot(
   table          = table,

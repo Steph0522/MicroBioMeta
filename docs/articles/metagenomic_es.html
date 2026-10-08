@@ -416,6 +416,11 @@ de arriba, de modo que la ordenación (vía el paquete <code>vegan</code>
 <span class="citation">(<a href="#ref-oksanen2024vegan"><span class="nocase">Oksanen et al.</span> 2024</a>)</span>) y la prueba
 PERMANOVA <span class="citation">(<a href="#ref-anderson2001permanova">Anderson 2001</a>)</span> evalúan la
 misma noción de disimilitud.</p>
+<p>El resultado es una figura de la tabla (un ggplot), así que se puede
+combinar con otros gráficos (p. ej. <code><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">cowplot::plot_grid()</a></code>) o
+guardar con <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code>. Usa
+<code>save_table = TRUE</code> para obtener también los resultados en un
+archivo de texto.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>                metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -501,24 +506,24 @@ encontrar los taxones que mejor predicen el polígono:</p>
 <h2 id="análisis-ambientales">Análisis ambientales<a class="anchor" aria-label="anchor" href="#an%C3%A1lisis-ambientales"></a>
 </h2>
 <p>Los metadatos ya traen las variables fisicoquímicas del suelo medidas
-para estas muestras, así que la tabla ambiental se construye de la misma
-forma que en la viñeta de amplicón:</p>
+para estas muestras, así que, como en la viñeta de amplicón, las
+variables se eligen por nombre con <code>env_vars</code> (no hace falta
+una tabla ambiental aparte):</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">env_table_meta</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">SAMPLEID</span>, <span class="va">pH</span><span class="op">:</span><span class="va">ARENA</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">remove_rownames</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"SAMPLEID"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">env_vars_meta</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pH</span><span class="op">:</span><span class="va">ARENA</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="correlación-entre-variables-ambientales-y-abundancia-taxonómica">Correlación entre variables ambientales y abundancia taxonómica<a class="anchor" aria-label="anchor" href="#correlaci%C3%B3n-entre-variables-ambientales-y-abundancia-taxon%C3%B3mica"></a>
 </h3>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
-<span>                    env_data <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>                    metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
+<span>                    env_vars <span class="op">=</span> <span class="va">env_vars_meta</span>,</span>
 <span>                    taxonomy_db <span class="op">=</span> <span class="st">"Kraken2"</span>,</span>
 <span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
 <span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in corr_env_abund_plot(table = table_meta, env_data = env_table_meta, :</span></span>
+<pre><code><span><span class="co">## Warning in corr_env_abund_plot(table = table_meta, metadata = metadata_meta, :</span></span>
 <span><span class="co">## Dropping non-numeric columns from `env_data`: type, type2</span></span></code></pre>
 <p><img src="metagenomic_es_files/figure-html/correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
@@ -526,11 +531,7 @@ forma que en la viñeta de amplicón:</p>
 <h3 id="ordenación-restringida-cca">Ordenación restringida (CCA)<a class="anchor" aria-label="anchor" href="#ordenaci%C3%B3n-restringida-cca"></a>
 </h3>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">env_table_meta</span> <span class="op">&lt;-</span> <span class="va">env_table_meta</span><span class="op">[</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_meta</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">env_table_meta</span><span class="op">)</span><span class="op">)</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>,</span>
-<span>               env_data <span class="op">=</span> <span class="va">env_table_meta</span>,</span>
 <span>               metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
 <span>               env_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"MO"</span>, <span class="st">"N"</span>, <span class="st">"P"</span>, <span class="st">"K"</span><span class="op">)</span>,</span>
 <span>               analysis <span class="op">=</span> <span class="st">"CCA"</span>,</span>
@@ -592,7 +593,7 @@ Biology</em> 20: 257. <a href="https://doi.org/10.1186/s13059-019-1891-0" class=
 <div class="section level2">
 <h2 id="información-de-la-sesión">Información de la sesión<a class="anchor" aria-label="anchor" href="#informaci%C3%B3n-de-la-sesi%C3%B3n"></a>
 </h2>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.6.1 (2026-06-24 ucrt)</span></span>
 <span><span class="co">## Platform: x86_64-w64-mingw32/x64</span></span>

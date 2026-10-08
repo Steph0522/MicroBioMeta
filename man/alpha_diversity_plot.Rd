@@ -2,7 +2,7 @@
 % Please edit documentation in R/alpha_diversity_plot.R
 \name{alpha_diversity_plot}
 \alias{alpha_diversity_plot}
-\title{Alpha diversity plot}
+\title{Alpha diversity indices plot}
 \usage{
 alpha_diversity_plot(
   table,
@@ -39,99 +39,115 @@ alpha_diversity_plot(
 )
 }
 \arguments{
-\item{table}{A data frame or matrix with samples as columns and taxa as rows.
-The first column must contain the OTUID, ASV, or species name.}
+\item{table}{A data frame with taxa in rows and samples in columns. The last
+column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame with metadata. The first column must match sample names in \code{table}.}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}).}
 
 \item{type}{Type of plot: \code{"boxplot"} (default) or \code{"barplot"}. Case-insensitive.}
 
-\item{stat}{Optional. Statistical test to compare the groups within each
-panel. \code{"wilcox.test"} or \code{"t.test"} compare every pair of
-groups, each with its own bracket and p-value (\code{ggpubr::stat_pwc()});
-\code{"kruskal.test"} or \code{"anova"} give one global p-value per panel.}
+\item{stat}{Character or \code{NULL}. Statistical test to compare the groups
+within each panel. \code{"wilcox.test"} or \code{"t.test"} compare every
+pair of groups, each with its own bracket and p-value
+(\code{ggpubr::stat_pwc()}); \code{"kruskal.test"} or \code{"anova"} give
+one global p-value per panel. Default \code{NULL} (no test shown).}
 
-\item{p_adjust_method}{Multiple-comparison correction for the pairwise
-tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied within
-each panel; any method of \code{stats::p.adjust()}. Default
-\code{"holm"}; \code{"none"} shows the raw p-values.
-Panel tags (A, B, C...) are added regardless of whether \code{stat} is set;
-\code{stat} only adds the p-value annotations on top of them.}
+\item{p_adjust_method}{Character. Multiple-testing correction for the
+pairwise tests (\code{stat = "wilcox.test"} or \code{"t.test"}), applied
+within each panel, any method of \code{stats::p.adjust()}. Default
+\code{"holm"}; \code{"none"} uses the raw p-values.}
 
-\item{x_col}{Column in \code{metadata} to be used on the x-axis.}
+\item{x_col}{Character. Name of the column in \code{metadata} for the
+x-axis.}
 
-\item{fill_col}{Column in \code{metadata} to define fill color.}
+\item{fill_col}{Character. Name of the column in \code{metadata} for the
+fill color.}
 
-\item{facet_by}{Optional. A metadata column to facet (e.g., Treatment, Site).}
+\item{facet_by}{Character. Name of the column in \code{metadata} to facet
+the plot by. Optional; \code{NULL} (default) for no facets.}
 
-\item{facet_by2}{Optional. A metadata column to double facet (e.g., Treatment, Site).}
+\item{facet_by2}{Character. Name of a second column in \code{metadata} to
+facet by. Optional; \code{NULL} (default) for none.}
 
-\item{facet_orientation}{Whether \code{facet_by} appears in columns
-(\code{"horizontal"}, default) or rows (\code{"vertical"}). Case-insensitive.}
+\item{facet_orientation}{Character. \code{"horizontal"} (default) puts the
+\code{facet_by} facets in columns; \code{"vertical"} in rows.
+Case-insensitive.}
 
-\item{palette}{Color palette to use: \code{"colorb"} (default, colorblind-friendly
-Okabe-Ito), \code{"grey"}, \code{"viridis"}, or \code{"brewer"}. Case-insensitive.}
+\item{palette}{Character. Palette name: \code{"colorb"} (default,
+colorblind-friendly Okabe-Ito), \code{"grey"}, \code{"viridis"} or
+\code{"brewer"}. Case-insensitive.}
 
-\item{group_colors}{A vector of custom colors. Overrides \code{palette} if provided.}
+\item{group_colors}{Optional character vector of colors, one per group,
+named after the groups or in their order. Overrides \code{palette}.}
 
-\item{n_cols}{Number of columns in facet wrap (optional).}
+\item{n_cols}{Integer. Number of columns of the facet grid. If \code{NULL}
+(default), set automatically.}
 
-\item{n_rows}{Number of rows in facet wrap (optional).}
+\item{n_rows}{Integer. Number of rows of the facet grid. If \code{NULL}
+(default), set automatically.}
 
-\item{strip_color}{Background color of facet strips. Default: "grey".}
+\item{strip_color}{Character. Background color of the facet strips (used
+when \code{facet_by} is set). Default \code{"grey"}.}
 
-\item{show_legend}{Logical. Show legend? Default: TRUE.}
+\item{show_legend}{Logical. If \code{TRUE} (default), the legend is shown.}
 
-\item{title}{Title for the entire plot.}
+\item{title}{Character. Plot title. \code{NULL} (default) shows no title.}
 
-\item{legend_title}{Title for the legend.}
+\item{legend_title}{Character. Title of the legend. If \code{NULL}
+(default), the legend has no title.}
 
-\item{legend_position}{Position of the legend: "bottom", "top", "right", or "left". Default is "bottom".}
+\item{legend_position}{Character. Position of the legend: \code{"bottom"}
+(default), \code{"top"}, \code{"right"} or \code{"left"}.}
 
-\item{x_axis_title}{Title for the x-axis.}
+\item{x_axis_title}{Character. Title of the x-axis. Default \code{NULL} (no
+title).}
 
-\item{y_axis_title}{Title for the y-axis.}
+\item{y_axis_title}{Character. Title of the y-axis. Default \code{"Diversity
+measure"}.}
 
-\item{free_y}{Logical. Whether y-axis scales are free across facets. Default \code{FALSE}.}
+\item{free_y}{Logical. If \code{TRUE}, the y-axis scale is free across
+facets. Default \code{FALSE}.}
 
-\item{rarefy_depth}{Integer. If provided, rarefies samples to this depth before diversity estimation. Default \code{NULL}.}
+\item{rarefy_depth}{Integer. If given, the samples are rarefied to this
+depth (\code{vegan::rrarefy()}) before computing the indices. Default
+\code{NULL} (no rarefaction).}
 
-\item{panel_label_case}{Character. Case of the auto-generated panel tags
-(A, B, C... added to every panel by default). One of
-\code{"upper"} (default, "A", "B", "C") or \code{"lower"} ("a", "b", "c").
-Ignored if \code{panel_labels} is supplied.}
+\item{panel_label_case}{Character. Case of the panel tags (added to every
+panel): \code{"upper"} (default; A, B, C) or \code{"lower"} (a, b, c).
+Ignored if \code{panel_labels} is given.}
 
 \item{panel_labels}{Optional character vector of custom panel tags, one per
-panel, used as-is (e.g. \code{c("(a)", "(b)", "(c)")} or
-\code{c("a.", "b.", "c.")}) — for journal styles that
-\code{panel_label_case} alone can't produce. Overrides
-\code{panel_label_case} when provided.}
+panel, used as-is (e.g. \code{c("(a)", "(b)", "(c)")}). Overrides
+\code{panel_label_case}.}
 
 \item{panel_label_bold}{Logical. If \code{TRUE} (default), panel tags are
 bold. Set to \code{FALSE} for journals that require plain (non-bold)
 panel tags.}
 
-\item{x_label_angle}{Numeric. Rotation (in degrees) of the x-axis tick
-labels. Default \code{0} (horizontal); use e.g. \code{45} or \code{90} when
-group names are long enough to overlap.}
+\item{x_label_angle}{Numeric. Rotation (degrees) of the x-axis labels.
+Default \code{0} (horizontal); use \code{45} or \code{90} if they overlap.}
 
-\item{strip_text_bold}{Logical. If \code{TRUE}, facet strip labels are bold.
-Default \code{FALSE} (plain).}
+\item{strip_text_bold}{Logical. If \code{TRUE}, the facet strip labels are
+bold. Default \code{FALSE}.}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
-Default \code{NULL}, which lets the panels fill the available space.}
+Default \code{NULL} (automatic).}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the diversity table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the diversity table as a
+tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table. Default \code{"diversity.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"diversity.txt"}.}
 }
 \value{
-A ggplot object showing alpha diversity with Hill numbers.
+A ggplot object.
 }
 \description{
-This function generates a boxplot or barplot to visualize alpha diversity Hill numbers (q = 0, 1, 2)
-for a given dataset, faceted by one or two categorical variables (e.g., sample type or treatment).
-It supports palette customization, faceting, and statistical comparison.
+Computes the Chao1, Shannon and Simpson indices of each sample and plots
+them as box plots or bar plots, one panel per index, optionally faceted by
+one or two metadata variables and with statistical comparisons between
+groups.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -139,7 +155,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SAMPLEID"
 
 # Panel tags (A/B/C) are always added (see panel_label_case and
 # panel_labels to customize their case/format); stat additionally

@@ -2,13 +2,14 @@
 % Please edit documentation in R/aldex_volcano_plot.R
 \name{aldex_volcano_plot}
 \alias{aldex_volcano_plot}
-\title{This function generates either an effect size plot or a volcano plot based on ALDEx2 results.}
+\title{ALDEx2 volcano or effect size plot}
 \usage{
 aldex_volcano_plot(
   table,
   metadata,
   group_col,
   type = "volcano",
+  mc_samples = 128,
   col_inf = "#56B4E9",
   col_sup = "#E69F00",
   threshold_lower = -1.5,
@@ -27,40 +28,55 @@ aldex_volcano_plot(
 )
 }
 \arguments{
-\item{table}{Data frame with count data; columns represent samples, rows represent features.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame containing metadata for the samples.}
+\item{metadata}{A data frame containing sample metadata.
+Its first column must hold the sample IDs (the column names of \code{table}).}
 
-\item{group_col}{Name of the column in \code{metadata} that contains the experimental conditions.}
+\item{group_col}{Character. Name of the column in \code{metadata} that
+defines the groups. It must have exactly two groups.}
 
 \item{type}{Type of plot to generate: \code{"volcano"} (default, volcano plot)
 or \code{"effect"} (effect-size plot). Case-insensitive.}
 
-\item{col_inf}{Color for points lower than threshold. Default \code{'#56B4E9'} (Okabe-Ito blue, matching the package's 2-group default).}
+\item{mc_samples}{Integer. Number of ALDEx2 Monte Carlo instances. Default
+\code{128} (ALDEx2's default), recommended for final analyses. Fewer
+instances are faster but the p-values and effect sizes are less stable (e.g.
+\code{16} for a quick look); call \code{set.seed()} before the function to
+make the result reproducible.}
 
-\item{col_sup}{Color for points higher than threshold. Default \code{'#E69F00'} (Okabe-Ito orange).}
+\item{col_inf}{Character. Color of the taxa lower in \code{cond}. Default
+\code{"#56B4E9"} (Okabe-Ito blue).}
 
-\item{threshold_lower}{Lower threshold for effect size/difference (x-axis).}
+\item{col_sup}{Character. Color of the taxa higher in \code{cond}. Default
+\code{"#E69F00"} (Okabe-Ito orange).}
 
-\item{threshold_upper}{Upper threshold for effect size/difference (x-axis).}
+\item{threshold_lower}{Numeric. Lower cutoff on the x-axis (effect size or
+difference between groups), drawn as a dashed line. Default \code{-1.5}.}
+
+\item{threshold_upper}{Numeric. Upper cutoff on the x-axis (effect size or
+difference between groups), drawn as a dashed line. Default \code{1.5}.}
 
 \item{cond}{Name of the reference condition for the plot labels: positive
 values on the x-axis mean higher in \code{cond}. Default \code{NULL}, the
 condition of the first sample in \code{table}.}
 
-\item{pval_threshold}{p-value cutoff for significance (default = 0.05), drawn
-as the dashed horizontal line.}
+\item{pval_threshold}{Numeric. P-value cutoff (after
+\code{p_adjust_method}), drawn as the dashed horizontal line. Default
+\code{0.05}.}
 
-\item{p_adjust_method}{\code{"BH"} (default) or \code{"none"}. With
-\code{"BH"}, the y-axis and the significance cutoff use ALDEx2's
-Benjamini-Hochberg adjusted p-values (\code{wi.eBH}), since thousands of
-taxa are tested at once; \code{"none"} uses the raw p-values
-(\code{wi.ep}). ALDEx2 only computes the BH correction, so no other
-method is available here.}
+\item{p_adjust_method}{Character. \code{"BH"} (default) or \code{"none"}:
+use the Benjamini-Hochberg adjusted p-values of ALDEx2 (\code{wi.eBH}) or
+the raw ones (\code{wi.ep}) for the y-axis and \code{pval_threshold}. ALDEx2
+only computes the BH correction.}
 
-\item{show_labels}{Logical. Whether to display "Higher/Lower in cond" labels (for "effect" plot only, default is TRUE).}
+\item{show_labels}{Logical. If \code{TRUE} (default), shows the "Higher
+in"/"Lower in" \code{cond} labels (only for \code{type = "effect"}).}
 
-\item{taxa}{Data frame with taxonomic information (required for "volcano" plot only).}
+\item{taxa}{Optional data frame with columns \code{Feature.ID} and
+\code{Taxon}, used to label the taxa. If \code{NULL} (default), the
+\code{taxonomy} column of \code{table} is used.}
 
 \item{x_axis_title, y_axis_title}{Titles for the x- and y-axis. Default
 \code{NULL}: \code{"Effect size"} (\code{"effect"}) or log2 fold change
@@ -74,18 +90,21 @@ significant points in the "volcano" plot. Default \code{3.5}.}
 keeping the volcano plot's text annotations to named taxa. Default
 \code{FALSE}.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 result table to disk. Default \code{FALSE}.
-\code{effect} and \code{diff.btw} are saved as ALDEx2 returns them
-(alphabetically second group minus the first); in the plot they are
-shown so that positive means higher in \code{cond}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the ALDEx2 results table as
+a tab-delimited file. Default \code{FALSE}. \code{effect} and
+\code{diff.btw} are saved as ALDEx2 returns them (second group in
+alphabetical order minus the first); in the plot, positive means higher in
+\code{cond}.}
 
-\item{table_filename}{Character. File path/name for the saved table. Default \code{"aldex_pval_effect.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.}
 }
 \value{
-A \code{ggplot} object with the selected plot.
+A ggplot object with the selected plot.
 }
 \description{
-This function generates either an effect size plot or a volcano plot based on ALDEx2 results.
+Runs ALDEx2 between two groups and plots the results as a volcano plot or an
+effect size plot.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -93,20 +112,20 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 # group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data
 aldex_volcano_plot(
-  table           = table,
-  metadata        = metadata,
-  group_col        = "Location",
-  type            = "effect",
-  col_inf         = "#56B4E9",
-  col_sup         = "#E69F00",
-  threshold_lower = -0.5,
-  threshold_upper = 0.5,
-  cond            = "Rhizosphere",
-  show_labels     = TRUE
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    mc_samples = 16,
+    type = "effect",
+    col_inf = "#56B4E9",
+    col_sup = "#E69F00",
+    threshold_lower = -0.5,
+    threshold_upper = 0.5,
+    cond = "Rhizosphere",
+    show_labels = TRUE
 )
 }

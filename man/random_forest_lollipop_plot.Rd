@@ -2,7 +2,7 @@
 % Please edit documentation in R/random_forest_lollipop_plot.R
 \name{random_forest_lollipop_plot}
 \alias{random_forest_lollipop_plot}
-\title{Generate a Lollipop plot from random forest results}
+\title{Random forest feature importance plot}
 \usage{
 random_forest_lollipop_plot(
   table,
@@ -18,34 +18,46 @@ random_forest_lollipop_plot(
 )
 }
 \arguments{
-\item{table}{Data frame where columns are samples and rows are ASVs or taxa.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{Data frame containing sample metadata.}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}).}
 
-\item{top_n}{Number of top features to plot (default = 15).}
+\item{top_n}{Integer. Number of most important features to show. Default
+\code{15}.}
 
-\item{size}{the size of the point of the lollipop.}
+\item{size}{Numeric. Size of the lollipop points. Default \code{8}.}
 
-\item{variable_to_predict}{Variable to predict from the metadata.}
+\item{variable_to_predict}{Character. Name of the column in \code{metadata}
+to predict (a categorical variable).}
 
-\item{group_colors}{Custom color palette (optional).}
+\item{group_colors}{Optional character vector of colors, one per phylum
+(recycled if shorter). If \code{NULL} (default), the package palette is
+used.}
 
-\item{title}{Main title for the figure.}
+\item{title}{Character. Plot title. \code{NULL} (default) shows no title.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the feature-importance
-table to disk. Default \code{FALSE}.}
+table as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"randomforest_importance.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"randomforest_importance.txt"}.}
 
-\item{x_axis_title}{Title for the horizontal (importance) axis. Default
-\code{"Feature importance (MeanDecreaseGini)"}.}
+\item{x_axis_title}{Character. Title of the x-axis (feature importance).
+Default \code{"Feature importance (MeanDecreaseGini)"}.}
 }
 \value{
-A lollipop plot showing top important features from random forest analysis.
+A ggplot object.
 }
 \description{
-Generate a Lollipop plot from random forest results
+Fits a random forest (randomForest) that predicts a metadata variable from
+the abundances, and plots the most important features as a lollipop plot
+colored by phylum.
+}
+\details{
+The random forest is random; call \code{set.seed()} before the
+function to make the result reproducible.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -53,13 +65,12 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 random_forest_lollipop_plot(
-  table               = table,
-  metadata            = metadata,
-  variable_to_predict = "Location",
-  top_n               = 20,
-  size                = 6
+    table               = table,
+    metadata            = metadata,
+    variable_to_predict = "Location",
+    top_n               = 20,
+    size                = 6
 )
 }

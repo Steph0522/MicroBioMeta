@@ -2,9 +2,7 @@
 
 Computes relative abundances from a taxonomic abundance table and
 compares two experimental conditions by calculating a directional
-abundance ratio for each taxon. Taxa are ranked by mean abundance and
-visualized as a bubble plot, where bubble size represents mean relative
-abundance and color indicates the dominant condition.
+abundance ratio for each taxon.
 
 ## Usage
 
@@ -30,19 +28,18 @@ ratios_bubble_plot(
 
 - table:
 
-  A data frame containing a taxonomic abundance table with a taxonomy
-  column and sample columns with numeric counts.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - metadata:
 
-  A data frame containing sample metadata. The first column must
-  correspond to sample IDs and include a column defining the
-  experimental conditions.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - group_col:
 
-  Character. Name of the metadata column defining the experimental
-  condition.
+  Character. Name of the column in `metadata` that defines the groups.
+  `condition_A` and `condition_B` are two of its values.
 
 - condition_A:
 
@@ -54,44 +51,48 @@ ratios_bubble_plot(
 
 - taxonomy_db:
 
-  Character. Taxonomic database used for annotation.
-  ("silva","Kraken2").
+  Character. Database the taxonomy strings come from: `"silva"`
+  (default), `"gg2"` (Greengenes2, also `"gg"`), `"unite"` or
+  `"Kraken2"` (also `"kraken"`). Case-insensitive.
 
 - top_n:
 
-  Integer. Number of taxa with the highest mean abundance to display.
+  Integer. Number of taxa with the highest mean abundance to show.
+  Default `30`.
 
 - level:
 
-  Character. Taxonomic level to use for comparison (e.g. "phylum",
-  "genus", "species").
+  Character. Taxonomic level: `"kingdom"`, `"phylum"`, `"class"`,
+  `"order"`, `"family"`, `"genus"` (default) or `"species"`.
+  Case-insensitive.
 
 - x_axis_title:
 
-  Character. Label for the x-axis (taxon names).
+  Character. Title of the x-axis (taxon names). Default `"Taxon"`.
 
 - legend_title:
 
-  Character. Title for the fill legend and the axis showing the dominant
-  condition. Defaults to `group_col` when `NULL` (default).
+  Character. Title of the legend and of the axis showing the dominant
+  condition. If `NULL` (default), the name of `group_col` is used.
 
 - group_colors:
 
-  Character vector of colors used to represent the dominant condition.
+  Optional character vector of two colors, one per condition. If `NULL`
+  (default), the package's orange/blue pair is used.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the underlying ratio table to disk. Default
-  `FALSE`.
+  Logical. If `TRUE`, saves the ratio table as a tab-delimited file.
+  Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"ratios_bubble_table.txt"`.
 
 ## Value
 
-A ggplot2 object showing abundance ratios between the two conditions.
+A ggplot object.
 
 ## Examples
 
@@ -101,7 +102,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 ratios_bubble_plot(
   table         = table,

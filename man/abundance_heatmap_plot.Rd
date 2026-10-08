@@ -16,7 +16,7 @@ abundance_heatmap_plot(
   name_legend_condition1 = NULL,
   name_legend_condition2 = NULL,
   name_legend_condition3 = NULL,
-  top_n,
+  top_n = 15,
   exclude_unclassified = TRUE,
   cluster = TRUE,
   show_column_names = TRUE,
@@ -38,69 +38,77 @@ The last column must be named \code{taxonomy}, containing full taxonomic strings
 must hold the sample IDs (the column names of \code{table}). Optional: if
 \code{NULL} (default), the heatmap has no sample annotations.}
 
-\item{condition1}{Variable of the first horizontal annotation}
+\item{condition1}{Character. Name of the column in \code{metadata} for the
+first column annotation. Optional; \code{NULL} (default) for none.}
 
-\item{condition2}{Variable of the second horizontal annotation}
+\item{condition2}{Character. Name of the column in \code{metadata} for the
+second column annotation. Optional; \code{NULL} (default) for none.}
 
-\item{condition3}{Variable of the third horizontal annotation}
+\item{condition3}{Character. Name of the column in \code{metadata} for the
+third column annotation. Optional; \code{NULL} (default) for none.}
 
-\item{colors_condition1}{Color vector for condition 1. If named, colors are
-matched to the condition values by name (e.g.
+\item{colors_condition1}{Optional character vector of colors for
+\code{condition1}. If named, colors are matched to the values by name (e.g.
 \code{c(Roots = "#009E73", Rhizosphere = "#56B4E9")}); otherwise they are
-assigned in alphabetical order of the values. Defaults to the
-colorblind-friendly Okabe-Ito palette.}
+assigned in alphabetical order of the values. If \code{NULL} (default), the
+colorblind-friendly Okabe-Ito palette is used.}
 
-\item{colors_condition2}{Color vector for condition 2 (same rules as
-\code{colors_condition1}). Defaults to colors from the colorblind-friendly
-"Safe" palette (rose, indigo, olive...), which contrast with the
-Okabe-Ito colors of condition 1.}
+\item{colors_condition2}{Optional character vector of colors for
+\code{condition2} (same rules as \code{colors_condition1}). If \code{NULL}
+(default), colors of the colorblind-friendly "Safe" palette are used, which
+contrast with those of \code{condition1}.}
 
-\item{colors_condition3}{Color vector for condition 3 (same rules as
-\code{colors_condition1}).}
+\item{colors_condition3}{Optional character vector of colors for
+\code{condition3} (same rules as \code{colors_condition1}). If \code{NULL}
+(default), a third set of colorblind-friendly colors is used.}
 
-\item{name_legend_condition1}{Title assigned to legend of condition 1}
+\item{name_legend_condition1}{Character. Title of the legend of
+\code{condition1}. If \code{NULL} (default), the name of \code{condition1}
+is used.}
 
-\item{name_legend_condition2}{Title assigned to legend of condition 2}
+\item{name_legend_condition2}{Character. Title of the legend of
+\code{condition2}. If \code{NULL} (default), the name of \code{condition2}
+is used.}
 
-\item{name_legend_condition3}{Title assigned to legend of condition 3}
+\item{name_legend_condition3}{Character. Title of the legend of
+\code{condition3}. If \code{NULL} (default), the name of \code{condition3}
+is used.}
 
-\item{top_n}{Number of features to plot.}
+\item{top_n}{Integer. Number of most abundant features to show. Default
+\code{15}.}
 
-\item{exclude_unclassified}{Logical. If \code{TRUE} (default), taxa with
-no recognizable classification at any level (labeled "Unclassified")
-are dropped \emph{before} selecting the \code{top_n} most abundant
-features, so \code{top_n} always returns identified taxa. Set to
-\code{FALSE} to keep the previous behavior and allow "Unclassified"
-rows into the plot.}
+\item{exclude_unclassified}{Logical. If \code{TRUE} (default), taxa with no
+classification at any level ("Unclassified") are dropped before selecting
+the \code{top_n} most abundant features, so all the rows are identified
+taxa. Use \code{FALSE} to keep them.}
 
-\item{cluster}{Logical indicating whether to cluster rows (TRUE) or order by abundance (FALSE)}
+\item{cluster}{Logical. If \code{TRUE} (default), the rows are clustered; if
+\code{FALSE}, they are ordered by abundance.}
 
-\item{show_column_names}{Logical indicating whether to show column names (TRUE) or not (FALSE)}
+\item{show_column_names}{Logical. If \code{TRUE} (default), the sample names
+are shown.}
 
-\item{cell_size}{Numeric or \code{NULL}. Side, in millimeters, of each
-(square) heatmap cell.}
+\item{cell_size}{Numeric. Side, in millimeters, of each (square) cell. If
+\code{NULL} (default), it is set automatically.}
 
-\item{annotation_height}{Numeric or \code{NULL}. Height, in millimeters,
-of each column annotation bar (condition1/condition2/condition3).}
+\item{annotation_height}{Numeric. Height, in millimeters, of each column
+annotation bar (\code{condition1}, \code{condition2}, \code{condition3}). If
+\code{NULL} (default), the cell height is used.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves the underlying abundance
-table to disk. Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the abundance table shown
+in the heatmap as a tab-delimited file. Default \code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"abundance_heatmap_table.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"abundance_heatmap_table.txt"}.}
 
-\item{feature_prefix}{Character. Prefix used to label each row in the
-heatmap, immediately before the row number (e.g. \code{feature_prefix =
-"ASV"} labels rows \code{"ASV1"}, \code{"ASV2"}...). Default \code{""}
-(rows are labeled just \code{"1"}, \code{"2"}...) since the right label
-depends on how \code{table}'s features were generated - set it to
-whatever fits (\code{"ASV"}, \code{"OTU"}, \code{"Taxon"},
-\code{"Species"}...).}
+\item{feature_prefix}{Character. Prefix of the row labels, before the row
+number (e.g. \code{feature_prefix = "ASV"} labels the rows \code{"ASV1"},
+\code{"ASV2"}...). Default \code{""} (rows labeled \code{"1"},
+\code{"2"}...).}
 
-\item{max_label_length}{Integer or \code{NULL}. Taxon names longer than
-this many characters are cut with an ellipsis in the row labels, so a
-single long name doesn't squeeze the heatmap. Use \code{NULL} to never
-cut. Default \code{35}.}
+\item{max_label_length}{Integer. Taxon names longer than this many
+characters are cut with an ellipsis in the row labels. \code{NULL} never
+cuts them. Default \code{35}.}
 
 \item{composite_names}{Logical. If \code{TRUE} (default), SILVA composite
 names of three or more genera are labeled with the last genus plus
@@ -122,45 +130,47 @@ draws the heatmap; it can also be combined with other plots (e.g.
 \code{cowplot::plot_grid()}, \code{patchwork::wrap_elements()}).
 }
 \description{
-Creates a heatmap using ComplexHeatmap to visualize the relative abundance of features or ASV's.
+Creates a heatmap (with ComplexHeatmap) of the relative abundance of the
+most abundant features (ASVs, OTUs or taxa).
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 abundance_heatmap_plot(
-  table                  = table,
-  metadata               = metadata,
-  condition1             = "Location",
-  condition2             = "Treatment",
-  condition3             = "Plot",
-  top_n                  = 50,
-  cluster                = TRUE,
-  show_column_names      = FALSE,
-  name_legend_condition1 = "Location",
-  name_legend_condition2 = "Treatment",
-  name_legend_condition3 = "Plot"
+    table                  = table,
+    metadata               = metadata,
+    condition1             = "Location",
+    condition2             = "Treatment",
+    condition3             = "Plot",
+    top_n                  = 50,
+    cluster                = TRUE,
+    show_column_names      = FALSE,
+    name_legend_condition1 = "Location",
+    name_legend_condition2 = "Treatment",
+    name_legend_condition3 = "Plot"
 )
 \donttest{
 heat <- abundance_heatmap_plot(
-  table                  = table,
-  metadata               = metadata,
-  condition1             = "Location",
-  condition2             = "Treatment",
-  top_n                  = 20,
-  show_column_names      = FALSE,
-  colors_condition1      = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
-  colors_condition2      = c(Control          = "#CC6677",
-                             Moderate_drought = "#332288",
-                             Severe_drought   = "#999933"),
-  name_legend_condition1 = "Compartment",
-  feature_prefix         = "ASV",
-  max_label_length       = 30,
-  draw                   = FALSE
+    table = table,
+    metadata = metadata,
+    condition1 = "Location",
+    condition2 = "Treatment",
+    top_n = 20,
+    show_column_names = FALSE,
+    colors_condition1 = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+    colors_condition2 = c(
+        Control = "#CC6677",
+        Moderate_drought = "#332288",
+        Severe_drought = "#999933"
+    ),
+    name_legend_condition1 = "Compartment",
+    feature_prefix = "ASV",
+    max_label_length = 30,
+    draw = FALSE
 )
-heat  # printing the returned object draws the heatmap
+heat # printing the returned object draws the heatmap
 }
 }

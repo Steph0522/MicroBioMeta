@@ -2,11 +2,11 @@
 % Please edit documentation in R/cca_rda_biplot.R
 \name{cca_rda_biplot}
 \alias{cca_rda_biplot}
-\title{CCA/RDA Biplot with ggplot2}
+\title{CCA/RDA biplot}
 \usage{
 cca_rda_biplot(
   table,
-  env_data,
+  env_data = NULL,
   env_vars,
   method = "hell",
   metadata,
@@ -25,61 +25,76 @@ cca_rda_biplot(
 )
 }
 \arguments{
-\item{table}{A data frame of species abundances with taxa as rows and
-samples as columns, plus a final \code{taxonomy} column (same format as
-the rest of the package). Internally transposed to samples-as-rows for
-the ordination.}
+\item{table}{A data frame with taxa in rows and samples in columns.
+The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{env_data}{A data frame of environmental variables, with row names
-matching the sample names in \code{table}.}
+\item{env_data}{Optional data frame of environmental variables, with row
+names matching the sample names in \code{table}. Default \code{NULL}:
+the variables named in \code{env_vars} are taken from \code{metadata}.
+Use it only when the variables are in a separate table.}
 
-\item{env_vars}{A character vector with the names of environmental variables to include in the analysis.}
+\item{env_vars}{A character vector with the names of environmental variables
+(columns of \code{metadata}, or of \code{env_data} if given) to include in
+the analysis.}
 
-\item{method}{Transformation method passed to \code{decostand} (default is \code{"hell"} for Hellinger).}
+\item{method}{Character. Transformation of the abundances, passed to
+\code{vegan::decostand()}. Default \code{"hell"} (Hellinger).}
 
-\item{metadata}{Data frame with sample metadata; its first column must hold the sample IDs.}
+\item{metadata}{A data frame containing sample metadata.
+Its first column must hold the sample IDs (the column names of \code{table}).
+The environmental variables can be columns of \code{metadata} (see \code{env_vars}).}
 
-\item{group_col}{Optional name of the column in \code{metadata} used to define sample groups.}
+\item{group_col}{Character. Name of the column in \code{metadata} that
+defines the groups. Used to color the samples. Optional; \code{NULL}
+(default) for no groups.}
 
-\item{group_colors}{Optional named vector of colors to use for each group.}
+\item{group_colors}{Optional character vector of colors, one per group,
+named after the groups or in their order. If \code{NULL} (default), the
+colorblind-friendly Okabe-Ito palette is used.}
 
-\item{legend_title}{Optional custom title for the group legend.}
+\item{legend_title}{Character. Title of the legend. If \code{NULL}
+(default), the name of \code{group_col} is used.}
 
-\item{scale_env}{Logical; whether to scale environmental variables (default is \code{TRUE}).}
+\item{scale_env}{Logical. If \code{TRUE} (default), the environmental
+variables are scaled (without centering) before the analysis.}
 
-\item{pval_threshold}{P-value threshold for selecting significant environmental variables (default is \code{0.05}).}
+\item{pval_threshold}{Numeric. P-value cutoff (after \code{p_adjust_method})
+to draw only the significant environmental variables. Default \code{0.05}.}
 
-\item{p_adjust_method}{Multiple-comparison correction applied to the
-\code{vegan::envfit()} p-values of the environmental variables before
-\code{pval_threshold}; any method of \code{stats::p.adjust()}. Default
-\code{"none"} (raw p-values, the usual choice with few variables).}
+\item{p_adjust_method}{Character. Multiple-testing correction for the
+\code{vegan::envfit()} p-values of the environmental variables, any method
+of \code{stats::p.adjust()}. Default \code{"none"} (raw p-values), the usual
+choice with few variables.}
 
-\item{show_all_env_vectors}{Logical; if TRUE, plot all environmental vectors regardless of significance.}
+\item{show_all_env_vectors}{Logical. If \code{TRUE}, all the environmental
+variables are drawn, significant or not. Default \code{FALSE}.}
 
 \item{analysis}{Constrained ordination method: \code{"CCA"} (default, Canonical
 Correspondence Analysis) or \code{"RDA"} (Redundancy Analysis). Case-insensitive.}
 
-\item{scale_arrows}{Numeric value to scale environmental vectors in the plot.}
+\item{scale_arrows}{Numeric. Multiplies the length of the environmental
+arrows; it only changes how they are drawn. Default \code{1}.}
 
-\item{title}{Plot title. \code{"auto"} (default) generates \code{"CCA Biplot"} or \code{"RDA Biplot"};
-\code{NULL} shows no title; any other string is used as-is.}
+\item{title}{Character. Plot title. \code{"auto"} (default) shows \code{"CCA
+Biplot"} or \code{"RDA Biplot"}; \code{NULL} shows no title; any other text
+is used as the title.}
 
-\item{save_table}{Logical. If \code{TRUE}, saves a combined table of sample
-scores and environmental vector loadings to disk, distinguished by a
-\code{type} column (\code{"site"} or \code{"vector"}). Default \code{FALSE}.}
+\item{save_table}{Logical. If \code{TRUE}, saves the sample scores and
+environmental vector loadings (one table, with a \code{type} column:
+\code{"site"} or \code{"vector"}) as a tab-delimited file. Default
+\code{FALSE}.}
 
-\item{table_filename}{Character. File path/name for the saved table (used
-when \code{save_table = TRUE}). Default \code{"cca_rda_scores.txt"}.}
+\item{table_filename}{Character. Name or path of the saved file (used when
+\code{save_table = TRUE}). Default \code{"cca_rda_scores.txt"}.}
 }
 \value{
-A \code{ggplot} object displaying the biplot with sample scores and
-environmental vectors. The axis titles show the percentage of the total
-variance (inertia) explained by each constrained axis.
+A ggplot object with the biplot. The axis titles show the percentage
+of the variance (inertia) explained by each constrained axis.
 }
 \description{
-Performs Canonical Correspondence Analysis (CCA) or Redundancy Analysis (RDA) based on a species abundance table
-and selected environmental variables, returning a biplot with ggplot2 that visualizes
-sample scores and environmental vectors.
+Performs a Canonical Correspondence Analysis (CCA) or a Redundancy Analysis
+(RDA) of the abundance table constrained by environmental variables, and
+plots the samples and the environmental vectors as a biplot.
 }
 \details{
 The p-values of the environmental vectors come from
@@ -92,19 +107,14 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
-# env_data must have rownames matching the sample names in `table`
-env_data <- metadata
-rownames(env_data) <- env_data$SampleID
-
+# The environmental variables are columns of metadata, chosen with env_vars
 cca_rda_biplot(
-  table                = table,
-  env_data             = env_data,
-  metadata             = metadata,
-  env_vars             = c("pH", "TOC", "FW", "Root_FW", "DW"),
-  analysis             = "RDA",
-  show_all_env_vectors = TRUE,
-  group_col            = "Location"
+    table                = table,
+    metadata             = metadata,
+    env_vars             = c("pH", "TOC", "FW", "Root_FW", "DW"),
+    analysis             = "RDA",
+    show_all_env_vectors = TRUE,
+    group_col            = "Location"
 )
 }

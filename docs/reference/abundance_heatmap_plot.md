@@ -1,7 +1,7 @@
 # Heatmap of relative abundance
 
-Creates a heatmap using ComplexHeatmap to visualize the relative
-abundance of features or ASV's.
+Creates a heatmap (with ComplexHeatmap) of the relative abundance of the
+most abundant features (ASVs, OTUs or taxa).
 
 ## Usage
 
@@ -18,7 +18,7 @@ abundance_heatmap_plot(
   name_legend_condition1 = NULL,
   name_legend_condition2 = NULL,
   name_legend_condition3 = NULL,
-  top_n,
+  top_n = 15,
   exclude_unclassified = TRUE,
   cluster = TRUE,
   show_column_names = TRUE,
@@ -48,102 +48,106 @@ abundance_heatmap_plot(
 
 - condition1:
 
-  Variable of the first horizontal annotation
+  Character. Name of the column in `metadata` for the first column
+  annotation. Optional; `NULL` (default) for none.
 
 - condition2:
 
-  Variable of the second horizontal annotation
+  Character. Name of the column in `metadata` for the second column
+  annotation. Optional; `NULL` (default) for none.
 
 - condition3:
 
-  Variable of the third horizontal annotation
+  Character. Name of the column in `metadata` for the third column
+  annotation. Optional; `NULL` (default) for none.
 
 - colors_condition1:
 
-  Color vector for condition 1. If named, colors are matched to the
-  condition values by name (e.g.
+  Optional character vector of colors for `condition1`. If named, colors
+  are matched to the values by name (e.g.
   `c(Roots = "#009E73", Rhizosphere = "#56B4E9")`); otherwise they are
-  assigned in alphabetical order of the values. Defaults to the
-  colorblind-friendly Okabe-Ito palette.
+  assigned in alphabetical order of the values. If `NULL` (default), the
+  colorblind-friendly Okabe-Ito palette is used.
 
 - colors_condition2:
 
-  Color vector for condition 2 (same rules as `colors_condition1`).
-  Defaults to colors from the colorblind-friendly "Safe" palette (rose,
-  indigo, olive...), which contrast with the Okabe-Ito colors of
-  condition 1.
+  Optional character vector of colors for `condition2` (same rules as
+  `colors_condition1`). If `NULL` (default), colors of the
+  colorblind-friendly "Safe" palette are used, which contrast with those
+  of `condition1`.
 
 - colors_condition3:
 
-  Color vector for condition 3 (same rules as `colors_condition1`).
+  Optional character vector of colors for `condition3` (same rules as
+  `colors_condition1`). If `NULL` (default), a third set of
+  colorblind-friendly colors is used.
 
 - name_legend_condition1:
 
-  Title assigned to legend of condition 1
+  Character. Title of the legend of `condition1`. If `NULL` (default),
+  the name of `condition1` is used.
 
 - name_legend_condition2:
 
-  Title assigned to legend of condition 2
+  Character. Title of the legend of `condition2`. If `NULL` (default),
+  the name of `condition2` is used.
 
 - name_legend_condition3:
 
-  Title assigned to legend of condition 3
+  Character. Title of the legend of `condition3`. If `NULL` (default),
+  the name of `condition3` is used.
 
 - top_n:
 
-  Number of features to plot.
+  Integer. Number of most abundant features to show. Default `15`.
 
 - exclude_unclassified:
 
-  Logical. If `TRUE` (default), taxa with no recognizable classification
-  at any level (labeled "Unclassified") are dropped *before* selecting
-  the `top_n` most abundant features, so `top_n` always returns
-  identified taxa. Set to `FALSE` to keep the previous behavior and
-  allow "Unclassified" rows into the plot.
+  Logical. If `TRUE` (default), taxa with no classification at any level
+  ("Unclassified") are dropped before selecting the `top_n` most
+  abundant features, so all the rows are identified taxa. Use `FALSE` to
+  keep them.
 
 - cluster:
 
-  Logical indicating whether to cluster rows (TRUE) or order by
-  abundance (FALSE)
+  Logical. If `TRUE` (default), the rows are clustered; if `FALSE`, they
+  are ordered by abundance.
 
 - show_column_names:
 
-  Logical indicating whether to show column names (TRUE) or not (FALSE)
+  Logical. If `TRUE` (default), the sample names are shown.
 
 - cell_size:
 
-  Numeric or `NULL`. Side, in millimeters, of each (square) heatmap
-  cell.
+  Numeric. Side, in millimeters, of each (square) cell. If `NULL`
+  (default), it is set automatically.
 
 - annotation_height:
 
-  Numeric or `NULL`. Height, in millimeters, of each column annotation
-  bar (condition1/condition2/condition3).
+  Numeric. Height, in millimeters, of each column annotation bar
+  (`condition1`, `condition2`, `condition3`). If `NULL` (default), the
+  cell height is used.
 
 - save_table:
 
-  Logical. If `TRUE`, saves the underlying abundance table to disk.
-  Default `FALSE`.
+  Logical. If `TRUE`, saves the abundance table shown in the heatmap as
+  a tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"abundance_heatmap_table.txt"`.
 
 - feature_prefix:
 
-  Character. Prefix used to label each row in the heatmap, immediately
-  before the row number (e.g. `feature_prefix = "ASV"` labels rows
-  `"ASV1"`, `"ASV2"`...). Default `""` (rows are labeled just `"1"`,
-  `"2"`...) since the right label depends on how `table`'s features were
-  generated - set it to whatever fits (`"ASV"`, `"OTU"`, `"Taxon"`,
-  `"Species"`...).
+  Character. Prefix of the row labels, before the row number (e.g.
+  `feature_prefix = "ASV"` labels the rows `"ASV1"`, `"ASV2"`...).
+  Default `""` (rows labeled `"1"`, `"2"`...).
 
 - max_label_length:
 
-  Integer or `NULL`. Taxon names longer than this many characters are
-  cut with an ellipsis in the row labels, so a single long name doesn't
-  squeeze the heatmap. Use `NULL` to never cut. Default `35`.
+  Integer. Taxon names longer than this many characters are cut with an
+  ellipsis in the row labels. `NULL` never cuts them. Default `35`.
 
 - composite_names:
 
@@ -176,7 +180,6 @@ table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMe
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 abundance_heatmap_plot(
   table                  = table,

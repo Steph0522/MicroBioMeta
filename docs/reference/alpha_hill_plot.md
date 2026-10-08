@@ -1,8 +1,9 @@
-# Alpha diversity plot
+# Hill numbers alpha diversity plot
 
-Generates a boxplot or barplot to visualize alpha diversity Hill numbers
-(q = 0, 1, 2) for a given dataset, faceted by one or two categorical
-variables (e.g., sample type or treatment).
+Computes the Hill numbers (q = 0, 1, 2) of each sample and plots them as
+box plots or bar plots, one panel per order q, optionally faceted by one
+or two metadata variables and with statistical comparisons between
+groups.
 
 ## Usage
 
@@ -50,8 +51,8 @@ alpha_hill_plot(
 
 - metadata:
 
-  A data frame containing sample metadata. Must include a `SAMPLEID`
-  column matching sample names in `table`.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`).
 
 - type:
 
@@ -59,106 +60,111 @@ alpha_hill_plot(
 
 - stat:
 
-  Optional. Statistical test to compare the groups within each panel.
-  `"wilcox.test"` or `"t.test"` compare every pair of groups, each with
-  its own bracket and p-value
+  Character or `NULL`. Statistical test to compare the groups within
+  each panel. `"wilcox.test"` or `"t.test"` compare every pair of
+  groups, each with its own bracket and p-value
   ([`ggpubr::stat_pwc()`](https://rpkgs.datanovia.com/ggpubr/reference/geom_pwc.html));
   `"kruskal.test"` or `"anova"` give one global p-value per panel.
+  Default `NULL` (no test shown).
 
 - p_adjust_method:
 
-  Multiple-comparison correction for the pairwise tests
-  (`stat = "wilcox.test"` or `"t.test"`), applied within each panel; any
+  Character. Multiple-testing correction for the pairwise tests
+  (`stat = "wilcox.test"` or `"t.test"`), applied within each panel, any
   method of
   [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
-  `"holm"`; `"none"` shows the raw p-values. Panel tags (A, B, C...) are
-  added regardless of whether `stat` is set; `stat` only adds the
-  p-value annotations on top of them.
+  `"holm"`; `"none"` uses the raw p-values.
 
 - x_col:
 
-  Column in `metadata` to be used on the x-axis.
+  Character. Name of the column in `metadata` for the x-axis.
 
 - fill_col:
 
-  Column in `metadata` to define fill color.
+  Character. Name of the column in `metadata` for the fill color.
 
 - facet_by:
 
-  Optional. A metadata column to facet (e.g., Treatment, Site).
+  Character. Name of the column in `metadata` to facet the plot by.
+  Optional; `NULL` (default) for no facets.
 
 - facet_by2:
 
-  Optional. A metadata column to double facet (e.g., Treatment, Site).
+  Character. Name of a second column in `metadata` to facet by.
+  Optional; `NULL` (default) for none.
 
 - facet_orientation:
 
-  Whether `facet_by` appears in columns (`"horizontal"`, default) or
-  rows (`"vertical"`). Case-insensitive.
+  Character. `"horizontal"` (default) puts the `facet_by` facets in
+  columns; `"vertical"` in rows. Case-insensitive.
 
 - palette:
 
-  Color palette to use: `"colorb"` (default, colorblind-friendly
-  Okabe-Ito), `"grey"`, `"viridis"`, or `"brewer"`. Case-insensitive.
+  Character. Palette name: `"colorb"` (default, colorblind-friendly
+  Okabe-Ito), `"grey"`, `"viridis"` or `"brewer"`. Case-insensitive.
 
 - group_colors:
 
-  A vector of custom colors. Overrides `palette` if provided.
+  Optional character vector of colors, one per group, named after the
+  groups or in their order. Overrides `palette`.
 
 - n_cols:
 
-  Number of columns in facet wrap (optional).
+  Integer. Number of columns of the facet grid. If `NULL` (default), set
+  automatically.
 
 - n_rows:
 
-  Number of rows in facet wrap (optional).
+  Integer. Number of rows of the facet grid. If `NULL` (default), set
+  automatically.
 
 - strip_color:
 
-  Background color of facet strips. Default: "grey".
+  Character. Background color of the facet strips (used when `facet_by`
+  is set). Default `"grey"`.
 
 - show_legend:
 
-  Logical. Show legend? Default: TRUE.
+  Logical. If `TRUE` (default), the legend is shown.
 
 - title:
 
-  Title for the entire plot.
+  Character. Plot title. `NULL` (default) shows no title.
 
 - legend_title:
 
-  Title for the legend.
+  Character. Title of the legend. If `NULL` (default), the legend has no
+  title.
 
 - legend_position:
 
-  Position of the legend: "bottom", "top", "right", or "left". Default
-  is "bottom".
+  Character. Position of the legend: `"bottom"` (default), `"top"`,
+  `"right"` or `"left"`.
 
 - x_axis_title:
 
-  Title for the x-axis.
+  Character. Title of the x-axis. Default `NULL` (no title).
 
 - y_axis_title:
 
-  Title for the y-axis.
+  Character. Title of the y-axis. Default
+  `"Effective number of features"`.
 
 - free_y:
 
-  Logical. Whether y-axis scales are free across facets. Default
+  Logical. If `TRUE`, the y-axis scale is free across facets. Default
   `FALSE`.
 
 - panel_label_case:
 
-  Character. Case of the auto-generated panel tags (A, B, C... added to
-  every panel by default). One of `"upper"` (default, "A", "B", "C") or
-  `"lower"` ("a", "b", "c"). Ignored if `panel_labels` is supplied.
+  Character. Case of the panel tags (added to every panel): `"upper"`
+  (default; A, B, C) or `"lower"` (a, b, c). Ignored if `panel_labels`
+  is given.
 
 - panel_labels:
 
   Optional character vector of custom panel tags, one per panel, used
-  as-is (e.g. `c("(a)", "(b)", "(c)")` or `c("a.", "b.", "c.")`) — for
-  journal styles that `panel_label_case` alone can't produce. Overrides
-  `panel_label_case` when provided.
+  as-is (e.g. `c("(a)", "(b)", "(c)")`). Overrides `panel_label_case`.
 
 - panel_label_bold:
 
@@ -167,32 +173,31 @@ alpha_hill_plot(
 
 - x_label_angle:
 
-  Numeric. Rotation (in degrees) of the x-axis tick labels. Default `0`
-  (horizontal); use e.g. `45` or `90` when group names are long enough
-  to overlap.
+  Numeric. Rotation (degrees) of the x-axis labels. Default `0`
+  (horizontal); use `45` or `90` if they overlap.
 
 - strip_text_bold:
 
-  Logical. If `TRUE`, facet strip labels are bold. Default `FALSE`
-  (plain).
+  Logical. If `TRUE`, the facet strip labels are bold. Default `FALSE`.
 
 - aspect_ratio:
 
-  Numeric. Aspect ratio (height/width) of each panel. Default `NULL`,
-  which lets the panels fill the available space.
+  Numeric. Aspect ratio (height/width) of each panel. Default `NULL`
+  (automatic).
 
 - save_table:
 
-  Logical. If `TRUE`, saves the diversity table to disk. Default
-  `FALSE`.
+  Logical. If `TRUE`, saves the Hill numbers table as a tab-delimited
+  file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table. Default `"hill.txt"`.
+  Character. Name or path of the saved file (used when
+  `save_table = TRUE`). Default `"hill.txt"`.
 
 ## Value
 
-A ggplot object showing alpha diversity with Hill numbers.
+A ggplot object.
 
 ## Examples
 
@@ -202,7 +207,6 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 # Panel tags (A/B/C) are always added (see panel_label_case and
 # panel_labels to customize their case/format); stat additionally

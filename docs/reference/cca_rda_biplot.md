@@ -1,16 +1,16 @@
-# CCA/RDA Biplot with ggplot2
+# CCA/RDA biplot
 
-Performs Canonical Correspondence Analysis (CCA) or Redundancy Analysis
-(RDA) based on a species abundance table and selected environmental
-variables, returning a biplot with ggplot2 that visualizes sample scores
-and environmental vectors.
+Performs a Canonical Correspondence Analysis (CCA) or a Redundancy
+Analysis (RDA) of the abundance table constrained by environmental
+variables, and plots the samples and the environmental vectors as a
+biplot.
 
 ## Usage
 
 ``` r
 cca_rda_biplot(
   table,
-  env_data,
+  env_data = NULL,
   env_vars,
   method = "hell",
   metadata,
@@ -33,66 +33,71 @@ cca_rda_biplot(
 
 - table:
 
-  A data frame of species abundances with taxa as rows and samples as
-  columns, plus a final `taxonomy` column (same format as the rest of
-  the package). Internally transposed to samples-as-rows for the
-  ordination.
+  A data frame with taxa in rows and samples in columns. The last column
+  must be named `taxonomy`, containing full taxonomic strings.
 
 - env_data:
 
-  A data frame of environmental variables, with row names matching the
-  sample names in `table`.
+  Optional data frame of environmental variables, with row names
+  matching the sample names in `table`. Default `NULL`: the variables
+  named in `env_vars` are taken from `metadata`. Use it only when the
+  variables are in a separate table.
 
 - env_vars:
 
-  A character vector with the names of environmental variables to
-  include in the analysis.
+  A character vector with the names of environmental variables (columns
+  of `metadata`, or of `env_data` if given) to include in the analysis.
 
 - method:
 
-  Transformation method passed to `decostand` (default is `"hell"` for
-  Hellinger).
+  Character. Transformation of the abundances, passed to
+  [`vegan::decostand()`](https://vegandevs.github.io/vegan/reference/decostand.html).
+  Default `"hell"` (Hellinger).
 
 - metadata:
 
-  Data frame with sample metadata; its first column must hold the sample
-  IDs.
+  A data frame containing sample metadata. Its first column must hold
+  the sample IDs (the column names of `table`). The environmental
+  variables can be columns of `metadata` (see `env_vars`).
 
 - group_col:
 
-  Optional name of the column in `metadata` used to define sample
-  groups.
+  Character. Name of the column in `metadata` that defines the groups.
+  Used to color the samples. Optional; `NULL` (default) for no groups.
 
 - group_colors:
 
-  Optional named vector of colors to use for each group.
+  Optional character vector of colors, one per group, named after the
+  groups or in their order. If `NULL` (default), the colorblind-friendly
+  Okabe-Ito palette is used.
 
 - legend_title:
 
-  Optional custom title for the group legend.
+  Character. Title of the legend. If `NULL` (default), the name of
+  `group_col` is used.
 
 - scale_env:
 
-  Logical; whether to scale environmental variables (default is `TRUE`).
+  Logical. If `TRUE` (default), the environmental variables are scaled
+  (without centering) before the analysis.
 
 - pval_threshold:
 
-  P-value threshold for selecting significant environmental variables
-  (default is `0.05`).
+  Numeric. P-value cutoff (after `p_adjust_method`) to draw only the
+  significant environmental variables. Default `0.05`.
 
 - p_adjust_method:
 
-  Multiple-comparison correction applied to the
+  Character. Multiple-testing correction for the
   [`vegan::envfit()`](https://vegandevs.github.io/vegan/reference/envfit.html)
-  p-values of the environmental variables before `pval_threshold`; any
-  method of
+  p-values of the environmental variables, any method of
   [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
-  `"none"` (raw p-values, the usual choice with few variables).
+  `"none"` (raw p-values), the usual choice with few variables.
 
 - show_all_env_vectors:
 
-  Logical; if TRUE, plot all environmental vectors regardless of
-  significance.
+  Logical. If `TRUE`, all the environmental variables are drawn,
+  significant or not. Default `FALSE`.
 
 - analysis:
 
@@ -102,29 +107,30 @@ cca_rda_biplot(
 
 - scale_arrows:
 
-  Numeric value to scale environmental vectors in the plot.
+  Numeric. Multiplies the length of the environmental arrows; it only
+  changes how they are drawn. Default `1`.
 
 - title:
 
-  Plot title. `"auto"` (default) generates `"CCA Biplot"` or
-  `"RDA Biplot"`; `NULL` shows no title; any other string is used as-is.
+  Character. Plot title. `"auto"` (default) shows `"CCA Biplot"` or
+  `"RDA Biplot"`; `NULL` shows no title; any other text is used as the
+  title.
 
 - save_table:
 
-  Logical. If `TRUE`, saves a combined table of sample scores and
-  environmental vector loadings to disk, distinguished by a `type`
-  column (`"site"` or `"vector"`). Default `FALSE`.
+  Logical. If `TRUE`, saves the sample scores and environmental vector
+  loadings (one table, with a `type` column: `"site"` or `"vector"`) as
+  a tab-delimited file. Default `FALSE`.
 
 - table_filename:
 
-  Character. File path/name for the saved table (used when
+  Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"cca_rda_scores.txt"`.
 
 ## Value
 
-A `ggplot` object displaying the biplot with sample scores and
-environmental vectors. The axis titles show the percentage of the total
-variance (inertia) explained by each constrained axis.
+A ggplot object with the biplot. The axis titles show the percentage of
+the variance (inertia) explained by each constrained axis.
 
 ## Details
 
@@ -141,15 +147,10 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
-# env_data must have rownames matching the sample names in `table`
-env_data <- metadata
-rownames(env_data) <- env_data$SampleID
-
+# The environmental variables are columns of metadata, chosen with env_vars
 cca_rda_biplot(
   table                = table,
-  env_data             = env_data,
   metadata             = metadata,
   env_vars             = c("pH", "TOC", "FW", "Root_FW", "DW"),
   analysis             = "RDA",

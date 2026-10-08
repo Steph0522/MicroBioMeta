@@ -15,11 +15,11 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  fig.align = "center",
-  out.width = "100%",
-  fig.width = 7,
-  fig.height = 5,
-  dpi = 96
+    fig.align = "center",
+    out.width = "100%",
+    fig.width = 7,
+    fig.height = 5,
+    dpi = 96
 )
 ```
 
@@ -33,7 +33,7 @@ Los datos provienen de suelos forestales a lo largo de los transectos Iztaccíhu
 
 Datos crudos, metadatos y los scripts originales del análisis: [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
 
-## 💻 Cargar los datos
+## Cargar los datos
 Primero, carguemos `MicroBioMeta` y `tidyverse` (usado para el manejo de datos):
 
 ```{r "start", message=FALSE}
@@ -45,8 +45,8 @@ Cada muestra se procesó por separado, así que los reportes `bracken_species` s
 
 ```{r cargar-los-datos-1}
 table_kraken <- read.delim(
-  system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
-  row.names = 1, check.names = FALSE
+    system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
+    row.names = 1, check.names = FALSE
 )
 
 table_kraken[1:3, c(1:2, ncol(table_kraken))]
@@ -60,8 +60,8 @@ Ahora, carguemos los metadatos:
 
 ```{r cargar-los-datos-2}
 metadata_meta <- read.delim(
-  system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
-  check.names = FALSE
+    system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
+    check.names = FALSE
 )
 
 head(metadata_meta[, 1:10])
@@ -75,7 +75,7 @@ sample_cols <- setdiff(colnames(table_kraken), "taxonomy")
 id_metagenome <- as.integer(gsub("kraken_pluspfp_|_report_bracken_species", "", sample_cols))
 
 colnames(table_kraken)[match(sample_cols, colnames(table_kraken))] <-
-  metadata_meta$SAMPLEID[match(id_metagenome, metadata_meta$id_metagenome)]
+    metadata_meta$SAMPLEID[match(id_metagenome, metadata_meta$id_metagenome)]
 ```
 
 Renombremos y demos formato a los metadatos:
@@ -93,19 +93,19 @@ Las coordenadas se tomaron y cargaron así:
 
 ```{r cargar-los-datos-6}
 coord_meta <- read.csv(
-  system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
+    system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
 ) %>%
-  dplyr::select(-Site) %>% # descartamos el índice de sitio general propio del CSV (1-12); queremos `Sitio` (1-2) en su lugar
-  dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
-  dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)
+    dplyr::select(-Site) %>% # descartamos el índice de sitio general propio del CSV (1-12); queremos `Sitio` (1-2) en su lugar
+    dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
+    dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)
 
 metadata_meta <- metadata_meta %>%
-  dplyr::mutate(Polygon_num = as.integer(gsub("Pol", "", Polygon)), Site = as.integer(Site)) %>%
-  dplyr::left_join(coord_meta, by = c("Polygon_num", "Site", "Transecto")) %>%
-  dplyr::mutate(Site = as.character(Site))
+    dplyr::mutate(Polygon_num = as.integer(gsub("Pol", "", Polygon)), Site = as.integer(Site)) %>%
+    dplyr::left_join(coord_meta, by = c("Polygon_num", "Site", "Transecto")) %>%
+    dplyr::mutate(Site = as.character(Site))
 ```
 
-### 🔄 Empezar desde un objeto phyloseq o TreeSummarizedExperiment
+### Empezar desde un objeto phyloseq o TreeSummarizedExperiment
 
 `MicroBioMeta` trabaja con tablas simples, pero si tus datos ya están en un objeto `phyloseq` o en un `TreeSummarizedExperiment` (el contenedor de Bioconductor que usa la familia de paquetes [`mia`](https://bioconductor.org/packages/mia/)), `from_phyloseq()` y `from_tse()` los convierten en la `table` (con la columna `taxonomy` al final) y la `metadata` (con `SAMPLEID` primero) que usamos en esta viñeta.
 
@@ -115,9 +115,9 @@ Para mostrarlo, guardamos la tabla de Kraken2 en un `TreeSummarizedExperiment`, 
 counts <- as.matrix(table_meta[, metadata_meta$SAMPLEID])
 
 ranks <- tidyr::separate(
-  data.frame(taxonomy = gsub("[kpcofgs]__", "", table_meta$taxonomy)),
-  taxonomy, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
-  sep = "; ", fill = "right"
+    data.frame(taxonomy = gsub("[kpcofgs]__", "", table_meta$taxonomy)),
+    taxonomy, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+    sep = "; ", fill = "right"
 )
 rownames(ranks) <- rownames(table_meta)
 
@@ -125,9 +125,9 @@ samples <- metadata_meta
 rownames(samples) <- samples$SAMPLEID
 
 tse <- TreeSummarizedExperiment::TreeSummarizedExperiment(
-  assays  = list(counts = counts),
-  rowData = ranks,
-  colData = samples
+    assays  = list(counts = counts),
+    rowData = ranks,
+    colData = samples
 )
 tse
 ```
@@ -149,53 +149,59 @@ Con un objeto `phyloseq` funciona igual:
 mbm <- from_phyloseq(physeq)
 ```
 
-## 📊 Exploración de la composición
-### 📊 Barplot de abundancia
+## Exploración de la composición
+### Barplot de abundancia
 Misma función que en la viñeta de amplicón; la única diferencia es `taxonomy_db = "Kraken2"`, que le indica a la lógica de parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.
 
 ```{r barplot-de-abundancia-7, fig.width=9, fig.height=6}
-abundance_bar_plot(table = table_meta,
-                  metadata = metadata_meta,
-                  taxonomy_db = "Kraken2",
-                  level = "genus",
-                  top_n = 20,
-                  x_col = "Polygon",
-                  x_axis_title = "Polygons",
-                  add_remained = TRUE,
-                  label = "Genus",
-                  save_table = FALSE)
+abundance_bar_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    taxonomy_db = "Kraken2",
+    level = "genus",
+    top_n = 20,
+    x_col = "Polygon",
+    x_axis_title = "Polygons",
+    add_remained = TRUE,
+    label = "Genus",
+    save_table = FALSE
+)
 ```
 
-### 🖥️ Heatmap de abundancia
+### Heatmap de abundancia
 Los taxones de Kraken2/Bracken no son ASVs, así que aquí se usa `feature_prefix = "Taxon"` en vez del prefijo `"ASV"` por defecto para las etiquetas de fila. `condition2` agrega una segunda barra de anotación, aquí el sitio de muestreo dentro de cada polígono.
 
 ```{r heatmap-de-abundancia-8, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
-abundance_heatmap_plot(table = table_meta,
-                  metadata = metadata_meta,
-                  top_n = 20,
-                  show_column_names = FALSE,
-                  condition1 = "Polygon",
-                  condition2 = "Site",
-                  feature_prefix = "Taxon")
+abundance_heatmap_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    top_n = 20,
+    show_column_names = FALSE,
+    condition1 = "Polygon",
+    condition2 = "Site",
+    feature_prefix = "Taxon"
+)
 ```
 
-## 📊 Diversidad alfa
+## Diversidad alfa
 Como en la viñeta de metabarcoding, primero se puede usar `alpha_hill_corr_plot(table = table_meta)` para revisar si los números de Hill dependen de la profundidad de secuenciación.
 
-### 📊 Visualización de diversidad alfa
+### Visualización de diversidad alfa
 `fill_col` es igual a `x_col` aquí, así que la leyenda solo repetiría las etiquetas del eje x - `show_legend = FALSE` la quita.
 
 ```{r visualizaci-n-de-diversidad-alfa-10, warning=FALSE, fig.width=9, fig.height=5}
-alpha_hill_plot(table = table_meta,
-                metadata = metadata_meta,
-                x_col = "Polygon",
-                fill_col = "Polygon",
-                facet_by = "Site",
-                facet_orientation = "horizontal",
-                legend_title = "",
-                stat = "kruskal.test",
-                show_legend = FALSE,
-                save_table = FALSE)
+alpha_hill_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    x_col = "Polygon",
+    fill_col = "Polygon",
+    facet_by = "Site",
+    facet_orientation = "horizontal",
+    legend_title = "",
+    stat = "kruskal.test",
+    show_legend = FALSE,
+    save_table = FALSE
+)
 ```
 
 La riqueza (*q*=0) está casi saturada y plana entre bloques aquí — esta tabla de Bracken a nivel de género simplemente no tiene mucho margen para variar en *q*=0 — mientras que *q*=1 y *q*=2 (que ponderan por abundancia relativa) sí capturan diferencias entre bloques.
@@ -203,10 +209,12 @@ La riqueza (*q*=0) está casi saturada y plana entre bloques aquí — esta tabl
 ### Diversidad alfa a lo largo de un gradiente continuo
 
 ```{r diversidad-alfa-a-lo-largo-de-un-gradiente-continuo-11, warning=FALSE, fig.height=4, fig.width=10}
-alpha_decay_plot(table = table_meta,
-                 metadata = metadata_meta,
-                 cont_var = "pH",
-                 x_axis_title = "Soil pH")
+alpha_decay_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    cont_var = "pH",
+    x_axis_title = "Soil pH"
+)
 ```
 
 La diversidad en *q*=1 y *q*=2 aumenta significativamente con el pH del suelo; *q*=0 no, por la misma razón de efecto techo que arriba.
@@ -219,24 +227,30 @@ Aquí usamos la disimilitud de **Bray-Curtis**, que toma en cuenta la abundancia
 
 ```{r ordenaci-n-de-la-composici-n-de-la-comunidad-12, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 set.seed(123)
-beta_ord_plot(table = table_meta,
-              metadata = metadata_meta,
-              distance = "bray",
-              ordination = "NMDS",
-              group_col = "Polygon")
+beta_ord_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    distance = "bray",
+    ordination = "NMDS",
+    group_col = "Polygon"
+)
 ```
 
 ### Pruebas estadísticas para diversidad beta
 
 `distance = "bray"` coincide con el usado en la ordenación de arriba, de modo que la ordenación (vía el paquete `vegan` [@oksanen2024vegan]) y la prueba PERMANOVA [@anderson2001permanova] evalúan la misma noción de disimilitud.
 
+El resultado es una figura de la tabla (un ggplot), así que se puede combinar con otros gráficos (p. ej. `cowplot::plot_grid()`) o guardar con `ggplot2::ggsave()`. Usa `save_table = TRUE` para obtener también los resultados en un archivo de texto.
+
 ```{r pruebas-estad-sticas-para-diversidad-beta-13, fig.width=8, fig.height=4}
-beta_test_table(table = table_meta,
-                metadata = metadata_meta,
-                formula_str = "Polygon*Site",
-                distance = "bray",
-                test = "permanova",
-                permutations = 999)
+beta_test_table(
+    table = table_meta,
+    metadata = metadata_meta,
+    formula_str = "Polygon*Site",
+    distance = "bray",
+    test = "permanova",
+    permutations = 999
+)
 ```
 
 
@@ -246,11 +260,11 @@ beta_test_table(table = table_meta,
 
 ```{r decaimiento-de-la-similitud-comunitaria-con-la-distancia-14, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
 beta_decay_plot(
-  table    = table_meta,
-  metadata = metadata_meta,
-  lat_col  = "Latitude",
-  lon_col  = "Longitude",
-  distance = "bray"
+    table    = table_meta,
+    metadata = metadata_meta,
+    lat_col  = "Latitude",
+    lon_col  = "Longitude",
+    distance = "bray"
 )
 ```
 
@@ -262,25 +276,27 @@ Para las versiones de heatmap (ALDEx2 [@fernandes2014aldex2]) y ANCOMBC2 [@lin20
 
 ```{r an-lisis-de-abundancia-diferencial-15}
 metadata_meta_compar <- metadata_meta %>%
-  filter(Polygon == "Pol2" | Polygon == "Pol5")
+    filter(Polygon == "Pol2" | Polygon == "Pol5")
 
 table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SAMPLEID, colnames(table_meta)), ncol(table_meta))]
 ```
 
 ```{r an-lisis-de-abundancia-diferencial-16, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
-aldex_heatmap_plot(table = table_meta_compar,
-                   metadata = metadata_meta_compar,
-                   group_col = "Polygon")
+aldex_heatmap_plot(
+    table = table_meta_compar,
+    metadata = metadata_meta_compar,
+    group_col = "Polygon"
+)
 ```
 
 ```{r an-lisis-de-abundancia-diferencial-17, fig.width=8, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
 ancombc_plot(
-  table        = table_meta_compar,
-  metadata     = metadata_meta_compar,
-  group_col     = "Polygon",
-  level    = "Genus",
-  min_prevalence      = 0.05,
-  p_adjust_method = "BH"
+    table = table_meta_compar,
+    metadata = metadata_meta_compar,
+    group_col = "Polygon",
+    level = "Genus",
+    min_prevalence = 0.05,
+    p_adjust_method = "BH"
 )
 ```
 
@@ -293,52 +309,51 @@ random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n 
 ```
 
 ```{r identificando-taxones-importantes-19, fig.width=8, fig.height=9, out.width="60%"}
-ratios_bubble_plot(table = table_meta_compar,
-           metadata = metadata_meta_compar,
-           group_col = "Polygon",
-           top_n = 20,
-           condition_A = "Pol2",
-           condition_B = "Pol5")
+ratios_bubble_plot(
+    table = table_meta_compar,
+    metadata = metadata_meta_compar,
+    group_col = "Polygon",
+    top_n = 20,
+    condition_A = "Pol2",
+    condition_B = "Pol5"
+)
 ```
 
 ## Análisis ambientales
 
-Los metadatos ya traen las variables fisicoquímicas del suelo medidas para estas muestras, así que la tabla ambiental se construye de la misma forma que en la viñeta de amplicón:
+Los metadatos ya traen las variables fisicoquímicas del suelo medidas para estas muestras, así que, como en la viñeta de amplicón, las variables se eligen por nombre con `env_vars` (no hace falta una tabla ambiental aparte):
 
 ```{r an-lisis-ambientales-20}
-env_table_meta <- metadata_meta %>%
-  dplyr::select(SAMPLEID, pH:ARENA) %>%
-  remove_rownames() %>%
-  column_to_rownames(var = "SAMPLEID")
+env_vars_meta <- metadata_meta %>%
+    dplyr::select(pH:ARENA) %>%
+    colnames()
 ```
 
 ### Correlación entre variables ambientales y abundancia taxonómica
 
 ```{r correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21, fig.width=9, fig.height=3.2}
-corr_env_abund_plot(table = table_meta,
-                    env_data = env_table_meta,
-                    metadata = metadata_meta,
-                    taxonomy_db = "Kraken2",
-                    level = "phylum",
-                    save_table = FALSE)
+corr_env_abund_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    env_vars = env_vars_meta,
+    taxonomy_db = "Kraken2",
+    level = "phylum",
+    save_table = FALSE
+)
 ```
 
 ### Ordenación restringida (CCA)
 
-```{r ordenaci-n-restringida-cca-22}
-env_table_meta <- env_table_meta[
-  match(metadata_meta$SAMPLEID, rownames(env_table_meta)), , drop = FALSE]
-```
-
 ```{r ordenaci-n-restringida-cca-23, fig.width=8, fig.height=6}
-cca_rda_biplot(table = table_meta,
-               env_data = env_table_meta,
-               metadata = metadata_meta,
-               env_vars = c("pH", "MO", "N", "P", "K"),
-               analysis = "CCA",
-               show_all_env_vectors = TRUE,
-               group_col = "Polygon",
-               scale_arrows = 3)
+cca_rda_biplot(
+    table = table_meta,
+    metadata = metadata_meta,
+    env_vars = c("pH", "MO", "N", "P", "K"),
+    analysis = "CCA",
+    show_all_env_vectors = TRUE,
+    group_col = "Polygon",
+    scale_arrows = 3
+)
 ```
 
 

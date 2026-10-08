@@ -29,9 +29,9 @@ beta_decay_plot(
 \item{table}{A data frame with taxa in rows and samples in columns.
 The last column must be named \code{taxonomy}, containing full taxonomic strings.}
 
-\item{metadata}{A data frame containing sample metadata.
-Must include a \code{SAMPLEID} column matching sample names in \code{table}.
-Must also contain latitude and longitude columns}
+\item{metadata}{A data frame containing sample metadata. Its first column
+must hold the sample IDs (the column names of \code{table}). It must also have
+the latitude and longitude columns.}
 
 \item{lat_col}{Character. Name of the latitude column in \code{metadata}
 (decimal degrees).}
@@ -39,12 +39,14 @@ Must also contain latitude and longitude columns}
 \item{lon_col}{Character. Name of the longitude column in \code{metadata}
 (decimal degrees).}
 
-\item{group_col}{Character or \code{NULL}. Optional categorical column in
-\code{metadata}}
+\item{group_col}{Character. Name of the column in \code{metadata} that
+defines the groups. If given, only pairs of samples from the same group are
+kept, with one color per group. Optional; \code{NULL} (default) for no
+groups.}
 
-\item{palette}{Only used when \code{group_col} is supplied. Either a
-palette name (\code{"colorb"} default, \code{"grey"}, \code{"viridis"},
-\code{"brewer"}) or a vector of fixed colors, one per group level.}
+\item{palette}{Palette name (\code{"colorb"} (default), \code{"grey"},
+\code{"viridis"} or \code{"brewer"}) or a vector of colors, one per group.
+Only used when \code{group_col} is given.}
 
 \item{distance}{Character. Dissimilarity metric passed to
 \code{vegan::vegdist}. Common options: \code{"jaccard"} (default),
@@ -58,7 +60,7 @@ Case-insensitive.}
 \item{permutations}{Integer. Number of permutations for the Mantel test.
 Default \code{999}.}
 
-\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds R2 to the
+\item{show_lm_stats}{Logical. If \code{TRUE} (default), adds \eqn{R^2} to the
 annotation label in addition to the Mantel r, p-value, and slope.}
 
 \item{point_color}{Character. Color of scatter points. Default
@@ -67,31 +69,30 @@ annotation label in addition to the Mantel r, p-value, and slope.}
 \item{line_color}{Character. Color of the regression line. Default
 \code{"#D55E00"}.}
 
-\item{point_size}{Numeric. Size of scatter points. Default \code{1}.}
+\item{point_size}{Numeric. Size of the points. Default \code{1}.}
 
-\item{point_alpha}{Numeric (0-1). Transparency of scatter points.
-Default \code{0.5}.}
+\item{point_alpha}{Numeric (0-1). Transparency of the points. Default
+\code{0.5}.}
 
 \item{annotation_size}{Numeric. Font size for the stats annotation.
 Default \code{3.5}.}
 
-\item{x_axis_title}{Character. X-axis label.
-Default \code{"Spatial distance (km)"}.}
+\item{x_axis_title}{Character. Title of the x-axis. Default \code{"Spatial
+distance (km)"}.}
 
-\item{y_axis_title}{Character or \code{NULL}. Y-axis label. If \code{NULL}
+\item{y_axis_title}{Character. Title of the y-axis. If \code{NULL}
 (default), it is built automatically.}
 
-\item{title}{Character or \code{NULL}. Plot title. Default
-\code{NULL} (no title).}
+\item{title}{Character. Plot title. \code{NULL} (default) shows no title.}
 }
 \value{
-A \code{ggplot} object.
+A ggplot object.
 }
 \description{
-Computes pairwise community dissimilarity (Jaccard, Horn/Morisita-Horn,
-Bray-Curtis, or other) and pairwise geographic distances from sample coordinates
-stored in \code{metadata}. It runs a Mantel test to evaluate the
-relationship between community similarity and geographic distance
+Computes the pairwise community dissimilarity (Jaccard, Morisita-Horn,
+Bray-Curtis or another vegdist method) and the pairwise geographic distance
+from the sample coordinates in metadata, and tests their relationship with a
+Mantel test.
 }
 \examples{
 table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
@@ -99,40 +100,39 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
-colnames(metadata)[1] <- "SampleID"
 
 loc_coords <- data.frame(
-  Loc = 1:7,
-  lat = 19.0 + seq(0, 0.6, length.out = 7),
-  lon = -99.0 + seq(0, 0.6, length.out = 7)
+    Loc = 1:7,
+    lat = 19.0 + seq(0, 0.6, length.out = 7),
+    lon = -99.0 + seq(0, 0.6, length.out = 7)
 )
 metadata$lat <- loc_coords$lat[match(metadata$Loc, loc_coords$Loc)]
 metadata$lon <- loc_coords$lon[match(metadata$Loc, loc_coords$Loc)]
 
 # Jaccard + Spearman Mantel (default)
 beta_decay_plot(
-  table    = table,
-  metadata = metadata,
-  lat_col  = "lat",
-  lon_col  = "lon"
+    table    = table,
+    metadata = metadata,
+    lat_col  = "lat",
+    lon_col  = "lon"
 )
 
 # Horn dissimilarity + Spearman Mantel
 beta_decay_plot(
-  table    = table,
-  metadata = metadata,
-  lat_col  = "lat",
-  lon_col  = "lon",
-  distance = "horn",
-  method   = "spearman"
+    table    = table,
+    metadata = metadata,
+    lat_col  = "lat",
+    lon_col  = "lon",
+    distance = "horn",
+    method   = "spearman"
 )
 
 # Separate Mantel test per location
 beta_decay_plot(
-  table     = table,
-  metadata  = metadata,
-  lat_col   = "lat",
-  lon_col   = "lon",
-  group_col = "Location"
+    table     = table,
+    metadata  = metadata,
+    lat_col   = "lat",
+    lon_col   = "lon",
+    group_col = "Location"
 )
 }

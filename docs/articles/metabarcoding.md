@@ -593,7 +593,6 @@ The function returns a **list with two elements**:
 
 table_genus <- collapse_table(
   table = table_fung,
-  metadata = metadata_fungi,
   level = "genus"
 )
 
@@ -815,6 +814,13 @@ an element obtain in each function**.
 `distance` matches the ordination of each dataset above (`compositional`
 for bacteria, `bray` for fungi), so the significance test evaluates the
 same notion of dissimilarity shown in the plot.
+
+The result is a table figure (a ggplot), so it can be combined with
+other plots
+(e.g. [`cowplot::plot_grid()`](https://wilkelab.org/cowplot/reference/plot_grid.html))
+or saved with
+[`ggplot2::ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html).
+Use `save_table = TRUE` to also get the results as a text file.
 
 ``` r
 
@@ -1211,6 +1217,33 @@ ancombc_plot(
 
 ![](metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44-1.png)
 
+With **3 or more groups**,
+[`ancombc_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ancombc_plot.md)
+returns a **heatmap** instead: one column per group compared against the
+reference level (the first factor level, here **Bulk soil**; it can be
+changed with `ref_level`), and one row per taxon that is significant in
+at least one comparison. Here we keep the three compartments (dropping
+**Uncultivated**) and group to `"Phylum"` so the heatmap stays readable:
+
+``` r
+
+metadata_bacteria_3 <- metadata_bacteria %>%
+  filter(Type_of_soil != "Uncultivated")
+
+table_bac_3 <- table_bac[, c(match(metadata_bacteria_3$SAMPLEID, colnames(table_bac)), ncol(table_bac))]
+
+ancombc_plot(
+  table           = table_bac_3,
+  metadata        = metadata_bacteria_3,
+  group_col       = "Type_of_soil",
+  level           = "Phylum",
+  min_prevalence  = 0.3,
+  p_adjust_method = "holm"
+)
+```
+
+![](metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44b-1.png)
+
 ### 📊 Example: Fungal data
 
 We follow the same procedure, comparing **Bulk soil** and **Roots**, but
@@ -1304,18 +1337,18 @@ composition**:
   — performs constrained ordination using **Canonical Correspondence
   Analysis (CCA)** or **Redundancy Analysis (RDA)**.
 
-#### 🖥️ Preparing the environmental table
+#### 🖥️ Choosing the environmental variables
 
-Environmental variables must be organized in a **data frame where rows
-correspond to samples and columns correspond to environmental
-variables**.
+The environmental variables are read directly from the **metadata** (one
+column per variable), so no separate table is needed: just pass the
+names of the columns to use in `env_vars`. If your variables are in a
+different table, give it in `env_data` (rows = samples, as row names).
 
 ``` r
 
-env_table_fung <- metadata_fungi %>%
-  dplyr::select(SAMPLEID, pH:Arbus_per) %>%
-  remove_rownames() %>%
-  column_to_rownames(var = "SAMPLEID")
+env_vars_fung <- metadata_fungi %>%
+  dplyr::select(pH:Arbus_per) %>%
+  colnames()
 ```
 
 #### 🖥️ Correlation between environmental variables and taxonomic abundance
@@ -1332,8 +1365,8 @@ Example using **phylum-level abundances**:
 ``` r
 
 corr_env_abund_plot(table = table_fung,
-                    env_data = env_table_fung,
                     metadata = metadata_fungi,
+                    env_vars = env_vars_fung,
                     level = "phylum",
                     save_table = FALSE)
 ```
@@ -1348,8 +1381,8 @@ tiles:
 ``` r
 
 corr_env_abund_plot(table = table_fung,
-                    env_data = env_table_fung,
                     metadata = metadata_fungi,
+                    env_vars = env_vars_fung,
                     level = "phylum",
                     save_table = FALSE,
                     geom = "circle")
@@ -1364,22 +1397,12 @@ The function
 performs a constrained ordination analysis to evaluate how environmental
 variables explain variation in microbial community composition.
 
-Before running the analysis, ensure that the **sample order in the
-environmental table matches the metadata**:
-
-``` r
-
-env_table_fung <- env_table_fung[
-  match(metadata_fungi$SAMPLEID, rownames(env_table_fung)), , drop = FALSE]
-```
-
 `scale_arrows` is a parameter that helps you to visualize better the
 environmental vectors:
 
 ``` r
 
 cca_rda_biplot(table = table_fung,
-               env_data = env_table_fung,
                metadata = metadata_fungi,
                env_vars = c("pH","TN","WHC", "EC", "Clay"),
                analysis = "RDA",

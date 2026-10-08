@@ -64,29 +64,29 @@
 
 
 <dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd><p>A data frame or matrix with samples as columns and taxa (features) as rows.
-Row names must contain OTUIDs, ASVs, or species names.</p></dd>
+<dd><p>A data frame with features in rows and samples in columns. Row
+names must hold the feature IDs (OTUs, ASVs, species...).</p></dd>
 
 
 <dt id="arg-taxonomy">taxonomy<a class="anchor" aria-label="anchor" href="#arg-taxonomy"></a></dt>
-<dd><p>A data frame or matrix with taxonomy information.
-Row names must match the identifiers in the table.</p></dd>
+<dd><p>A data frame or matrix with the taxonomy. Row names must
+match the feature IDs of <code>table</code>.</p></dd>
 
 
 <dt id="arg-save-table">save_table<a class="anchor" aria-label="anchor" href="#arg-save-table"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, saves the merged table to disk.
-Default <code>FALSE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, saves the merged table as a
+tab-delimited file. Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
-<dd><p>Character. File path/name for the saved table (used
-when <code>save_table = TRUE</code>). Default <code>"merged_feature_taxonomy.txt"</code>.</p></dd>
+<dd><p>Character. Name or path of the saved file (used when
+<code>save_table = TRUE</code>). Default <code>"merged_feature_taxonomy.txt"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame with counts and taxonomy merged. If only one column in the taxonomy is present,
-it will be renamed to 'taxonomy'.</p>
+    <p>A data frame with the counts of <code>table</code> and the taxonomy
+columns. A single taxonomy column is renamed to <code>taxonomy</code>.</p>
     </div>
 
     <div class="section level2">
@@ -94,8 +94,6 @@ it will be renamed to 'taxonomy'.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">table_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tabla_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">full_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">table_path</span>, row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Split the combined table into a counts-only feature table and a</span></span></span>
-<span class="r-in"><span><span class="co"># separate taxonomy data frame, as merge_feature_taxonomy expects them</span></span></span>
 <span class="r-in"><span><span class="va">feature_table</span> <span class="op">&lt;-</span> <span class="va">full_table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">full_table</span><span class="op">)</span>, <span class="st">"taxonomy"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">taxonomy_df</span> <span class="op">&lt;-</span> <span class="va">full_table</span><span class="op">[</span>, <span class="st">"taxonomy"</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
