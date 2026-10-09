@@ -59,6 +59,7 @@ effect size plot.</p>
 <span>  <span class="va">metadata</span>,</span>
 <span>  <span class="va">group_col</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"volcano"</span>,</span>
+<span>  mc_samples <span class="op">=</span> <span class="fl">128</span>,</span>
 <span>  col_inf <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
 <span>  col_sup <span class="op">=</span> <span class="st">"#E69F00"</span>,</span>
 <span>  threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>,</span>
@@ -99,6 +100,14 @@ defines the groups. It must have exactly two groups.</p></dd>
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Type of plot to generate: <code>"volcano"</code> (default, volcano plot)
 or <code>"effect"</code> (effect-size plot). Case-insensitive.</p></dd>
+
+
+<dt id="arg-mc-samples">mc_samples<a class="anchor" aria-label="anchor" href="#arg-mc-samples"></a></dt>
+<dd><p>Integer. Number of ALDEx2 Monte Carlo instances. Default
+<code>128</code> (ALDEx2's default), recommended for final analyses. Fewer
+instances are faster but the p-values and effect sizes are less stable (e.g.
+<code>16</code> for a quick look); call <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> before the function to
+make the result reproducible.</p></dd>
 
 
 <dt id="arg-col-inf">col_inf<a class="anchor" aria-label="anchor" href="#arg-col-inf"></a></dt>
@@ -198,23 +207,19 @@ alphabetical order minus the first); in the plot, positive means higher in
 <span class="r-in"><span><span class="co"># group_col must have exactly two groups; Location has two</span></span></span>
 <span class="r-in"><span><span class="co"># (Rhizosphere and Roots) in the bundled example data</span></span></span>
 <span class="r-in"><span><span class="fu">aldex_volcano_plot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table           <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata        <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  group_col        <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  type            <span class="op">=</span> <span class="st">"effect"</span>,</span></span>
-<span class="r-in"><span>  col_inf         <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span></span>
-<span class="r-in"><span>  col_sup         <span class="op">=</span> <span class="st">"#E69F00"</span>,</span></span>
-<span class="r-in"><span>  threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>  threshold_upper <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>  cond            <span class="op">=</span> <span class="st">"Rhizosphere"</span>,</span></span>
-<span class="r-in"><span>  show_labels     <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>    table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    group_col <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    mc_samples <span class="op">=</span> <span class="fl">16</span>,</span></span>
+<span class="r-in"><span>    type <span class="op">=</span> <span class="st">"effect"</span>,</span></span>
+<span class="r-in"><span>    col_inf <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span></span>
+<span class="r-in"><span>    col_sup <span class="op">=</span> <span class="st">"#E69F00"</span>,</span></span>
+<span class="r-in"><span>    threshold_lower <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>    threshold_upper <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>    cond <span class="op">=</span> <span class="st">"Rhizosphere"</span>,</span></span>
+<span class="r-in"><span>    show_labels <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> aldex.clr: generating Monte-Carlo instances and clr values</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> conditions vector supplied</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> operating in serial mode</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> computing center with all features</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> aldex.ttest: doing t-test</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> aldex.effect: calculating effect sizes</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>values are unreliable when estimated with so few MC smps</span>
 <span class="r-plt img"><img src="aldex_volcano_plot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

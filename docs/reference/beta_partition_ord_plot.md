@@ -110,9 +110,9 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 beta_partition_ord_plot(
-  table      = table,
-  metadata   = metadata,
-  group_col  = "Location",
-  point_size = 4
+    table      = table,
+    metadata   = metadata,
+    group_col  = "Location",
+    point_size = 4
 )
 ```

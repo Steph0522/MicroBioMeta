@@ -157,13 +157,13 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 beta_dissimilarity_plot(
-  table                = table,
-  metadata             = metadata,
-  comparison_condition1 = c("Rhizosphere_vs_Roots"),
-  condition1_col       = "Location",
-  condition2_col       = "Treatment",
-  x_axis_title         = "Samples",
-  partition            = "shared",
-  family               = "sorensen"
+    table = table,
+    metadata = metadata,
+    comparison_condition1 = c("Rhizosphere_vs_Roots"),
+    condition1_col = "Location",
+    condition2_col = "Treatment",
+    x_axis_title = "Samples",
+    partition = "shared",
+    family = "sorensen"
 )
 ```

@@ -78,11 +78,11 @@ table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMe
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 abundance_sankey_plot(
-  table        = table,
-  output_file  = file.path(tempdir(), "sankey_output.html"),
-  maxn         = 10,
-  taxRanks     = c("P", "C", "G", "S"),
-  taxonomy_db  = "silva"
+    table        = table,
+    output_file  = file.path(tempdir(), "sankey_output.html"),
+    maxn         = 10,
+    taxRanks     = c("P", "C", "G", "S"),
+    taxonomy_db  = "silva"
 )
-#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpyaHdP0/sankey_output.html
+#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpY18ORV/sankey_output.html
 ```

@@ -11,6 +11,21 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+- [`aldex_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_heatmap_plot.md):
+  in the saved table, the column `seccion` (in which group each taxon is
+  higher) is now named `higher_in`.
+- [`aldex_volcano_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_volcano_plot.md)
+  and
+  [`aldex_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/aldex_heatmap_plot.md)
+  gain `mc_samples`, the number of ALDEx2 Monte Carlo instances. The
+  default, `128` (ALDEx2’s default), gives the same results as before;
+  fewer instances are faster (e.g. `16` for a quick look) but less
+  stable.
+- [`ancombc_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ancombc_plot.md)
+  is about 2.5 times faster: it no longer runs the ANCOMBC2 sensitivity
+  analysis (`pseudo_sens`), which the plot did not use. The plotted taxa
+  are the same; the saved table no longer has the `passed_ss_*` and
+  `diff_robust_*` columns.
 - [`abundance_heatmap_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_heatmap_plot.md):
   `top_n` now defaults to `15`, as in
   [`abundance_bar_plot()`](https://steph0522.github.io/MicroBioMeta/reference/abundance_bar_plot.md)
@@ -219,6 +234,10 @@ BUG FIXES
 
 OTHER
 
+- Fewer dependencies: `reshape2`, `purrr`, `tidyselect`, `RColorBrewer`
+  and `viridis` were removed from Imports (their few uses are now done
+  with `tidyr`, base R and `scales`, with identical results).
+- Code restyled with 4-space indentation (styler).
 - Removed all
   [`install.packages()`](https://rdrr.io/r/utils/install.packages.html)
   calls from within functions; missing Suggested/Imported packages now

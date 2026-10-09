@@ -177,14 +177,16 @@ colnames(metadata)[1] <- "OTUID"
 # "Rhizosphere_vs_Roots" also catches pairs the self-join recorded the
 # other way around ("Roots_vs_Rhizosphere") - no need to list both.
 beta_turnover_plot(
-  table                 = table,
-  metadata              = metadata,
-  comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
-  comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
-  condition1_col        = "Location",
-  condition2_col        = "Treatment",
-  facet_colors        = c("#5D478B", "#8B668B"),
-  group_colors          = c("Rhizosphere_vs_Roots"       = "#56B4E9",
-                            "Rhizosphere_vs_Rhizosphere" = "#E69F00")
+    table = table,
+    metadata = metadata,
+    comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
+    comparison_condition2 = c("Control_vs_Control", "Moderate_drought_vs_Moderate_drought"),
+    condition1_col = "Location",
+    condition2_col = "Treatment",
+    facet_colors = c("#5D478B", "#8B668B"),
+    group_colors = c(
+        "Rhizosphere_vs_Roots" = "#56B4E9",
+        "Rhizosphere_vs_Rhizosphere" = "#E69F00"
+    )
 )
 ```

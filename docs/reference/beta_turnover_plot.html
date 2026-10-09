@@ -234,15 +234,17 @@ treatment) and facets by it, so the comparison is not confounded by it.</p>
 <span class="r-in"><span><span class="co"># "Rhizosphere_vs_Roots" also catches pairs the self-join recorded the</span></span></span>
 <span class="r-in"><span><span class="co"># other way around ("Roots_vs_Rhizosphere") - no need to list both.</span></span></span>
 <span class="r-in"><span><span class="fu">beta_turnover_plot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table                 <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata              <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  comparison_condition1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>, <span class="st">"Rhizosphere_vs_Rhizosphere"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  comparison_condition2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control_vs_Control"</span>, <span class="st">"Moderate_drought_vs_Moderate_drought"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  condition1_col        <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  condition2_col        <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
-<span class="r-in"><span>  facet_colors        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5D478B"</span>, <span class="st">"#8B668B"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  group_colors          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>       <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span></span>
-<span class="r-in"><span>                            <span class="st">"Rhizosphere_vs_Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    comparison_condition1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>, <span class="st">"Rhizosphere_vs_Rhizosphere"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    comparison_condition2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Control_vs_Control"</span>, <span class="st">"Moderate_drought_vs_Moderate_drought"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    condition1_col <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>    facet_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#5D478B"</span>, <span class="st">"#8B668B"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    group_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="st">"Rhizosphere_vs_Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span></span>
+<span class="r-in"><span>        <span class="st">"Rhizosphere_vs_Rhizosphere"</span> <span class="op">=</span> <span class="st">"#E69F00"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="beta_turnover_plot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>

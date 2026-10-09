@@ -100,7 +100,8 @@ ancombc_plot(
 
 - save_table:
 
-  Logical. If `TRUE`, saves the full ANCOMBC2 results table as a
+  Logical. If `TRUE`, saves the ANCOMBC2 results table (log fold change,
+  standard error, p- and q-values and `diff_` of each term) as a
   tab-delimited file. Default `FALSE`.
 
 - table_filename:
@@ -123,11 +124,11 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 
 # \donttest{
 ancombc_plot(
-  table        = table,
-  metadata     = metadata,
-  group_col     = "Location",
-  min_prevalence      = 0.3,
-  p_adjust_method = "BH"
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    min_prevalence = 0.3,
+    p_adjust_method = "BH"
 )
 #> Registered S3 method overwritten by 'lme4':
 #>   method           from
@@ -151,10 +152,10 @@ ancombc_plot(
 #> Loading required package: foreach
 #> Loading required package: rngtools
 #> ANCOM-BC2 primary results ...
-#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
-#> For taxa that are significant but do not pass the sensitivity analysis,
-#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
-#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
+#> Sensitivity analysis is currently turned off.
+#> Since sensitivity analysis is essential for reducing false positives,
+#> it is highly recommended to enable it unless your primary focus is power.
+#> Are you sure you want to proceed without it?
 #> Term 'Location': 1 significant taxa
 
 # }

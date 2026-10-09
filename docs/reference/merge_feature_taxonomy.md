@@ -51,7 +51,7 @@ feature_table <- full_table[, setdiff(colnames(full_table), "taxonomy")]
 taxonomy_df <- full_table[, "taxonomy", drop = FALSE]
 
 merged <- merge_feature_taxonomy(
-  table    = feature_table,
-  taxonomy = taxonomy_df
+    table    = feature_table,
+    taxonomy = taxonomy_df
 )
 ```

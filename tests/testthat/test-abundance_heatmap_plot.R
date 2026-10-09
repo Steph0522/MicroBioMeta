@@ -17,7 +17,6 @@ test_that("abundance_heatmap_plot returns a grob, with or without drawing", {
         expect_s3_class(g, "gTree")
         expect_s3_class(g, "mbm_heatmap")
     }
-    # printing the returned object draws the heatmap
     expect_no_error(print(g))
 })
 

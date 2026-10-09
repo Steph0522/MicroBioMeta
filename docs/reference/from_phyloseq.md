@@ -41,19 +41,29 @@ for `(Tree)SummarizedExperiment` objects.
 
 ``` r
 if (requireNamespace("phyloseq", quietly = TRUE)) {
-  counts <- matrix(c(10, 0, 5, 3, 8, 1), nrow = 3,
-                   dimnames = list(c("ASV1", "ASV2", "ASV3"), c("S1", "S2")))
-  tax <- matrix(c("Bacteria", "Bacteria", "Bacteria",
-                  "Firmicutes", "Proteobacteria", NA),
-                nrow = 3, dimnames = list(rownames(counts), c("Kingdom", "Phylum")))
-  samples <- data.frame(Soil = c("Rhizosphere", "Bulk soil"),
-                        row.names = c("S1", "S2"))
-  ps <- phyloseq::phyloseq(phyloseq::otu_table(counts, taxa_are_rows = TRUE),
-                           phyloseq::tax_table(tax),
-                           phyloseq::sample_data(samples))
-  mbm <- from_phyloseq(ps)
-  mbm$table
-  mbm$metadata
+    counts <- matrix(c(10, 0, 5, 3, 8, 1),
+        nrow = 3,
+        dimnames = list(c("ASV1", "ASV2", "ASV3"), c("S1", "S2"))
+    )
+    tax <- matrix(
+        c(
+            "Bacteria", "Bacteria", "Bacteria",
+            "Firmicutes", "Proteobacteria", NA
+        ),
+        nrow = 3, dimnames = list(rownames(counts), c("Kingdom", "Phylum"))
+    )
+    samples <- data.frame(
+        Soil = c("Rhizosphere", "Bulk soil"),
+        row.names = c("S1", "S2")
+    )
+    ps <- phyloseq::phyloseq(
+        phyloseq::otu_table(counts, taxa_are_rows = TRUE),
+        phyloseq::tax_table(tax),
+        phyloseq::sample_data(samples)
+    )
+    mbm <- from_phyloseq(ps)
+    mbm$table
+    mbm$metadata
 }
 #>   SAMPLEID        Soil
 #> 1       S1 Rhizosphere

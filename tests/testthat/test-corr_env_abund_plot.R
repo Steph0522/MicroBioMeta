@@ -21,9 +21,6 @@ test_that("corr_env_abund_plot corrects correlation p-values before filtering", 
 
     p_raw <- run("none")
     expect_s3_class(p_raw, "ggplot")
-
-    # FDR correction can only keep the same taxa or fewer; if none survive,
-    # the function says so clearly instead of failing inside cor().
     p_bh <- tryCatch(run("BH"), error = function(e) e)
     if (inherits(p_bh, "error")) {
         expect_match(conditionMessage(p_bh), "No taxa have a significant correlation")

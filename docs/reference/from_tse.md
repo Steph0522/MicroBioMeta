@@ -51,18 +51,25 @@ for `phyloseq` objects.
 
 ``` r
 if (requireNamespace("SummarizedExperiment", quietly = TRUE)) {
-  counts <- matrix(c(10, 0, 5, 3, 8, 1), nrow = 3,
-                   dimnames = list(c("ASV1", "ASV2", "ASV3"), c("S1", "S2")))
-  tax <- data.frame(Kingdom = "Bacteria",
-                    Phylum = c("Firmicutes", "Proteobacteria", NA),
-                    row.names = rownames(counts))
-  samples <- data.frame(Soil = c("Rhizosphere", "Bulk soil"),
-                        row.names = c("S1", "S2"))
-  se <- SummarizedExperiment::SummarizedExperiment(
-    assays = list(counts = counts), rowData = tax, colData = samples)
-  mbm <- from_tse(se)
-  mbm$table
-  mbm$metadata
+    counts <- matrix(c(10, 0, 5, 3, 8, 1),
+        nrow = 3,
+        dimnames = list(c("ASV1", "ASV2", "ASV3"), c("S1", "S2"))
+    )
+    tax <- data.frame(
+        Kingdom = "Bacteria",
+        Phylum = c("Firmicutes", "Proteobacteria", NA),
+        row.names = rownames(counts)
+    )
+    samples <- data.frame(
+        Soil = c("Rhizosphere", "Bulk soil"),
+        row.names = c("S1", "S2")
+    )
+    se <- SummarizedExperiment::SummarizedExperiment(
+        assays = list(counts = counts), rowData = tax, colData = samples
+    )
+    mbm <- from_tse(se)
+    mbm$table
+    mbm$metadata
 }
 #>   SAMPLEID        Soil
 #> 1       S1 Rhizosphere

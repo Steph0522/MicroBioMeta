@@ -165,37 +165,37 @@ function to make the result reproducible.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example using a data frame</span></span></span>
 <span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table       <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location*Treatment"</span>,</span></span>
-<span class="r-in"><span>  distance    <span class="op">=</span> <span class="st">"bray"</span>,</span></span>
-<span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
-<span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
-<span class="r-in"><span>  strata_var  <span class="op">=</span> <span class="st">"Plot"</span></span></span>
+<span class="r-in"><span>    table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    formula_str <span class="op">=</span> <span class="st">"Location*Treatment"</span>,</span></span>
+<span class="r-in"><span>    distance <span class="op">=</span> <span class="st">"bray"</span>,</span></span>
+<span class="r-in"><span>    test <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
+<span class="r-in"><span>    permutations <span class="op">=</span> <span class="fl">999</span>,</span></span>
+<span class="r-in"><span>    strata_var <span class="op">=</span> <span class="st">"Plot"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="beta_test_table-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example using a distance matrix</span></span></span>
 <span class="r-in"><span><span class="va">dist_matrix</span> <span class="op">&lt;-</span> <span class="fu">vegan</span><span class="fu">::</span><span class="fu"><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegdist</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span>, <span class="st">"taxonomy"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"bray"</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">table</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table</span><span class="op">)</span>, <span class="st">"taxonomy"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    method <span class="op">=</span> <span class="st">"bray"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table       <span class="op">=</span> <span class="va">dist_matrix</span>,</span></span>
-<span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"betadisper"</span></span></span>
+<span class="r-in"><span>    table       <span class="op">=</span> <span class="va">dist_matrix</span>,</span></span>
+<span class="r-in"><span>    metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    test        <span class="op">=</span> <span class="st">"betadisper"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="beta_test_table-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compositional PERMANOVA (CLR via ALDEx2, then Euclidean)</span></span></span>
 <span class="r-in"><span><span class="fu">beta_test_table</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table       <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata    <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  distance    <span class="op">=</span> <span class="st">"compositional"</span>,</span></span>
-<span class="r-in"><span>  test        <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
-<span class="r-in"><span>  permutations <span class="op">=</span> <span class="fl">999</span></span></span>
+<span class="r-in"><span>    table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    formula_str <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    distance <span class="op">=</span> <span class="st">"compositional"</span>,</span></span>
+<span class="r-in"><span>    test <span class="op">=</span> <span class="st">"permanova"</span>,</span></span>
+<span class="r-in"><span>    permutations <span class="op">=</span> <span class="fl">999</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> no conditions provided: forcing denom = 'all'</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> no conditions provided: forcing conds = 'NA'</span>

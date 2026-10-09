@@ -90,15 +90,14 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 random_forest_lollipop_plot(
-  table               = table,
-  metadata            = metadata,
-  variable_to_predict = "Location",
-  top_n               = 20,
-  size                = 6
+    table               = table,
+    metadata            = metadata,
+    variable_to_predict = "Location",
+    top_n               = 20,
+    size                = 6
 )
 #> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
 #>   - 'Proteobacteria' changed to 'Pseudomonadota'
 #>   - 'Actinobacteriota' changed to 'Actinomycetota'
-#>   - 'Firmicutes' changed to 'Bacillota'
 #> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
 ```

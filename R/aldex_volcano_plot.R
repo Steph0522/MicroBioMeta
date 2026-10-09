@@ -148,7 +148,10 @@ aldex_volcano_plot <- function(table,
     }
     other_cond <- setdiff(groups, cond)[1]
 
-    aldex_clr <- ALDEx2::aldex(table, conditions, mc.samples = mc_samples, denom = "all")
+    aldex_clr <- suppressMessages(ALDEx2::aldex(
+        table, conditions,
+        mc.samples = mc_samples, denom = "all", verbose = FALSE
+    ))
 
     processed_data <- aldex_clr %>%
         tibble::rownames_to_column(var = "Feature.ID") %>%

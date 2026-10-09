@@ -1,8 +1,6 @@
 test_that("beta_turnover_plot returns a plot comparing beta diversity within same-batch pairs", {
     toy <- make_beta_toy_community()
 
-    # comparison_condition1/2 match regardless of order, so each pair only
-    # needs to be listed once - not also its "B_vs_A" reverse.
     result <- beta_turnover_plot(
         table = toy$table,
         metadata = toy$metadata,

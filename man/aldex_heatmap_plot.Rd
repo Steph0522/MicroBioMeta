@@ -87,7 +87,7 @@ annotation, one per group, named after the groups or in their order. If
 plotted taxa (effect size, \code{diff.btw} and p-value category) as a
 tab-delimited file. Default \code{FALSE}. \code{effect} and \code{diff.btw}
 are saved as ALDEx2 returns them (second group in alphabetical order minus
-the first); the \code{seccion} column says in which group each taxon is
+the first); the \code{higher_in} column says in which group each taxon is
 higher.}
 
 \item{table_filename}{Character. Name or path of the saved file (used when

@@ -104,13 +104,13 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 ratios_bubble_plot(
-  table         = table,
-  metadata      = metadata,
-  group_col = "Location",
-  condition_A   = "Rhizosphere",
-  condition_B   = "Roots",
-  taxonomy_db   = "silva",
-  level         = "genus",
-  top_n         = 20
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    condition_A = "Rhizosphere",
+    condition_B = "Roots",
+    taxonomy_db = "silva",
+    level = "genus",
+    top_n = 20
 )
 ```

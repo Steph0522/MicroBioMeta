@@ -89,14 +89,14 @@ table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 # Always tagged A/B/C (see panel_label_case and panel_labels to customize)
 alpha_hill_corr_plot(
-  table             = table,
-  facet_orientation = "horizontal"
+    table             = table,
+    facet_orientation = "horizontal"
 )
 
 
 ## Using Pearson correlation instead of the default Spearman
 alpha_hill_corr_plot(
-  table  = table,
-  method = "pearson"
+    table  = table,
+    method = "pearson"
 )
 ```

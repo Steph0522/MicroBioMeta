@@ -1,7 +1,3 @@
-# Shared toy community used by the compositional ordination / PERMANOVA tests.
-# Two groups (A: S1-S3, B: S4-S6) of 8 features, with features 1-4 enriched in
-# group A and 5-8 enriched in group B, so the compositional distance has clear,
-# non-degenerate structure for the ordination and PERMANOVA to pick up.
 make_toy_community <- function() {
     set.seed(1)
     n_feat <- 8

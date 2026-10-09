@@ -15,8 +15,6 @@ test_that("a two-sample stat compares every pair of boxes within each facet", {
     built <- ggplot2::ggplot_build(p)
     pw <- unique(built$data[[2]][, c("PANEL", "group1", "group2")])
 
-    # Non-significant pairs are hidden (hide.ns), so up to choose(n, 2) of
-    # them are drawn, each one a different pair of boxes with its own bracket.
     n_boxes <- length(unique(p$data$condition1_group))
     expect_gt(nrow(pw), 1)
     expect_lte(nrow(pw), choose(n_boxes, 2))

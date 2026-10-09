@@ -51,6 +51,12 @@
 <li>Bundled a real (subset) 16S example dataset in <code>inst/extdata</code> (<code>tabla_bacteria.txt</code> / <code>metadata_bacteria.txt</code>), used throughout the documentation examples.</li>
 </ul><p>SIGNIFICANT USER-VISIBLE CHANGES</p>
 <ul><li>
+<code><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot()</a></code>: in the saved table, the column <code>seccion</code> (in which group each taxon is higher) is now named <code>higher_in</code>.</li>
+<li>
+<code><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot()</a></code> and <code><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot()</a></code> gain <code>mc_samples</code>, the number of ALDEx2 Monte Carlo instances. The default, <code>128</code> (ALDEx2’s default), gives the same results as before; fewer instances are faster (e.g. <code>16</code> for a quick look) but less stable.</li>
+<li>
+<code><a href="../reference/ancombc_plot.html">ancombc_plot()</a></code> is about 2.5 times faster: it no longer runs the ANCOMBC2 sensitivity analysis (<code>pseudo_sens</code>), which the plot did not use. The plotted taxa are the same; the saved table no longer has the <code>passed_ss_*</code> and <code>diff_robust_*</code> columns.</li>
+<li>
 <code><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot()</a></code>: <code>top_n</code> now defaults to <code>15</code>, as in <code><a href="../reference/abundance_bar_plot.html">abundance_bar_plot()</a></code> (before it had no default).</li>
 <li>
 <code><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot()</a></code>: <code>group_col</code> is required (the dispersion and the lines to the centroid are computed per group; before, its <code>NULL</code> default failed with an unclear error), and <code>table_filename</code> defaults to <code>"beta_partition"</code> (files <code>beta_partition_jacs.txt</code>, <code>_jtus.txt</code>, <code>_jnes.txt</code>) instead of <code>"SAMPLE1"</code>.</li>
@@ -105,7 +111,9 @@
 <li>Fixed a duplicate, empty <code>Alpha diversity</code> section in <code>_pkgdown.yml</code>’s reference index.</li>
 <li>Fixed stale references to pre-rename function names (<code>alpha_hill_corrplot</code> -&gt; <code>alpha_hill_corr_plot</code>, <code>beta_partition_plot</code> -&gt; <code>beta_partition_ord_plot</code>) left over in code comments and one <code>@param</code> doc.</li>
 </ul><p>OTHER</p>
-<ul><li>Removed all <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> calls from within functions; missing Suggested/Imported packages now fail with an informative <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop()</a></code> message instead of installing silently, per Bioconductor guidelines.</li>
+<ul><li>Fewer dependencies: <code>reshape2</code>, <code>purrr</code>, <code>tidyselect</code>, <code>RColorBrewer</code> and <code>viridis</code> were removed from Imports (their few uses are now done with <code>tidyr</code>, base R and <code>scales</code>, with identical results).</li>
+<li>Code restyled with 4-space indentation (styler).</li>
+<li>Removed all <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> calls from within functions; missing Suggested/Imported packages now fail with an informative <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop()</a></code> message instead of installing silently, per Bioconductor guidelines.</li>
 <li>Removed <code>assign(..., envir = .GlobalEnv)</code> side effects; functions return their results directly.</li>
 <li>Replaced <code>T</code>/<code>F</code> literals with <code>TRUE</code>/<code>FALSE</code>, and <code>1:length(x)</code>-style indexing (which breaks on zero-length input) with <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along()</a></code>/<code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code>.</li>
 <li>Added a <code>Depends: R (&gt;= 4.1)</code> floor to <code>DESCRIPTION</code>, reflecting the package’s use of the native lambda (<code>\(x) ...</code>) syntax.</li>

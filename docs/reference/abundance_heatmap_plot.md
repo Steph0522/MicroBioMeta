@@ -182,17 +182,17 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 abundance_heatmap_plot(
-  table                  = table,
-  metadata               = metadata,
-  condition1             = "Location",
-  condition2             = "Treatment",
-  condition3             = "Plot",
-  top_n                  = 50,
-  cluster                = TRUE,
-  show_column_names      = FALSE,
-  name_legend_condition1 = "Location",
-  name_legend_condition2 = "Treatment",
-  name_legend_condition3 = "Plot"
+    table                  = table,
+    metadata               = metadata,
+    condition1             = "Location",
+    condition2             = "Treatment",
+    condition3             = "Plot",
+    top_n                  = 50,
+    cluster                = TRUE,
+    show_column_names      = FALSE,
+    name_legend_condition1 = "Location",
+    name_legend_condition2 = "Treatment",
+    name_legend_condition3 = "Plot"
 )
 #> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
 #> 
@@ -200,25 +200,27 @@ abundance_heatmap_plot(
 
 # \donttest{
 heat <- abundance_heatmap_plot(
-  table                  = table,
-  metadata               = metadata,
-  condition1             = "Location",
-  condition2             = "Treatment",
-  top_n                  = 20,
-  show_column_names      = FALSE,
-  colors_condition1      = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
-  colors_condition2      = c(Control          = "#CC6677",
-                             Moderate_drought = "#332288",
-                             Severe_drought   = "#999933"),
-  name_legend_condition1 = "Compartment",
-  feature_prefix         = "ASV",
-  max_label_length       = 30,
-  draw                   = FALSE
+    table = table,
+    metadata = metadata,
+    condition1 = "Location",
+    condition2 = "Treatment",
+    top_n = 20,
+    show_column_names = FALSE,
+    colors_condition1 = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+    colors_condition2 = c(
+        Control = "#CC6677",
+        Moderate_drought = "#332288",
+        Severe_drought = "#999933"
+    ),
+    name_legend_condition1 = "Compartment",
+    feature_prefix = "ASV",
+    max_label_length = 30,
+    draw = FALSE
 )
 #> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
 #> 
 #> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
-heat  # printing the returned object draws the heatmap
+heat # printing the returned object draws the heatmap
 
 # }
 ```

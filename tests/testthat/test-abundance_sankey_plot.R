@@ -1,5 +1,4 @@
 test_that("abundance_sankey_plot doesn't turn SILVA placeholders into fake taxa", {
-    # saveNetwork() writes a self-contained HTML, which needs pandoc
     skip_if_not(rmarkdown::pandoc_available())
 
     tax <- c(

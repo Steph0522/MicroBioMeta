@@ -114,37 +114,37 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 
 # Example using a data frame
 beta_test_table(
-  table       = table,
-  metadata    = metadata,
-  formula_str = "Location*Treatment",
-  distance    = "bray",
-  test        = "permanova",
-  permutations = 999,
-  strata_var  = "Plot"
+    table = table,
+    metadata = metadata,
+    formula_str = "Location*Treatment",
+    distance = "bray",
+    test = "permanova",
+    permutations = 999,
+    strata_var = "Plot"
 )
 
 
 # Example using a distance matrix
 dist_matrix <- vegan::vegdist(
-  t(table[, setdiff(colnames(table), "taxonomy")]),
-  method = "bray"
+    t(table[, setdiff(colnames(table), "taxonomy")]),
+    method = "bray"
 )
 beta_test_table(
-  table       = dist_matrix,
-  metadata    = metadata,
-  formula_str = "Location",
-  test        = "betadisper"
+    table       = dist_matrix,
+    metadata    = metadata,
+    formula_str = "Location",
+    test        = "betadisper"
 )
 
 
 # Compositional PERMANOVA (CLR via ALDEx2, then Euclidean)
 beta_test_table(
-  table       = table,
-  metadata    = metadata,
-  formula_str = "Location",
-  distance    = "compositional",
-  test        = "permanova",
-  permutations = 999
+    table = table,
+    metadata = metadata,
+    formula_str = "Location",
+    distance = "compositional",
+    test = "permanova",
+    permutations = 999
 )
 #> no conditions provided: forcing denom = 'all'
 #> no conditions provided: forcing conds = 'NA'

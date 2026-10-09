@@ -165,26 +165,26 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 
 loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))
 metadata$dist_km <- loc_dist$dist_km[match(metadata$Loc, loc_dist$Loc)] +
-  stats::rnorm(nrow(metadata), sd = 0.3)
+    stats::rnorm(nrow(metadata), sd = 0.3)
 
 # All samples, no grouping. Always tagged A/B/C (see panel_label_case and
 # panel_labels to customize)
 alpha_decay_plot(
-  table        = table,
-  metadata     = metadata,
-  cont_var     = "dist_km",
-  x_axis_title = "Distance (km)"
+    table        = table,
+    metadata     = metadata,
+    cont_var     = "dist_km",
+    x_axis_title = "Distance (km)"
 )
 #> Warning: cannot compute exact p-value with ties
 
 
 # Separate regression lines by location
 alpha_decay_plot(
-  table        = table,
-  metadata     = metadata,
-  cont_var     = "dist_km",
-  x_axis_title = "Distance (km)",
-  group_col    = "Location"
+    table        = table,
+    metadata     = metadata,
+    cont_var     = "dist_km",
+    x_axis_title = "Distance (km)",
+    group_col    = "Location"
 )
 #> Warning: cannot compute exact p-value with ties
 ```

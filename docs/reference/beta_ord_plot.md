@@ -148,119 +148,117 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 beta_ord_plot(
-  table      = table,
-  metadata   = metadata,
-  distance   = "aitchison",
-  ordination = "NMDS",
-  group_col  = "Location",
-  top_n      = 5
+    table      = table,
+    metadata   = metadata,
+    distance   = "aitchison",
+    ordination = "NMDS",
+    group_col  = "Location",
+    top_n      = 5
 )
 #> Run 0 stress 0.1706715 
-#> Run 1 stress 0.1858971 
-#> Run 2 stress 0.1964941 
-#> Run 3 stress 0.2008229 
-#> Run 4 stress 0.2108036 
-#> Run 5 stress 0.2110827 
-#> Run 6 stress 0.2022634 
-#> Run 7 stress 0.1852785 
-#> Run 8 stress 0.2071095 
-#> Run 9 stress 0.1928814 
-#> Run 10 stress 0.1847932 
-#> Run 11 stress 0.2006323 
-#> Run 12 stress 0.1817891 
-#> Run 13 stress 0.1812133 
-#> Run 14 stress 0.1805684 
-#> Run 15 stress 0.1911592 
-#> Run 16 stress 0.1987114 
-#> Run 17 stress 0.2251462 
-#> Run 18 stress 0.1939527 
-#> Run 19 stress 0.1890742 
-#> Run 20 stress 0.1883558 
-#> Run 21 stress 0.1938252 
-#> Run 22 stress 0.2100218 
-#> Run 23 stress 0.1886366 
-#> Run 24 stress 0.1961417 
-#> Run 25 stress 0.1752081 
-#> Run 26 stress 0.1828438 
-#> Run 27 stress 0.2031569 
-#> Run 28 stress 0.1873056 
-#> Run 29 stress 0.196631 
-#> Run 30 stress 0.1971796 
-#> Run 31 stress 0.1968274 
-#> Run 32 stress 0.1890111 
-#> Run 33 stress 0.1953745 
-#> Run 34 stress 0.1822461 
-#> Run 35 stress 0.1864966 
-#> Run 36 stress 0.2013476 
-#> Run 37 stress 0.1775038 
-#> Run 38 stress 0.1702792 
-#> ... New best solution
-#> ... Procrustes: rmse 0.05496463  max resid 0.238398 
-#> Run 39 stress 0.1840863 
-#> Run 40 stress 0.1858768 
-#> Run 41 stress 0.1826098 
-#> Run 42 stress 0.1861802 
-#> Run 43 stress 0.2099587 
-#> Run 44 stress 0.207177 
-#> Run 45 stress 0.178743 
-#> Run 46 stress 0.1854874 
-#> Run 47 stress 0.1827463 
-#> Run 48 stress 0.186119 
-#> Run 49 stress 0.2163555 
-#> Run 50 stress 0.2081207 
-#> Run 51 stress 0.1938853 
-#> Run 52 stress 0.2120015 
-#> Run 53 stress 0.1733722 
-#> Run 54 stress 0.1733489 
-#> Run 55 stress 0.1835213 
-#> Run 56 stress 0.190806 
-#> Run 57 stress 0.2269347 
-#> Run 58 stress 0.2013745 
-#> Run 59 stress 0.1934049 
-#> Run 60 stress 0.2279811 
-#> Run 61 stress 0.2033342 
-#> Run 62 stress 0.2225681 
-#> Run 63 stress 0.1816522 
-#> Run 64 stress 0.1775682 
-#> Run 65 stress 0.1994683 
-#> Run 66 stress 0.1723301 
-#> Run 67 stress 0.1955567 
-#> Run 68 stress 0.2069365 
-#> Run 69 stress 0.2084881 
-#> Run 70 stress 0.1955151 
-#> Run 71 stress 0.183886 
-#> Run 72 stress 0.1966279 
-#> Run 73 stress 0.2066014 
-#> Run 74 stress 0.1855555 
-#> Run 75 stress 0.180835 
-#> Run 76 stress 0.1881507 
-#> Run 77 stress 0.190056 
-#> Run 78 stress 0.1993236 
-#> Run 79 stress 0.1837502 
-#> Run 80 stress 0.1737991 
-#> Run 81 stress 0.179853 
-#> Run 82 stress 0.1821538 
-#> Run 83 stress 0.1792971 
-#> Run 84 stress 0.1831922 
-#> Run 85 stress 0.2154851 
-#> Run 86 stress 0.1836506 
-#> Run 87 stress 0.1747959 
-#> Run 88 stress 0.2179816 
-#> Run 89 stress 0.2042863 
-#> Run 90 stress 0.1827904 
-#> Run 91 stress 0.1756128 
-#> Run 92 stress 0.1718132 
-#> Run 93 stress 0.2176935 
-#> Run 94 stress 0.2017589 
-#> Run 95 stress 0.1962462 
-#> Run 96 stress 0.1954244 
-#> Run 97 stress 0.1764035 
-#> Run 98 stress 0.2014986 
-#> Run 99 stress 0.1926154 
-#> Run 100 stress 0.2081464 
+#> Run 1 stress 0.1882851 
+#> Run 2 stress 0.2073973 
+#> Run 3 stress 0.1870265 
+#> Run 4 stress 0.1943693 
+#> Run 5 stress 0.1972803 
+#> Run 6 stress 0.1854032 
+#> Run 7 stress 0.1848408 
+#> Run 8 stress 0.1872543 
+#> Run 9 stress 0.1965079 
+#> Run 10 stress 0.1972311 
+#> Run 11 stress 0.1715078 
+#> Run 12 stress 0.2175272 
+#> Run 13 stress 0.1942439 
+#> Run 14 stress 0.1991476 
+#> Run 15 stress 0.1858242 
+#> Run 16 stress 0.1848806 
+#> Run 17 stress 0.1867463 
+#> Run 18 stress 0.1819661 
+#> Run 19 stress 0.2076914 
+#> Run 20 stress 0.1946762 
+#> Run 21 stress 0.1726581 
+#> Run 22 stress 0.2012334 
+#> Run 23 stress 0.1860186 
+#> Run 24 stress 0.2066487 
+#> Run 25 stress 0.1873832 
+#> Run 26 stress 0.1727758 
+#> Run 27 stress 0.1720405 
+#> Run 28 stress 0.2186642 
+#> Run 29 stress 0.1721501 
+#> Run 30 stress 0.1723186 
+#> Run 31 stress 0.1782168 
+#> Run 32 stress 0.1963826 
+#> Run 33 stress 0.1753228 
+#> Run 34 stress 0.1827007 
+#> Run 35 stress 0.2050238 
+#> Run 36 stress 0.1741984 
+#> Run 37 stress 0.1899418 
+#> Run 38 stress 0.1902202 
+#> Run 39 stress 0.2027131 
+#> Run 40 stress 0.1885076 
+#> Run 41 stress 0.1838089 
+#> Run 42 stress 0.1901196 
+#> Run 43 stress 0.2039347 
+#> Run 44 stress 0.1802905 
+#> Run 45 stress 0.184073 
+#> Run 46 stress 0.1868212 
+#> Run 47 stress 0.2102216 
+#> Run 48 stress 0.2025207 
+#> Run 49 stress 0.1829283 
+#> Run 50 stress 0.1788322 
+#> Run 51 stress 0.1850474 
+#> Run 52 stress 0.1764492 
+#> Run 53 stress 0.1949606 
+#> Run 54 stress 0.189422 
+#> Run 55 stress 0.1782869 
+#> Run 56 stress 0.1859456 
+#> Run 57 stress 0.1837504 
+#> Run 58 stress 0.1899624 
+#> Run 59 stress 0.1857217 
+#> Run 60 stress 0.1981857 
+#> Run 61 stress 0.1726998 
+#> Run 62 stress 0.2121562 
+#> Run 63 stress 0.2129648 
+#> Run 64 stress 0.186306 
+#> Run 65 stress 0.2112353 
+#> Run 66 stress 0.1878251 
+#> Run 67 stress 0.1796622 
+#> Run 68 stress 0.1829535 
+#> Run 69 stress 0.2223803 
+#> Run 70 stress 0.1982551 
+#> Run 71 stress 0.1898512 
+#> Run 72 stress 0.1893261 
+#> Run 73 stress 0.1981641 
+#> Run 74 stress 0.1958698 
+#> Run 75 stress 0.187652 
+#> Run 76 stress 0.1852827 
+#> Run 77 stress 0.2071778 
+#> Run 78 stress 0.1927552 
+#> Run 79 stress 0.1796531 
+#> Run 80 stress 0.1803939 
+#> Run 81 stress 0.2022443 
+#> Run 82 stress 0.1825395 
+#> Run 83 stress 0.1791748 
+#> Run 84 stress 0.1971115 
+#> Run 85 stress 0.2116146 
+#> Run 86 stress 0.1796075 
+#> Run 87 stress 0.174111 
+#> Run 88 stress 0.208126 
+#> Run 89 stress 0.1955574 
+#> Run 90 stress 0.1992225 
+#> Run 91 stress 0.2081711 
+#> Run 92 stress 0.1779663 
+#> Run 93 stress 0.1734975 
+#> Run 94 stress 0.2137808 
+#> Run 95 stress 0.2328016 
+#> Run 96 stress 0.2307386 
+#> Run 97 stress 0.1873002 
+#> Run 98 stress 0.1950328 
+#> Run 99 stress 0.1713901 
+#> Run 100 stress 0.1949897 
 #> *** Best solution was not repeated -- monoMDS stopping criteria:
-#>     19: no. of iterations >= maxit
-#>     81: stress ratio > sratmax
+#>     20: no. of iterations >= maxit
+#>     80: stress ratio > sratmax
 #> Coordinate system already present.
 #> ℹ Adding new coordinate system, which will replace the existing one.
 ```

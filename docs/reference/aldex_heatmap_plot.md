@@ -14,6 +14,7 @@ aldex_heatmap_plot(
   effect_threshold = 0,
   pval_threshold = 0.05,
   p_adjust_method = "BH",
+  mc_samples = 128,
   cluster_rows = FALSE,
   cluster_columns = FALSE,
   heatmap_colors = NULL,
@@ -62,6 +63,15 @@ aldex_heatmap_plot(
   adjusted p-values of ALDEx2 (`wi.eBH`) or the raw ones (`wi.ep`) for
   `pval_threshold` and the p-value annotation. ALDEx2 only computes the
   BH correction.
+
+- mc_samples:
+
+  Integer. Number of ALDEx2 Monte Carlo instances. Default `128`
+  (ALDEx2's default), recommended for final analyses. Fewer instances
+  are faster but the p-values and effect sizes are less stable (e.g.
+  `16` for a quick look); call
+  [`set.seed()`](https://rdrr.io/r/base/Random.html) before the function
+  to make the result reproducible.
 
 - cluster_rows:
 
@@ -114,7 +124,7 @@ aldex_heatmap_plot(
   (effect size, `diff.btw` and p-value category) as a tab-delimited
   file. Default `FALSE`. `effect` and `diff.btw` are saved as ALDEx2
   returns them (second group in alphabetical order minus the first); the
-  `seccion` column says in which group each taxon is higher.
+  `higher_in` column says in which group each taxon is higher.
 
 - table_filename:
 
@@ -149,18 +159,14 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 # filtered by effect size alone (pval_threshold = NULL), since this small
 # (46-sample) dataset has few taxa with significant p-values.
 aldex_heatmap_plot(
-  table            = table,
-  metadata         = metadata,
-  group_col        = "Location",
-  effect_threshold = 0.5,
-  pval_threshold   = NULL
+    table            = table,
+    metadata         = metadata,
+    group_col        = "Location",
+    mc_samples       = 16,
+    effect_threshold = 0.5,
+    pval_threshold   = NULL
 )
-#> aldex.clr: generating Monte-Carlo instances and clr values
-#> conditions vector supplied
-#> operating in serial mode
-#> computing center with all features
-#> aldex.ttest: doing t-test
-#> aldex.effect: calculating effect sizes
+#> Warning: values are unreliable when estimated with so few MC smps
 
 
 # All the colors have colorblind-friendly defaults, but each can be set by
@@ -169,23 +175,21 @@ aldex_heatmap_plot(
 # (one color per p-value class) and heatmap_colors (median clr values)
 # \donttest{
 aldex_heatmap_plot(
-  table            = table,
-  metadata         = metadata,
-  group_col        = "Location",
-  effect_threshold = 0.5,
-  pval_threshold   = NULL,
-  group_colors     = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
-  effect_colors    = c("#0072B2", "white", "#E69F00"),
-  pvalue_colors    = c("<0.001" = "black", "<0.01" = "grey30",
-                       "<0.05" = "grey60", ">0.05" = "grey90"),
-  heatmap_colors   = "BuOr"
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    mc_samples = 16,
+    effect_threshold = 0.5,
+    pval_threshold = NULL,
+    group_colors = c(Rhizosphere = "#56B4E9", Roots = "#009E73"),
+    effect_colors = c("#0072B2", "white", "#E69F00"),
+    pvalue_colors = c(
+        "<0.001" = "black", "<0.01" = "grey30",
+        "<0.05" = "grey60", ">0.05" = "grey90"
+    ),
+    heatmap_colors = "BuOr"
 )
-#> aldex.clr: generating Monte-Carlo instances and clr values
-#> conditions vector supplied
-#> operating in serial mode
-#> computing center with all features
-#> aldex.ttest: doing t-test
-#> aldex.effect: calculating effect sizes
+#> Warning: values are unreliable when estimated with so few MC smps
 
 # }
 ```

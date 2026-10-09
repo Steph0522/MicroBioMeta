@@ -150,11 +150,11 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 
 # The environmental variables are columns of metadata, chosen with env_vars
 cca_rda_biplot(
-  table                = table,
-  metadata             = metadata,
-  env_vars             = c("pH", "TOC", "FW", "Root_FW", "DW"),
-  analysis             = "RDA",
-  show_all_env_vectors = TRUE,
-  group_col            = "Location"
+    table                = table,
+    metadata             = metadata,
+    env_vars             = c("pH", "TOC", "FW", "Root_FW", "DW"),
+    analysis             = "RDA",
+    show_all_env_vectors = TRUE,
+    group_col            = "Location"
 )
 ```

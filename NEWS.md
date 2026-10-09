@@ -9,6 +9,8 @@ NEW FEATURES
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+* `aldex_heatmap_plot()`: in the saved table, the column `seccion` (in which
+  group each taxon is higher) is now named `higher_in`.
 * `aldex_volcano_plot()` and `aldex_heatmap_plot()` gain `mc_samples`, the
   number of ALDEx2 Monte Carlo instances. The default, `128` (ALDEx2's
   default), gives the same results as before; fewer instances are faster

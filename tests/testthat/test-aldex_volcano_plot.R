@@ -1,8 +1,6 @@
 test_that("aldex_volcano_plot returns a ggplot for the effect-size view", {
     toy <- make_toy_community()
 
-    # aldex()'s Monte Carlo Dirichlet sampling uses R's global RNG; seeding
-    # here (the function itself doesn't) makes the test deterministic.
     set.seed(1)
     p <- aldex_volcano_plot(
         table = toy$table,
@@ -69,7 +67,6 @@ test_that("aldex_volcano_plot rejects an invalid type", {
 test_that("aldex_volcano_plot: in the plot, positive effect means higher in cond", {
     toy <- make_toy_community()
 
-    # OTU1-OTU4 are enriched in group A (see helper-toy_community.R)
     run <- function(cond) {
         tmp <- tempfile(fileext = ".txt")
         on.exit(unlink(tmp))
@@ -90,7 +87,6 @@ test_that("aldex_volcano_plot: in the plot, positive effect means higher in cond
     b <- run("B")
     expect_gt(a$plot, 0)
     expect_lt(b$plot, 0)
-    # The saved table keeps ALDEx2's own sign (B minus A), whatever cond is
     expect_lt(a$saved, 0)
     expect_equal(a$saved, b$saved)
 })
@@ -111,7 +107,6 @@ test_that("aldex_volcano_plot: p_adjust_method picks the adjusted or raw p-value
 
     expect_equal(p_bh$data$.p, p_bh$data$wi.eBH)
     expect_equal(p_raw$data$.p, p_raw$data$wi.ep)
-    # ALDEx2 only offers BH
     expect_error(aldex_volcano_plot(toy$table, toy$metadata,
         group_col = "Group",
         type = "effect", p_adjust_method = "holm"

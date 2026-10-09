@@ -16,7 +16,6 @@ test_that("collapse_table sums counts of features sharing taxonomy at the reques
     expect_named(result, c("collapsed_table", "long_format"))
 
     collapsed <- result$collapsed_table
-    # The two Lactobacillus features (OTU1, OTU2) should be summed into one row
     expect_equal(nrow(collapsed), 2)
     lacto_row <- collapsed[grepl("Lactobacillus$", collapsed$taxonomy), ]
     expect_equal(lacto_row$Sample1, 15)

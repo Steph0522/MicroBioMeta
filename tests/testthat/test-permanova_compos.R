@@ -10,8 +10,6 @@ test_that("beta_test_table runs a compositional PERMANOVA and returns a table fi
         permutations = 99
     )
 
-    # The result is the table figure, a ggplot that can be combined with
-    # other plots (e.g. cowplot::plot_grid) or saved with ggsave
     expect_s3_class(res, "ggplot")
     expect_no_error(print(res))
 })

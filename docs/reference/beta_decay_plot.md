@@ -134,39 +134,39 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 loc_coords <- data.frame(
-  Loc = 1:7,
-  lat = 19.0 + seq(0, 0.6, length.out = 7),
-  lon = -99.0 + seq(0, 0.6, length.out = 7)
+    Loc = 1:7,
+    lat = 19.0 + seq(0, 0.6, length.out = 7),
+    lon = -99.0 + seq(0, 0.6, length.out = 7)
 )
 metadata$lat <- loc_coords$lat[match(metadata$Loc, loc_coords$Loc)]
 metadata$lon <- loc_coords$lon[match(metadata$Loc, loc_coords$Loc)]
 
 # Jaccard + Spearman Mantel (default)
 beta_decay_plot(
-  table    = table,
-  metadata = metadata,
-  lat_col  = "lat",
-  lon_col  = "lon"
+    table    = table,
+    metadata = metadata,
+    lat_col  = "lat",
+    lon_col  = "lon"
 )
 
 
 # Horn dissimilarity + Spearman Mantel
 beta_decay_plot(
-  table    = table,
-  metadata = metadata,
-  lat_col  = "lat",
-  lon_col  = "lon",
-  distance = "horn",
-  method   = "spearman"
+    table    = table,
+    metadata = metadata,
+    lat_col  = "lat",
+    lon_col  = "lon",
+    distance = "horn",
+    method   = "spearman"
 )
 
 
 # Separate Mantel test per location
 beta_decay_plot(
-  table     = table,
-  metadata  = metadata,
-  lat_col   = "lat",
-  lon_col   = "lon",
-  group_col = "Location"
+    table     = table,
+    metadata  = metadata,
+    lat_col   = "lat",
+    lon_col   = "lon",
+    group_col = "Location"
 )
 ```

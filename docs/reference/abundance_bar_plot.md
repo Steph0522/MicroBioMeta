@@ -148,14 +148,14 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 abundance_bar_plot(
-  table        = table,
-  metadata     = metadata,
-  taxonomy_db  = "silva",
-  level        = "genus",
-  x_col        = "Location",
-  label        = "Genus",
-  facet_by    = "Treatment",
-  top_n        = 30,
-  add_remained = TRUE
+    table = table,
+    metadata = metadata,
+    taxonomy_db = "silva",
+    level = "genus",
+    x_col = "Location",
+    label = "Genus",
+    facet_by = "Treatment",
+    top_n = 30,
+    add_remained = TRUE
 )
 ```

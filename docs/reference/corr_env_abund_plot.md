@@ -147,15 +147,15 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 corr_env_abund_plot(
-  table          = table,
-  metadata       = metadata,
-  env_vars      = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
-  method         = "pearson",
-  geom           = "tile",
-  hc.order       = FALSE,
-  invert_axes    = TRUE,
-  show_labels    = FALSE,
-  level          = "phylum",
-  taxonomy_db    = "silva"
+    table = table,
+    metadata = metadata,
+    env_vars = c("pH", "TOC", "FW", "Root_FW", "DW", "Root_L", "Stem_L"),
+    method = "pearson",
+    geom = "tile",
+    hc.order = FALSE,
+    invert_axes = TRUE,
+    show_labels = FALSE,
+    level = "phylum",
+    taxonomy_db = "silva"
 )
 ```

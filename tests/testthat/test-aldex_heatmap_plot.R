@@ -1,10 +1,6 @@
 test_that("aldex_heatmap_plot returns a printable grob for a two-group comparison", {
     toy <- make_toy_community()
 
-    # A low effect_threshold, plus the fixture's planted group signal
-    # (features 1-4 boosted in group A, 5-8 in group B), makes it very likely
-    # at least one taxon passes the filter regardless of the Monte Carlo
-    # draw - set.seed() makes that draw reproducible either way.
     set.seed(1)
     ht <- aldex_heatmap_plot(
         table = toy$table,

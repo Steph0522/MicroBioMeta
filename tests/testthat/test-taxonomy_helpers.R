@@ -21,7 +21,6 @@ test_that("ratios_bubble_plot names taxa at every level, like abundance_bar_plot
             level = lv, top_n = 10
         )
         expect_s3_class(p, "ggplot")
-        # short names, not full taxonomy strings
         expect_false(any(grepl(";", p$data$taxonomy)), info = lv)
     }
     expect_error(

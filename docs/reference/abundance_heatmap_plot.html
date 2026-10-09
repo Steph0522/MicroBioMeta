@@ -239,17 +239,17 @@ draws the heatmap; it can also be combined with other plots (e.g.
 <span class="r-in"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span><span class="va">metadata_path</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">abundance_heatmap_plot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table                  <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata               <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  condition1             <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  condition2             <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
-<span class="r-in"><span>  condition3             <span class="op">=</span> <span class="st">"Plot"</span>,</span></span>
-<span class="r-in"><span>  top_n                  <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>  cluster                <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  show_column_names      <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  name_legend_condition1 <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  name_legend_condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
-<span class="r-in"><span>  name_legend_condition3 <span class="op">=</span> <span class="st">"Plot"</span></span></span>
+<span class="r-in"><span>    table                  <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>    metadata               <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    condition1             <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    condition2             <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>    condition3             <span class="op">=</span> <span class="st">"Plot"</span>,</span></span>
+<span class="r-in"><span>    top_n                  <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>    cluster                <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    show_column_names      <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>    name_legend_condition1 <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    name_legend_condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>    name_legend_condition3 <span class="op">=</span> <span class="st">"Plot"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> </span>
@@ -257,25 +257,27 @@ draws the heatmap; it can also be combined with other plots (e.g.
 <span class="r-plt img"><img src="abundance_heatmap_plot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">heat</span> <span class="op">&lt;-</span> <span class="fu">abundance_heatmap_plot</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  table                  <span class="op">=</span> <span class="va">table</span>,</span></span>
-<span class="r-in"><span>  metadata               <span class="op">=</span> <span class="va">metadata</span>,</span></span>
-<span class="r-in"><span>  condition1             <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
-<span class="r-in"><span>  condition2             <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
-<span class="r-in"><span>  top_n                  <span class="op">=</span> <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>  show_column_names      <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  colors_condition1      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Rhizosphere <span class="op">=</span> <span class="st">"#56B4E9"</span>, Roots <span class="op">=</span> <span class="st">"#009E73"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  colors_condition2      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Control          <span class="op">=</span> <span class="st">"#CC6677"</span>,</span></span>
-<span class="r-in"><span>                             Moderate_drought <span class="op">=</span> <span class="st">"#332288"</span>,</span></span>
-<span class="r-in"><span>                             Severe_drought   <span class="op">=</span> <span class="st">"#999933"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  name_legend_condition1 <span class="op">=</span> <span class="st">"Compartment"</span>,</span></span>
-<span class="r-in"><span>  feature_prefix         <span class="op">=</span> <span class="st">"ASV"</span>,</span></span>
-<span class="r-in"><span>  max_label_length       <span class="op">=</span> <span class="fl">30</span>,</span></span>
-<span class="r-in"><span>  draw                   <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>    table <span class="op">=</span> <span class="va">table</span>,</span></span>
+<span class="r-in"><span>    metadata <span class="op">=</span> <span class="va">metadata</span>,</span></span>
+<span class="r-in"><span>    condition1 <span class="op">=</span> <span class="st">"Location"</span>,</span></span>
+<span class="r-in"><span>    condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>    top_n <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>    show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>    colors_condition1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Rhizosphere <span class="op">=</span> <span class="st">"#56B4E9"</span>, Roots <span class="op">=</span> <span class="st">"#009E73"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    colors_condition2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        Control <span class="op">=</span> <span class="st">"#CC6677"</span>,</span></span>
+<span class="r-in"><span>        Moderate_drought <span class="op">=</span> <span class="st">"#332288"</span>,</span></span>
+<span class="r-in"><span>        Severe_drought <span class="op">=</span> <span class="st">"#999933"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    name_legend_condition1 <span class="op">=</span> <span class="st">"Compartment"</span>,</span></span>
+<span class="r-in"><span>    feature_prefix <span class="op">=</span> <span class="st">"ASV"</span>,</span></span>
+<span class="r-in"><span>    max_label_length <span class="op">=</span> <span class="fl">30</span>,</span></span>
+<span class="r-in"><span>    draw <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/</span>
-<span class="r-in"><span><span class="va">heat</span>  <span class="co"># printing the returned object draws the heatmap</span></span></span>
+<span class="r-in"><span><span class="va">heat</span> <span class="co"># printing the returned object draws the heatmap</span></span></span>
 <span class="r-plt img"><img src="abundance_heatmap_plot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>

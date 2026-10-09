@@ -53,7 +53,7 @@
 #'   plotted taxa (effect size, \code{diff.btw} and p-value category) as a
 #'   tab-delimited file. Default \code{FALSE}. \code{effect} and \code{diff.btw}
 #'   are saved as ALDEx2 returns them (second group in alphabetical order minus
-#'   the first); the \code{seccion} column says in which group each taxon is
+#'   the first); the \code{higher_in} column says in which group each taxon is
 #'   higher.
 #' @param table_filename Character. Name or path of the saved file (used when
 #'   \code{save_table = TRUE}). Default \code{"aldex_pval_effect.txt"}.
@@ -166,7 +166,7 @@ aldex_heatmap_plot <- function(table,
         stop("Number of conditions does not match number of samples.")
     }
 
-    aldex_results <- ALDEx2::aldex(
+    aldex_results <- suppressMessages(ALDEx2::aldex(
         reads                  = table_counts,
         conditions             = conditions,
         mc.samples             = mc_samples,
@@ -175,7 +175,7 @@ aldex_heatmap_plot <- function(table,
         verbose                = FALSE,
         denom                  = "all",
         include.sample.summary = FALSE
-    )
+    ))
 
     if (!all(c("effect", "wi.eBH") %in% colnames(aldex_results))) {
         stop("Columns 'effect' or 'wi.eBH' missing in ALDEx2 results.")
@@ -215,7 +215,7 @@ aldex_heatmap_plot <- function(table,
         tibble::rownames_to_column("OTUID") %>%
         dplyr::left_join(table %>% dplyr::select(OTUID, taxonomy), by = "OTUID") %>%
         dplyr::mutate(
-            seccion = dplyr::case_when(
+            higher_in = dplyr::case_when(
                 diff.btw < 0 ~ paste("Higher in", unique_conditions[2]),
                 diff.btw > 0 ~ paste("Higher in", unique_conditions[1]),
                 TRUE ~ "No Change"

@@ -7,7 +7,6 @@ test_that("y_axis_title changes the y-axis title of the beta boxplots", {
     )
     expect_equal(p1$labels$y, "Shared ASVs")
 
-    # default stays the automatic title
     p2 <- beta_dissimilarity_plot(toy$table, toy$metadata,
         condition1_col = "Group",
         partition = "shared"

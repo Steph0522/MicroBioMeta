@@ -11,6 +11,7 @@ aldex_volcano_plot(
   metadata,
   group_col,
   type = "volcano",
+  mc_samples = 128,
   col_inf = "#56B4E9",
   col_sup = "#E69F00",
   threshold_lower = -1.5,
@@ -50,6 +51,15 @@ aldex_volcano_plot(
 
   Type of plot to generate: `"volcano"` (default, volcano plot) or
   `"effect"` (effect-size plot). Case-insensitive.
+
+- mc_samples:
+
+  Integer. Number of ALDEx2 Monte Carlo instances. Default `128`
+  (ALDEx2's default), recommended for final analyses. Fewer instances
+  are faster but the p-values and effect sizes are less stable (e.g.
+  `16` for a quick look); call
+  [`set.seed()`](https://rdrr.io/r/base/Random.html) before the function
+  to make the result reproducible.
 
 - col_inf:
 
@@ -145,21 +155,17 @@ metadata <- read.delim(metadata_path, check.names = FALSE)
 # group_col must have exactly two groups; Location has two
 # (Rhizosphere and Roots) in the bundled example data
 aldex_volcano_plot(
-  table           = table,
-  metadata        = metadata,
-  group_col        = "Location",
-  type            = "effect",
-  col_inf         = "#56B4E9",
-  col_sup         = "#E69F00",
-  threshold_lower = -0.5,
-  threshold_upper = 0.5,
-  cond            = "Rhizosphere",
-  show_labels     = TRUE
+    table = table,
+    metadata = metadata,
+    group_col = "Location",
+    mc_samples = 16,
+    type = "effect",
+    col_inf = "#56B4E9",
+    col_sup = "#E69F00",
+    threshold_lower = -0.5,
+    threshold_upper = 0.5,
+    cond = "Rhizosphere",
+    show_labels = TRUE
 )
-#> aldex.clr: generating Monte-Carlo instances and clr values
-#> conditions vector supplied
-#> operating in serial mode
-#> computing center with all features
-#> aldex.ttest: doing t-test
-#> aldex.effect: calculating effect sizes
+#> Warning: values are unreliable when estimated with so few MC smps
 ```

@@ -1,8 +1,6 @@
 test_that("beta_partition_ord_plot returns a combined ordination panel", {
     toy <- make_beta_toy_community()
 
-    # The function auto-detects and drops a taxonomy column on its own (as
-    # documented), so the fixture's table is passed as-is.
     p <- beta_partition_ord_plot(
         table     = toy$table,
         metadata  = toy$metadata,

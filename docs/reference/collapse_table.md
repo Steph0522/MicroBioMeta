@@ -60,10 +60,10 @@ table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMe
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 collapse_table(
-  table      = table,
-  level      = "genus",
-  rel_abun   = FALSE,
-  save_table = FALSE
+    table      = table,
+    level      = "genus",
+    rel_abun   = FALSE,
+    save_table = FALSE
 )
 #> $collapsed_table
 #>                                                                                                                                                                         taxonomy

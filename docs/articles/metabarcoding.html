@@ -87,7 +87,7 @@ S. E., Estrada-Torres, A., Dendooven, L., &amp; Navarro-Noya, Y. E.
 (2023). Shifts in root-associated fungal communities under drought
 conditions in Ricinus communis. Fungal Ecology, 63, 101225.</a></p>
 <div class="section level2">
-<h2 id="loading-data">💻 Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
+<h2 id="loading-data">Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
 </h2>
 <p>First, let’s load the <code>MicroBioMeta</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -115,30 +115,30 @@ exported as plain <code>.txt</code> files (under
 set:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bacteria_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"table_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"table_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
+<span>    row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fungi_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"table_fungi.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"table_fungi.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
+<span>    row.names <span class="op">=</span> <span class="fl">1</span>, check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">taxonomy_bacteria</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"taxonomy_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
-<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"taxonomy_bacteria.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="va">Taxon</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Confidence</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"Feature.ID"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="va">Taxon</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Confidence</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"Feature.ID"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">taxonomy_fungi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"taxonomy_fungi.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
-<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"taxonomy_fungi.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="va">Taxon</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Consensus</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"Feature.ID"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>taxonomy <span class="op">=</span> <span class="va">Taxon</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Consensus</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">"Feature.ID"</span><span class="op">)</span></span></code></pre></div>
 <p>⚠️ Let’s notice that we renamed the column called Taxon for taxonomy
 before join this two data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -147,14 +147,14 @@ before join this two data:</p>
 <p>Now, let’s call the metadata for data set:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bacteria_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacterias.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
-<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_bacterias.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Month</span> <span class="op">==</span> <span class="st">"2"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Month</span> <span class="op">==</span> <span class="st">"2"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fungi_metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_fungis.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
-<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"metadata_fungis.txt"</span>, package <span class="op">=</span> <span class="st">"MicroBioMeta"</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Then, Let’s filter and manage data. It is a good practice to use
 table and metadata that contains de same information and samples and in
@@ -163,22 +163,24 @@ tables to match with the metadata.</p>
 <p>For bacteria:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samples_bac</span> <span class="op">&lt;-</span> <span class="va">bacteria_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span><span class="op">[</span></span>
-<span>  <span class="va">bacteria_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">bacteria_table</span><span class="op">)</span><span class="op">]</span></span>
+<span>    <span class="va">bacteria_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">bacteria_table</span><span class="op">)</span></span>
+<span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">table_bacteria</span> <span class="op">&lt;-</span> <span class="va">bacteria_table</span><span class="op">[</span>, <span class="va">samples_bac</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">metadata_bacteria</span> <span class="op">&lt;-</span> <span class="va">bacteria_metadata</span><span class="op">[</span></span>
-<span>  <span class="va">bacteria_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">samples_bac</span>, <span class="op">]</span></span></code></pre></div>
+<span>    <span class="va">bacteria_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">samples_bac</span>,</span>
+<span><span class="op">]</span></span></code></pre></div>
 <p>and for fungi:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samples_fun</span> <span class="op">&lt;-</span> <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span><span class="op">[</span></span>
-<span>  <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fungi_table</span><span class="op">)</span></span>
+<span>    <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fungi_table</span><span class="op">)</span></span>
 <span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">table_fungi</span> <span class="op">&lt;-</span> <span class="va">fungi_table</span><span class="op">[</span>, <span class="va">samples_fun</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">metadata_fungi</span> <span class="op">&lt;-</span> <span class="va">fungi_metadata</span><span class="op">[</span></span>
-<span>  <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">samples_fun</span>,</span>
+<span>    <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">samples_fun</span>,</span>
 <span><span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -193,14 +195,18 @@ taxonomy table into this format. Keeping taxonomy as a column of the
 same table means most functions can look up taxonomic identity without
 requiring a separate object.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table_bac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_feature_taxonomy.html">merge_feature_taxonomy</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bacteria</span>,</span>
-<span>                                    taxonomy <span class="op">=</span> <span class="va">taxonomy_bacteria</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">table_bac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_feature_taxonomy.html">merge_feature_taxonomy</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bacteria</span>,</span>
+<span>    taxonomy <span class="op">=</span> <span class="va">taxonomy_bacteria</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in merge_feature_taxonomy(table = table_bacteria, taxonomy =</span></span>
 <span><span class="co">## taxonomy_bacteria): 83 taxonomy IDs are not present in the table and will be</span></span>
 <span><span class="co">## excluded from the result.</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">table_fung</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_feature_taxonomy.html">merge_feature_taxonomy</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fungi</span>, </span>
-<span>                                     taxonomy <span class="op">=</span> <span class="va">taxonomy_fungi</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">table_fung</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_feature_taxonomy.html">merge_feature_taxonomy</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fungi</span>,</span>
+<span>    taxonomy <span class="op">=</span> <span class="va">taxonomy_fungi</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in merge_feature_taxonomy(table = table_fungi, taxonomy =</span></span>
 <span><span class="co">## taxonomy_fungi): 17 taxonomy IDs are not present in the table and will be</span></span>
 <span><span class="co">## excluded from the result.</span></span></code></pre>
@@ -208,13 +214,13 @@ requiring a separate object.</p>
 match the feature table and were excluded from the result.</p>
 </div>
 <div class="section level2">
-<h2 id="composition-exploration">📊 Composition exploration<a class="anchor" aria-label="anchor" href="#composition-exploration"></a>
+<h2 id="composition-exploration">Composition exploration<a class="anchor" aria-label="anchor" href="#composition-exploration"></a>
 </h2>
 <p><code>MicroBioMeta</code> has several functions to explore
 composition, taxonomic identity, and abundance. Let’s explore each of
 them.</p>
 <div class="section level3">
-<h3 id="abundance-barplots">📊 Abundance barplots<a class="anchor" aria-label="anchor" href="#abundance-barplots"></a>
+<h3 id="abundance-barplots">Abundance barplots<a class="anchor" aria-label="anchor" href="#abundance-barplots"></a>
 </h3>
 <p>Abundance barplots are useful to identify patterns in community
 composition based on taxonomic identity.<br>
@@ -247,31 +253,35 @@ across figures.</p>
 returns a table containing the relative abundances (percentages) used to
 generate the plot.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>                  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
-<span>                  level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
-<span>                  top_n <span class="op">=</span> <span class="fl">15</span>,</span>
-<span>                  x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                  facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                  add_remained <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                  label <span class="op">=</span>   <span class="st">"Phylum"</span>,</span>
-<span>                  x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
-<span>                  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    taxonomy_db <span class="op">=</span> <span class="st">"silva"</span>,</span>
+<span>    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
+<span>    top_n <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    add_remained <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    label <span class="op">=</span> <span class="st">"Phylum"</span>,</span>
+<span>    x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/abundance-barplots-10-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                  x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                  facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                  add_remained <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                  label <span class="op">=</span>   <span class="st">"Genera"</span>,</span>
-<span>                  x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
-<span>                  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_bar_plot.html">abundance_bar_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    add_remained <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    label <span class="op">=</span> <span class="st">"Genera"</span>,</span>
+<span>    x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/abundance-barplots-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="abundance-heatmaps">🖥️ Abundance heatmaps<a class="anchor" aria-label="anchor" href="#abundance-heatmaps"></a>
+<h3 id="abundance-heatmaps">Abundance heatmaps<a class="anchor" aria-label="anchor" href="#abundance-heatmaps"></a>
 </h3>
 <p>Notice that the input files are the same as the previous function and
 this is consistent with all functions from now on.</p>
@@ -313,28 +323,32 @@ colors:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">treatment_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>TC <span class="op">=</span> <span class="st">"#CC6677"</span>, TD <span class="op">=</span> <span class="st">"#332288"</span>, TED <span class="op">=</span> <span class="st">"#999933"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>                  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                  condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                  colors_condition2 <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
-<span>                  feature_prefix <span class="op">=</span> <span class="st">"ASV"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    top_n <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>    show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    colors_condition2 <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
+<span>    feature_prefix <span class="op">=</span> <span class="st">"ASV"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/abundance-heatmaps-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                  top_n <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>                  show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                  condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                  condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                  colors_condition2 <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
-<span>                  feature_prefix <span class="op">=</span> <span class="st">"ASV"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_heatmap_plot.html">abundance_heatmap_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    top_n <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>    show_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    condition1 <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    condition2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    colors_condition2 <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
+<span>    feature_prefix <span class="op">=</span> <span class="st">"ASV"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/abundance-heatmaps-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="sankey-diagram-of-taxonomic-flow">🖥️ Sankey diagram of taxonomic flow<a class="anchor" aria-label="anchor" href="#sankey-diagram-of-taxonomic-flow"></a>
+<h3 id="sankey-diagram-of-taxonomic-flow">Sankey diagram of taxonomic flow<a class="anchor" aria-label="anchor" href="#sankey-diagram-of-taxonomic-flow"></a>
 </h3>
 <p><code><a href="../reference/abundance_sankey_plot.html">abundance_sankey_plot()</a></code> visualizes how relative
 abundance flows across taxonomic ranks: from Kingdom to Species as an
@@ -356,12 +370,12 @@ available on CRAN:</p>
 the diagram as an HTML file</strong>.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sankey_bacteria</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abundance_sankey_plot.html">abundance_sankey_plot</a></span><span class="op">(</span></span>
-<span>  table       <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>  maxn        <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  width       <span class="op">=</span> <span class="fl">950</span>,</span>
-<span>  height      <span class="op">=</span> <span class="fl">650</span>,</span>
-<span>  taxRanks    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="st">"C"</span>, <span class="st">"O"</span>, <span class="st">"F"</span>, <span class="st">"G"</span><span class="op">)</span>,</span>
-<span>  taxonomy_db <span class="op">=</span> <span class="st">"silva"</span></span>
+<span>    table       <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    maxn        <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    width       <span class="op">=</span> <span class="fl">950</span>,</span>
+<span>    height      <span class="op">=</span> <span class="fl">650</span>,</span>
+<span>    taxRanks    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="st">"C"</span>, <span class="st">"O"</span>, <span class="st">"F"</span>, <span class="st">"G"</span><span class="op">)</span>,</span>
+<span>    taxonomy_db <span class="op">=</span> <span class="st">"silva"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">sankey_bacteria</span></span></code></pre></div>
 <div id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:950px;height:650px;" class="sankeyNetwork html-widget"></div>
@@ -369,7 +383,7 @@ the diagram as an HTML file</strong>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="alpha-diversity">📊 Alpha diversity<a class="anchor" aria-label="anchor" href="#alpha-diversity"></a>
+<h2 id="alpha-diversity">Alpha diversity<a class="anchor" aria-label="anchor" href="#alpha-diversity"></a>
 </h2>
 <p>Alpha diversity describes the diversity within individual samples.
 With <code>MicroBioMeta</code>, alpha diversity can be explored using
@@ -382,7 +396,7 @@ example, <em>q</em>=0 corresponds to species richness (total species),
 <em>q</em>=1 to the exponential of Shannon entropy (frequent species),
 and <em>q</em>=2 to the inverse Simpson index (dominant species).</p>
 <div class="section level3">
-<h3 id="correlation-among-hill-numbers">📈 Correlation among Hill numbers<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
+<h3 id="correlation-among-hill-numbers">Correlation among Hill numbers<a class="anchor" aria-label="anchor" href="#correlation-among-hill-numbers"></a>
 </h3>
 <p>The <code><a href="../reference/alpha_hill_corr_plot.html">alpha_hill_corr_plot()</a></code> function calculates Hill
 numbers for different orders (typically, 𝑞=0,1,2) and visualizes the
@@ -400,7 +414,7 @@ before comparing groups.</p>
 <p><img src="metabarcoding_files/figure-html/correlation-among-hill-numbers-16-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="alpha-diversity-visualization">📊 Alpha diversity visualization<a class="anchor" aria-label="anchor" href="#alpha-diversity-visualization"></a>
+<h3 id="alpha-diversity-visualization">Alpha diversity visualization<a class="anchor" aria-label="anchor" href="#alpha-diversity-visualization"></a>
 </h3>
 <p>The <code><a href="../reference/alpha_hill_plot.html">alpha_hill_plot()</a></code> function calculates Hill numbers
 and visualizes alpha diversity patterns across experimental conditions
@@ -414,42 +428,48 @@ controls whether facets are arranged horizontally or vertically.</p>
 <p>If <code>save_table = TRUE</code>, the function also returns a table
 containing the alpha diversity values calculated for each sample.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>                metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>                x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                fill_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                group_colors <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
-<span>                facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    fill_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-diversity-visualization-18-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>The same function can swap the roles of the variables. For the fungi
 🍄 we put the soil compartment on the x-axis and split the panels by
 treatment, which highlights how diversity changes from bulk soil to
 roots within each treatment:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>                show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
+<span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-diversity-visualization-19-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Also, we can visualize other metrics considering classic alpha
 diversity indexes:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_diversity_plot.html">alpha_diversity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                fill_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                group_colors <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
-<span>                facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>                stat <span class="op">=</span> <span class="st">"anova"</span>,</span>
-<span>                free_y <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_diversity_plot.html">alpha_diversity_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    fill_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"anova"</span>,</span>
+<span>    free_y <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-diversity-visualization-20-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Each panel is automatically labeled (A, B, C, …) so it can be
 referenced. When <code>stat</code> is set, p-values are added to each
@@ -467,31 +487,35 @@ labels(e.g. <code>c("(a)", "(b)", "(c)")</code>) instead of the
 auto-generated ones. <code>free_y</code> lets each panel use its own
 y-axis scale instead of a shared one, as below:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_diversity_plot.html">alpha_diversity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                fill_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                group_colors <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
-<span>                facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>                stat <span class="op">=</span> <span class="st">"anova"</span>,</span>
-<span>                free_y <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
-<span>                panel_label_bold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_diversity_plot.html">alpha_diversity_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    fill_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="va">treatment_colors</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    facet_orientation <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"anova"</span>,</span>
+<span>    free_y <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    x_label_angle <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>    panel_label_bold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-diversity-visualization-21-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>With <code>facet_orientation = "vertical"</code> the Hill orders
 (<em>q</em>) go in rows and the <code>facet_by</code> groups in
 columns:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                facet_orientation <span class="op">=</span> <span class="st">"vertical"</span>,</span>
-<span>                show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    facet_orientation <span class="op">=</span> <span class="st">"vertical"</span>,</span>
+<span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-diversity-visualization-vertical-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -512,17 +536,19 @@ one.</p>
 comparison:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_bacteria_decay</span> <span class="op">&lt;-</span> <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bulk soil"</span>, <span class="st">"Rhizosphere"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bulk soil"</span>, <span class="st">"Rhizosphere"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/alpha_decay_plot.html">alpha_decay_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>                 metadata <span class="op">=</span> <span class="va">metadata_bacteria_decay</span>,</span>
-<span>                 cont_var <span class="op">=</span> <span class="st">"pH"</span>,</span>
-<span>                 group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                 x_axis_title <span class="op">=</span> <span class="st">"Soil pH"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/alpha_decay_plot.html">alpha_decay_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria_decay</span>,</span>
+<span>    cont_var <span class="op">=</span> <span class="st">"pH"</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Soil pH"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-diversity-along-a-continuous-gradient-22-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="shared-taxa-between-sample-groups">💻 Shared taxa between sample groups<a class="anchor" aria-label="anchor" href="#shared-taxa-between-sample-groups"></a>
+<h3 id="shared-taxa-between-sample-groups">Shared taxa between sample groups<a class="anchor" aria-label="anchor" href="#shared-taxa-between-sample-groups"></a>
 </h3>
 <p>Another way to explore alpha diversity patterns is by examining
 <strong>which taxa are shared or unique among groups of
@@ -532,13 +558,15 @@ the metadata.</p>
 <p>We generate a Venn diagram grouping samples according to the
 treatment (TC, TD and TED).</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
-<span>                  merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,   </span>
-<span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span> <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    min_prevalence <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/shared-taxa-between-sample-groups-23-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="section level4">
-<h4 id="collapsing-the-table-by-taxonomic-level">💻 Collapsing the table by taxonomic level<a class="anchor" aria-label="anchor" href="#collapsing-the-table-by-taxonomic-level"></a>
+<h4 id="collapsing-the-table-by-taxonomic-level">Collapsing the table by taxonomic level<a class="anchor" aria-label="anchor" href="#collapsing-the-table-by-taxonomic-level"></a>
 </h4>
 <p>Microbial community tables are often generated at the <strong>ASV or
 OTU level</strong>, which can contain hundreds or thousands of features.
@@ -562,14 +590,14 @@ visualize genera shared.</p></li>
 </ul>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">table_genus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/collapse_table.html">collapse_table</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>  level <span class="op">=</span> <span class="st">"genus"</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    level <span class="op">=</span> <span class="st">"genus"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">table_genus</span><span class="op">$</span><span class="va">collapsed_table</span>,</span>
-<span>  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>  merge_by <span class="op">=</span> <span class="st">"Treatment"</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_genus</span><span class="op">$</span><span class="va">collapsed_table</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    merge_by <span class="op">=</span> <span class="st">"Treatment"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/collapsing-the-table-by-taxonomic-level-24-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>By default, <code><a href="../reference/collapse_table.html">collapse_table()</a></code> returns the <strong>raw
@@ -581,7 +609,7 @@ microbial community data are needed to visualized or analyzed as
 to 100%.</p>
 </div>
 <div class="section level4">
-<h4 id="filtering-taxa-by-prevalence">🖥️ Filtering taxa by prevalence<a class="anchor" aria-label="anchor" href="#filtering-taxa-by-prevalence"></a>
+<h4 id="filtering-taxa-by-prevalence">Filtering taxa by prevalence<a class="anchor" aria-label="anchor" href="#filtering-taxa-by-prevalence"></a>
 </h4>
 <p>Sometimes it is useful to visualize only taxa that occur frequently
 within each group. This can be done using the
@@ -590,41 +618,47 @@ within each group. This can be done using the
 <strong>at least 20% of the samples within each group</strong>. The
 parameter is default to 0, that means that nor filtering is applied.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
-<span>                  merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,   </span>
-<span>                  min_prevalence <span class="op">=</span> <span class="fl">0.2</span> <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    min_prevalence <span class="op">=</span> <span class="fl">0.2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/filtering-taxa-by-prevalence-25-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="customizing-group-colors">🖥️ Customizing group colors<a class="anchor" aria-label="anchor" href="#customizing-group-colors"></a>
+<h4 id="customizing-group-colors">Customizing group colors<a class="anchor" aria-label="anchor" href="#customizing-group-colors"></a>
 </h4>
 <p>The function also allows custom colors for the groups.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
-<span>                  merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,   </span>
-<span>                  min_prevalence <span class="op">=</span> <span class="fl">0</span>,   </span>
-<span>                  group_colors <span class="op">=</span> <span class="va">treatment_colors</span> <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    min_prevalence <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="va">treatment_colors</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/customizing-group-colors-26-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="alternative-plotting-method">🖥️ Alternative plotting method<a class="anchor" aria-label="anchor" href="#alternative-plotting-method"></a>
+<h4 id="alternative-plotting-method">Alternative plotting method<a class="anchor" aria-label="anchor" href="#alternative-plotting-method"></a>
 </h4>
 <p>By default the function uses the package <strong>ggvenn</strong>, but
 it can also generate the diagram using
 <strong>ggVennDiagram</strong>.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,   </span>
-<span>                  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,   </span>
-<span>                  merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,   </span>
-<span>                  method <span class="op">=</span> <span class="st">"ggvenndiagram"</span> <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/venn_plot.html">venn_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    merge_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    method <span class="op">=</span> <span class="st">"ggvenndiagram"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alternative-plotting-method-27-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="beta-diversity">💻 Beta diversity<a class="anchor" aria-label="anchor" href="#beta-diversity"></a>
+<h2 id="beta-diversity">Beta diversity<a class="anchor" aria-label="anchor" href="#beta-diversity"></a>
 </h2>
 <p>Beta diversity describes the differences in community composition and
 structure among samples. These analyses help determine whether microbial
@@ -636,7 +670,7 @@ differences and partitioning approaches that separate shared and unique
 components of diversity. These functions allow both visual exploration
 and formal hypothesis testing.</p>
 <div class="section level3">
-<h3 id="ordination-of-community-composition">🖥️ Ordination of community composition<a class="anchor" aria-label="anchor" href="#ordination-of-community-composition"></a>
+<h3 id="ordination-of-community-composition">Ordination of community composition<a class="anchor" aria-label="anchor" href="#ordination-of-community-composition"></a>
 </h3>
 <p>The <code><a href="../reference/beta_ord_plot.html">beta_ord_plot()</a></code> function calculates pairwise
 dissimilarities among samples and visualizes the results using an
@@ -671,13 +705,15 @@ gives almost the same result in every run, at the cost of a longer
 computation.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>              metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>               distance <span class="op">=</span> <span class="st">"compositional"</span>,</span>
-<span>               mc_samples <span class="op">=</span> <span class="fl">128</span>,</span>
-<span>              ordination <span class="op">=</span> <span class="st">"PCA"</span>,</span>
-<span>              group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>              shape_col <span class="op">=</span> <span class="st">"Treatment"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"compositional"</span>,</span>
+<span>    mc_samples <span class="op">=</span> <span class="fl">128</span>,</span>
+<span>    ordination <span class="op">=</span> <span class="st">"PCA"</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    shape_col <span class="op">=</span> <span class="st">"Treatment"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/ordination-of-community-composition-28-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>For the fungi 🍄 we use a different combination:
 <strong>Bray-Curtis</strong> dissimilarity, which weights taxa by their
@@ -685,12 +721,14 @@ abundance, with an <strong>NMDS</strong> ordination. NMDS starts from
 random configurations, so <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> is used here too:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>              metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>              group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>              shape_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>              distance <span class="op">=</span> <span class="st">"bray"</span>,</span>
-<span>              ordination <span class="op">=</span> <span class="st">"NMDS"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    shape_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"bray"</span>,</span>
+<span>    ordination <span class="op">=</span> <span class="st">"NMDS"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Run 0 stress 0.1282494 </span></span>
 <span><span class="co">## Run 1 stress 0.137064 </span></span>
 <span><span class="co">## Run 2 stress 0.1268558 </span></span>
@@ -730,7 +768,7 @@ random configurations, so <code><a href="https://rdrr.io/r/base/Random.html" cla
 <p><img src="metabarcoding_files/figure-html/ordination-of-community-composition-29-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="statistical-tests-for-beta-diversity">🖥️ Statistical tests for beta diversity<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
+<h3 id="statistical-tests-for-beta-diversity">Statistical tests for beta diversity<a class="anchor" aria-label="anchor" href="#statistical-tests-for-beta-diversity"></a>
 </h3>
 <p>The <code><a href="../reference/beta_test_table.html">beta_test_table()</a></code> function performs statistical
 tests to evaluate whether community composition differs among
@@ -767,13 +805,15 @@ other plots (e.g. <code><a href="https://wilkelab.org/cowplot/reference/plot_gr
 also get the results as a text file.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>                metadata<span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>                formula_str <span class="op">=</span> <span class="st">"Type_of_soil*Treatment"</span>,</span>
-<span>                distance <span class="op">=</span> <span class="st">"compositional"</span>,</span>
-<span>                mc_samples <span class="op">=</span> <span class="fl">128</span>,</span>
-<span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
-<span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil*Treatment"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"compositional"</span>,</span>
+<span>    mc_samples <span class="op">=</span> <span class="fl">128</span>,</span>
+<span>    test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
+<span>    permutations <span class="op">=</span> <span class="fl">999</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## no conditions provided: forcing denom = 'all'</span></span></code></pre>
 <pre><code><span><span class="co">## no conditions provided: forcing conds = 'NA'</span></span></code></pre>
 <pre><code><span><span class="co">## conditions vector supplied</span></span></code></pre>
@@ -782,16 +822,18 @@ also get the results as a text file.</p>
 <p><img src="metabarcoding_files/figure-html/statistical-tests-for-beta-diversity-30-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                metadata<span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                formula_str <span class="op">=</span> <span class="st">"Type_of_soil*Treatment"</span>,</span>
-<span>                distance <span class="op">=</span> <span class="st">"bray"</span>,</span>
-<span>                test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
-<span>                permutations <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil*Treatment"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"bray"</span>,</span>
+<span>    test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
+<span>    permutations <span class="op">=</span> <span class="fl">999</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/statistical-tests-for-beta-diversity-31-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="beta-diversity-partitioning">💻 Beta diversity partitioning<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
+<h3 id="beta-diversity-partitioning">Beta diversity partitioning<a class="anchor" aria-label="anchor" href="#beta-diversity-partitioning"></a>
 </h3>
 <p>Beta diversity can also be decomposed into different components. The
 <code><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot()</a></code> function partitions beta
@@ -803,25 +845,27 @@ used for the partition (e.g., Jaccard or Sørensen). The
 samples are visualized according to metadata variables.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>  family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>  shape_col <span class="op">=</span> <span class="st">"Treatment"</span>, </span>
-<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    shape_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/beta-diversity-partitioning-32-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_partition_ord_plot.html">beta_partition_ord_plot</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>  metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>  family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>  shape_col <span class="op">=</span> <span class="st">"Treatment"</span>, </span>
-<span>  save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    shape_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/beta-diversity-partitioning-33-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="pairwise-beta-diversity-visualization">🖥️ Pairwise beta diversity visualization<a class="anchor" aria-label="anchor" href="#pairwise-beta-diversity-visualization"></a>
+<h3 id="pairwise-beta-diversity-visualization">Pairwise beta diversity visualization<a class="anchor" aria-label="anchor" href="#pairwise-beta-diversity-visualization"></a>
 </h3>
 <p>The <code><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code> function summarizes
 pairwise beta diversity values using boxplots, allowing comparison of
@@ -849,9 +893,11 @@ self-comparisons:</p>
 <code class="sourceCode R"><span><span class="va">groups_bac</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">metadata_bacteria</span><span class="op">$</span><span class="va">Type_of_soil</span><span class="op">)</span><span class="op">)</span>, <span class="st">"Roots"</span><span class="op">)</span></span>
 <span><span class="va">vs_roots_bac</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="va">groups_bac</span>, <span class="st">"Roots"</span><span class="op">)</span>, <span class="st">"_vs_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">groups_bac</span>, <span class="st">"Roots"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># each comparison takes the color of the group compared with Roots</span></span>
-<span><span class="va">vs_roots_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bulk soil_vs_Roots"</span>    <span class="op">=</span> <span class="st">"#E69F00"</span>,</span>
-<span>                     <span class="st">"Rhizosphere_vs_Roots"</span>  <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
-<span>                     <span class="st">"Roots_vs_Uncultivated"</span> <span class="op">=</span> <span class="st">"#F0E442"</span><span class="op">)</span></span>
+<span><span class="va">vs_roots_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Bulk soil_vs_Roots"</span> <span class="op">=</span> <span class="st">"#E69F00"</span>,</span>
+<span>    <span class="st">"Rhizosphere_vs_Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
+<span>    <span class="st">"Roots_vs_Uncultivated"</span> <span class="op">=</span> <span class="st">"#F0E442"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">vs_roots_bac</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "Rhizosphere_vs_Roots"  "Bulk soil_vs_Roots"    "Roots_vs_Uncultivated"</span></span></code></pre>
 <p>As with the alpha diversity plots, <code>x_label_angle</code> rotates
@@ -866,18 +912,20 @@ of each facet, with the same pairwise or global behavior and
 <p>If <code>save_table = TRUE</code>, the function also returns a table
 containing the beta diversity values used to generate the plot.</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>                       metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
-<span>                       comparison_condition1 <span class="op">=</span> <span class="va">vs_roots_bac</span>,</span>
-<span>                       group_colors <span class="op">=</span> <span class="va">vs_roots_colors</span>,</span>
-<span>                       condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                       condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                       x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
-<span>                       show_x_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
-<span>                       partition <span class="op">=</span> <span class="st">"shared"</span>, </span>
-<span>                       family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
-<span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    comparison_condition1 <span class="op">=</span> <span class="va">vs_roots_bac</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="va">vs_roots_colors</span>,</span>
+<span>    condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
+<span>    show_x_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
+<span>    partition <span class="op">=</span> <span class="st">"shared"</span>,</span>
+<span>    family <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/pairwise-beta-diversity-visualization-35-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>For the fungi 🍄 we look at a different component:
 <code>partition = "turnover"</code> keeps only the replacement of taxa
@@ -887,22 +935,24 @@ of the other), here with the Sørensen family:</p>
 <code class="sourceCode R"><span><span class="va">groups_fung</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">metadata_fungi</span><span class="op">$</span><span class="va">Type_of_soil</span><span class="op">)</span><span class="op">)</span>, <span class="st">"Roots"</span><span class="op">)</span></span>
 <span><span class="va">vs_roots_fung</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="va">groups_fung</span>, <span class="st">"Roots"</span><span class="op">)</span>, <span class="st">"_vs_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">groups_fung</span>, <span class="st">"Roots"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                       metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                       comparison_condition1 <span class="op">=</span> <span class="va">vs_roots_fung</span>,</span>
-<span>                       group_colors <span class="op">=</span> <span class="va">vs_roots_colors</span>,</span>
-<span>                       condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                       condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>                       x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
-<span>                       show_x_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
-<span>                       partition <span class="op">=</span> <span class="st">"turnover"</span>,</span>
-<span>                       family <span class="op">=</span> <span class="st">"sorensen"</span>,</span>
-<span>                       save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    comparison_condition1 <span class="op">=</span> <span class="va">vs_roots_fung</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="va">vs_roots_colors</span>,</span>
+<span>    condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Samples"</span>,</span>
+<span>    show_x_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
+<span>    partition <span class="op">=</span> <span class="st">"turnover"</span>,</span>
+<span>    family <span class="op">=</span> <span class="st">"sorensen"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/pairwise-beta-diversity-visualization-37-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="pairwise-turnover-between-group-vs--within-group">🖥️ Pairwise turnover: between-group vs. within-group<a class="anchor" aria-label="anchor" href="#pairwise-turnover-between-group-vs--within-group"></a>
+<h3 id="pairwise-turnover-between-group-vs--within-group">Pairwise turnover: between-group vs. within-group<a class="anchor" aria-label="anchor" href="#pairwise-turnover-between-group-vs--within-group"></a>
 </h3>
 <p><code><a href="../reference/beta_turnover_plot.html">beta_turnover_plot()</a></code> reports the ASV turnover component
 of Hill-number-based beta diversity (<em>q</em>=0, 1, 2), one facet row
@@ -942,20 +992,22 @@ the legend. Set <code>show_x_labels = TRUE</code> to bring them back.
 each facet, as in <code><a href="../reference/beta_dissimilarity_plot.html">beta_dissimilarity_plot()</a></code>.</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_turnover_plot.html">beta_turnover_plot</a></span><span class="op">(</span></span>
-<span>  table                 <span class="op">=</span> <span class="va">table_fungi</span>,</span>
-<span>  metadata              <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>  comparison_condition1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>, <span class="st">"Rhizosphere_vs_Rhizosphere"</span><span class="op">)</span>,</span>
-<span>  condition1_col        <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>  condition2_col        <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>  facet_colors        <span class="op">=</span> <span class="st">"#5D478B"</span>,</span>
-<span>  group_colors          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>       <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
-<span>                            <span class="st">"Rhizosphere_vs_Rhizosphere"</span> <span class="op">=</span> <span class="st">"grey75"</span><span class="op">)</span>,</span>
-<span>  stat                  <span class="op">=</span> <span class="st">"wilcox.test"</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fungi</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    comparison_condition1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rhizosphere_vs_Roots"</span>, <span class="st">"Rhizosphere_vs_Rhizosphere"</span><span class="op">)</span>,</span>
+<span>    condition1_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    condition2_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    facet_colors <span class="op">=</span> <span class="st">"#5D478B"</span>,</span>
+<span>    group_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"Rhizosphere_vs_Roots"</span> <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
+<span>        <span class="st">"Rhizosphere_vs_Rhizosphere"</span> <span class="op">=</span> <span class="st">"grey75"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"wilcox.test"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/pairwise-turnover-between-group-vs-within-group-38-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="distance-decay-of-community-similarity">💻 Distance-decay of community similarity<a class="anchor" aria-label="anchor" href="#distance-decay-of-community-similarity"></a>
+<h3 id="distance-decay-of-community-similarity">Distance-decay of community similarity<a class="anchor" aria-label="anchor" href="#distance-decay-of-community-similarity"></a>
 </h3>
 <p>The function <code><a href="../reference/beta_decay_plot.html">beta_decay_plot()</a></code> tests whether communities
 that are geographically closer are also more similar in composition. It
@@ -972,30 +1024,30 @@ per group instead of one global test.</p>
 <p>We construct example data for this part:</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">loc_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Loc <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">8</span>,</span>
-<span>  lat <span class="op">=</span> <span class="fl">19.0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, length.out <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,</span>
-<span>  lon <span class="op">=</span> <span class="op">-</span><span class="fl">99.0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, length.out <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span>
+<span>    Loc <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">8</span>,</span>
+<span>    lat <span class="op">=</span> <span class="fl">19.0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, length.out <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,</span>
+<span>    lon <span class="op">=</span> <span class="op">-</span><span class="fl">99.0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.8</span>, length.out <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">metadata_bacteria</span><span class="op">$</span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="va">loc_coords</span><span class="op">$</span><span class="va">lat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_bacteria</span><span class="op">$</span><span class="va">Loc</span>, <span class="va">loc_coords</span><span class="op">$</span><span class="va">Loc</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">metadata_bacteria</span><span class="op">$</span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="va">loc_coords</span><span class="op">$</span><span class="va">lon</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_bacteria</span><span class="op">$</span><span class="va">Loc</span>, <span class="va">loc_coords</span><span class="op">$</span><span class="va">Loc</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#filtering uncultivated</span></span>
+<span><span class="co"># filtering uncultivated</span></span>
 <span><span class="va">metadata_bacteria_decay</span> <span class="op">&lt;-</span> <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">!=</span> <span class="st">"Uncultivated"</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">!=</span> <span class="st">"Uncultivated"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_decay_plot.html">beta_decay_plot</a></span><span class="op">(</span></span>
-<span>  table     <span class="op">=</span> <span class="va">table_bac</span>,</span>
-<span>  metadata  <span class="op">=</span> <span class="va">metadata_bacteria_decay</span>,</span>
-<span>  lat_col   <span class="op">=</span> <span class="st">"lat"</span>,</span>
-<span>  lon_col   <span class="op">=</span> <span class="st">"lon"</span>,</span>
-<span>  distance  <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
+<span>    table     <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata  <span class="op">=</span> <span class="va">metadata_bacteria_decay</span>,</span>
+<span>    lat_col   <span class="op">=</span> <span class="st">"lat"</span>,</span>
+<span>    lon_col   <span class="op">=</span> <span class="st">"lon"</span>,</span>
+<span>    distance  <span class="op">=</span> <span class="st">"jaccard"</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/distance-decay-of-community-similarity-40-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="differential-abundant-analysis">📊 Differential abundant analysis<a class="anchor" aria-label="anchor" href="#differential-abundant-analysis"></a>
+<h2 id="differential-abundant-analysis">Differential abundant analysis<a class="anchor" aria-label="anchor" href="#differential-abundant-analysis"></a>
 </h2>
 <p><code>MicroBioMeta</code> has several functions to explore
 <strong>differentially abundant taxa</strong>. These analyses help
@@ -1030,13 +1082,13 @@ features that best predict a given variable or condition, visualized as
 a <strong>lollipop plot of feature importance</strong>.</p></li>
 </ul>
 <div class="section level3">
-<h3 id="example-bacterial-data">📊 Example: Bacterial data<a class="anchor" aria-label="anchor" href="#example-bacterial-data"></a>
+<h3 id="example-bacterial-data">Example: Bacterial data<a class="anchor" aria-label="anchor" href="#example-bacterial-data"></a>
 </h3>
 <p>First, we filter the metadata to retain only two soil compartments to
 apply ALDEx2.</p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">metadata_bacteria_compar</span> <span class="op">&lt;-</span>  <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Roots"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span><span class="st">"Rhizosphere"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">metadata_bacteria_compar</span> <span class="op">&lt;-</span> <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Roots"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Rhizosphere"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_bacteria_compar</span> <span class="op">&lt;-</span> <span class="va">table_bacteria</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_bacteria_compar</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_bacteria</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
@@ -1054,16 +1106,18 @@ are tested at once. In these data no taxon remains significant after the
 correction (all points grey); <code>p_adjust_method = "none"</code> uses
 the raw p-value instead.</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_bac_compar</span>,</span>
-<span>                   metadata <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
-<span>                   group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>                   type <span class="op">=</span> <span class="st">"volcano"</span>,</span>
-<span>                   label_size <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                   filter_uncultured <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac_compar</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    type <span class="op">=</span> <span class="st">"volcano"</span>,</span>
+<span>    label_size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    filter_uncultured <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/example-bacterial-data-42-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="ancombc2-as-an-alternative-method">📊 ANCOMBC2 as an alternative method<a class="anchor" aria-label="anchor" href="#ancombc2-as-an-alternative-method"></a>
+<h3 id="ancombc2-as-an-alternative-method">ANCOMBC2 as an alternative method<a class="anchor" aria-label="anchor" href="#ancombc2-as-an-alternative-method"></a>
 </h3>
 <p><code><a href="../reference/ancombc_plot.html">ancombc_plot()</a></code> provides an alternative to the
 ALDEx2-based functions above. This function depends on the Bioconductor
@@ -1083,12 +1137,12 @@ keep). Raising <code>min_prevalence</code> filters those sparse taxa out
 before testing and avoids it.</p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
-<span>  table        <span class="op">=</span> <span class="va">table_bac_compar</span>,</span>
-<span>  metadata     <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
-<span>  group_col     <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>  level    <span class="op">=</span> <span class="st">"Genus"</span>,</span>
-<span>  min_prevalence      <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_bac_compar</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    level <span class="op">=</span> <span class="st">"Genus"</span>,</span>
+<span>    min_prevalence <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>    p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 <p>With <strong>3 or more groups</strong>, <code><a href="../reference/ancombc_plot.html">ancombc_plot()</a></code>
@@ -1101,30 +1155,30 @@ least one comparison. Here we keep the three compartments (dropping
 heatmap stays readable:</p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_bacteria_3</span> <span class="op">&lt;-</span> <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">!=</span> <span class="st">"Uncultivated"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">!=</span> <span class="st">"Uncultivated"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_bac_3</span> <span class="op">&lt;-</span> <span class="va">table_bac</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_bacteria_3</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_bac</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">table_bac</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
-<span>  table           <span class="op">=</span> <span class="va">table_bac_3</span>,</span>
-<span>  metadata        <span class="op">=</span> <span class="va">metadata_bacteria_3</span>,</span>
-<span>  group_col       <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>  level           <span class="op">=</span> <span class="st">"Phylum"</span>,</span>
-<span>  min_prevalence  <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  p_adjust_method <span class="op">=</span> <span class="st">"holm"</span></span>
+<span>    table           <span class="op">=</span> <span class="va">table_bac_3</span>,</span>
+<span>    metadata        <span class="op">=</span> <span class="va">metadata_bacteria_3</span>,</span>
+<span>    group_col       <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    level           <span class="op">=</span> <span class="st">"Phylum"</span>,</span>
+<span>    min_prevalence  <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>    p_adjust_method <span class="op">=</span> <span class="st">"holm"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44b-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="example-fungal-data">📊 Example: Fungal data<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
+<h3 id="example-fungal-data">Example: Fungal data<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
 </h3>
 <p>We follow the same procedure, comparing <strong>Bulk soil</strong>
 and <strong>Roots</strong>, but visualize the results with a
 <strong>heatmap</strong>. This funtcions uses
 <code>ComplexHeatmap</code>.</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">metadata_fungi_compar</span> <span class="op">&lt;-</span>  <span class="va">metadata_fungi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Bulk soil"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span><span class="st">"Roots"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">metadata_fungi_compar</span> <span class="op">&lt;-</span> <span class="va">metadata_fungi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Bulk soil"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Roots"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_fungi_compar</span> <span class="op">&lt;-</span> <span class="va">table_fung</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_fungi_compar</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_fung</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
@@ -1140,13 +1194,15 @@ per group, with side annotations for the effect size, the p-value class
 and the difference between groups:</p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung_compar</span>,</span>
-<span>                   metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
-<span>                   group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/aldex_heatmap_plot.html">aldex_heatmap_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung_compar</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/example-fungal-data-46-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="identifying-important-taxa">📊 Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
+<h3 id="identifying-important-taxa">Identifying important taxa<a class="anchor" aria-label="anchor" href="#identifying-important-taxa"></a>
 </h3>
 <p>The functions <code><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot()</a></code> and
 <code><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot()</a></code> can also be used to highlight taxa
@@ -1156,10 +1212,11 @@ conditions.</p>
 identify the taxa that best predict the soil compartment:</p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="va">table_bac</span>, </span>
-<span>  metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>, </span>
-<span>  top_n <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>  variable_to_predict <span class="op">=</span> <span class="st">"Type_of_soil"</span><span class="op">)</span></span></code></pre></div>
+<span>    table <span class="op">=</span> <span class="va">table_bac</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria</span>,</span>
+<span>    top_n <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>    variable_to_predict <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in random_forest_lollipop_plot(table = table_bac, metadata = metadata_bacteria, : Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:</span></span>
 <span><span class="co">##   - 'Proteobacteria' changed to 'Pseudomonadota'</span></span>
 <span><span class="co">##   - 'Actinobacteriota' changed to 'Actinomycetota'</span></span>
@@ -1168,17 +1225,19 @@ identify the taxa that best predict the soil compartment:</p>
 <p>Alternatively, taxa with the strongest <strong>log-ratio differences
 between two conditions</strong> can be visualized using:</p>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung_compar</span>,</span>
-<span>           metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
-<span>           group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>           top_n <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>           condition_A <span class="op">=</span> <span class="st">"Roots"</span>,</span>
-<span>           condition_B <span class="op">=</span> <span class="st">"Bulk soil"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung_compar</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi_compar</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    top_n <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>    condition_A <span class="op">=</span> <span class="st">"Roots"</span>,</span>
+<span>    condition_B <span class="op">=</span> <span class="st">"Bulk soil"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/identifying-important-taxa-48-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="environmental-analyses">💻 Environmental analyses<a class="anchor" aria-label="anchor" href="#environmental-analyses"></a>
+<h2 id="environmental-analyses">Environmental analyses<a class="anchor" aria-label="anchor" href="#environmental-analyses"></a>
 </h2>
 <p><code>MicroBioMeta</code> provides two functions to explore the
 relationship between <strong>environmental variables</strong> and
@@ -1191,7 +1250,7 @@ using <strong>Canonical Correspondence Analysis (CCA)</strong> or
 <strong>Redundancy Analysis (RDA)</strong>.</p></li>
 </ul>
 <div class="section level4">
-<h4 id="choosing-the-environmental-variables">🖥️ Choosing the environmental variables<a class="anchor" aria-label="anchor" href="#choosing-the-environmental-variables"></a>
+<h4 id="choosing-the-environmental-variables">Choosing the environmental variables<a class="anchor" aria-label="anchor" href="#choosing-the-environmental-variables"></a>
 </h4>
 <p>The environmental variables are read directly from the
 <strong>metadata</strong> (one column per variable), so no separate
@@ -1200,11 +1259,11 @@ table is needed: just pass the names of the columns to use in
 it in <code>env_data</code> (rows = samples, as row names).</p>
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">env_vars_fung</span> <span class="op">&lt;-</span> <span class="va">metadata_fungi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pH</span><span class="op">:</span><span class="va">Arbus_per</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pH</span><span class="op">:</span><span class="va">Arbus_per</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="correlation-between-environmental-variables-and-taxonomic-abundance">🖥️ Correlation between environmental variables and taxonomic
+<h4 id="correlation-between-environmental-variables-and-taxonomic-abundance">Correlation between environmental variables and taxonomic
 abundance<a class="anchor" aria-label="anchor" href="#correlation-between-environmental-variables-and-taxonomic-abundance"></a>
 </h4>
 <p>The function <code><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot()</a></code> calculates
@@ -1214,28 +1273,32 @@ level and returns a <strong>correlation heatmap</strong> showing how
 environmental variables relate to taxonomic abundances.</p>
 <p>Example using <strong>phylum-level abundances</strong>:</p>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                    env_vars <span class="op">=</span> <span class="va">env_vars_fung</span>,</span>
-<span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
-<span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    env_vars <span class="op">=</span> <span class="va">env_vars_fung</span>,</span>
+<span>    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/correlation-between-environmental-variables-and-taxonomic-abundance-50-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="alternative-visualization">🖥️ Alternative visualization<a class="anchor" aria-label="anchor" href="#alternative-visualization"></a>
+<h3 id="alternative-visualization">Alternative visualization<a class="anchor" aria-label="anchor" href="#alternative-visualization"></a>
 </h3>
 <p>Correlations can also be displayed using circle markers instead of
 tiles:</p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>                    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>                    env_vars <span class="op">=</span> <span class="va">env_vars_fung</span>,</span>
-<span>                    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
-<span>                    save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                    geom <span class="op">=</span> <span class="st">"circle"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/corr_env_abund_plot.html">corr_env_abund_plot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    env_vars <span class="op">=</span> <span class="va">env_vars_fung</span>,</span>
+<span>    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
+<span>    save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    geom <span class="op">=</span> <span class="st">"circle"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alternative-visualization-51-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="section level4">
-<h4 id="constrained-ordination-cca-rda">🖥️ Constrained ordination (CCA / RDA)<a class="anchor" aria-label="anchor" href="#constrained-ordination-cca-rda"></a>
+<h4 id="constrained-ordination-cca-rda">Constrained ordination (CCA / RDA)<a class="anchor" aria-label="anchor" href="#constrained-ordination-cca-rda"></a>
 </h4>
 <p>The function <code><a href="../reference/cca_rda_biplot.html">cca_rda_biplot()</a></code> performs a constrained
 ordination analysis to evaluate how environmental variables explain
@@ -1243,13 +1306,15 @@ variation in microbial community composition.</p>
 <p><code>scale_arrows</code> is a parameter that helps you to visualize
 better the environmental vectors:</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_fung</span>,</span>
-<span>               metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
-<span>               env_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>,<span class="st">"TN"</span>,<span class="st">"WHC"</span>, <span class="st">"EC"</span>, <span class="st">"Clay"</span><span class="op">)</span>,</span>
-<span>               analysis <span class="op">=</span> <span class="st">"RDA"</span>,</span>
-<span>               show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>               group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>               scale_arrows <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    env_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"TN"</span>, <span class="st">"WHC"</span>, <span class="st">"EC"</span>, <span class="st">"Clay"</span><span class="op">)</span>,</span>
+<span>    analysis <span class="op">=</span> <span class="st">"RDA"</span>,</span>
+<span>    show_all_env_vectors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    scale_arrows <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Some constraints or conditions were aliased because they were redundant. This</span></span>
 <span><span class="co">## can happen if terms are constant or linearly dependent (collinear): 'WHC',</span></span>
@@ -1443,27 +1508,26 @@ Blanchet, et al.</span> 2024. <em>Vegan: Community Ecology Package</em>.
 <span><span class="co">## [133] magrittr_2.0.5              Formula_1.2-6              </span></span>
 <span><span class="co">## [135] patchwork_1.3.2             geosphere_1.6-8            </span></span>
 <span><span class="co">## [137] Rcpp_1.1.2                  ape_5.8-1                  </span></span>
-<span><span class="co">## [139] viridis_0.6.5               stringi_1.8.9              </span></span>
-<span><span class="co">## [141] rootSolve_1.8.2.4           MASS_7.3-65                </span></span>
-<span><span class="co">## [143] plyr_1.8.9                  parallel_4.6.1             </span></span>
-<span><span class="co">## [145] ggrepel_0.9.8               doSNOW_1.0.20              </span></span>
-<span><span class="co">## [147] lmom_3.3                    deldir_2.0-4               </span></span>
-<span><span class="co">## [149] splines_4.6.1               multtest_2.68.0            </span></span>
-<span><span class="co">## [151] hms_1.1.4                   circlize_0.4.18            </span></span>
-<span><span class="co">## [153] ALDEx2_1.44.0               igraph_2.3.3               </span></span>
-<span><span class="co">## [155] ggpubr_1.0.0                ggsignif_0.6.4             </span></span>
-<span><span class="co">## [157] reshape2_1.4.5              stats4_4.6.1               </span></span>
-<span><span class="co">## [159] magic_1.6-1                 evaluate_1.0.5             </span></span>
-<span><span class="co">## [161] latticeExtra_0.6-31         RcppParallel_6.2.1         </span></span>
-<span><span class="co">## [163] nloptr_2.2.1                tzdb_0.5.0                 </span></span>
-<span><span class="co">## [165] networkD3_0.4.1             clue_0.3-68                </span></span>
-<span><span class="co">## [167] broom_1.0.13                e1071_1.7-17               </span></span>
-<span><span class="co">## [169] rstatix_1.1.0               viridisLite_0.4.3          </span></span>
-<span><span class="co">## [171] class_7.3-23                ragg_1.5.2                 </span></span>
-<span><span class="co">## [173] gsl_2.1-9                   truncnorm_1.0-9            </span></span>
-<span><span class="co">## [175] snow_0.4-4                  minpack.lm_1.2-4           </span></span>
-<span><span class="co">## [177] lmerTest_3.2-1              IRanges_2.46.0             </span></span>
-<span><span class="co">## [179] cluster_2.1.8.2             timechange_0.4.0</span></span></code></pre>
+<span><span class="co">## [139] stringi_1.8.9               rootSolve_1.8.2.4          </span></span>
+<span><span class="co">## [141] MASS_7.3-65                 parallel_4.6.1             </span></span>
+<span><span class="co">## [143] ggrepel_0.9.8               doSNOW_1.0.20              </span></span>
+<span><span class="co">## [145] lmom_3.3                    deldir_2.0-4               </span></span>
+<span><span class="co">## [147] splines_4.6.1               multtest_2.68.0            </span></span>
+<span><span class="co">## [149] hms_1.1.4                   circlize_0.4.18            </span></span>
+<span><span class="co">## [151] ALDEx2_1.44.0               igraph_2.3.3               </span></span>
+<span><span class="co">## [153] ggpubr_1.0.0                ggsignif_0.6.4             </span></span>
+<span><span class="co">## [155] stats4_4.6.1                magic_1.6-1                </span></span>
+<span><span class="co">## [157] evaluate_1.0.5              latticeExtra_0.6-31        </span></span>
+<span><span class="co">## [159] RcppParallel_6.2.1          nloptr_2.2.1               </span></span>
+<span><span class="co">## [161] tzdb_0.5.0                  networkD3_0.4.1            </span></span>
+<span><span class="co">## [163] clue_0.3-68                 broom_1.0.13               </span></span>
+<span><span class="co">## [165] e1071_1.7-17                rstatix_1.1.0              </span></span>
+<span><span class="co">## [167] viridisLite_0.4.3           class_7.3-23               </span></span>
+<span><span class="co">## [169] ragg_1.5.2                  gsl_2.1-9                  </span></span>
+<span><span class="co">## [171] truncnorm_1.0-9             snow_0.4-4                 </span></span>
+<span><span class="co">## [173] minpack.lm_1.2-4            lmerTest_3.2-1             </span></span>
+<span><span class="co">## [175] IRanges_2.46.0              cluster_2.1.8.2            </span></span>
+<span><span class="co">## [177] timechange_0.4.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

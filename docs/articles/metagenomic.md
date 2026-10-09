@@ -25,7 +25,7 @@ e18323.](https://peerj.com/articles/18323/)
 Raw data, metadata and the original analysis scripts:
 [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
 
-## 💻 Loading data
+## Loading data
 
 First, let’s load `MicroBioMeta` and `tidyverse` (used for data
 wrangling):
@@ -44,8 +44,8 @@ merged into a single table beforehand (one column per sample, named
 ``` r
 
 table_kraken <- read.delim(
-  system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
-  row.names = 1, check.names = FALSE
+    system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
+    row.names = 1, check.names = FALSE
 )
 
 table_kraken[1:3, c(1:2, ncol(table_kraken))]
@@ -78,8 +78,8 @@ Now, let’s load the metadata:
 ``` r
 
 metadata_meta <- read.delim(
-  system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
-  check.names = FALSE
+    system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
+    check.names = FALSE
 )
 
 head(metadata_meta[, 1:10])
@@ -112,7 +112,7 @@ sample_cols <- setdiff(colnames(table_kraken), "taxonomy")
 id_metagenome <- as.integer(gsub("kraken_pluspfp_|_report_bracken_species", "", sample_cols))
 
 colnames(table_kraken)[match(sample_cols, colnames(table_kraken))] <-
-  metadata_meta$SAMPLEID[match(id_metagenome, metadata_meta$id_metagenome)]
+    metadata_meta$SAMPLEID[match(id_metagenome, metadata_meta$id_metagenome)]
 ```
 
 Let’s rename and format the metadata:
@@ -133,19 +133,19 @@ Coordinates were taken and loaded:
 ``` r
 
 coord_meta <- read.csv(
-  system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
+    system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
 ) %>%
-  dplyr::select(-Site) %>% # drop the CSV's own overall site index (1-12); we want `Sitio` (1-2) instead
-  dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
-  dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)
+    dplyr::select(-Site) %>% # drop the CSV's own overall site index (1-12); we want `Sitio` (1-2) instead
+    dplyr::rename(Polygon_num = pol, Site = Sitio) %>%
+    dplyr::select(Polygon_num, Site, Transecto, Latitude, Longitude)
 
 metadata_meta <- metadata_meta %>%
-  dplyr::mutate(Polygon_num = as.integer(gsub("Pol", "", Polygon)), Site = as.integer(Site)) %>%
-  dplyr::left_join(coord_meta, by = c("Polygon_num", "Site", "Transecto")) %>%
-  dplyr::mutate(Site = as.character(Site))
+    dplyr::mutate(Polygon_num = as.integer(gsub("Pol", "", Polygon)), Site = as.integer(Site)) %>%
+    dplyr::left_join(coord_meta, by = c("Polygon_num", "Site", "Transecto")) %>%
+    dplyr::mutate(Site = as.character(Site))
 ```
 
-### 🔄 Starting from a phyloseq or TreeSummarizedExperiment object
+### Starting from a phyloseq or TreeSummarizedExperiment object
 
 `MicroBioMeta` works with plain tables, but if your data are already in
 a `phyloseq` object or in a `TreeSummarizedExperiment` (the Bioconductor
@@ -165,9 +165,9 @@ with one taxonomy column per rank, as `mia` would:
 counts <- as.matrix(table_meta[, metadata_meta$SAMPLEID])
 
 ranks <- tidyr::separate(
-  data.frame(taxonomy = gsub("[kpcofgs]__", "", table_meta$taxonomy)),
-  taxonomy, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
-  sep = "; ", fill = "right"
+    data.frame(taxonomy = gsub("[kpcofgs]__", "", table_meta$taxonomy)),
+    taxonomy, c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"),
+    sep = "; ", fill = "right"
 )
 rownames(ranks) <- rownames(table_meta)
 
@@ -175,9 +175,9 @@ samples <- metadata_meta
 rownames(samples) <- samples$SAMPLEID
 
 tse <- TreeSummarizedExperiment::TreeSummarizedExperiment(
-  assays  = list(counts = counts),
-  rowData = ranks,
-  colData = samples
+    assays  = list(counts = counts),
+    rowData = ranks,
+    colData = samples
 )
 tse
 ```
@@ -237,9 +237,9 @@ With a `phyloseq` object it works the same way:
 mbm <- from_phyloseq(physeq)
 ```
 
-## 📊 Composition exploration
+## Composition exploration
 
-### 📊 Abundance barplot
+### Abundance barplot
 
 Same function as in the metabarcoding vignette; the only difference is
 `taxonomy_db = "Kraken2"`, which tells the taxonomy-parsing logic to
@@ -247,21 +247,23 @@ expect Kraken2/Bracken-style strings.
 
 ``` r
 
-abundance_bar_plot(table = table_meta,
-                  metadata = metadata_meta,
-                  taxonomy_db = "Kraken2",
-                  level = "genus",
-                  top_n = 20,
-                  x_col = "Polygon",
-                  x_axis_title = "Polygons",
-                  add_remained = TRUE,
-                  label = "Genus",
-                  save_table = FALSE)
+abundance_bar_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    taxonomy_db = "Kraken2",
+    level = "genus",
+    top_n = 20,
+    x_col = "Polygon",
+    x_axis_title = "Polygons",
+    add_remained = TRUE,
+    label = "Genus",
+    save_table = FALSE
+)
 ```
 
 ![](metagenomic_files/figure-html/abundance-barplot-7-1.png)
 
-### 🖥️ Abundance heatmap
+### Abundance heatmap
 
 Kraken2/Bracken taxa aren’t ASVs, so `feature_prefix = "Taxon"` is used
 here instead of the default `"ASV"` row-label prefix. `condition2` adds
@@ -269,40 +271,44 @@ a second annotation bar, here the sampling site within each polygon.
 
 ``` r
 
-abundance_heatmap_plot(table = table_meta,
-                  metadata = metadata_meta,
-                  top_n = 20,
-                  show_column_names = FALSE,
-                  condition1 = "Polygon",
-                  condition2 = "Site",
-                  feature_prefix = "Taxon")
+abundance_heatmap_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    top_n = 20,
+    show_column_names = FALSE,
+    condition1 = "Polygon",
+    condition2 = "Site",
+    feature_prefix = "Taxon"
+)
 ```
 
 ![](metagenomic_files/figure-html/abundance-heatmap-8-1.png)
 
-## 📊 Alpha diversity
+## Alpha diversity
 
 As in the metabarcoding vignette,
 `alpha_hill_corr_plot(table = table_meta)` can be used first to check
 whether the Hill numbers depend on sequencing depth.
 
-### 📊 Alpha diversity visualization
+### Alpha diversity visualization
 
 `fill_col` is the same as `x_col` here, so the legend would just repeat
 the x-axis tick labels - `show_legend = FALSE` drops it.
 
 ``` r
 
-alpha_hill_plot(table = table_meta,
-                metadata = metadata_meta,
-                x_col = "Polygon",
-                fill_col = "Polygon",
-                facet_by = "Site",
-                facet_orientation = "horizontal",
-                legend_title = "",
-                stat = "kruskal.test",
-                show_legend = FALSE,
-                save_table = FALSE)
+alpha_hill_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    x_col = "Polygon",
+    fill_col = "Polygon",
+    facet_by = "Site",
+    facet_orientation = "horizontal",
+    legend_title = "",
+    stat = "kruskal.test",
+    show_legend = FALSE,
+    save_table = FALSE
+)
 ```
 
 ![](metagenomic_files/figure-html/alpha-diversity-visualization-10-1.png)
@@ -316,10 +322,12 @@ pick up differences between blocks.
 
 ``` r
 
-alpha_decay_plot(table = table_meta,
-                 metadata = metadata_meta,
-                 cont_var = "pH",
-                 x_axis_title = "Soil pH")
+alpha_decay_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    cont_var = "pH",
+    x_axis_title = "Soil pH"
+)
 ```
 
 ![](metagenomic_files/figure-html/alpha-diversity-along-a-continuous-gradient-11-1.png)
@@ -340,11 +348,13 @@ every time:
 ``` r
 
 set.seed(123)
-beta_ord_plot(table = table_meta,
-              metadata = metadata_meta,
-              distance = "bray",
-              ordination = "NMDS",
-              group_col = "Polygon")
+beta_ord_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    distance = "bray",
+    ordination = "NMDS",
+    group_col = "Polygon"
+)
 ```
 
     ## Run 0 stress 0.109415 
@@ -406,12 +416,14 @@ Use `save_table = TRUE` to also get the results as a text file.
 
 ``` r
 
-beta_test_table(table = table_meta,
-                metadata = metadata_meta,
-                formula_str = "Polygon*Site",
-                distance = "bray",
-                test = "permanova",
-                permutations = 999)
+beta_test_table(
+    table = table_meta,
+    metadata = metadata_meta,
+    formula_str = "Polygon*Site",
+    distance = "bray",
+    test = "permanova",
+    permutations = 999
+)
 ```
 
 ![](metagenomic_files/figure-html/statistical-tests-for-beta-diversity-13-1.png)
@@ -426,11 +438,11 @@ similar in composition, via a Mantel test ([Mantel
 ``` r
 
 beta_decay_plot(
-  table    = table_meta,
-  metadata = metadata_meta,
-  lat_col  = "Latitude",
-  lon_col  = "Longitude",
-  distance = "bray"
+    table    = table_meta,
+    metadata = metadata_meta,
+    lat_col  = "Latitude",
+    lon_col  = "Longitude",
+    distance = "bray"
 )
 ```
 
@@ -454,16 +466,18 @@ For the heatmap (ALDEx2 ([Fernandes et al.
 ``` r
 
 metadata_meta_compar <- metadata_meta %>%
-  filter(Polygon == "Pol2" | Polygon == "Pol5")
+    filter(Polygon == "Pol2" | Polygon == "Pol5")
 
 table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SAMPLEID, colnames(table_meta)), ncol(table_meta))]
 ```
 
 ``` r
 
-aldex_heatmap_plot(table = table_meta_compar,
-                   metadata = metadata_meta_compar,
-                   group_col = "Polygon")
+aldex_heatmap_plot(
+    table = table_meta_compar,
+    metadata = metadata_meta_compar,
+    group_col = "Polygon"
+)
 ```
 
 ![](metagenomic_files/figure-html/differential-abundant-analysis-16-1.png)
@@ -471,12 +485,12 @@ aldex_heatmap_plot(table = table_meta_compar,
 ``` r
 
 ancombc_plot(
-  table        = table_meta_compar,
-  metadata     = metadata_meta_compar,
-  group_col     = "Polygon",
-  level    = "Genus",
-  min_prevalence      = 0.05,
-  p_adjust_method = "BH"
+    table = table_meta_compar,
+    metadata = metadata_meta_compar,
+    group_col = "Polygon",
+    level = "Genus",
+    min_prevalence = 0.05,
+    p_adjust_method = "BH"
 )
 ```
 
@@ -498,12 +512,14 @@ random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n 
 
 ``` r
 
-ratios_bubble_plot(table = table_meta_compar,
-           metadata = metadata_meta_compar,
-           group_col = "Polygon",
-           top_n = 20,
-           condition_A = "Pol2",
-           condition_B = "Pol5")
+ratios_bubble_plot(
+    table = table_meta_compar,
+    metadata = metadata_meta_compar,
+    group_col = "Polygon",
+    top_n = 20,
+    condition_A = "Pol2",
+    condition_B = "Pol5"
+)
 ```
 
 ![](metagenomic_files/figure-html/identifying-important-taxa-19-1.png)
@@ -518,20 +534,22 @@ needed):
 ``` r
 
 env_vars_meta <- metadata_meta %>%
-  dplyr::select(pH:ARENA) %>%
-  colnames()
+    dplyr::select(pH:ARENA) %>%
+    colnames()
 ```
 
 ### Correlation between environmental variables and taxonomic abundance
 
 ``` r
 
-corr_env_abund_plot(table = table_meta,
-                    metadata = metadata_meta,
-                    env_vars = env_vars_meta,
-                    taxonomy_db = "Kraken2",
-                    level = "phylum",
-                    save_table = FALSE)
+corr_env_abund_plot(
+    table = table_meta,
+    metadata = metadata_meta,
+    env_vars = env_vars_meta,
+    taxonomy_db = "Kraken2",
+    level = "phylum",
+    save_table = FALSE
+)
 ```
 
     ## Warning in corr_env_abund_plot(table = table_meta, metadata = metadata_meta, :
@@ -543,13 +561,15 @@ corr_env_abund_plot(table = table_meta,
 
 ``` r
 
-cca_rda_biplot(table = table_meta,
-               metadata = metadata_meta,
-               env_vars = c("pH", "MO", "N", "P", "K"),
-               analysis = "CCA",
-               show_all_env_vectors = TRUE,
-               group_col = "Polygon",
-               scale_arrows = 3)
+cca_rda_biplot(
+    table = table_meta,
+    metadata = metadata_meta,
+    env_vars = c("pH", "MO", "N", "P", "K"),
+    analysis = "CCA",
+    show_all_env_vectors = TRUE,
+    group_col = "Polygon",
+    scale_arrows = 3
+)
 ```
 
 ![](metagenomic_files/figure-html/constrained-ordination-cca-23-1.png)
@@ -649,67 +669,65 @@ sessionInfo()
     ##  [43] codetools_0.2-20                DelayedArray_0.38.2            
     ##  [45] energy_1.7-12                   tidyselect_1.2.1               
     ##  [47] shape_1.4.6.1                   farver_2.1.2                   
-    ##  [49] lme4_2.0-6                      viridis_0.6.5                  
-    ##  [51] matrixStats_1.5.0               stats4_4.6.1                   
-    ##  [53] base64enc_0.1-6                 Seqinfo_1.2.0                  
-    ##  [55] ALDEx2_1.44.0                   jsonlite_2.0.0                 
-    ##  [57] GetoptLong_1.1.1                multtest_2.68.0                
-    ##  [59] e1071_1.7-17                    Formula_1.2-6                  
-    ##  [61] survival_3.8-6                  iterators_1.0.14               
-    ##  [63] systemfonts_1.3.2               tools_4.6.1                    
-    ##  [65] treeio_1.36.1                   ragg_1.5.2                     
-    ##  [67] DescTools_0.99.60               Rcpp_1.1.2                     
-    ##  [69] ggVennDiagram_1.5.7             glue_1.8.1                     
-    ##  [71] gridExtra_2.3.1                 SparseArray_1.12.2             
-    ##  [73] xfun_0.61                       mgcv_1.9-4                     
-    ##  [75] MatrixGenerics_1.24.0           TreeSummarizedExperiment_2.20.0
-    ##  [77] numDeriv_2016.8-1.1             withr_3.0.3                    
-    ##  [79] fastmap_1.2.0                   ggh4x_0.3.1                    
-    ##  [81] latticeExtra_0.6-31             boot_1.3-32                    
-    ##  [83] digest_0.6.39                   truncnorm_1.0-9                
-    ##  [85] timechange_0.4.0                R6_2.6.1                       
-    ##  [87] textshaping_1.0.5               colorspace_2.1-3               
-    ##  [89] Cairo_1.7-0                     gtools_3.9.5                   
-    ##  [91] jpeg_0.1-11                     dichromat_2.0-1                
-    ##  [93] generics_0.1.4                  data.table_1.18.6.1            
-    ##  [95] class_7.3-23                    httr_1.4.9                     
-    ##  [97] htmlwidgets_1.6.4               S4Arrays_1.12.0                
-    ##  [99] pkgconfig_2.0.3                 gtable_0.3.6                   
-    ## [101] Exact_3.3                       zCompositions_1.6.2            
-    ## [103] ComplexHeatmap_2.28.0           S7_0.2.2                       
-    ## [105] SingleCellExperiment_1.34.0     XVector_0.52.0                 
-    ## [107] htmltools_0.5.9                 carData_3.0-6                  
-    ## [109] zigg_0.0.2                      clue_0.3-68                    
-    ## [111] scales_1.4.0                    Biobase_2.72.0                 
-    ## [113] lmom_3.3                        png_0.1-9                      
-    ## [115] reformulas_0.4.4                ANCOMBC_2.14.0                 
-    ## [117] knitr_1.52                      rstudioapi_0.19.0              
-    ## [119] reshape2_1.4.5                  geosphere_1.6-8                
-    ## [121] tzdb_0.5.0                      rjson_0.2.23                   
-    ## [123] nloptr_2.2.1                    checkmate_2.3.4                
-    ## [125] nlme_3.1-169                    zoo_1.9-1                      
-    ## [127] proxy_0.4-29                    cachem_1.1.0                   
-    ## [129] GlobalOptions_0.1.4             rootSolve_1.8.2.4              
-    ## [131] parallel_4.6.1                  foreign_0.8-91                 
-    ## [133] desc_1.4.3                      pillar_1.11.1                  
-    ## [135] grid_4.6.1                      vctrs_0.7.3                    
-    ## [137] randomForest_4.7-1.2            ggpubr_1.0.0                   
-    ## [139] car_3.1-5                       cluster_2.1.8.2                
-    ## [141] htmlTable_2.5.0                 evaluate_1.0.5                 
-    ## [143] magick_2.9.1                    mvtnorm_1.4-2                  
-    ## [145] cli_3.6.6                       compiler_4.6.1                 
-    ## [147] rlang_1.3.0                     crayon_1.5.3                   
-    ## [149] ggsignif_0.6.4                  labeling_0.4.3                 
-    ## [151] interp_1.1-6                    plyr_1.8.9                     
-    ## [153] fs_2.1.0                        stringi_1.8.9                  
-    ## [155] viridisLite_0.4.3               deldir_2.0-4                   
-    ## [157] BiocParallel_1.46.0             lmerTest_3.2-1                 
-    ## [159] gsl_2.1-9                       Biostrings_2.80.2              
-    ## [161] lazyeval_0.2.3                  Matrix_1.7-5                   
-    ## [163] hms_1.1.4                       patchwork_1.3.2                
-    ## [165] NADA_1.6-1.2                    SummarizedExperiment_1.42.0    
-    ## [167] haven_2.5.5                     rbibutils_2.4.1                
-    ## [169] Rfast_2.1.5.2                   broom_1.0.13                   
-    ## [171] RcppParallel_6.2.1              bslib_0.12.0                   
-    ## [173] directlabels_2026.8.27          readxl_1.5.0.1                 
-    ## [175] ape_5.8-1
+    ##  [49] lme4_2.0-6                      matrixStats_1.5.0              
+    ##  [51] stats4_4.6.1                    base64enc_0.1-6                
+    ##  [53] Seqinfo_1.2.0                   ALDEx2_1.44.0                  
+    ##  [55] jsonlite_2.0.0                  GetoptLong_1.1.1               
+    ##  [57] multtest_2.68.0                 e1071_1.7-17                   
+    ##  [59] Formula_1.2-6                   survival_3.8-6                 
+    ##  [61] iterators_1.0.14                systemfonts_1.3.2              
+    ##  [63] tools_4.6.1                     treeio_1.36.1                  
+    ##  [65] ragg_1.5.2                      DescTools_0.99.60              
+    ##  [67] Rcpp_1.1.2                      ggVennDiagram_1.5.7            
+    ##  [69] glue_1.8.1                      gridExtra_2.3.1                
+    ##  [71] SparseArray_1.12.2              xfun_0.61                      
+    ##  [73] mgcv_1.9-4                      MatrixGenerics_1.24.0          
+    ##  [75] TreeSummarizedExperiment_2.20.0 numDeriv_2016.8-1.1            
+    ##  [77] withr_3.0.3                     fastmap_1.2.0                  
+    ##  [79] ggh4x_0.3.1                     latticeExtra_0.6-31            
+    ##  [81] boot_1.3-32                     digest_0.6.39                  
+    ##  [83] truncnorm_1.0-9                 timechange_0.4.0               
+    ##  [85] R6_2.6.1                        textshaping_1.0.5              
+    ##  [87] colorspace_2.1-3                Cairo_1.7-0                    
+    ##  [89] gtools_3.9.5                    jpeg_0.1-11                    
+    ##  [91] dichromat_2.0-1                 generics_0.1.4                 
+    ##  [93] data.table_1.18.6.1             class_7.3-23                   
+    ##  [95] httr_1.4.9                      htmlwidgets_1.6.4              
+    ##  [97] S4Arrays_1.12.0                 pkgconfig_2.0.3                
+    ##  [99] gtable_0.3.6                    Exact_3.3                      
+    ## [101] zCompositions_1.6.2             ComplexHeatmap_2.28.0          
+    ## [103] S7_0.2.2                        SingleCellExperiment_1.34.0    
+    ## [105] XVector_0.52.0                  htmltools_0.5.9                
+    ## [107] carData_3.0-6                   zigg_0.0.2                     
+    ## [109] clue_0.3-68                     scales_1.4.0                   
+    ## [111] Biobase_2.72.0                  lmom_3.3                       
+    ## [113] png_0.1-9                       reformulas_0.4.4               
+    ## [115] ANCOMBC_2.14.0                  knitr_1.52                     
+    ## [117] rstudioapi_0.19.0               geosphere_1.6-8                
+    ## [119] tzdb_0.5.0                      rjson_0.2.23                   
+    ## [121] nloptr_2.2.1                    checkmate_2.3.4                
+    ## [123] nlme_3.1-169                    zoo_1.9-1                      
+    ## [125] proxy_0.4-29                    cachem_1.1.0                   
+    ## [127] GlobalOptions_0.1.4             rootSolve_1.8.2.4              
+    ## [129] parallel_4.6.1                  foreign_0.8-91                 
+    ## [131] desc_1.4.3                      pillar_1.11.1                  
+    ## [133] grid_4.6.1                      vctrs_0.7.3                    
+    ## [135] randomForest_4.7-1.2            ggpubr_1.0.0                   
+    ## [137] car_3.1-5                       cluster_2.1.8.2                
+    ## [139] htmlTable_2.5.0                 evaluate_1.0.5                 
+    ## [141] magick_2.9.1                    mvtnorm_1.4-2                  
+    ## [143] cli_3.6.6                       compiler_4.6.1                 
+    ## [145] rlang_1.3.0                     crayon_1.5.3                   
+    ## [147] ggsignif_0.6.4                  labeling_0.4.3                 
+    ## [149] interp_1.1-6                    fs_2.1.0                       
+    ## [151] stringi_1.8.9                   viridisLite_0.4.3              
+    ## [153] deldir_2.0-4                    BiocParallel_1.46.0            
+    ## [155] lmerTest_3.2-1                  gsl_2.1-9                      
+    ## [157] Biostrings_2.80.2               lazyeval_0.2.3                 
+    ## [159] Matrix_1.7-5                    hms_1.1.4                      
+    ## [161] patchwork_1.3.2                 NADA_1.6-1.2                   
+    ## [163] SummarizedExperiment_1.42.0     haven_2.5.5                    
+    ## [165] rbibutils_2.4.1                 Rfast_2.1.5.2                  
+    ## [167] broom_1.0.13                    RcppParallel_6.2.1             
+    ## [169] bslib_0.12.0                    directlabels_2026.8.27         
+    ## [171] readxl_1.5.0.1                  ape_5.8-1

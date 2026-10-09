@@ -87,28 +87,28 @@ metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "Micr
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 venn_plot(
-  table          = table,
-  metadata       = metadata,
-  merge_by       = "Location",
-  min_prevalence = 0
+    table          = table,
+    metadata       = metadata,
+    merge_by       = "Location",
+    min_prevalence = 0
 )
 
 
 ## Filtering taxa by prevalence
 venn_plot(
-  table          = table,
-  metadata       = metadata,
-  merge_by       = "Location",
-  min_prevalence = 0.2
+    table          = table,
+    metadata       = metadata,
+    merge_by       = "Location",
+    min_prevalence = 0.2
 )
 
 
 ## Custom colors
 venn_plot(
-  table          = table,
-  metadata       = metadata,
-  merge_by       = "Location",
-  min_prevalence = 0,
-  group_colors   = c("#1B9E77", "#D95F02")
+    table          = table,
+    metadata       = metadata,
+    merge_by       = "Location",
+    min_prevalence = 0,
+    group_colors   = c("#1B9E77", "#D95F02")
 )
 ```
