@@ -739,20 +739,21 @@ Adicionalmente, dos enfoques complementarios ayudan a identificar **taxones impo
 
 
 ### Ejemplo: datos de bacterias
-Primero, filtramos los metadatos para conservar solo dos compartimentos de suelo y aplicar ALDEx2.
+Primero, conservamos solo dos compartimentos de suelo, **Bulk soil** y **Roots**, ya que ALDEx2 compara dos grupos.
 
 ```{r ejemplo-datos-de-bacterias-41}
 metadata_bacteria_compar <- metadata_bacteria %>%
-    filter(Type_of_soil == "Roots" | Type_of_soil == "Rhizosphere")
+    filter(Type_of_soil == "Roots" | Type_of_soil == "Bulk soil")
 
 table_bacteria_compar <- table_bacteria[match(metadata_bacteria_compar$SAMPLEID, colnames(table_bacteria))]
 
 table_bac_compar <- merge_feature_taxonomy(table_bacteria_compar, taxonomy_bacteria)
 ```
 
-Podemos visualizar la abundancia diferencial usando un **volcano plot**. Los taxones significativos se etiquetan con su nombre; `label_size` controla el tamaño de fuente de estas etiquetas, y `filter_uncultured = TRUE` descarta los taxones "uncultured"/"unculture" de las etiquetas (aunque igual se grafican como puntos, solo no se etiquetan). Por defecto la significancia usa el valor p ajustado por Benjamini-Hochberg (`p_adjust_method = "BH"`), porque se prueban miles de taxones a la vez. En estos datos ningún taxón queda significativo tras la corrección (todos los puntos grises); con `p_adjust_method = "none"` se usa el valor p sin corregir.
+Podemos visualizar la abundancia diferencial usando un **volcano plot**. Los taxones significativos se etiquetan con su nombre; `label_size` controla el tamaño de fuente de estas etiquetas, y `filter_uncultured = TRUE` descarta los taxones "uncultured"/"unculture" de las etiquetas (aunque igual se grafican como puntos, solo no se etiquetan). Por defecto la significancia usa el valor p ajustado por Benjamini-Hochberg (`p_adjust_method = "BH"`), porque se prueban miles de taxones a la vez. Entre el suelo y las raíces muchos taxones siguen siendo significativos después de la corrección (puntos de color); con `p_adjust_method = "none"` se usaría el valor p sin corregir.
 
 ```{r ejemplo-datos-de-bacterias-42, message=FALSE, warning=FALSE, fig.width=6, fig.height=4.5, out.width="60%"}
+set.seed(123)
 aldex_volcano_plot(
     table = table_bac_compar,
     metadata = metadata_bacteria_compar,
@@ -773,6 +774,8 @@ BiocManager::install("ANCOMBC")
 
 `level` agrupa la tabla a un rango taxonómico antes de la prueba (por defecto `"Genus"`), y `p_adjust_method`/`min_prevalence` controlan la corrección por pruebas múltiples y el filtro de prevalencia.
 
+Con dos grupos el resultado es un **gráfico de barras**: una barra por taxón significativo con su log fold change (LFC) entre los dos grupos y su error estándar, coloreada según el grupo donde el taxón es más abundante. El grupo de referencia es el primer nivel de `group_col` (aquí **Bulk soil**), así que los valores positivos indican mayor abundancia en **Roots**. Aquí `min_prevalence = 0.5` conserva los phyla presentes en al menos la mitad de las muestras.
+
 ⚠️ Con un `min_prevalence` bajo, los taxones raros o dispersos pueden disparar un error `"Zero variances have been detected..."` en el paso interno de corrección de sesgo de ANCOMBC2 en algunas corridas (no siempre ocurre, depende de qué taxones conserve la iteración de bootstrap en turno). Subir `min_prevalence` filtra esos taxones dispersos antes de la prueba y evita el error.
 
 ```{r ancombc2-como-m-todo-alternativo-44, message=FALSE, warning=FALSE, fig.width=7, fig.height=5, out.width="60%"}
@@ -780,8 +783,8 @@ ancombc_plot(
     table = table_bac_compar,
     metadata = metadata_bacteria_compar,
     group_col = "Type_of_soil",
-    level = "Genus",
-    min_prevalence = 0.3,
+    level = "Phylum",
+    min_prevalence = 0.5,
     p_adjust_method = "BH"
 )
 ```
@@ -803,6 +806,8 @@ ancombc_plot(
     p_adjust_method = "holm"
 )
 ```
+
+**Cómo leer el heatmap:** cada columna es un grupo comparado con el de referencia (aquí **Rhizosphere** vs **Bulk soil** y **Roots** vs **Bulk soil**), y cada fila es un taxón. El color y el número de cada celda son el log fold change (LFC, logaritmo natural) estimado por ANCOMBC2: los valores positivos (naranja) indican que el taxón es más abundante en ese grupo que en el suelo (Bulk soil), los negativos (azul) que es menos abundante, y el blanco que no cambia. Por ejemplo, un LFC de 1 equivale a unas 2.7 veces más abundante (*e*^1^), y uno de -1 a unas 2.7 veces menos. Un taxón aparece si es significativo en al menos una de las comparaciones, así que una celda puede tener color aunque esa comparación en particular no sea significativa; con `save_table = TRUE` se guardan el valor p ajustado (`q_`) y la significancia (`diff_`) de cada comparación.
 
 ### Ejemplo: datos de hongos
 Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**, pero visualizamos los resultados con un **heatmap**. Esta función usa `ComplexHeatmap`.

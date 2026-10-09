@@ -1116,11 +1116,12 @@ features</strong>.</p></li>
 <div class="section level3">
 <h3 id="ejemplo-datos-de-bacterias">Ejemplo: datos de bacterias<a class="anchor" aria-label="anchor" href="#ejemplo-datos-de-bacterias"></a>
 </h3>
-<p>Primero, filtramos los metadatos para conservar solo dos
-compartimentos de suelo y aplicar ALDEx2.</p>
+<p>Primero, conservamos solo dos compartimentos de suelo, <strong>Bulk
+soil</strong> y <strong>Roots</strong>, ya que ALDEx2 compara dos
+grupos.</p>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata_bacteria_compar</span> <span class="op">&lt;-</span> <span class="va">metadata_bacteria</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Roots"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Rhizosphere"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Roots"</span> <span class="op">|</span> <span class="va">Type_of_soil</span> <span class="op">==</span> <span class="st">"Bulk soil"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_bacteria_compar</span> <span class="op">&lt;-</span> <span class="va">table_bacteria</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">metadata_bacteria_compar</span><span class="op">$</span><span class="va">SAMPLEID</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">table_bacteria</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
@@ -1135,12 +1136,13 @@ taxones “uncultured”/“unculture” de las etiquetas (aunque igual se
 grafican como puntos, solo no se etiquetan). Por defecto la
 significancia usa el valor p ajustado por Benjamini-Hochberg
 (<code>p_adjust_method = "BH"</code>), porque se prueban miles de
-taxones a la vez. En estos datos ningún taxón queda significativo tras
-la corrección (todos los puntos grises); con
-<code>p_adjust_method = "none"</code> se usa el valor p sin
+taxones a la vez. Entre el suelo y las raíces muchos taxones siguen
+siendo significativos después de la corrección (puntos de color); con
+<code>p_adjust_method = "none"</code> se usaría el valor p sin
 corregir.</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/aldex_volcano_plot.html">aldex_volcano_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_bac_compar</span>,</span>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
 <span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
@@ -1163,6 +1165,14 @@ Bioconductor <code>ANCOMBC</code>:</p>
 prueba (por defecto <code>"Genus"</code>), y
 <code>p_adjust_method</code>/<code>min_prevalence</code> controlan la
 corrección por pruebas múltiples y el filtro de prevalencia.</p>
+<p>Con dos grupos el resultado es un <strong>gráfico de barras</strong>:
+una barra por taxón significativo con su log fold change (LFC) entre los
+dos grupos y su error estándar, coloreada según el grupo donde el taxón
+es más abundante. El grupo de referencia es el primer nivel de
+<code>group_col</code> (aquí <strong>Bulk soil</strong>), así que los
+valores positivos indican mayor abundancia en <strong>Roots</strong>.
+Aquí <code>min_prevalence = 0.5</code> conserva los phyla presentes en
+al menos la mitad de las muestras.</p>
 <p>⚠️ Con un <code>min_prevalence</code> bajo, los taxones raros o
 dispersos pueden disparar un error
 <code>"Zero variances have been detected..."</code> en el paso interno
@@ -1175,8 +1185,8 @@ antes de la prueba y evita el error.</p>
 <span>    table <span class="op">=</span> <span class="va">table_bac_compar</span>,</span>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_bacteria_compar</span>,</span>
 <span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
-<span>    level <span class="op">=</span> <span class="st">"Genus"</span>,</span>
-<span>    min_prevalence <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>    level <span class="op">=</span> <span class="st">"Phylum"</span>,</span>
+<span>    min_prevalence <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>    p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_es_files/figure-html/ancombc2-como-m-todo-alternativo-44-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
@@ -1203,6 +1213,21 @@ que el heatmap sea legible:</p>
 <span>    p_adjust_method <span class="op">=</span> <span class="st">"holm"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_es_files/figure-html/ancombc2-como-m-todo-alternativo-44b-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
+<p><strong>Cómo leer el heatmap:</strong> cada columna es un grupo
+comparado con el de referencia (aquí <strong>Rhizosphere</strong> vs
+<strong>Bulk soil</strong> y <strong>Roots</strong> vs <strong>Bulk
+soil</strong>), y cada fila es un taxón. El color y el número de cada
+celda son el log fold change (LFC, logaritmo natural) estimado por
+ANCOMBC2: los valores positivos (naranja) indican que el taxón es más
+abundante en ese grupo que en el suelo (Bulk soil), los negativos (azul)
+que es menos abundante, y el blanco que no cambia. Por ejemplo, un LFC
+de 1 equivale a unas 2.7 veces más abundante (<em>e</em><sup>1</sup>), y
+uno de -1 a unas 2.7 veces menos. Un taxón aparece si es significativo
+en al menos una de las comparaciones, así que una celda puede tener
+color aunque esa comparación en particular no sea significativa; con
+<code>save_table = TRUE</code> se guardan el valor p ajustado
+(<code>q_</code>) y la significancia (<code>diff_</code>) de cada
+comparación.</p>
 </div>
 <div class="section level3">
 <h3 id="ejemplo-datos-de-hongos">Ejemplo: datos de hongos<a class="anchor" aria-label="anchor" href="#ejemplo-datos-de-hongos"></a>

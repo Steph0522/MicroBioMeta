@@ -1194,13 +1194,13 @@ taxa that discriminate between groups**:
 
 ### Example: Bacterial data
 
-First, we filter the metadata to retain only two soil compartments to
-apply ALDEx2.
+First, we keep only two soil compartments, **Bulk soil** and **Roots**,
+since ALDEx2 compares two groups.
 
 ``` r
 
 metadata_bacteria_compar <- metadata_bacteria %>%
-    filter(Type_of_soil == "Roots" | Type_of_soil == "Rhizosphere")
+    filter(Type_of_soil == "Roots" | Type_of_soil == "Bulk soil")
 
 table_bacteria_compar <- table_bacteria[match(metadata_bacteria_compar$SAMPLEID, colnames(table_bacteria))]
 
@@ -1216,12 +1216,13 @@ font size of these labels, and `filter_uncultured = TRUE` drops
 “uncultured”/“unculture” taxa from the labels (they are still plotted as
 points, just not labeled). By default significance uses the
 Benjamini-Hochberg adjusted p-value (`p_adjust_method = "BH"`), since
-thousands of taxa are tested at once. In these data no taxon remains
-significant after the correction (all points grey);
-`p_adjust_method = "none"` uses the raw p-value instead.
+thousands of taxa are tested at once. Between bulk soil and roots many
+taxa remain significant after the correction (colored points);
+`p_adjust_method = "none"` would use the raw p-values instead.
 
 ``` r
 
+set.seed(123)
 aldex_volcano_plot(
     table = table_bac_compar,
     metadata = metadata_bacteria_compar,
@@ -1250,6 +1251,14 @@ BiocManager::install("ANCOMBC")
 `"Genus"`), and `p_adjust_method`/`min_prevalence` control the
 multiple-testing correction and prevalence filter.
 
+With two groups the result is a **bar plot**: one bar per significant
+taxon with its log fold change (LFC) between the two groups and its
+standard error, colored by the group where the taxon is more abundant.
+The reference group is the first level of `group_col` (here **Bulk
+soil**), so positive values mean more abundant in **Roots**. Here
+`min_prevalence = 0.5` keeps the phyla present in at least half of the
+samples.
+
 ⚠️ With a low `min_prevalence`, rare/sparse taxa can trigger a
 `"Zero variances have been detected..."` error from ANCOMBC2’s internal
 bias-correction step on some runs (it doesn’t always happen, it depends
@@ -1263,8 +1272,8 @@ ancombc_plot(
     table = table_bac_compar,
     metadata = metadata_bacteria_compar,
     group_col = "Type_of_soil",
-    level = "Genus",
-    min_prevalence = 0.3,
+    level = "Phylum",
+    min_prevalence = 0.5,
     p_adjust_method = "BH"
 )
 ```
@@ -1297,6 +1306,19 @@ ancombc_plot(
 ```
 
 ![](metabarcoding_files/figure-html/ancombc2-as-an-alternative-method-44b-1.png)
+
+**How to read the heatmap:** each column is one group compared with the
+reference (here **Rhizosphere** vs **Bulk soil** and **Roots** vs **Bulk
+soil**), and each row is a taxon. The color and the number in each cell
+are the log fold change (LFC, natural logarithm) estimated by ANCOMBC2:
+positive values (orange) mean the taxon is more abundant in that group
+than in bulk soil, negative values (blue) that it is less abundant, and
+white means no change. For example, an LFC of 1 means about 2.7 times
+more abundant (*e*¹), and -1 about 2.7 times less. A taxon is shown when
+it is significant in at least one of the comparisons, so a cell can be
+colored even if that particular comparison is not significant;
+`save_table = TRUE` saves the adjusted p-value (`q_`) and the
+significance (`diff_`) of every comparison.
 
 ### Example: Fungal data
 
