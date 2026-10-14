@@ -77,8 +77,10 @@
 datos de <strong>metagenómica shotgun</strong>, como alternativa al
 flujo de trabajo de amplicón (metabarcoding) cubierto en la <a href="metabarcoding_es.html">viñeta de Amplicón</a>. Las funciones y la
 mayoría de sus parámetros son exactamente los mismos en ambos flujos de
-trabajo, así que no se vuelven a explicar aquí, solo lo que es
-específico de los datos metagenómicos.</p>
+trabajo, así que no se vuelven a explicar aquí; solo se explica lo que
+es específico de los datos metagenómicos. Las instrucciones de
+instalación están en la <a href="metabarcoding_es.html">viñeta de
+Amplicón</a>.</p>
 <p>Para este ejemplo, las lecturas fueron clasificadas taxonómicamente
 con <a href="https://ccb.jhu.edu/software/kraken2/" class="external-link"><code>Kraken2</code></a>
 <span class="citation">(<a href="#ref-wood2019kraken2">Wood et al.
@@ -130,11 +132,11 @@ con una columna <strong><code>taxonomy</code></strong> ya agregada como
 <p>La taxonomía ya está en la tabla, así que no hace falta usar la
 función <code><a href="../reference/merge_feature_taxonomy.html">merge_feature_taxonomy()</a></code>.</p>
 <p>⚠️ Las cadenas de taxonomía de Kraken2 usan un prefijo
-<code>k__</code>/<code>p__</code>/<code>c__</code>/… como SILVA/GTDB,
-pero los rangos están separados por <code>"; "</code> (punto y coma
-<strong>y espacio</strong>) en vez de <code>";"</code>.
-<code>MicroBioMeta</code> ya tiene esto contemplado en cualquier lugar
-donde exista un argumento <code>taxonomy_db</code>, solo pasa
+<code>k__</code>/<code>p__</code>/<code>c__</code>/… como SILVA, pero
+los rangos están separados por <code>"; "</code> (punto y coma <strong>y
+espacio</strong>) en vez de <code>";"</code>. <code>MicroBioMeta</code>
+ya tiene esto contemplado en cualquier lugar donde exista un argumento
+<code>taxonomy_db</code>, solo pasa
 <code>taxonomy_db = "Kraken2"</code>.</p>
 <p>Ahora, carguemos los metadatos:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -287,7 +289,7 @@ parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.</p>
 <span>    label <span class="op">=</span> <span class="st">"Genus"</span>,</span>
 <span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/barplot-de-abundancia-7-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/bar-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="heatmap-de-abundancia">Heatmap de abundancia<a class="anchor" aria-label="anchor" href="#heatmap-de-abundancia"></a>
@@ -307,7 +309,7 @@ sitio de muestreo dentro de cada polígono.</p>
 <span>    condition2 <span class="op">=</span> <span class="st">"Site"</span>,</span>
 <span>    feature_prefix <span class="op">=</span> <span class="st">"Taxon"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/heatmap-de-abundancia-8-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/heat-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -335,12 +337,13 @@ leyenda solo repetiría las etiquetas del eje x -
 <span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/visualizaci-n-de-diversidad-alfa-10-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>La riqueza (<em>q</em>=0) está casi saturada y plana entre bloques
-aquí — esta tabla de Bracken a nivel de género simplemente no tiene
-mucho margen para variar en <em>q</em>=0 — mientras que <em>q</em>=1 y
+<p><img src="metagenomic_es_files/figure-html/alpha-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p>La riqueza (<em>q</em>=0) está casi saturada y plana entre polígonos
+aquí — esta tabla de Bracken a nivel de especie tiene solo 87 especies
+de hongos, 83 de ellas presentes en las 36 muestras, así que hay poco
+margen para variar en <em>q</em>=0 — mientras que <em>q</em>=1 y
 <em>q</em>=2 (que ponderan por abundancia relativa) sí capturan
-diferencias entre bloques.</p>
+diferencias entre polígonos.</p>
 </div>
 <div class="section level3">
 <h3 id="diversidad-alfa-a-lo-largo-de-un-gradiente-continuo">Diversidad alfa a lo largo de un gradiente continuo<a class="anchor" aria-label="anchor" href="#diversidad-alfa-a-lo-largo-de-un-gradiente-continuo"></a>
@@ -352,7 +355,7 @@ diferencias entre bloques.</p>
 <span>    cont_var <span class="op">=</span> <span class="st">"pH"</span>,</span>
 <span>    x_axis_title <span class="op">=</span> <span class="st">"Soil pH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/diversidad-alfa-a-lo-largo-de-un-gradiente-continuo-11-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/alpha-gradient-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>La diversidad en <em>q</em>=1 y <em>q</em>=2 aumenta
 significativamente con el pH del suelo; <em>q</em>=0 no, por la misma
 razón de efecto techo que arriba.</p>
@@ -416,7 +419,7 @@ usamos <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">
 <span><span class="co">## ... Procrustes: rmse 0.01783515  max resid 0.09870479 </span></span>
 <span><span class="co">## Run 20 stress 0.1100308 </span></span>
 <span><span class="co">## *** Best solution repeated 3 times</span></span></code></pre>
-<p><img src="metagenomic_es_files/figure-html/ordenaci-n-de-la-composici-n-de-la-comunidad-12-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/ord-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="pruebas-estadísticas-para-diversidad-beta">Pruebas estadísticas para diversidad beta<a class="anchor" aria-label="anchor" href="#pruebas-estad%C3%ADsticas-para-diversidad-beta"></a>
@@ -440,7 +443,7 @@ archivo de texto.</p>
 <span>    test <span class="op">=</span> <span class="st">"permanova"</span>,</span>
 <span>    permutations <span class="op">=</span> <span class="fl">999</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/permanova-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="decaimiento-de-la-similitud-comunitaria-con-la-distancia">Decaimiento de la similitud comunitaria con la distancia<a class="anchor" aria-label="anchor" href="#decaimiento-de-la-similitud-comunitaria-con-la-distancia"></a>
@@ -456,7 +459,7 @@ mediante una prueba de Mantel <span class="citation">(<a href="#ref-mantel1967te
 <span>    lon_col  <span class="op">=</span> <span class="st">"Longitude"</span>,</span>
 <span>    distance <span class="op">=</span> <span class="st">"bray"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/decaimiento-de-la-similitud-comunitaria-con-la-distancia-14-1.png" class="r-plt" alt="" width="70%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/decay-1.png" class="r-plt" alt="" width="70%" style="display: block; margin: auto;"></p>
 <p>Las comunidades geográficamente más cercanas son significativamente
 más similares en composición (Mantel <em>r</em> ≈ 0.21, <em>p</em> ≈
 0.001; el valor p exacto varía ligeramente entre corridas ya que la
@@ -471,8 +474,8 @@ consistentes con la ordenación de arriba.</p>
 <h2 id="análisis-de-abundancia-diferencial">Análisis de abundancia diferencial<a class="anchor" aria-label="anchor" href="#an%C3%A1lisis-de-abundancia-diferencial"></a>
 </h2>
 <p>Para las versiones de heatmap (ALDEx2 <span class="citation">(<a href="#ref-fernandes2014aldex2">Fernandes et al. 2014</a>)</span>) y
-ANCOMBC2 <span class="citation">(<a href="#ref-lin2020ancombc">Lin and
-Peddada 2020</a>)</span> necesitamos un subconjunto de 2 grupos del
+ANCOM-BC2 <span class="citation">(<a href="#ref-lin2024ancombc2">Lin and
+Peddada 2024</a>)</span> necesitamos un subconjunto de 2 grupos del
 <code>Polygon</code> de 6 niveles; en esta parte compararemos Polygon 2
 y 5:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -486,7 +489,7 @@ y 5:</p>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_meta_compar</span>,</span>
 <span>    group_col <span class="op">=</span> <span class="st">"Polygon"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-16-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/diff-2-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ancombc_plot.html">ancombc_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
@@ -496,7 +499,7 @@ y 5:</p>
 <span>    min_prevalence <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>    p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-17-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/diff-3-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <div class="section level3">
 <h3 id="identificando-taxones-importantes">Identificando taxones importantes<a class="anchor" aria-label="anchor" href="#identificando-taxones-importantes"></a>
 </h3>
@@ -505,7 +508,7 @@ Forest <span class="citation">(<a href="#ref-breiman2001randomforest">Breiman 20
 encontrar los taxones que mejor predicen el polígono:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/random_forest_lollipop_plot.html">random_forest_lollipop_plot</a></span><span class="op">(</span>table <span class="op">=</span> <span class="va">table_meta</span>, metadata <span class="op">=</span> <span class="va">metadata_meta</span>, top_n <span class="op">=</span> <span class="fl">10</span>, variable_to_predict <span class="op">=</span> <span class="st">"Polygon"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/identificando-taxones-importantes-18-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/rf-1-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ratios_bubble_plot.html">ratios_bubble_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_meta_compar</span>,</span>
@@ -515,7 +518,7 @@ encontrar los taxones que mejor predicen el polígono:</p>
 <span>    condition_A <span class="op">=</span> <span class="st">"Pol2"</span>,</span>
 <span>    condition_B <span class="op">=</span> <span class="st">"Pol5"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/identificando-taxones-importantes-19-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/rf-2-1.png" class="r-plt" alt="" width="60%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -527,7 +530,7 @@ variables se eligen por nombre con <code>env_vars</code> (no hace falta
 una tabla ambiental aparte):</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">env_vars_meta</span> <span class="op">&lt;-</span> <span class="va">metadata_meta</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pH</span><span class="op">:</span><span class="va">ARENA</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">pH</span><span class="op">:</span><span class="va">ARENA</span>, <span class="op">-</span><span class="va">type</span>, <span class="op">-</span><span class="va">type2</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="correlación-entre-variables-ambientales-y-abundancia-taxonómica">Correlación entre variables ambientales y abundancia taxonómica<a class="anchor" aria-label="anchor" href="#correlaci%C3%B3n-entre-variables-ambientales-y-abundancia-taxon%C3%B3mica"></a>
@@ -541,14 +544,12 @@ una tabla ambiental aparte):</p>
 <span>    level <span class="op">=</span> <span class="st">"phylum"</span>,</span>
 <span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in corr_env_abund_plot(table = table_meta, metadata = metadata_meta, :</span></span>
-<span><span class="co">## Dropping non-numeric columns from `env_data`: type, type2</span></span></code></pre>
-<p><img src="metagenomic_es_files/figure-html/correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/corr-env-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="ordenación-restringida-cca">Ordenación restringida (CCA)<a class="anchor" aria-label="anchor" href="#ordenaci%C3%B3n-restringida-cca"></a>
 </h3>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cca_rda_biplot.html">cca_rda_biplot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_meta</span>,</span>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_meta</span>,</span>
@@ -558,7 +559,7 @@ una tabla ambiental aparte):</p>
 <span>    group_col <span class="op">=</span> <span class="st">"Polygon"</span>,</span>
 <span>    scale_arrows <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="metagenomic_es_files/figure-html/ordenaci-n-restringida-cca-23-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="metagenomic_es_files/figure-html/cca-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -582,10 +583,10 @@ the Analysis of High-Throughput Sequencing Datasets: Characterizing
 Gene Sequencing and Selective Growth Experiments by Compositional Data
 Analysis.”</span> <em>Microbiome</em> 2: 15. <a href="https://doi.org/10.1186/2049-2618-2-15" class="external-link">https://doi.org/10.1186/2049-2618-2-15</a>.
 </div>
-<div id="ref-lin2020ancombc" class="csl-entry">
-Lin, Huang, and Shyamal Das Peddada. 2020. <span>“Analysis of
-Compositions of Microbiomes with Bias Correction.”</span> <em>Nature
-Communications</em> 11: 3514. <a href="https://doi.org/10.1038/s41467-020-17041-7" class="external-link">https://doi.org/10.1038/s41467-020-17041-7</a>.
+<div id="ref-lin2024ancombc2" class="csl-entry">
+Lin, Huang, and Shyamal Das Peddada. 2024. <span>“Multigroup Analysis of
+Compositions of Microbiomes with Covariate Adjustments and Repeated
+Measures.”</span> <em>Nature Methods</em> 21 (1): 83–91. <a href="https://doi.org/10.1038/s41592-023-02092-7" class="external-link">https://doi.org/10.1038/s41592-023-02092-7</a>.
 </div>
 <div id="ref-lu2017bracken" class="csl-entry">
 Lu, Jennifer, Florian P. Breitwieser, Peter Thielen, and Steven L.
@@ -613,7 +614,7 @@ Biology</em> 20: 257. <a href="https://doi.org/10.1186/s13059-019-1891-0" class=
 <div class="section level2">
 <h2 id="información-de-la-sesión">Información de la sesión<a class="anchor" aria-label="anchor" href="#informaci%C3%B3n-de-la-sesi%C3%B3n"></a>
 </h2>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.6.1 (2026-06-24 ucrt)</span></span>
 <span><span class="co">## Platform: x86_64-w64-mingw32/x64</span></span>

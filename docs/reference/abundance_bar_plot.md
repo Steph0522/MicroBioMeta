@@ -141,10 +141,10 @@ A ggplot object with the stacked bar plot of relative abundances.
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 abundance_bar_plot(
@@ -158,4 +158,5 @@ abundance_bar_plot(
     top_n = 30,
     add_remained = TRUE
 )
+#> Phylum names were updated to their validly published names (Oren & Garrity 2021, used by NCBI Taxonomy): Actinobacteriota -> Actinomycetota, Chloroflexi -> Chloroflexota, Cyanobacteria -> Cyanobacteriota, Firmicutes -> Bacillota, Proteobacteria -> Pseudomonadota (shown once per session).
 ```

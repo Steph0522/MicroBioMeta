@@ -38,10 +38,10 @@
 #' @export
 #'
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
-#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #'
 #' ratios_bubble_plot(
@@ -75,6 +75,8 @@ ratios_bubble_plot <- function(table,
         dplyr::select(SampleID = 1, Condition = dplyr::all_of(group_col))
 
     samples <- metadata_sub$SampleID
+
+    table$taxonomy <- .mbm_update_phyla(table$taxonomy)
 
     abundance_raw <- table %>%
         dplyr::select(taxonomy, dplyr::all_of(samples))

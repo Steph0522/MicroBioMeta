@@ -5,8 +5,10 @@
 amplicón (metabarcoding) cubierto en la [viñeta de
 Amplicón](https://steph0522.github.io/MicroBioMeta/articles/metabarcoding_es.md).
 Las funciones y la mayoría de sus parámetros son exactamente los mismos
-en ambos flujos de trabajo, así que no se vuelven a explicar aquí, solo
-lo que es específico de los datos metagenómicos.
+en ambos flujos de trabajo, así que no se vuelven a explicar aquí; solo
+se explica lo que es específico de los datos metagenómicos. Las
+instrucciones de instalación están en la [viñeta de
+Amplicón](https://steph0522.github.io/MicroBioMeta/articles/metabarcoding_es.md).
 
 Para este ejemplo, las lecturas fueron clasificadas taxonómicamente con
 [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) ([Wood et al.
@@ -70,7 +72,7 @@ La taxonomía ya está en la tabla, así que no hace falta usar la función
 [`merge_feature_taxonomy()`](https://steph0522.github.io/MicroBioMeta/reference/merge_feature_taxonomy.md).
 
 ⚠️ Las cadenas de taxonomía de Kraken2 usan un prefijo
-`k__`/`p__`/`c__`/… como SILVA/GTDB, pero los rangos están separados por
+`k__`/`p__`/`c__`/… como SILVA, pero los rangos están separados por
 `"; "` (punto y coma **y espacio**) en vez de `";"`. `MicroBioMeta` ya
 tiene esto contemplado en cualquier lugar donde exista un argumento
 `taxonomy_db`, solo pasa `taxonomy_db = "Kraken2"`.
@@ -265,7 +267,7 @@ abundance_bar_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/barplot-de-abundancia-7-1.png)
+![](metagenomic_es_files/figure-html/bar-1.png)
 
 ### Heatmap de abundancia
 
@@ -287,7 +289,7 @@ abundance_heatmap_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/heatmap-de-abundancia-8-1.png)
+![](metagenomic_es_files/figure-html/heat-1.png)
 
 ## Diversidad alfa
 
@@ -316,12 +318,13 @@ alpha_hill_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/visualizaci-n-de-diversidad-alfa-10-1.png)
+![](metagenomic_es_files/figure-html/alpha-1.png)
 
-La riqueza (*q*=0) está casi saturada y plana entre bloques aquí — esta
-tabla de Bracken a nivel de género simplemente no tiene mucho margen
-para variar en *q*=0 — mientras que *q*=1 y *q*=2 (que ponderan por
-abundancia relativa) sí capturan diferencias entre bloques.
+La riqueza (*q*=0) está casi saturada y plana entre polígonos aquí —
+esta tabla de Bracken a nivel de especie tiene solo 87 especies de
+hongos, 83 de ellas presentes en las 36 muestras, así que hay poco
+margen para variar en *q*=0 — mientras que *q*=1 y *q*=2 (que ponderan
+por abundancia relativa) sí capturan diferencias entre polígonos.
 
 ### Diversidad alfa a lo largo de un gradiente continuo
 
@@ -335,7 +338,7 @@ alpha_decay_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/diversidad-alfa-a-lo-largo-de-un-gradiente-continuo-11-1.png)
+![](metagenomic_es_files/figure-html/alpha-gradient-1.png)
 
 La diversidad en *q*=1 y *q*=2 aumenta significativamente con el pH del
 suelo; *q*=0 no, por la misma razón de efecto techo que arriba.
@@ -402,7 +405,7 @@ beta_ord_plot(
     ## Run 20 stress 0.1100308 
     ## *** Best solution repeated 3 times
 
-![](metagenomic_es_files/figure-html/ordenaci-n-de-la-composici-n-de-la-comunidad-12-1.png)
+![](metagenomic_es_files/figure-html/ord-1.png)
 
 ### Pruebas estadísticas para diversidad beta
 
@@ -432,7 +435,7 @@ beta_test_table(
 )
 ```
 
-![](metagenomic_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-13-1.png)
+![](metagenomic_es_files/figure-html/permanova-1.png)
 
 ### Decaimiento de la similitud comunitaria con la distancia
 
@@ -452,7 +455,7 @@ beta_decay_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/decaimiento-de-la-similitud-comunitaria-con-la-distancia-14-1.png)
+![](metagenomic_es_files/figure-html/decay-1.png)
 
 Las comunidades geográficamente más cercanas son significativamente más
 similares en composición (Mantel *r* ≈ 0.21, *p* ≈ 0.001; el valor p
@@ -466,8 +469,8 @@ arriba.
 ## Análisis de abundancia diferencial
 
 Para las versiones de heatmap (ALDEx2 ([Fernandes et al.
-2014](#ref-fernandes2014aldex2))) y ANCOMBC2 ([Lin and Peddada
-2020](#ref-lin2020ancombc)) necesitamos un subconjunto de 2 grupos del
+2014](#ref-fernandes2014aldex2))) y ANCOM-BC2 ([Lin and Peddada
+2024](#ref-lin2024ancombc2)) necesitamos un subconjunto de 2 grupos del
 `Polygon` de 6 niveles; en esta parte compararemos Polygon 2 y 5:
 
 ``` r
@@ -487,7 +490,7 @@ aldex_heatmap_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-16-1.png)
+![](metagenomic_es_files/figure-html/diff-2-1.png)
 
 ``` r
 
@@ -501,7 +504,7 @@ ancombc_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/an-lisis-de-abundancia-diferencial-17-1.png)
+![](metagenomic_es_files/figure-html/diff-3-1.png)
 
 ### Identificando taxones importantes
 
@@ -515,7 +518,7 @@ mejor predicen el polígono:
 random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n = 10, variable_to_predict = "Polygon")
 ```
 
-![](metagenomic_es_files/figure-html/identificando-taxones-importantes-18-1.png)
+![](metagenomic_es_files/figure-html/rf-1-1.png)
 
 ``` r
 
@@ -529,7 +532,7 @@ ratios_bubble_plot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/identificando-taxones-importantes-19-1.png)
+![](metagenomic_es_files/figure-html/rf-2-1.png)
 
 ## Análisis ambientales
 
@@ -541,7 +544,7 @@ ambiental aparte):
 ``` r
 
 env_vars_meta <- metadata_meta %>%
-    dplyr::select(pH:ARENA) %>%
+    dplyr::select(pH:ARENA, -type, -type2) %>%
     colnames()
 ```
 
@@ -559,10 +562,7 @@ corr_env_abund_plot(
 )
 ```
 
-    ## Warning in corr_env_abund_plot(table = table_meta, metadata = metadata_meta, :
-    ## Dropping non-numeric columns from `env_data`: type, type2
-
-![](metagenomic_es_files/figure-html/correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21-1.png)
+![](metagenomic_es_files/figure-html/corr-env-1.png)
 
 ### Ordenación restringida (CCA)
 
@@ -579,7 +579,7 @@ cca_rda_biplot(
 )
 ```
 
-![](metagenomic_es_files/figure-html/ordenaci-n-restringida-cca-23-1.png)
+![](metagenomic_es_files/figure-html/cca-1.png)
 
 ## Referencias
 
@@ -597,9 +597,10 @@ Analysis of High-Throughput Sequencing Datasets: Characterizing RNA-Seq,
 Compositional Data Analysis.” *Microbiome* 2: 15.
 <https://doi.org/10.1186/2049-2618-2-15>.
 
-Lin, Huang, and Shyamal Das Peddada. 2020. “Analysis of Compositions of
-Microbiomes with Bias Correction.” *Nature Communications* 11: 3514.
-<https://doi.org/10.1038/s41467-020-17041-7>.
+Lin, Huang, and Shyamal Das Peddada. 2024. “Multigroup Analysis of
+Compositions of Microbiomes with Covariate Adjustments and Repeated
+Measures.” *Nature Methods* 21 (1): 83–91.
+<https://doi.org/10.1038/s41592-023-02092-7>.
 
 Lu, Jennifer, Florian P. Breitwieser, Peter Thielen, and Steven L.
 Salzberg. 2017. “Bracken: Estimating Species Abundance in Metagenomics

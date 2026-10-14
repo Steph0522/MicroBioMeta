@@ -1,7 +1,7 @@
 Package: MicroBioMeta
-Title: Intuitive Microbiome Data Analysis and Visualization for Beginners with Minimal Coding
+Title: Analysis and Visualization of Microbiome Diversity, Composition, and Differential Abundance
 Version: 0.99.0
-Date: 2026-10-06
+Date: 2026-10-12
 Authors@R: c(
     person("Stephanie", "Hereira Pacheco", , "shereirap@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1433-8187")),
@@ -19,8 +19,8 @@ License: Artistic-2.0
 Depends: R (>= 4.6.0)
 URL: https://github.com/Steph0522/MicroBioMeta, https://steph0522.github.io/MicroBioMeta/
 BugReports: https://github.com/Steph0522/MicroBioMeta/issues
-biocViews: Software, Microbiome, Metagenomics, Visualization,
-    DifferentialExpression, MultipleComparison, LongRead
+biocViews: Software, Microbiome, Metagenomics, Sequencing, Visualization,
+    DifferentialExpression, MultipleComparison, DimensionReduction
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports:

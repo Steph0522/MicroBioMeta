@@ -1,7 +1,31 @@
 # Amplicón
 
-🧬 MicroBioMeta es un paquete de R diseñado para trabajar con datos de
-metabarcoding. Este tutorial recorre un ejemplo de su uso.
+🧬 MicroBioMeta es un paquete de R para explorar, analizar y visualizar
+datos de microbioma. Este tutorial recorre un ejemplo de su uso con
+datos de metabarcoding.
+
+## Instalación
+
+`MicroBioMeta` todavía no está en Bioconductor. Por ahora, se instala
+desde GitHub:
+
+``` r
+
+# install.packages("remotes")
+remotes::install_github("Steph0522/MicroBioMeta")
+```
+
+Cuando sea aceptado en Bioconductor, se instalará con:
+
+``` r
+
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("MicroBioMeta")
+```
+
+## Datos de ejemplo
 
 Para este ejemplo usaremos datos secuenciados con el barcode 16S para
 bacterias y 18S para hongos.
@@ -102,13 +126,13 @@ Ahora, carguemos los metadatos de cada conjunto de datos:
 ``` r
 
 bacteria_metadata <- read.delim(
-    system.file("extdata", "metadata_bacterias.txt", package = "MicroBioMeta"),
+    system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta"),
     check.names = FALSE
 ) %>%
     filter(Month == "2")
 
 fungi_metadata <- read.delim(
-    system.file("extdata", "metadata_fungis.txt", package = "MicroBioMeta"),
+    system.file("extdata", "metadata_fungi.txt", package = "MicroBioMeta"),
     check.names = FALSE
 )
 ```
@@ -151,7 +175,8 @@ metadata_fungi <- fungi_metadata[
 ## Preprocesamiento de los datos
 
 Las funciones de `MicroBioMeta` necesitan que los datos estén en formato
-`biom`, con una columna de **taxonomía** al final.
+`biom` (taxones en filas, muestras en columnas), con una columna de
+**taxonomía** al final.
 
 Si tus datos no vienen ya en ese formato,
 [`merge_feature_taxonomy()`](https://steph0522.github.io/MicroBioMeta/reference/merge_feature_taxonomy.md)
@@ -187,6 +212,13 @@ table_fung <- merge_feature_taxonomy(
 ⚠️ Nota que esta advertencia reporta cuántos IDs de taxonomía no
 coincidieron con la tabla de features y fueron excluidos del resultado.
 
+⚠️ Todas las funciones que usan la taxonomía muestran los filos
+bacterianos con sus nombres válidamente publicados (por ejemplo,
+*Proteobacteria* como *Pseudomonadota*, *Firmicutes* como *Bacillota*,
+*Actinobacteriota* como *Actinomycetota*), que son los que usa NCBI
+Taxonomy desde 2021. Un mensaje indica qué nombres se cambiaron (una vez
+por sesión).
+
 ## Exploración de la composición
 
 `MicroBioMeta` tiene varias funciones para explorar la composición,
@@ -200,8 +232,8 @@ Esta función genera barplots apilados de abundancias relativas usando
 una tabla de abundancia y un archivo de metadatos como entrada.
 
 El parámetro `taxonomy_db` especifica la base de datos taxonómica de
-referencia usada para la asignación taxonómica (por ejemplo, SILVA,
-GTDB, UNITE).\
+referencia usada para la asignación taxonómica: `"silva"` (por defecto),
+`"gg2"` (Greengenes2), `"unite"` o `"Kraken2"`.\
 El parámetro `x_col` indica la columna de los metadatos usada para
 agrupar muestras en el eje x, mientras que `facet_by` define la columna
 de metadatos usada para dividir el gráfico en facetas.
@@ -209,13 +241,13 @@ de metadatos usada para dividir el gráfico en facetas.
 El parámetro `level` permite elegir el nivel taxonómico al que se
 colapsan los datos.
 
-`top_n_groups` controla el número de taxones más abundantes que se
-muestran en el barplot.
+`top_n` controla el número de taxones más abundantes que se muestran en
+el barplot.
 
-Si `add_remain = TRUE`, las abundancias relativas se completan hasta el
-100% agregando una categoría gris que representa los taxones restantes
-no mostrados explícitamente; si es `FALSE`, solo se muestran los taxones
-seleccionados.\
+Si `add_remained = TRUE`, las abundancias relativas se completan hasta
+el 100% agregando una categoría gris que representa los taxones
+restantes no mostrados explícitamente; si es `FALSE`, solo se muestran
+los taxones seleccionados.\
 El parámetro `label` define el título de la leyenda mostrada en el
 gráfico.
 
@@ -227,8 +259,9 @@ negritas (por defecto `FALSE`), y `aspect_ratio` fija la relación
 alto/ancho del panel cuando necesitas proporciones consistentes entre
 figuras.
 
-Finalmente, cuando `save_table = TRUE`, la función también retorna una
-tabla con las abundancias relativas (porcentajes) usadas para generar el
+Finalmente, cuando `save_table = TRUE`, la función también guarda un
+archivo delimitado por tabuladores (con el nombre de `table_filename`)
+con las abundancias relativas (porcentajes) usadas para generar el
 gráfico.
 
 ``` r
@@ -248,7 +281,9 @@ abundance_bar_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/barplots-de-abundancia-10-1.png)
+    ## Phylum names were updated to their validly published names (Oren & Garrity 2021, used by NCBI Taxonomy): Actinobacteriota -> Actinomycetota, Campilobacterota -> Campylobacterota, Chloroflexi -> Chloroflexota, Cyanobacteria -> Cyanobacteriota, Firmicutes -> Bacillota, Proteobacteria -> Pseudomonadota (shown once per session).
+
+![](metabarcoding_es_files/figure-html/bar-1-1.png)
 
 ``` r
 
@@ -264,7 +299,7 @@ abundance_bar_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/barplots-de-abundancia-11-1.png)
+![](metabarcoding_es_files/figure-html/bar-2-1.png)
 
 ### Heatmaps de abundancia
 
@@ -328,7 +363,7 @@ abundance_heatmap_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/heatmaps-de-abundancia-12-1.png)
+![](metabarcoding_es_files/figure-html/heat-1-1.png)
 
 ``` r
 
@@ -344,7 +379,7 @@ abundance_heatmap_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/heatmaps-de-abundancia-13-1.png)
+![](metabarcoding_es_files/figure-html/heat-2-1.png)
 
 ### Diagrama de Sankey del flujo taxonómico
 
@@ -422,7 +457,7 @@ tenerlo en cuenta (o rarefaccionar) antes de comparar grupos.
 alpha_hill_corr_plot(table = table_bac)
 ```
 
-![](metabarcoding_es_files/figure-html/correlaci-n-entre-n-meros-de-hill-16-1.png)
+![](metabarcoding_es_files/figure-html/hill-corr-1.png)
 
 ### Visualización de diversidad alfa
 
@@ -439,8 +474,9 @@ El argumento `facet_by` permite dividir el gráfico según una variable de
 metadatos, y `facet_orientation` controla si las facetas se organizan
 horizontal o verticalmente.
 
-Si `save_table = TRUE`, la función también retorna una tabla con los
-valores de diversidad alfa calculados para cada muestra.
+Si `save_table = TRUE`, la función también guarda un archivo delimitado
+por tabuladores con los valores de diversidad alfa calculados para cada
+muestra.
 
 ``` r
 
@@ -456,7 +492,7 @@ alpha_hill_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-de-diversidad-alfa-18-1.png)
+![](metabarcoding_es_files/figure-html/alpha-1-1.png)
 
 La misma función permite intercambiar el papel de las variables. Para
 los hongos 🍄 ponemos el compartimento de suelo en el eje x y separamos
@@ -477,7 +513,7 @@ alpha_hill_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-de-diversidad-alfa-19-1.png)
+![](metabarcoding_es_files/figure-html/alpha-2-1.png)
 
 También podemos visualizar otras métricas considerando índices clásicos
 de diversidad alfa:
@@ -498,7 +534,7 @@ alpha_diversity_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-de-diversidad-alfa-20-1.png)
+![](metabarcoding_es_files/figure-html/alpha-3-1.png)
 
 Cada panel se etiqueta automáticamente (A, B, C, …) para poder
 referenciarlo. Cuando se establece `stat`, también se agregan valores p
@@ -532,7 +568,7 @@ alpha_diversity_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-de-diversidad-alfa-21-1.png)
+![](metabarcoding_es_files/figure-html/alpha-4-1.png)
 
 Con `facet_orientation = "vertical"` los órdenes de Hill (*q*) van en
 filas y los grupos de `facet_by` en columnas:
@@ -551,7 +587,7 @@ alpha_hill_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-de-diversidad-alfa-vertical-1.png)
+![](metabarcoding_es_files/figure-html/alpha-vertical-1.png)
 
 ### Diversidad alfa a lo largo de un gradiente continuo
 
@@ -584,7 +620,7 @@ alpha_decay_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/diversidad-alfa-a-lo-largo-de-un-gradiente-continuo-22-1.png)
+![](metabarcoding_es_files/figure-html/alpha-gradient-1.png)
 
 ### Taxones compartidos entre grupos de muestras
 
@@ -608,7 +644,7 @@ venn_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/taxones-compartidos-entre-grupos-de-muestras-23-1.png)
+![](metabarcoding_es_files/figure-html/venn-1.png)
 
 #### Colapsar la tabla por nivel taxonómico
 
@@ -631,9 +667,9 @@ La función retorna una **lista con dos elementos**:
 - **`long_format`**: la misma información en formato largo, útil para
   graficación o análisis estadísticos posteriores.
 
-- Por ejemplo, el siguiente código colapsa la tabla de abundancia de
-  hongos al **nivel de género** y hacemos un diagrama de Venn para
-  visualizar los géneros compartidos.
+Por ejemplo, el siguiente código colapsa la tabla de abundancia de
+hongos al **nivel de género** y hacemos un diagrama de Venn para
+visualizar los géneros compartidos.
 
 ``` r
 
@@ -649,7 +685,7 @@ venn_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/colapsar-la-tabla-por-nivel-taxon-mico-24-1.png)
+![](metabarcoding_es_files/figure-html/collapse-1.png)
 
 Por defecto,
 [`collapse_table()`](https://steph0522.github.io/MicroBioMeta/reference/collapse_table.md)
@@ -679,7 +715,7 @@ venn_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/filtrar-taxones-por-prevalencia-25-1.png)
+![](metabarcoding_es_files/figure-html/prevalence-1.png)
 
 #### Personalizar los colores de los grupos
 
@@ -696,7 +732,7 @@ venn_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/personalizar-los-colores-de-los-grupos-26-1.png)
+![](metabarcoding_es_files/figure-html/venn-colors-1.png)
 
 #### Método de graficación alternativo
 
@@ -713,7 +749,7 @@ venn_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/m-todo-de-graficaci-n-alternativo-27-1.png)
+![](metabarcoding_es_files/figure-html/venn-alt-1.png)
 
 ## Diversidad beta
 
@@ -738,16 +774,16 @@ resultados usando un método de ordenación. Por defecto, la función usa
 métricas de distancia ecológicas comunes (por ejemplo, Bray–Curtis o
 Euclidiana) y técnicas de reducción de dimensionalidad como **PCoA**,
 **PCA** o **NMDS**. Para tener en cuenta la naturaleza composicional de
-los datos, en los ejemplos se usan las distancias `aitchinson` y
-`compositional`. Compositional usa la transformación *clr* (log del
-cociente centrado) implementada por el paquete `ALDEx2`.
+los datos, se pueden usar las distancias `aitchison` y `compositional`.
+`compositional` usa la transformación *clr* (log-razón centrada)
+implementada por el paquete `ALDEx2`.
 
 El parámetro `group_col` especifica la columna de metadatos usada para
 colorear las muestras, mientras que `shape_col` permite mostrar una
 variable adicional de metadatos usando distintas formas de punto.
 
 El argumento `distance` define la métrica de disimilitud usada para
-calcular la diversidad beta (por ejemplo, **bray, jaccard, aitchsion**,
+calcular la diversidad beta (por ejemplo, **bray, jaccard, aitchison**,
 etc.), y `ordination` (opciones: **PCA, PCoA** o **NMDS**) especifica el
 método de ordenación aplicado para visualizar las distancias entre
 muestras.
@@ -780,7 +816,7 @@ beta_ord_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/ordenaci-n-de-la-composici-n-de-la-comunidad-28-1.png)
+![](metabarcoding_es_files/figure-html/ord-1-1.png)
 
 Para los hongos 🍄 usamos otra combinación: la disimilitud de
 **Bray-Curtis**, que pondera los taxones por su abundancia, con una
@@ -838,7 +874,7 @@ beta_ord_plot(
     ## Coordinate system already present.
     ## ℹ Adding new coordinate system, which will replace the existing one.
 
-![](metabarcoding_es_files/figure-html/ordenaci-n-de-la-composici-n-de-la-comunidad-29-1.png)
+![](metabarcoding_es_files/figure-html/ord-2-1.png)
 
 ### Pruebas estadísticas para diversidad beta
 
@@ -863,14 +899,14 @@ emparejan las muestras por posición: las filas de la metadata se
 emparejan con la tabla por ID (y se reordenan si hace falta, con un
 mensaje), las muestras que no están en la metadata se dejan fuera con un
 mensaje, y la función se detiene si ningún ID coincide. Esto aplica a
-todas las funciones que hacen una prueba estadística (PERMANOVA,
-betadisper, ALDEx2, CCA/RDA, random forest). `table` también puede ser
-una distancia ya calculada (por ejemplo, de
+las funciones que hacen PERMANOVA, betadisper, ALDEx2, CCA/RDA o random
+forest. `table` también puede ser una distancia ya calculada (por
+ejemplo, de
 [`vegan::vegdist()`](https://vegandevs.github.io/vegan/reference/vegdist.html)),
 que se usa tal cual.
 
-⚠️ **NOTA: Cada función tiene la opción save\_\* que exporta una tabla o
-un elemento obtenido en cada función**.
+⚠️ **NOTA: Cada función tiene la opción `save_table`, que guarda los
+valores detrás del gráfico en un archivo delimitado por tabuladores**.
 
 `distance` coincide con la ordenación de cada conjunto de datos de
 arriba (`compositional` para bacterias, `bray` para hongos), de modo que
@@ -909,7 +945,7 @@ beta_test_table(
 
     ## computing center with all features
 
-![](metabarcoding_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-30-1.png)
+![](metabarcoding_es_files/figure-html/permanova-1-1.png)
 
 ``` r
 
@@ -924,7 +960,7 @@ beta_test_table(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/pruebas-estad-sticas-para-diversidad-beta-31-1.png)
+![](metabarcoding_es_files/figure-html/permanova-2-1.png)
 
 ### Partición de la diversidad beta
 
@@ -952,7 +988,7 @@ beta_partition_ord_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/partici-n-de-la-diversidad-beta-32-1.png)
+![](metabarcoding_es_files/figure-html/partition-1-1.png)
 
 ``` r
 
@@ -966,7 +1002,7 @@ beta_partition_ord_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/partici-n-de-la-diversidad-beta-33-1.png)
+![](metabarcoding_es_files/figure-html/partition-2-1.png)
 
 ### Visualización pareada de diversidad beta
 
@@ -984,8 +1020,8 @@ variables de metadatos usadas para definir los grupos que se comparan.
 conserva solo pares de muestras con el mismo valor (por ejemplo, las dos
 muestras del tratamiento TC), así que no se mezclan tratamientos. El
 argumento `partition` determina qué componente de la diversidad beta se
-muestra (por ejemplo, compartido o exclusivo), mientras que `family`
-define el índice de disimilitud usado.
+muestra (`"shared"`, `"turnover"` o `"nestedness"`), mientras que
+`family` define el índice de disimilitud usado.
 
 Por defecto,
 [`beta_dissimilarity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_dissimilarity_plot.md)
@@ -993,7 +1029,7 @@ conserva todas las combinaciones pareadas posibles de `condition1_col`,
 incluyendo un grupo comparado consigo mismo (por ejemplo
 `"Roots_vs_Roots"`). El argumento `comparison_condition1` restringe el
 gráfico a etiquetas específicas `"value1_vs_value2"` (los dos valores
-ordenados alfabéticamente y unidos con `"*_vs_*"`). Aquí construimos esa
+ordenados alfabéticamente y unidos con `"_vs_"`). Aquí construimos esa
 lista programáticamente para conservar solo las comparaciones de cada
 otro compartimento **contra Roots**, descartando las autocomparaciones:
 
@@ -1021,8 +1057,9 @@ que en los gráficos alfa, `stat` (por ejemplo `"wilcox.test"`,
 los boxplots de cada faceta, por pares o global y con `p_adjust_method`,
 igual que en los gráficos alfa.
 
-Si `save_table = TRUE`, la función también retorna una tabla con los
-valores de diversidad beta usados para generar el gráfico.
+Si `save_table = TRUE`, la función también guarda un archivo delimitado
+por tabuladores con los valores de diversidad beta usados para generar
+el gráfico.
 
 ``` r
 
@@ -1042,7 +1079,7 @@ beta_dissimilarity_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-pareada-de-diversidad-beta-35-1.png)
+![](metabarcoding_es_files/figure-html/dissim-2-1.png)
 
 Para los hongos 🍄 vemos otro componente: `partition = "turnover"`
 conserva solo el reemplazo de taxones entre muestras (no las diferencias
@@ -1073,7 +1110,7 @@ beta_dissimilarity_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-pareada-de-diversidad-beta-37-1.png)
+![](metabarcoding_es_files/figure-html/dissim-4-1.png)
 
 ### Recambio pareado (turnover): entre grupos vs. dentro del grupo
 
@@ -1124,7 +1161,7 @@ una comparación estadística entre las cajas de cada faceta, como en
 ``` r
 
 beta_turnover_plot(
-    table = table_fungi,
+    table = table_fung,
     metadata = metadata_fungi,
     comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
     condition1_col = "Type_of_soil",
@@ -1138,7 +1175,7 @@ beta_turnover_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/recambio-pareado-turnover-entre-grupos-vs-dentro-del-grupo-38-1.png)
+![](metabarcoding_es_files/figure-html/turnover-1.png)
 
 ### Decaimiento de la similitud comunitaria con la distancia
 
@@ -1186,7 +1223,7 @@ beta_decay_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/decaimiento-de-la-similitud-comunitaria-con-la-distancia-40-1.png)
+![](metabarcoding_es_files/figure-html/decay-2-1.png)
 
 ## Análisis de abundancia diferencial
 
@@ -1195,17 +1232,17 @@ diferencialmente abundantes**. Estos análisis ayudan a identificar
 features microbianos que varían significativamente entre grupos
 experimentales.
 
-Dos funciones se apoyan en un **marco de análisis de datos
+Dos funciones se apoyan en el **marco de análisis de datos
 composicionales implementado en el paquete**
-[ALDEx2](https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html)
-([Fernandes et al. 2014](#ref-fernandes2014aldex2)). Este enfoque tiene
-en cuenta la naturaleza composicional de los datos de secuenciación
-([Gloor et al. 2017](#ref-gloor2017compositional)) usando instancias de
-Monte Carlo Dirichlet y transformaciones log-razón centradas, y en el
-paquete [ANCOMBC2](https://bioconductor.org/packages/ANCOMBC/) ([Lin and
-Peddada 2020](#ref-lin2020ancombc)), un método alternativo de abundancia
-diferencial que modela explícitamente el sesgo composicional y los ceros
-estructurales.
+[ALDEx2](https://bioconductor.org/packages/ALDEx2/) ([Fernandes et al.
+2014](#ref-fernandes2014aldex2)), que tiene en cuenta la naturaleza
+composicional de los datos de secuenciación ([Gloor et al.
+2017](#ref-gloor2017compositional)) usando instancias de Monte Carlo
+Dirichlet y transformaciones log-razón centradas. Una tercera usa
+ANCOM-BC2 ([Lin and Peddada 2024](#ref-lin2024ancombc2)), del paquete
+[ANCOMBC](https://bioconductor.org/packages/ANCOMBC/), un método
+alternativo de abundancia diferencial que modela explícitamente el sesgo
+composicional y los ceros estructurales.
 
 Las funciones:
 
@@ -1236,7 +1273,7 @@ Adicionalmente, dos enfoques complementarios ayudan a identificar
 ### Ejemplo: datos de bacterias
 
 Primero, conservamos solo dos compartimentos de suelo, **Bulk soil** y
-**Roots**, ya que ALDEx2 compara dos grupos.
+**Roots**, ya que las funciones de ALDEx2 comparan dos grupos.
 
 ``` r
 
@@ -1275,7 +1312,7 @@ aldex_volcano_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/ejemplo-datos-de-bacterias-42-1.png)
+![](metabarcoding_es_files/figure-html/volcano-1.png)
 
 ### ANCOMBC2 como método alternativo
 
@@ -1320,7 +1357,7 @@ ancombc_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/ancombc2-como-m-todo-alternativo-44-1.png)
+![](metabarcoding_es_files/figure-html/ancombc-2-1.png)
 
 Con **3 o más grupos**,
 [`ancombc_plot()`](https://steph0522.github.io/MicroBioMeta/reference/ancombc_plot.md)
@@ -1348,7 +1385,7 @@ ancombc_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/ancombc2-como-m-todo-alternativo-44b-1.png)
+![](metabarcoding_es_files/figure-html/ancombc-3-1.png)
 
 **Cómo leer el heatmap:** cada columna es un grupo comparado con el de
 referencia (aquí **Rhizosphere** vs **Bulk soil** y **Roots** vs **Bulk
@@ -1368,7 +1405,7 @@ cada comparación.
 
 Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**,
 pero visualizamos los resultados con un **heatmap**. Esta función usa
-`ComplexHeatmap`.
+`ComplexHeatmap` ([Gu et al. 2016](#ref-gu2016complexheatmap)).
 
 ``` r
 
@@ -1400,7 +1437,7 @@ aldex_heatmap_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/ejemplo-datos-de-hongos-46-1.png)
+![](metabarcoding_es_files/figure-html/aldex-heat-1.png)
 
 ### Identificando taxones importantes
 
@@ -1424,12 +1461,7 @@ random_forest_lollipop_plot(
 )
 ```
 
-    ## Warning in random_forest_lollipop_plot(table = table_bac, metadata = metadata_bacteria, : Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
-    ##   - 'Proteobacteria' changed to 'Pseudomonadota'
-    ##   - 'Actinobacteriota' changed to 'Actinomycetota'
-    ## Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
-
-![](metabarcoding_es_files/figure-html/identificando-taxones-importantes-47-1.png)
+![](metabarcoding_es_files/figure-html/rf-1-1.png)
 
 Alternativamente, los taxones con las diferencias log-razón más fuertes
 entre dos condiciones pueden visualizarse con:
@@ -1446,7 +1478,7 @@ ratios_bubble_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/identificando-taxones-importantes-48-1.png)
+![](metabarcoding_es_files/figure-html/rf-2-1.png)
 
 ## Análisis ambientales
 
@@ -1462,22 +1494,20 @@ microbiana**:
   — realiza una ordenación restringida usando **Análisis de
   Correspondencia Canónica (CCA)** o **Análisis de Redundancia (RDA)**.
 
-#### Eligiendo las variables ambientales
+### Eligiendo las variables ambientales
 
 Las variables ambientales se leen directamente de los **metadatos** (una
 columna por variable), así que no hace falta una tabla aparte: basta con
 pasar en `env_vars` los nombres de las columnas a usar. Si tus variables
 están en otra tabla, pásala en `env_data` (filas = muestras, como
-nombres de fila).
+nombres de fila). Aquí usamos las variables fisicoquímicas del suelo:
 
 ``` r
 
-env_vars_fung <- metadata_fungi %>%
-    dplyr::select(pH:Arbus_per) %>%
-    colnames()
+env_vars_fung <- c("pH", "Silt", "WHC", "TN", "EC", "Sand", "Clay")
 ```
 
-#### Correlación entre variables ambientales y abundancia taxonómica
+### Correlación entre variables ambientales y abundancia taxonómica
 
 La función
 [`corr_env_abund_plot()`](https://steph0522.github.io/MicroBioMeta/reference/corr_env_abund_plot.md)
@@ -1499,9 +1529,9 @@ corr_env_abund_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-50-1.png)
+![](metabarcoding_es_files/figure-html/corr-env-1.png)
 
-### Visualización alternativa
+#### Visualización alternativa
 
 Las correlaciones también pueden mostrarse usando marcadores circulares
 en vez de celdas:
@@ -1518,9 +1548,9 @@ corr_env_abund_plot(
 )
 ```
 
-![](metabarcoding_es_files/figure-html/visualizaci-n-alternativa-51-1.png)
+![](metabarcoding_es_files/figure-html/corr-env-alt-1.png)
 
-#### Ordenación restringida (CCA / RDA)
+### Ordenación restringida (CCA / RDA)
 
 La función
 [`cca_rda_biplot()`](https://steph0522.github.io/MicroBioMeta/reference/cca_rda_biplot.md)
@@ -1549,7 +1579,7 @@ cca_rda_biplot(
     ## can happen if terms are constant or linearly dependent (collinear): 'WHC',
     ## 'EC', 'Clay'
 
-![](metabarcoding_es_files/figure-html/ordenaci-n-restringida-cca-rda-53-1.png)
+![](metabarcoding_es_files/figure-html/cca-1.png)
 
 Este análisis produce un **biplot** donde:
 
@@ -1603,13 +1633,19 @@ Egozcue. 2017. “Microbiome Datasets Are Compositional: And This Is Not
 Optional.” *Frontiers in Microbiology* 8: 2224.
 <https://doi.org/10.3389/fmicb.2017.02224>.
 
+Gu, Zuguang, Roland Eils, and Matthias Schlesner. 2016. “Complex
+Heatmaps Reveal Patterns and Correlations in Multidimensional Genomic
+Data.” *Bioinformatics* 32 (18): 2847–49.
+<https://doi.org/10.1093/bioinformatics/btw313>.
+
 Li, Daijiang. 2018. “hillR: Taxonomic, Functional, and Phylogenetic
 Diversity and Similarity Through Hill Numbers.” *Journal of Open Source
 Software* 3 (31): 1041. <https://doi.org/10.21105/joss.01041>.
 
-Lin, Huang, and Shyamal Das Peddada. 2020. “Analysis of Compositions of
-Microbiomes with Bias Correction.” *Nature Communications* 11: 3514.
-<https://doi.org/10.1038/s41467-020-17041-7>.
+Lin, Huang, and Shyamal Das Peddada. 2024. “Multigroup Analysis of
+Compositions of Microbiomes with Covariate Adjustments and Repeated
+Measures.” *Nature Methods* 21 (1): 83–91.
+<https://doi.org/10.1038/s41592-023-02092-7>.
 
 Mantel, Nathan. 1967. “The Detection of Disease Clustering and a
 Generalized Regression Approach.” *Cancer Research* 27 (2): 209–20.

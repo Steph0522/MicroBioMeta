@@ -10,7 +10,7 @@ template:
 
 navbar:
   logo:
-    src: man/figures/logo.png
+    src: man/figures/logo.jpg
   structure:
     left: [intro, installation, tutorials, reference, news]
     right: [search, issues, github]

@@ -79,9 +79,9 @@
 #' @export
 #'
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
-#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #'
 #' abundance_heatmap_plot(
@@ -144,6 +144,7 @@ abundance_heatmap_plot <- function(table,
     .mbm_check_table(table)
     tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
     if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
+    table[[tax_col]] <- .mbm_update_phyla(table[[tax_col]])
     if (is.null(metadata)) {
         if (!is.null(condition1) || !is.null(condition2) || !is.null(condition3)) {
             stop("`condition1`/`condition2`/`condition3` need `metadata`.", call. = FALSE)
@@ -193,19 +194,8 @@ abundance_heatmap_plot <- function(table,
         dplyr::mutate(asv = paste0(feature_prefix, dplyr::row_number())) %>%
         tidyr::unite("taxa", asv, taxonomy, remove = FALSE) %>%
         dplyr::mutate(dplyr::across(dplyr::everything(), ~ trimws(.))) %>%
-        dplyr::mutate(phylum = sub("^p__", "", phylum)) %>%
-        dplyr::mutate(phylum = dplyr::case_when(
-            phylum == "Proteobacteria" ~ "Pseudomonadata",
-            phylum == "Firmicutes" ~ "Bacillota",
-            phylum == "Actinobacteriota" ~ "Actinomycetota",
-            phylum == "Bacteroidetes" ~ "Bacteroidota",
-            TRUE ~ as.character(phylum)
-        )) %>%
+        dplyr::mutate(phylum = sub("^(p__|D_1__)", "", phylum)) %>%
         dplyr::mutate(phylum = ifelse(is.na(phylum) | phylum == "", "Unclassified", phylum))
-    warning(
-        "Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:\n",
-        "\nReference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/"
-    )
 
     if (save_table) {
         utils::write.table(table_abundance,

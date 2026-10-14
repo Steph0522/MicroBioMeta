@@ -44,7 +44,7 @@ single taxonomy column is renamed to `taxonomy`.
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 full_table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 feature_table <- full_table[, setdiff(colnames(full_table), "taxonomy")]

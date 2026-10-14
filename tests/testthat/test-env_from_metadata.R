@@ -1,8 +1,8 @@
 load_bacteria <- function() {
-    table <- read.delim(system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta"),
+    table <- read.delim(system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta"),
         row.names = 1, check.names = FALSE
     )
-    metadata <- read.delim(system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta"),
+    metadata <- read.delim(system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta"),
         check.names = FALSE
     )
     colnames(metadata)[1] <- "SampleID"

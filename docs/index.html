@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Intuitive Microbiome Data Analysis and Visualization for Beginners with Minimal Coding • MicroBioMeta</title>
+<title>Analysis and Visualization of Microbiome Diversity, Composition, and Differential Abundance • MicroBioMeta</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Intuitive Microbiome Data Analysis and Visualization for Beginners with Minimal Coding">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Analysis and Visualization of Microbiome Diversity, Composition, and Differential Abundance">
 <meta name="description" content="The goal of MicroBioMeta is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way.">
 <meta property="og:description" content="The goal of MicroBioMeta is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way.">
 <meta name="twitter:card" content="summary_large_image">
@@ -66,11 +66,55 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="dna-microbiometa-">🧬 MicroBioMeta <img src="reference/figures/logo.jpg" alt="MicroBioMeta logo" width="150" align="right"><a class="anchor" aria-label="anchor" href="#dna-microbiometa-"></a>
 </h1></div>
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p>The goal of <code>MicroBioMeta</code> is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way</p>
+<p>The goal of <code>MicroBioMeta</code> is to support beginners in microbiome data analysis, whether working with metagenomic or metabarcoding datasets. It enables users with limited experience in R to explore, visualize, and analyze results with minimal coding and customization. This helps save time on scripting, while still producing statistically robust results and publication-ready figures in an intuitive and accessible way.</p>
+<p>The functions take a feature table (taxa in rows, samples in columns, with a <code>taxonomy</code> column at the end) and a metadata table (sample IDs in the first column). They cover:</p>
+<ul>
+<li>
+<strong>Composition</strong>: bar plots, heatmaps and Sankey diagrams.</li>
+<li>
+<strong>Alpha diversity</strong>: Hill numbers, classic indices, diversity along continuous gradients and Venn diagrams.</li>
+<li>
+<strong>Beta diversity</strong>: ordinations, PERMANOVA/betadisper, turnover and nestedness partitions, and distance-decay.</li>
+<li>
+<strong>Differential abundance</strong>: ALDEx2, ANCOM-BC2, random forest and log-ratios.</li>
+<li>
+<strong>Environmental variables</strong>: correlations and CCA/RDA biplots.</li>
+</ul>
+<div class="section level2">
+<h2 id="computer-installation">💻 Installation<a class="anchor" aria-label="anchor" href="#computer-installation"></a>
+</h2>
+<p><code>MicroBioMeta</code> is not on Bioconductor yet. For now, install it from GitHub:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Steph0522/MicroBioMeta"</span><span class="op">)</span></span></code></pre></div>
+<p>Once it is accepted in Bioconductor, it will be installed with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"MicroBioMeta"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="green_book-documentation">📗 Documentation<a class="anchor" aria-label="anchor" href="#green_book-documentation"></a>
+</h2>
+<p>Tutorials in English and Spanish are on the <a href="https://steph0522.github.io/MicroBioMeta/">web page</a>:</p>
+<ul>
+<li>
+<a href="https://steph0522.github.io/MicroBioMeta/articles/metabarcoding.html">Metabarcoding</a> / <a href="https://steph0522.github.io/MicroBioMeta/articles/metabarcoding_es.html">Amplicón</a>
+</li>
+<li>
+<a href="https://steph0522.github.io/MicroBioMeta/articles/metagenomic.html">Metagenomic</a> / <a href="https://steph0522.github.io/MicroBioMeta/articles/metagenomic_es.html">Metagenómica</a>
+</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="test_tube-example-data">🧪 Example data<a class="anchor" aria-label="anchor" href="#test_tube-example-data"></a>
+</h2>
+<p>The package includes 16S and 18S metabarcoding data from <em>Ricinus communis</em> soils and roots, and shotgun metagenomic (Kraken2/Bracken) data from forest soils of Central Mexico, all from published studies. Their sources and how they were prepared are described in <a href="inst/script/README.html"><code>inst/script/README.md</code></a>.</p>
+</div>
 <div class="section level2">
 <h2 id="woman_technologist-contributors">👩‍💻 Contributors<a class="anchor" aria-label="anchor" href="#woman_technologist-contributors"></a>
 </h2>
@@ -81,40 +125,21 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="computer-installation-instructions">
-<span class="emoji" data-emoji="computer">💻</span> Installation instructions<a class="anchor" aria-label="anchor" href="#computer-installation-instructions"></a>
-</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Steph0522/MicroBioMeta"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Steph0522/MicroBioMeta" class="external-link">MicroBioMeta</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="green_book-examples">
-<span class="emoji" data-emoji="green_book">📗</span> Examples<a class="anchor" aria-label="anchor" href="#green_book-examples"></a>
-</h2>
-<p>For examples and uses go to the <a href="https://steph0522.github.io/MicroBioMeta/">web page</a></p>
-</div>
-<div class="section level2">
-<h2 id="raised_hands-code-of-conduct">
-<span class="emoji" data-emoji="raised_hands">🙌</span> Code of Conduct<a class="anchor" aria-label="anchor" href="#raised_hands-code-of-conduct"></a>
+<h2 id="raised_hands-code-of-conduct">🙌 Code of Conduct<a class="anchor" aria-label="anchor" href="#raised_hands-code-of-conduct"></a>
 </h2>
 <p>Please note that the <code>MicroBioMeta</code> project is released with a <a href="http://bioconductor.org/about/code-of-conduct/" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 <div class="section level2">
-<h2 id="hammer-development-tools">
-<span class="emoji" data-emoji="hammer">🔨</span> Development tools<a class="anchor" aria-label="anchor" href="#hammer-development-tools"></a>
+<h2 id="hammer-development-tools">🔨 Development tools<a class="anchor" aria-label="anchor" href="#hammer-development-tools"></a>
 </h2>
 <ul>
-<li>Continuous code testing is possible thanks to <a href="https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/" class="external-link">GitHub actions</a> through <em><a href="https://CRAN.R-project.org/package=usethis" class="external-link">usethis</a></em>, <em><a href="https://CRAN.R-project.org/package=remotes" class="external-link">remotes</a></em>, and <em><a href="https://CRAN.R-project.org/package=rcmdcheck" class="external-link">rcmdcheck</a></em> customized to use <a href="https://www.bioconductor.org/help/docker/" class="external-link">Bioconductor’s docker containers</a> and <em><a href="https://bioconductor.org/packages/3.18/BiocCheck" class="external-link">BiocCheck</a></em>.</li>
+<li>Continuous code testing is possible thanks to <a href="https://www.tidyverse.org/blog/2020/04/usethis-1-6-0/" class="external-link">GitHub actions</a> through <em><a href="https://CRAN.R-project.org/package=usethis" class="external-link">usethis</a></em>, <em><a href="https://CRAN.R-project.org/package=remotes" class="external-link">remotes</a></em>, and <em><a href="https://CRAN.R-project.org/package=rcmdcheck" class="external-link">rcmdcheck</a></em> customized to use <a href="https://www.bioconductor.org/help/docker/" class="external-link">Bioconductor’s docker containers</a> and <em><a href="https://bioconductor.org/packages/BiocCheck" class="external-link">BiocCheck</a></em>.</li>
 <li>Code coverage assessment is possible thanks to <a href="https://codecov.io/gh" class="external-link">codecov</a> and <em><a href="https://CRAN.R-project.org/package=covr" class="external-link">covr</a></em>.</li>
-<li>The <a href="http://Steph0522.github.io/MicroBioMeta" class="external-link">documentation website</a> is automatically updated thanks to <em><a href="https://CRAN.R-project.org/package=pkgdown" class="external-link">pkgdown</a></em>.</li>
-<li>The code is styled automatically thanks to <em><a href="https://CRAN.R-project.org/package=styler" class="external-link">styler</a></em>.</li>
+<li>The <a href="https://steph0522.github.io/MicroBioMeta/">documentation website</a> is built with <em><a href="https://CRAN.R-project.org/package=pkgdown" class="external-link">pkgdown</a></em>.</li>
+<li>The code is styled with <em><a href="https://CRAN.R-project.org/package=styler" class="external-link">styler</a></em>.</li>
 <li>The documentation is formatted thanks to <em><a href="https://CRAN.R-project.org/package=devtools" class="external-link">devtools</a></em> and <em><a href="https://CRAN.R-project.org/package=roxygen2" class="external-link">roxygen2</a></em>.</li>
 </ul>
-<p>For more details, check the <code>dev</code> directory.</p>
-<p>This package was developed using</p>
+<p>This package was developed using <em><a href="https://bioconductor.org/packages/biocthis" class="external-link">biocthis</a></em>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -160,11 +185,11 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://github.com/Steph0522/MicroBioMeta/actions/workflows/check-bioc.yml" class="external-link"><img src="https://github.com/Steph0522/MicroBioMeta/actions/workflows/check-bioc.yml/badge.svg" alt="R-CMD-check-bioc"></a></li>
 <li><a href="https://github.com/Steph0522/MicroBioMeta/issues" class="external-link"><img src="https://img.shields.io/github/issues/Steph0522/MicroBioMeta" alt="GitHub issues"></a></li>
 <li><a href="https://github.com/Steph0522/MicroBioMeta/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/Steph0522/MicroBioMeta" alt="GitHub pulls"></a></li>
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://github.com/Steph0522/MicroBioMeta/actions/workflows/check-bioc.yml" class="external-link"><img src="https://github.com/Steph0522/MicroBioMeta/actions/workflows/check-bioc.yml/badge.svg" alt="R-CMD-check-bioc"></a></li>
 <li><a href="https://github.com/Steph0522/MicroBioMeta/commits/devel" class="external-link"><img src="https://img.shields.io/github/last-commit/Steph0522/MicroBioMeta" alt="Last commit"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 </ul>
 </div>
 

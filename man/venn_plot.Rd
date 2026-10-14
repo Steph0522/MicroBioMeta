@@ -57,10 +57,10 @@ Creates a Venn diagram of the taxa shared between groups of samples, with
 ggvenn or ggVennDiagram.
 }
 \examples{
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 venn_plot(

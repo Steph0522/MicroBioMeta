@@ -5,8 +5,10 @@ metagenomic** data, as an alternative to the amplicon (metabarcoding)
 workflow covered in the [Metabarcoding
 vignette](https://steph0522.github.io/MicroBioMeta/articles/metabarcoding.md).
 The functions and most of their parameters are exactly the same across
-both workflows, so they aren’t re-explained here only what’s specific to
-metagenomic data is.
+both workflows, so they aren’t re-explained here; only what’s specific
+to metagenomic data is. The installation instructions are in the
+[Metabarcoding
+vignette](https://steph0522.github.io/MicroBioMeta/articles/metabarcoding.md).
 
 For this example, reads were taxonomically classified with
 [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) ([Wood et al.
@@ -64,12 +66,12 @@ table_kraken[1:3, c(1:2, ncol(table_kraken))]
     ## 36050               k__Eukaryota; p__Ascomycota; c__Sordariomycetes; o__Hypocreales; f__Nectriaceae; g__Fusarium; s__poae
     ## 56646          k__Eukaryota; p__Ascomycota; c__Sordariomycetes; o__Hypocreales; f__Nectriaceae; g__Fusarium; s__venenatum
 
-Taxonomy is already in the table so, there is no need to use
+Taxonomy is already in the table, so there is no need to use the
 [`merge_feature_taxonomy()`](https://steph0522.github.io/MicroBioMeta/reference/merge_feature_taxonomy.md)
 function.
 
 ⚠️ Taxonomy strings from Kraken2 use a `k__`/`p__`/`c__`/… prefix like
-SILVA/GTDB, but ranks are separated by `"; "` (semicolon **and space**)
+SILVA, but ranks are separated by `"; "` (semicolon **and space**)
 instead of `";"`. `MicroBioMeta` already accounts for this wherever a
 `taxonomy_db` argument exists, just pass `taxonomy_db = "Kraken2"`.
 
@@ -261,7 +263,7 @@ abundance_bar_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/abundance-barplot-7-1.png)
+![](metagenomic_files/figure-html/bar-1.png)
 
 ### Abundance heatmap
 
@@ -282,7 +284,7 @@ abundance_heatmap_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/abundance-heatmap-8-1.png)
+![](metagenomic_files/figure-html/heat-1.png)
 
 ## Alpha diversity
 
@@ -311,12 +313,13 @@ alpha_hill_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/alpha-diversity-visualization-10-1.png)
+![](metagenomic_files/figure-html/alpha-1.png)
 
-Richness (*q*=0) is nearly saturated and flat across blocks here — this
-genus-level Bracken table simply doesn’t have much room left to vary at
-*q*=0 — while *q*=1 and *q*=2 (which weight by relative abundance) do
-pick up differences between blocks.
+Richness (*q*=0) is nearly saturated and flat across polygons here —
+this species-level Bracken table has only 87 fungal species, 83 of them
+present in all 36 samples, so there is little room left to vary at *q*=0
+— while *q*=1 and *q*=2 (which weight by relative abundance) do pick up
+differences between polygons.
 
 ### Alpha diversity along a continuous gradient
 
@@ -330,7 +333,7 @@ alpha_decay_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/alpha-diversity-along-a-continuous-gradient-11-1.png)
+![](metagenomic_files/figure-html/alpha-gradient-1.png)
 
 Diversity at *q*=1 and *q*=2 increases significantly with soil pH; *q*=0
 doesn’t, for the same ceiling-effect reason as above.
@@ -397,7 +400,7 @@ beta_ord_plot(
     ## Run 20 stress 0.1100308 
     ## *** Best solution repeated 3 times
 
-![](metagenomic_files/figure-html/ordination-of-community-composition-12-1.png)
+![](metagenomic_files/figure-html/ord-1.png)
 
 ### Statistical tests for beta diversity
 
@@ -426,7 +429,7 @@ beta_test_table(
 )
 ```
 
-![](metagenomic_files/figure-html/statistical-tests-for-beta-diversity-13-1.png)
+![](metagenomic_files/figure-html/permanova-1.png)
 
 ### Distance-decay of community similarity
 
@@ -446,7 +449,7 @@ beta_decay_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/distance-decay-of-community-similarity-14-1.png)
+![](metagenomic_files/figure-html/decay-1.png)
 
 Communities that are geographically closer are significantly more
 similar in composition (Mantel *r* ≈ 0.21, *p* ≈ 0.001; the exact
@@ -456,11 +459,11 @@ soils. The relationship is weak, though: distance explains only about 4
 % of the variation in similarity (R² ≈ 0.04). `bray` is used to be
 consistent with the ordination above.
 
-## Differential abundant analysis
+## Differential abundance analysis
 
 For the heatmap (ALDEx2 ([Fernandes et al.
-2014](#ref-fernandes2014aldex2))) and ANCOMBC2 ([Lin and Peddada
-2020](#ref-lin2020ancombc)) versions we need a 2-group subset of the
+2014](#ref-fernandes2014aldex2))) and ANCOM-BC2 ([Lin and Peddada
+2024](#ref-lin2024ancombc2)) versions we need a 2-group subset of the
 6-level `Polygon`, in this part we will compare Polygon 2 and 5:
 
 ``` r
@@ -480,7 +483,7 @@ aldex_heatmap_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/differential-abundant-analysis-16-1.png)
+![](metagenomic_files/figure-html/diff-2-1.png)
 
 ``` r
 
@@ -494,7 +497,7 @@ ancombc_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/differential-abundant-analysis-17-1.png)
+![](metagenomic_files/figure-html/diff-3-1.png)
 
 ### Identifying important taxa
 
@@ -508,7 +511,7 @@ the polygon:
 random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n = 10, variable_to_predict = "Polygon")
 ```
 
-![](metagenomic_files/figure-html/identifying-important-taxa-18-1.png)
+![](metagenomic_files/figure-html/rf-1-1.png)
 
 ``` r
 
@@ -522,7 +525,7 @@ ratios_bubble_plot(
 )
 ```
 
-![](metagenomic_files/figure-html/identifying-important-taxa-19-1.png)
+![](metagenomic_files/figure-html/rf-2-1.png)
 
 ## Environmental analyses
 
@@ -534,7 +537,7 @@ needed):
 ``` r
 
 env_vars_meta <- metadata_meta %>%
-    dplyr::select(pH:ARENA) %>%
+    dplyr::select(pH:ARENA, -type, -type2) %>%
     colnames()
 ```
 
@@ -552,10 +555,7 @@ corr_env_abund_plot(
 )
 ```
 
-    ## Warning in corr_env_abund_plot(table = table_meta, metadata = metadata_meta, :
-    ## Dropping non-numeric columns from `env_data`: type, type2
-
-![](metagenomic_files/figure-html/correlation-between-environmental-variables-and-taxonomic-abundance-21-1.png)
+![](metagenomic_files/figure-html/corr-env-1.png)
 
 ### Constrained ordination (CCA)
 
@@ -572,7 +572,7 @@ cca_rda_biplot(
 )
 ```
 
-![](metagenomic_files/figure-html/constrained-ordination-cca-23-1.png)
+![](metagenomic_files/figure-html/cca-1.png)
 
 ## References
 
@@ -590,9 +590,10 @@ Analysis of High-Throughput Sequencing Datasets: Characterizing RNA-Seq,
 Compositional Data Analysis.” *Microbiome* 2: 15.
 <https://doi.org/10.1186/2049-2618-2-15>.
 
-Lin, Huang, and Shyamal Das Peddada. 2020. “Analysis of Compositions of
-Microbiomes with Bias Correction.” *Nature Communications* 11: 3514.
-<https://doi.org/10.1038/s41467-020-17041-7>.
+Lin, Huang, and Shyamal Das Peddada. 2024. “Multigroup Analysis of
+Compositions of Microbiomes with Covariate Adjustments and Repeated
+Measures.” *Nature Methods* 21 (1): 83–91.
+<https://doi.org/10.1038/s41592-023-02092-7>.
 
 Lu, Jennifer, Florian P. Breitwieser, Peter Thielen, and Steven L.
 Salzberg. 2017. “Bracken: Estimating Species Abundance in Metagenomics

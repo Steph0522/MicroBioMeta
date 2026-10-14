@@ -28,8 +28,8 @@
 #'   Default \code{NULL}.
 #' @param ref_level Character. Reference level of \code{group_col}, the
 #'   baseline of the comparisons. If \code{NULL} (default), the first factor
-#'   level is used (e.g. \code{ref_level = "control"} compares every other group
-#'   against control).
+#'   level is used (e.g. \code{ref_level = "P2"} compares every other group
+#'   against P2).
 #' @param diverging_palette Character. Colorblind-friendly diverging palette of
 #'   the heatmap (3 or more groups): \code{"BuOr"} (blue-orange, default),
 #'   \code{"BuVm"} (blue-vermillion), \code{"BuPk"} (blue-pink), \code{"GnPk"}
@@ -51,10 +51,10 @@
 #' @export
 #'
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
-#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #'
 #' \donttest{
@@ -108,6 +108,7 @@ ancombc_plot <- function(table,
     }
 
     names(table)[tax_col] <- "taxonomy"
+    table$taxonomy <- .mbm_update_phyla(table$taxonomy)
 
     table_counts <- table %>% dplyr::select(-taxonomy)
     otumat <- as.matrix(table_counts)
@@ -122,6 +123,13 @@ ancombc_plot <- function(table,
     meta_df <- as.data.frame(metadata)
     rownames(meta_df) <- meta_df[[sample_id_col]]
     meta_df[[sample_id_col]] <- NULL
+
+    common <- intersect(colnames(otumat), rownames(meta_df))
+    if (length(common) == 0) {
+        stop("No matching sample names between table and metadata.")
+    }
+    otumat <- otumat[, common, drop = FALSE]
+    meta_df <- meta_df[common, , drop = FALSE]
 
     tax_rank <- NULL
     if (!is.null(level)) {

@@ -34,7 +34,7 @@
 #' @return A \code{patchwork} object with the three q0/q1/q2 panels.
 #' @export
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' # Always tagged A/B/C (see panel_label_case and panel_labels to customize)

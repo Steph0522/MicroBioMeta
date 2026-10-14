@@ -157,10 +157,10 @@ A `patchwork` object with the three q0/q1/q2 panels, tagged as set by
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 loc_dist <- data.frame(Loc = 1:7, dist_km = seq(0, 12, length.out = 7))

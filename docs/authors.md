@@ -17,14 +17,14 @@ Source:
 [`inst/CITATION`](https://github.com/Steph0522/MicroBioMeta/blob/HEAD/inst/CITATION)
 
 Hereira Pacheco S, Montoya Ciriaco N, Zarco Gonzalez K (2026).
-*MicroBioMeta: Intuitive Microbiome Data Analysis and Visualization for
-Beginners with Minimal Coding*.
+*MicroBioMeta: Analysis and Visualization of Microbiome Diversity,
+Composition, and Differential Abundance*.
 [doi:10.18129/B9.bioc.MicroBioMeta](https://doi.org/10.18129/B9.bioc.MicroBioMeta).
 https://github.com/Steph0522/MicroBioMeta/MicroBioMeta - R package
 version 0.99.0, <http://www.bioconductor.org/packages/MicroBioMeta>.
 
     @Manual{,
-      title = {MicroBioMeta: Intuitive Microbiome Data Analysis and Visualization for Beginners with Minimal Coding},
+      title = {MicroBioMeta: Analysis and Visualization of Microbiome Diversity, Composition, and Differential Abundance},
       author = {Stephanie {Hereira Pacheco} and Nina {Montoya Ciriaco} and Karla {Zarco Gonzalez}},
       year = {2026},
       url = {http://www.bioconductor.org/packages/MicroBioMeta},

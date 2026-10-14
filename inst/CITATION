@@ -6,7 +6,7 @@ pkgVer <- function(pkg) {
 
 bibentry(
     bibtype = "manual",
-    title   = "MicroBioMeta: Intuitive Microbiome Data Analysis and Visualization for Beginners with Minimal Coding",
+    title   = "MicroBioMeta: Analysis and Visualization of Microbiome Diversity, Composition, and Differential Abundance",
     author  = c(
         person("Stephanie", "Hereira Pacheco"),
         person("Nina", "Montoya Ciriaco"),

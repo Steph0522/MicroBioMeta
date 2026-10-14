@@ -23,7 +23,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-🧬 MicroBioMeta es un paquete de R diseñado para trabajar con datos de metabarcoding. Este tutorial recorre un ejemplo de su uso.
+🧬 MicroBioMeta es un paquete de R para explorar, analizar y visualizar datos de microbioma. Este tutorial recorre un ejemplo de su uso con datos de metabarcoding.
+
+## Instalación
+
+`MicroBioMeta` todavía no está en Bioconductor. Por ahora, se instala desde GitHub:
+
+```{r install-github, eval=FALSE}
+# install.packages("remotes")
+remotes::install_github("Steph0522/MicroBioMeta")
+```
+
+Cuando sea aceptado en Bioconductor, se instalará con:
+
+```{r install-bioc, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("MicroBioMeta")
+```
+
+## Datos de ejemplo
 
 Para este ejemplo usaremos datos secuenciados con el barcode 16S para bacterias y 18S para hongos.
 
@@ -36,13 +56,13 @@ Para 18S 🍄: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Nav
 ## Cargar los datos
 Primero, carguemos el paquete `MicroBioMeta`:
 
-```{r "start", message=FALSE}
+```{r load, message=FALSE}
 library("MicroBioMeta")
 ```
 
 Carguemos también los demás paquetes que vamos a necesitar:
 
-```{r cargar-los-datos-1, warning=FALSE, message=FALSE}
+```{r data-1, warning=FALSE, message=FALSE}
 library(tidyverse)
 ```
 
@@ -54,7 +74,7 @@ Para esta viñeta, esos mismos datos vienen incluidos en el paquete ya exportado
 
 Primero, carguemos las tablas y la taxonomía de cada conjunto de datos:
 
-```{r cargar-los-datos-4}
+```{r data-2}
 bacteria_table <- read.delim(
     system.file("extdata", "table_bacteria.txt", package = "MicroBioMeta"),
     row.names = 1, check.names = FALSE
@@ -84,22 +104,22 @@ taxonomy_fungi <- read.delim(
 
 ⚠️ Nota que renombramos la columna Taxon a taxonomy antes de unir estos dos objetos:
 
-```{r cargar-los-datos-5}
+```{r data-3}
 colnames(taxonomy_bacteria)
 ```
 
 
 Ahora, carguemos los metadatos de cada conjunto de datos:
 
-```{r cargar-los-datos-6}
+```{r data-4}
 bacteria_metadata <- read.delim(
-    system.file("extdata", "metadata_bacterias.txt", package = "MicroBioMeta"),
+    system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta"),
     check.names = FALSE
 ) %>%
     filter(Month == "2")
 
 fungi_metadata <- read.delim(
-    system.file("extdata", "metadata_fungis.txt", package = "MicroBioMeta"),
+    system.file("extdata", "metadata_fungi.txt", package = "MicroBioMeta"),
     check.names = FALSE
 )
 ```
@@ -110,7 +130,7 @@ Ahora filtremos y ordenemos los datos. Es una buena práctica usar tabla y metad
 
 Para bacterias:
 
-```{r cargar-los-datos-7}
+```{r data-5}
 samples_bac <- bacteria_metadata$SAMPLEID[
     bacteria_metadata$SAMPLEID %in% colnames(bacteria_table)
 ]
@@ -124,7 +144,7 @@ metadata_bacteria <- bacteria_metadata[
 
 y para hongos:
 
-```{r cargar-los-datos-8}
+```{r data-6}
 samples_fun <- fungi_metadata$SAMPLEID[
     fungi_metadata$SAMPLEID %in% colnames(fungi_table)
 ]
@@ -138,11 +158,11 @@ metadata_fungi <- fungi_metadata[
 
 ## Preprocesamiento de los datos
 
-Las funciones de `MicroBioMeta` necesitan que los datos estén en formato `biom`, con una columna de **taxonomía** al final.
+Las funciones de `MicroBioMeta` necesitan que los datos estén en formato `biom` (taxones en filas, muestras en columnas), con una columna de **taxonomía** al final.
 
 Si tus datos no vienen ya en ese formato, `merge_feature_taxonomy()` combina una tabla de abundancia y una tabla de taxonomía en este formato. Mantener la taxonomía como una columna de la misma tabla permite que la mayoría de las funciones consulten la identidad taxonómica sin necesitar un objeto aparte.
 
-```{r preprocesamiento-de-los-datos-9}
+```{r prep}
 table_bac <- merge_feature_taxonomy(
     table = table_bacteria,
     taxonomy = taxonomy_bacteria
@@ -156,6 +176,8 @@ table_fung <- merge_feature_taxonomy(
 
 ⚠️ Nota que esta advertencia reporta cuántos IDs de taxonomía no coincidieron con la tabla de features y fueron excluidos del resultado.
 
+⚠️ Todas las funciones que usan la taxonomía muestran los filos bacterianos con sus nombres válidamente publicados (por ejemplo, *Proteobacteria* como *Pseudomonadota*, *Firmicutes* como *Bacillota*, *Actinobacteriota* como *Actinomycetota*), que son los que usa NCBI Taxonomy desde 2021. Un mensaje indica qué nombres se cambiaron (una vez por sesión).
+
 
 ## Exploración de la composición
 `MicroBioMeta` tiene varias funciones para explorar la composición, identidad taxonómica y abundancia. Exploremos cada una.
@@ -164,21 +186,21 @@ table_fung <- merge_feature_taxonomy(
 Los barplots de abundancia son útiles para identificar patrones en la composición de la comunidad según la identidad taxonómica.\
 Esta función genera barplots apilados de abundancias relativas usando una tabla de abundancia y un archivo de metadatos como entrada.
 
-El parámetro `taxonomy_db` especifica la base de datos taxonómica de referencia usada para la asignación taxonómica (por ejemplo, SILVA, GTDB, UNITE).\
+El parámetro `taxonomy_db` especifica la base de datos taxonómica de referencia usada para la asignación taxonómica: `"silva"` (por defecto), `"gg2"` (Greengenes2), `"unite"` o `"Kraken2"`.\
 El parámetro `x_col` indica la columna de los metadatos usada para agrupar muestras en el eje x, mientras que `facet_by` define la columna de metadatos usada para dividir el gráfico en facetas.
 
 El parámetro `level` permite elegir el nivel taxonómico al que se colapsan los datos.
 
-`top_n_groups` controla el número de taxones más abundantes que se muestran en el barplot.
+`top_n` controla el número de taxones más abundantes que se muestran en el barplot.
 
-Si `add_remain = TRUE`, las abundancias relativas se completan hasta el 100% agregando una categoría gris que representa los taxones restantes no mostrados explícitamente; si es `FALSE`, solo se muestran los taxones seleccionados.\
+Si `add_remained = TRUE`, las abundancias relativas se completan hasta el 100% agregando una categoría gris que representa los taxones restantes no mostrados explícitamente; si es `FALSE`, solo se muestran los taxones seleccionados.\
 El parámetro `label` define el título de la leyenda mostrada en el gráfico.
 
 Las etiquetas del eje x pueden rotarse con `x_label_angle` (por defecto `0`, horizontal), útil cuando los nombres de muestras o grupos son lo suficientemente largos como para superponerse, como en los ejemplos de abajo. `strip_text_bold` controla si los títulos de las facetas van en negritas (por defecto `FALSE`), y `aspect_ratio` fija la relación alto/ancho del panel cuando necesitas proporciones consistentes entre figuras.
 
-Finalmente, cuando `save_table = TRUE`, la función también retorna una tabla con las abundancias relativas (porcentajes) usadas para generar el gráfico.
+Finalmente, cuando `save_table = TRUE`, la función también guarda un archivo delimitado por tabuladores (con el nombre de `table_filename`) con las abundancias relativas (porcentajes) usadas para generar el gráfico.
 
-```{r barplots-de-abundancia-10, fig.width=9, fig.height=6}
+```{r bar-1, fig.width=9, fig.height=6}
 abundance_bar_plot(
     table = table_bac,
     metadata = metadata_bacteria,
@@ -194,7 +216,7 @@ abundance_bar_plot(
 )
 ```
 
-```{r barplots-de-abundancia-11, fig.width=9, fig.height=6}
+```{r bar-2, fig.width=9, fig.height=6}
 abundance_bar_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -228,7 +250,7 @@ Los tipos de suelo conservan los colores Okabe-Ito que el paquete usa por defect
 treatment_colors <- c(TC = "#CC6677", TD = "#332288", TED = "#999933")
 ```
 
-```{r heatmaps-de-abundancia-12, warning=FALSE, fig.width=14, fig.height=6}
+```{r heat-1, warning=FALSE, fig.width=14, fig.height=6}
 abundance_heatmap_plot(
     table = table_bac,
     metadata = metadata_bacteria,
@@ -241,7 +263,7 @@ abundance_heatmap_plot(
 )
 ```
 
-```{r heatmaps-de-abundancia-13, warning=FALSE, fig.width=14, fig.height=6}
+```{r heat-2, warning=FALSE, fig.width=14, fig.height=6}
 abundance_heatmap_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -259,13 +281,13 @@ abundance_heatmap_plot(
 
 El argumento `taxRanks` especifica qué rangos incluir como nodos, `maxn` limita el número de taxones conservados por rango, y `taxonomy_db` le indica a la función cómo están formateadas las cadenas de taxonomía (por ejemplo, `"silva"`, `"gg"`, `"kraken2"`). Esta función depende de [`networkD3`](https://CRAN.R-project.org/package=networkD3), disponible en CRAN:
 
-```{r diagrama-de-sankey-del-flujo-taxon-mico-14, eval=FALSE}
+```{r sankey-1, eval=FALSE}
 install.packages("networkD3")
 ```
 
 ⚠️ A diferencia de las demás funciones, esta no retorna un objeto `ggplot` sino un objeto interactivo `sankeyNetwork` (htmlwidget). Por defecto no escribe nada en disco; usa `output_file` (por ejemplo, `output_file = "sankey_bacteria.html"`) para **guardar el diagrama como archivo HTML**.
 
-```{r diagrama-de-sankey-del-flujo-taxon-mico-15, warning=FALSE}
+```{r sankey-2, warning=FALSE}
 sankey_bacteria <- abundance_sankey_plot(
     table       = table_bac,
     maxn        = 10,
@@ -288,7 +310,7 @@ Este es el primer paso antes de analizar las métricas de diversidad alfa.
 
 Para las bacterias 🦠, podemos observar que en todos los órdenes de *q* hay una correlación fuerte con la profundidad de secuenciación. Cuando esto pasa, las diferencias de diversidad entre muestras pueden reflejar en parte diferencias en el esfuerzo de secuenciación, así que conviene tenerlo en cuenta (o rarefaccionar) antes de comparar grupos.
 
-```{r correlaci-n-entre-n-meros-de-hill-16, warning=FALSE, fig.width=12, fig.height=4.5}
+```{r hill-corr, warning=FALSE, fig.width=12, fig.height=4.5}
 alpha_hill_corr_plot(table = table_bac)
 ```
 
@@ -299,9 +321,9 @@ El parámetro `x_col` especifica la columna de metadatos usada en el eje x, mien
 
 El argumento `facet_by` permite dividir el gráfico según una variable de metadatos, y `facet_orientation` controla si las facetas se organizan horizontal o verticalmente.
 
-Si `save_table = TRUE`, la función también retorna una tabla con los valores de diversidad alfa calculados para cada muestra.
+Si `save_table = TRUE`, la función también guarda un archivo delimitado por tabuladores con los valores de diversidad alfa calculados para cada muestra.
 
-```{r visualizaci-n-de-diversidad-alfa-18, warning=FALSE, fig.width=9, fig.height=8}
+```{r alpha-1, warning=FALSE, fig.width=9, fig.height=8}
 alpha_hill_plot(
     table = table_bac,
     metadata = metadata_bacteria,
@@ -316,7 +338,7 @@ alpha_hill_plot(
 
 La misma función permite intercambiar el papel de las variables. Para los hongos 🍄 ponemos el compartimento de suelo en el eje x y separamos los paneles por tratamiento, lo que resalta cómo cambia la diversidad del suelo desnudo a las raíces dentro de cada tratamiento:
 
-```{r visualizaci-n-de-diversidad-alfa-19, warning=FALSE, fig.width=9, fig.height=7}
+```{r alpha-2, warning=FALSE, fig.width=9, fig.height=7}
 alpha_hill_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -331,7 +353,7 @@ alpha_hill_plot(
 
 También podemos visualizar otras métricas considerando índices clásicos de diversidad alfa:
 
-```{r visualizaci-n-de-diversidad-alfa-20, warning=FALSE, fig.width=9, fig.height=7}
+```{r alpha-3, warning=FALSE, fig.width=9, fig.height=7}
 alpha_diversity_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -349,7 +371,7 @@ alpha_diversity_plot(
 Cada panel se etiqueta automáticamente (A, B, C, ...) para poder referenciarlo. Cuando se establece `stat`, también se agregan valores p a cada panel. `"wilcox.test"` o `"t.test"` comparan cada par de grupos, cada uno con su corchete, y corrigen los valores p por comparaciones múltiples dentro del panel con `p_adjust_method` (por defecto `"holm"`; `"none"` muestra los valores p sin corregir). `"kruskal.test"` o `"anova"` dan un solo valor p global por panel. Solo se dibujan las comparaciones significativas.
 `panel_label_case` alterna entre etiquetas en mayúsculas y minúsculas, `panel_label_bold` para etiquetas en negritas, y `panel_labels` te permite dar etiquetas personalizadas (por ejemplo `c("(a)", "(b)", "(c)")`) en vez de las generadas automáticamente. `free_y` permite que cada panel use su propia escala del eje y en vez de una compartida, como abajo:
 
-```{r visualizaci-n-de-diversidad-alfa-21, warning=FALSE, fig.width=9, fig.height=7}
+```{r alpha-4, warning=FALSE, fig.width=9, fig.height=7}
 alpha_diversity_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -368,7 +390,7 @@ alpha_diversity_plot(
 
 Con `facet_orientation = "vertical"` los órdenes de Hill (*q*) van en filas y los grupos de `facet_by` en columnas:
 
-```{r visualizaci-n-de-diversidad-alfa-vertical, warning=FALSE, fig.width=8, fig.height=8}
+```{r alpha-vertical, warning=FALSE, fig.width=8, fig.height=8}
 alpha_hill_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -389,7 +411,7 @@ El parámetro `cont_var` nombra la columna continua de metadatos a ubicar en el 
 
 Aquí usamos el `pH` del suelo como gradiente, restringido a `Bulk soil` y `Rhizosphere` para una comparación más limpia:
 
-```{r diversidad-alfa-a-lo-largo-de-un-gradiente-continuo-22, warning=FALSE, fig.height=4, fig.width=10}
+```{r alpha-gradient, warning=FALSE, fig.height=4, fig.width=10}
 metadata_bacteria_decay <- metadata_bacteria %>%
     filter(Type_of_soil %in% c("Bulk soil", "Rhizosphere"))
 
@@ -407,7 +429,7 @@ Otra forma de explorar los patrones de diversidad alfa es examinando **qué taxo
 
 Generamos un diagrama de Venn agrupando muestras según el tratamiento (TC, TD y TED).
 
-```{r taxones-compartidos-entre-grupos-de-muestras-23, fig.width=5, fig.height=4}
+```{r venn, fig.width=5, fig.height=4}
 venn_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -429,9 +451,9 @@ La función retorna una **lista con dos elementos**:
 
 -   **`long_format`**: la misma información en formato largo, útil para graficación o análisis estadísticos posteriores.
 
--   Por ejemplo, el siguiente código colapsa la tabla de abundancia de hongos al **nivel de género** y hacemos un diagrama de Venn para visualizar los géneros compartidos.
+Por ejemplo, el siguiente código colapsa la tabla de abundancia de hongos al **nivel de género** y hacemos un diagrama de Venn para visualizar los géneros compartidos.
 
-```{r colapsar-la-tabla-por-nivel-taxon-mico-24, fig.width=7, fig.height=6}
+```{r collapse, fig.width=7, fig.height=6}
 table_genus <- collapse_table(
     table = table_fung,
     level = "genus"
@@ -452,7 +474,7 @@ A veces es útil visualizar solo los taxones que ocurren frecuentemente dentro d
 
 Por ejemplo, el siguiente diagrama incluye solo los taxones presentes en **al menos el 20% de las muestras dentro de cada grupo**. El parámetro es 0 por defecto, lo que significa que no se aplica ningún filtro.
 
-```{r filtrar-taxones-por-prevalencia-25, fig.width=5, fig.height=4}
+```{r prevalence, fig.width=5, fig.height=4}
 venn_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -464,7 +486,7 @@ venn_plot(
 #### Personalizar los colores de los grupos
 La función también permite colores personalizados para los grupos.
 
-```{r personalizar-los-colores-de-los-grupos-26, fig.width=5, fig.height=4}
+```{r venn-colors, fig.width=5, fig.height=4}
 venn_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -477,7 +499,7 @@ venn_plot(
 #### Método de graficación alternativo
 Por defecto la función usa el paquete **ggvenn**, pero también puede generar el diagrama usando **ggVennDiagram**.
 
-```{r m-todo-de-graficaci-n-alternativo-27, fig.width=5, fig.height=4}
+```{r venn-alt, fig.width=5, fig.height=4}
 venn_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -492,15 +514,15 @@ La diversidad beta describe las diferencias en la composición y estructura de l
 `MicroBioMeta` tiene varias funciones para explorar la diversidad beta, incluyendo gráficos de ordenación, pruebas estadísticas de diferencias entre comunidades, y enfoques de partición que separan los componentes compartidos y exclusivos de la diversidad. Estas funciones permiten tanto la exploración visual como pruebas de hipótesis formales.
 
 ### Ordenación de la composición de la comunidad
-La función `beta_ord_plot()` calcula las disimilitudes pareadas entre muestras y visualiza los resultados usando un método de ordenación. Por defecto, la función usa métricas de distancia ecológicas comunes (por ejemplo, Bray–Curtis o Euclidiana) y técnicas de reducción de dimensionalidad como **PCoA**, **PCA** o **NMDS**. Para tener en cuenta la naturaleza composicional de los datos, en los ejemplos se usan las distancias `aitchinson` y `compositional`. Compositional usa la transformación *clr* (log del cociente centrado) implementada por el paquete `ALDEx2`.
+La función `beta_ord_plot()` calcula las disimilitudes pareadas entre muestras y visualiza los resultados usando un método de ordenación. Por defecto, la función usa métricas de distancia ecológicas comunes (por ejemplo, Bray–Curtis o Euclidiana) y técnicas de reducción de dimensionalidad como **PCoA**, **PCA** o **NMDS**. Para tener en cuenta la naturaleza composicional de los datos, se pueden usar las distancias `aitchison` y `compositional`. `compositional` usa la transformación *clr* (log-razón centrada) implementada por el paquete `ALDEx2`.
 
 El parámetro `group_col` especifica la columna de metadatos usada para colorear las muestras, mientras que `shape_col` permite mostrar una variable adicional de metadatos usando distintas formas de punto.
 
-El argumento `distance` define la métrica de disimilitud usada para calcular la diversidad beta (por ejemplo, **bray, jaccard, aitchsion**, etc.), y `ordination` (opciones: **PCA, PCoA** o **NMDS**) especifica el método de ordenación aplicado para visualizar las distancias entre muestras.
+El argumento `distance` define la métrica de disimilitud usada para calcular la diversidad beta (por ejemplo, **bray, jaccard, aitchison**, etc.), y `ordination` (opciones: **PCA, PCoA** o **NMDS**) especifica el método de ordenación aplicado para visualizar las distancias entre muestras.
 
 ⚠️ **NOTA: `distance = "compositional"` usa una de las instancias Monte Carlo que `ALDEx2` genera al azar, así que el resultado cambia un poco en cada corrida. Si quieres obtener siempre el mismo resultado, se sugiere correr `set.seed()` antes de la función**, como en los ejemplos de abajo. Lo mismo aplica a `beta_test_table(distance = "compositional")`, a las funciones de ALDEx2 y a los p-valores de `cca_rda_biplot()`. Por defecto (`mc_samples = 1`) se usa una sola instancia, lo que es rápido; para los análisis finales se sugiere `mc_samples = 128` (el valor por defecto de ALDEx2), que promedia los valores clr de 128 instancias y da casi el mismo resultado en cada corrida, aunque tarda más.
 
-```{r ordenaci-n-de-la-composici-n-de-la-comunidad-28, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+```{r ord-1, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 set.seed(123)
 beta_ord_plot(
     table = table_bac,
@@ -515,7 +537,7 @@ beta_ord_plot(
 
 Para los hongos 🍄 usamos otra combinación: la disimilitud de **Bray-Curtis**, que pondera los taxones por su abundancia, con una ordenación **NMDS**. NMDS parte de configuraciones al azar, así que aquí también se usa `set.seed()`:
 
-```{r ordenaci-n-de-la-composici-n-de-la-comunidad-29, fig.width=8, fig.height=6}
+```{r ord-2, fig.width=8, fig.height=6}
 set.seed(123)
 beta_ord_plot(
     table = table_fung,
@@ -532,15 +554,15 @@ La función `beta_test_table()` realiza pruebas estadísticas para evaluar si la
 
 El argumento `formula_str` especifica el diseño experimental usando una sintaxis de fórmula similar a la de los modelos lineales en R, o como se usa en el paquete `vegan` [@oksanen2024vegan]. El parámetro `distance` define la métrica de distancia usada para calcular las disimilitudes, y el argumento `test` especifica la prueba estadística (opciones: **PERMANOVA** [@anderson2001permanova] o **BETADISPER**).
 
-El parámetro `permutations` determina el número de permutaciones usadas para estimar la significancia estadística. `strata_var` se usa, como en el paquete `vegan`, para bloquear un parámetro. La primera columna de `metadata` debe tener los IDs de las muestras. Las funciones nunca emparejan las muestras por posición: las filas de la metadata se emparejan con la tabla por ID (y se reordenan si hace falta, con un mensaje), las muestras que no están en la metadata se dejan fuera con un mensaje, y la función se detiene si ningún ID coincide. Esto aplica a todas las funciones que hacen una prueba estadística (PERMANOVA, betadisper, ALDEx2, CCA/RDA, random forest). `table` también puede ser una distancia ya calculada (por ejemplo, de `vegan::vegdist()`), que se usa tal cual.
+El parámetro `permutations` determina el número de permutaciones usadas para estimar la significancia estadística. `strata_var` se usa, como en el paquete `vegan`, para bloquear un parámetro. La primera columna de `metadata` debe tener los IDs de las muestras. Las funciones nunca emparejan las muestras por posición: las filas de la metadata se emparejan con la tabla por ID (y se reordenan si hace falta, con un mensaje), las muestras que no están en la metadata se dejan fuera con un mensaje, y la función se detiene si ningún ID coincide. Esto aplica a las funciones que hacen PERMANOVA, betadisper, ALDEx2, CCA/RDA o random forest. `table` también puede ser una distancia ya calculada (por ejemplo, de `vegan::vegdist()`), que se usa tal cual.
 
-⚠️ **NOTA: Cada función tiene la opción save_* que exporta una tabla o un elemento obtenido en cada función**.
+⚠️ **NOTA: Cada función tiene la opción `save_table`, que guarda los valores detrás del gráfico en un archivo delimitado por tabuladores**.
 
 `distance` coincide con la ordenación de cada conjunto de datos de arriba (`compositional` para bacterias, `bray` para hongos), de modo que la prueba de significancia evalúa la misma noción de disimilitud que se muestra en el gráfico.
 
 El resultado es una figura de la tabla (un ggplot), así que se puede combinar con otros gráficos (p. ej. `cowplot::plot_grid()`) o guardar con `ggplot2::ggsave()`. Usa `save_table = TRUE` para obtener también los resultados en un archivo de texto.
 
-```{r pruebas-estad-sticas-para-diversidad-beta-30, fig.width=8, fig.height=4}
+```{r permanova-1, fig.width=8, fig.height=4}
 set.seed(123)
 beta_test_table(
     table = table_bac,
@@ -553,7 +575,7 @@ beta_test_table(
 )
 ```
 
-```{r pruebas-estad-sticas-para-diversidad-beta-31, fig.width=8, fig.height=4}
+```{r permanova-2, fig.width=8, fig.height=4}
 set.seed(123)
 beta_test_table(
     table = table_fung,
@@ -570,7 +592,7 @@ La diversidad beta también puede descomponerse en distintos componentes. La fun
 
 El argumento `family` especifica la familia de índices de disimilitud usada para la partición (por ejemplo, Jaccard o Sørensen). Los parámetros `group_col` y `shape_col` definen cómo se visualizan las muestras según variables de metadatos.
 
-```{r partici-n-de-la-diversidad-beta-32, fig.width=14, fig.height=5.5}
+```{r partition-1, fig.width=14, fig.height=5.5}
 beta_partition_ord_plot(
     table = table_bac,
     metadata = metadata_bacteria,
@@ -581,7 +603,7 @@ beta_partition_ord_plot(
 )
 ```
 
-```{r partici-n-de-la-diversidad-beta-33, fig.width=14, fig.height=5.5}
+```{r partition-2, fig.width=14, fig.height=5.5}
 beta_partition_ord_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -595,11 +617,11 @@ beta_partition_ord_plot(
 ### Visualización pareada de diversidad beta
 La función `beta_dissimilarity_plot()` resume los valores pareados de diversidad beta usando boxplots, permitiendo comparar los patrones de diversidad entre grupos de muestras. Esta función usa `betapart` sobre datos de incidencia (presencia/ausencia), con el índice de Sørensen o Jaccard: shared, turnover o nestedness.
 
-Los parámetros `condition1_col` y `condition2_col` especifican las variables de metadatos usadas para definir los grupos que se comparan. `condition2_col` separa las comparaciones en facetas: cada faceta conserva solo pares de muestras con el mismo valor (por ejemplo, las dos muestras del tratamiento TC), así que no se mezclan tratamientos. El argumento `partition` determina qué componente de la diversidad beta se muestra (por ejemplo, compartido o exclusivo), mientras que `family` define el índice de disimilitud usado.
+Los parámetros `condition1_col` y `condition2_col` especifican las variables de metadatos usadas para definir los grupos que se comparan. `condition2_col` separa las comparaciones en facetas: cada faceta conserva solo pares de muestras con el mismo valor (por ejemplo, las dos muestras del tratamiento TC), así que no se mezclan tratamientos. El argumento `partition` determina qué componente de la diversidad beta se muestra (`"shared"`, `"turnover"` o `"nestedness"`), mientras que `family` define el índice de disimilitud usado.
 
-Por defecto, `beta_dissimilarity_plot()` conserva todas las combinaciones pareadas posibles de `condition1_col`, incluyendo un grupo comparado consigo mismo (por ejemplo `"Roots_vs_Roots"`). El argumento `comparison_condition1` restringe el gráfico a etiquetas específicas `"value1_vs_value2"` (los dos valores ordenados alfabéticamente y unidos con `"*_vs_*"`). Aquí construimos esa lista programáticamente para conservar solo las comparaciones de cada otro compartimento **contra Roots**, descartando las autocomparaciones:
+Por defecto, `beta_dissimilarity_plot()` conserva todas las combinaciones pareadas posibles de `condition1_col`, incluyendo un grupo comparado consigo mismo (por ejemplo `"Roots_vs_Roots"`). El argumento `comparison_condition1` restringe el gráfico a etiquetas específicas `"value1_vs_value2"` (los dos valores ordenados alfabéticamente y unidos con `"_vs_"`). Aquí construimos esa lista programáticamente para conservar solo las comparaciones de cada otro compartimento **contra Roots**, descartando las autocomparaciones:
 
-```{r visualizaci-n-pareada-de-diversidad-beta-34}
+```{r dissim-1}
 groups_bac <- setdiff(unique(as.character(metadata_bacteria$Type_of_soil)), "Roots")
 vs_roots_bac <- paste0(pmin(groups_bac, "Roots"), "_vs_", pmax(groups_bac, "Roots"))
 # each comparison takes the color of the group compared with Roots
@@ -613,9 +635,9 @@ vs_roots_bac
 
 Igual que en los gráficos de diversidad alfa, `x_label_angle` rota las etiquetas del eje x (por defecto `0`), `strip_text_bold` activa/desactiva las negritas de los títulos de faceta (por defecto `FALSE`), y `aspect_ratio` fija la relación alto/ancho del panel. Igual que en los gráficos alfa, `stat` (por ejemplo `"wilcox.test"`, `"kruskal.test"`, `"anova"`) agrega una comparación estadística entre los boxplots de cada faceta, por pares o global y con `p_adjust_method`, igual que en los gráficos alfa.
 
-Si `save_table = TRUE`, la función también retorna una tabla con los valores de diversidad beta usados para generar el gráfico.
+Si `save_table = TRUE`, la función también guarda un archivo delimitado por tabuladores con los valores de diversidad beta usados para generar el gráfico.
 
-```{r visualizaci-n-pareada-de-diversidad-beta-35, fig.width=9, fig.height=6}
+```{r dissim-2, fig.width=9, fig.height=6}
 beta_dissimilarity_plot(
     table = table_bac,
     metadata = metadata_bacteria,
@@ -634,12 +656,12 @@ beta_dissimilarity_plot(
 
 Para los hongos 🍄 vemos otro componente: `partition = "turnover"` conserva solo el reemplazo de taxones entre muestras (no las diferencias debidas a que una muestra tenga un subconjunto de los taxones de la otra), aquí con la familia Sørensen:
 
-```{r visualizaci-n-pareada-de-diversidad-beta-36}
+```{r dissim-3}
 groups_fung <- setdiff(unique(as.character(metadata_fungi$Type_of_soil)), "Roots")
 vs_roots_fung <- paste0(pmin(groups_fung, "Roots"), "_vs_", pmax(groups_fung, "Roots"))
 ```
 
-```{r visualizaci-n-pareada-de-diversidad-beta-37, fig.width=9, fig.height=6}
+```{r dissim-4, fig.width=9, fig.height=6}
 beta_dissimilarity_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -667,9 +689,9 @@ Así que el gráfico de abajo tiene una franja morada arriba (este color se pued
 
 `facet_colors` colorea las franjas de faceta superiores (una por par de `comparison_condition2`) y `group_colors` colorea las cajas (una por par de `comparison_condition1`). Las etiquetas del eje están ocultas por defecto ya que los grupos ya están identificados en la leyenda. Establece `show_x_labels = TRUE` para mostrarlas de nuevo. `stat` agrega una comparación estadística entre las cajas de cada faceta, como en `beta_dissimilarity_plot()`.
 
-```{r recambio-pareado-turnover-entre-grupos-vs-dentro-del-grupo-38, warning=FALSE, fig.width=8, fig.height=6}
+```{r turnover, warning=FALSE, fig.width=8, fig.height=6}
 beta_turnover_plot(
-    table = table_fungi,
+    table = table_fung,
     metadata = metadata_fungi,
     comparison_condition1 = c("Rhizosphere_vs_Roots", "Rhizosphere_vs_Rhizosphere"),
     condition1_col = "Type_of_soil",
@@ -690,7 +712,7 @@ La función `beta_decay_plot()` evalúa si las comunidades geográficamente más
 
 Construimos datos de ejemplo para esta parte:
 
-```{r decaimiento-de-la-similitud-comunitaria-con-la-distancia-39, warning=FALSE, fig.width=8, fig.height=6}
+```{r decay-1, warning=FALSE, fig.width=8, fig.height=6}
 loc_coords <- data.frame(
     Loc = 0:8,
     lat = 19.0 + seq(0, 0.8, length.out = 9),
@@ -705,7 +727,7 @@ metadata_bacteria_decay <- metadata_bacteria %>%
 ```
 
 
-```{r decaimiento-de-la-similitud-comunitaria-con-la-distancia-40, warning=FALSE, fig.width=6.5, fig.height=4.5, out.width="65%"}
+```{r decay-2, warning=FALSE, fig.width=6.5, fig.height=4.5, out.width="65%"}
 beta_decay_plot(
     table     = table_bac,
     metadata  = metadata_bacteria_decay,
@@ -719,7 +741,7 @@ beta_decay_plot(
 ## Análisis de abundancia diferencial
 `MicroBioMeta` tiene varias funciones para explorar **taxones diferencialmente abundantes**. Estos análisis ayudan a identificar features microbianos que varían significativamente entre grupos experimentales.
 
-Dos funciones se apoyan en un **marco de análisis de datos composicionales implementado en el paquete** [ALDEx2](https://www.bioconductor.org/packages/release/bioc/html/ALDEx2.html) [@fernandes2014aldex2]. Este enfoque tiene en cuenta la naturaleza composicional de los datos de secuenciación [@gloor2017compositional] usando instancias de Monte Carlo Dirichlet y transformaciones log-razón centradas, y en el paquete [ANCOMBC2](https://bioconductor.org/packages/ANCOMBC/) [@lin2020ancombc], un método alternativo de abundancia diferencial que modela explícitamente el sesgo composicional y los ceros estructurales.
+Dos funciones se apoyan en el **marco de análisis de datos composicionales implementado en el paquete** [ALDEx2](https://bioconductor.org/packages/ALDEx2/) [@fernandes2014aldex2], que tiene en cuenta la naturaleza composicional de los datos de secuenciación [@gloor2017compositional] usando instancias de Monte Carlo Dirichlet y transformaciones log-razón centradas. Una tercera usa ANCOM-BC2 [@lin2024ancombc2], del paquete [ANCOMBC](https://bioconductor.org/packages/ANCOMBC/), un método alternativo de abundancia diferencial que modela explícitamente el sesgo composicional y los ceros estructurales.
 
 Las funciones:
 
@@ -739,9 +761,9 @@ Adicionalmente, dos enfoques complementarios ayudan a identificar **taxones impo
 
 
 ### Ejemplo: datos de bacterias
-Primero, conservamos solo dos compartimentos de suelo, **Bulk soil** y **Roots**, ya que ALDEx2 compara dos grupos.
+Primero, conservamos solo dos compartimentos de suelo, **Bulk soil** y **Roots**, ya que las funciones de ALDEx2 comparan dos grupos.
 
-```{r ejemplo-datos-de-bacterias-41}
+```{r bact-data}
 metadata_bacteria_compar <- metadata_bacteria %>%
     filter(Type_of_soil == "Roots" | Type_of_soil == "Bulk soil")
 
@@ -752,7 +774,7 @@ table_bac_compar <- merge_feature_taxonomy(table_bacteria_compar, taxonomy_bacte
 
 Podemos visualizar la abundancia diferencial usando un **volcano plot**. Los taxones significativos se etiquetan con su nombre; `label_size` controla el tamaño de fuente de estas etiquetas, y `filter_uncultured = TRUE` descarta los taxones "uncultured"/"unculture" de las etiquetas (aunque igual se grafican como puntos, solo no se etiquetan). Por defecto la significancia usa el valor p ajustado por Benjamini-Hochberg (`p_adjust_method = "BH"`), porque se prueban miles de taxones a la vez. Entre el suelo y las raíces muchos taxones siguen siendo significativos después de la corrección (puntos de color); con `p_adjust_method = "none"` se usaría el valor p sin corregir.
 
-```{r ejemplo-datos-de-bacterias-42, message=FALSE, warning=FALSE, fig.width=6, fig.height=4.5, out.width="60%"}
+```{r volcano, message=FALSE, warning=FALSE, fig.width=6, fig.height=4.5, out.width="60%"}
 set.seed(123)
 aldex_volcano_plot(
     table = table_bac_compar,
@@ -767,7 +789,7 @@ aldex_volcano_plot(
 ### ANCOMBC2 como método alternativo
 `ancombc_plot()` ofrece una alternativa a las funciones basadas en ALDEx2 de arriba. Esta función depende del paquete de Bioconductor `ANCOMBC`:
 
-```{r ancombc2-como-m-todo-alternativo-43, eval=FALSE}
+```{r ancombc-1, eval=FALSE}
 # install.packages("BiocManager")
 BiocManager::install("ANCOMBC")
 ```
@@ -778,7 +800,7 @@ Con dos grupos el resultado es un **gráfico de barras**: una barra por taxón s
 
 ⚠️ Con un `min_prevalence` bajo, los taxones raros o dispersos pueden disparar un error `"Zero variances have been detected..."` en el paso interno de corrección de sesgo de ANCOMBC2 en algunas corridas (no siempre ocurre, depende de qué taxones conserve la iteración de bootstrap en turno). Subir `min_prevalence` filtra esos taxones dispersos antes de la prueba y evita el error.
 
-```{r ancombc2-como-m-todo-alternativo-44, message=FALSE, warning=FALSE, fig.width=7, fig.height=5, out.width="60%"}
+```{r ancombc-2, message=FALSE, warning=FALSE, fig.width=7, fig.height=5, out.width="60%"}
 ancombc_plot(
     table = table_bac_compar,
     metadata = metadata_bacteria_compar,
@@ -791,7 +813,7 @@ ancombc_plot(
 
 Con **3 o más grupos**, `ancombc_plot()` retorna en cambio un **heatmap**: una columna por grupo comparado contra el nivel de referencia (el primer nivel del factor, aquí **Bulk soil**; se puede cambiar con `ref_level`), y una fila por cada taxón significativo en al menos una comparación. Aquí mantenemos los tres compartimentos (quitando **Uncultivated**) y agrupamos a `"Phylum"` para que el heatmap sea legible:
 
-```{r ancombc2-como-m-todo-alternativo-44b, message=FALSE, warning=FALSE, fig.width=7, fig.height=4.5, out.width="60%"}
+```{r ancombc-3, message=FALSE, warning=FALSE, fig.width=7, fig.height=4.5, out.width="60%"}
 metadata_bacteria_3 <- metadata_bacteria %>%
     filter(Type_of_soil != "Uncultivated")
 
@@ -810,9 +832,9 @@ ancombc_plot(
 **Cómo leer el heatmap:** cada columna es un grupo comparado con el de referencia (aquí **Rhizosphere** vs **Bulk soil** y **Roots** vs **Bulk soil**), y cada fila es un taxón. El color y el número de cada celda son el log fold change (LFC, logaritmo natural) estimado por ANCOMBC2: los valores positivos (naranja) indican que el taxón es más abundante en ese grupo que en el suelo (Bulk soil), los negativos (azul) que es menos abundante, y el blanco que no cambia. Por ejemplo, un LFC de 1 equivale a unas 2.7 veces más abundante (*e*^1^), y uno de -1 a unas 2.7 veces menos. Un taxón aparece si es significativo en al menos una de las comparaciones, así que una celda puede tener color aunque esa comparación en particular no sea significativa; con `save_table = TRUE` se guardan el valor p ajustado (`q_`) y la significancia (`diff_`) de cada comparación.
 
 ### Ejemplo: datos de hongos
-Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**, pero visualizamos los resultados con un **heatmap**. Esta función usa `ComplexHeatmap`.
+Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**, pero visualizamos los resultados con un **heatmap**. Esta función usa `ComplexHeatmap` [@gu2016complexheatmap].
 
-```{r ejemplo-datos-de-hongos-45}
+```{r fung-data}
 metadata_fungi_compar <- metadata_fungi %>%
     filter(Type_of_soil == "Bulk soil" | Type_of_soil == "Roots")
 
@@ -823,7 +845,7 @@ table_fung_compar <- merge_feature_taxonomy(table_fungi_compar, taxonomy_fungi)
 
 Como en el volcano plot, por defecto el heatmap conserva los taxones con un valor p ajustado por Benjamini-Hochberg menor a 0.05 (`pval_threshold = 0.05`, `p_adjust_method = "BH"`); `effect_threshold` permite además filtrar por tamaño del efecto. Cada fila muestra los valores clr medianos por grupo, con anotaciones laterales para el tamaño del efecto, la clase de valor p y la diferencia entre grupos:
 
-```{r ejemplo-datos-de-hongos-46, fig.width=9, fig.height=5, message=FALSE, warning=FALSE}
+```{r aldex-heat, fig.width=9, fig.height=5, message=FALSE, warning=FALSE}
 set.seed(123)
 aldex_heatmap_plot(
     table = table_fung_compar,
@@ -837,7 +859,7 @@ Las funciones `random_forest_lollipop_plot()` y `ratios_bubble_plot()` también 
 
 Por ejemplo, un **modelo Random Forest** puede usarse para identificar los taxones que mejor predicen el compartimento de suelo:
 
-```{r identificando-taxones-importantes-47, fig.width=7, fig.height=5, out.width="60%"}
+```{r rf-1, fig.width=7, fig.height=5, out.width="60%"}
 random_forest_lollipop_plot(
     table = table_bac,
     metadata = metadata_bacteria,
@@ -848,7 +870,7 @@ random_forest_lollipop_plot(
 
 Alternativamente, los taxones con las diferencias log-razón más fuertes entre dos condiciones pueden visualizarse con:
 
-```{r identificando-taxones-importantes-48, fig.width=10, fig.height=9}
+```{r rf-2, fig.width=10, fig.height=9}
 ratios_bubble_plot(
     table = table_fung_compar,
     metadata = metadata_fungi_compar,
@@ -866,21 +888,19 @@ ratios_bubble_plot(
 
 -   `cca_rda_biplot()` — realiza una ordenación restringida usando **Análisis de Correspondencia Canónica (CCA)** o **Análisis de Redundancia (RDA)**.
 
-#### Eligiendo las variables ambientales
-Las variables ambientales se leen directamente de los **metadatos** (una columna por variable), así que no hace falta una tabla aparte: basta con pasar en `env_vars` los nombres de las columnas a usar. Si tus variables están en otra tabla, pásala en `env_data` (filas = muestras, como nombres de fila).
+### Eligiendo las variables ambientales
+Las variables ambientales se leen directamente de los **metadatos** (una columna por variable), así que no hace falta una tabla aparte: basta con pasar en `env_vars` los nombres de las columnas a usar. Si tus variables están en otra tabla, pásala en `env_data` (filas = muestras, como nombres de fila). Aquí usamos las variables fisicoquímicas del suelo:
 
-```{r preparando-la-tabla-ambiental-49}
-env_vars_fung <- metadata_fungi %>%
-    dplyr::select(pH:Arbus_per) %>%
-    colnames()
+```{r env-table}
+env_vars_fung <- c("pH", "Silt", "WHC", "TN", "EC", "Sand", "Clay")
 ```
 
-#### Correlación entre variables ambientales y abundancia taxonómica
+### Correlación entre variables ambientales y abundancia taxonómica
 La función `corr_env_abund_plot()` calcula correlaciones entre **variables ambientales** y **abundancias relativas taxonómicas** en un nivel taxonómico seleccionado, y retorna un **heatmap de correlación** que muestra cómo se relacionan las variables ambientales con las abundancias taxonómicas.
 
 Ejemplo usando **abundancias a nivel de phylum**:
 
-```{r correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-50, fig.width=11, fig.height=9}
+```{r corr-env, fig.width=11, fig.height=9}
 corr_env_abund_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -892,10 +912,10 @@ corr_env_abund_plot(
 
 
 
-### Visualización alternativa
+#### Visualización alternativa
 Las correlaciones también pueden mostrarse usando marcadores circulares en vez de celdas:
 
-```{r visualizaci-n-alternativa-51, fig.width=11, fig.height=9}
+```{r corr-env-alt, fig.width=11, fig.height=9}
 corr_env_abund_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -906,12 +926,12 @@ corr_env_abund_plot(
 )
 ```
 
-#### Ordenación restringida (CCA / RDA)
+### Ordenación restringida (CCA / RDA)
 La función `cca_rda_biplot()` realiza un análisis de ordenación restringida para evaluar cómo las variables ambientales explican la variación en la composición de la comunidad microbiana.
 
 `scale_arrows` es un parámetro que te ayuda a visualizar mejor los vectores ambientales:
 
-```{r ordenaci-n-restringida-cca-rda-53, fig.width=8, fig.height=6}
+```{r cca, fig.width=8, fig.height=6}
 cca_rda_biplot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -940,6 +960,6 @@ Este análisis produce un **biplot** donde:
 
 ## Información de la sesión
 
-```{r informaci-n-de-la-sesi-n-54}
+```{r session}
 sessionInfo()
 ```

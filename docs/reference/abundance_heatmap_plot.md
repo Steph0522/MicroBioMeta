@@ -176,9 +176,9 @@ it can also be combined with other plots (e.g.
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 abundance_heatmap_plot(
@@ -194,9 +194,6 @@ abundance_heatmap_plot(
     name_legend_condition2 = "Treatment",
     name_legend_condition3 = "Plot"
 )
-#> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
-#> 
-#> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
 
 # \donttest{
 heat <- abundance_heatmap_plot(
@@ -217,9 +214,6 @@ heat <- abundance_heatmap_plot(
     max_label_length = 30,
     draw = FALSE
 )
-#> Warning: Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:
-#> 
-#> Reference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/
 heat # printing the returned object draws the heatmap
 
 # }

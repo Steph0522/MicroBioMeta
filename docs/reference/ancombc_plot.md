@@ -77,7 +77,7 @@ ancombc_plot(
 
   Character. Reference level of `group_col`, the baseline of the
   comparisons. If `NULL` (default), the first factor level is used (e.g.
-  `ref_level = "control"` compares every other group against control).
+  `ref_level = "P2"` compares every other group against P2).
 
 - diverging_palette:
 
@@ -116,10 +116,10 @@ A ggplot object: a bar plot (2 groups) or a heatmap (3 or more groups).
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
-metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 metadata <- read.delim(metadata_path, check.names = FALSE)
 
 # \donttest{

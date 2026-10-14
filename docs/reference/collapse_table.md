@@ -56,7 +56,7 @@ taxon/sample combination).
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 collapse_table(
@@ -68,245 +68,245 @@ collapse_table(
 #> $collapsed_table
 #>                                                                                                                                                                         taxonomy
 #> 374a5eb6496d14e8e9d6f3d8c7e34d9d                                                                                          d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae
-#> 4c47d5cf81df1ac6e2a0560029a81578                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae
-#> 8fb6741a6685fad0374f85ad3e16156c                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
-#> 310f3de009c95de5c938b8e811dfc96f                                                    d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae
+#> 4c47d5cf81df1ac6e2a0560029a81578                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae
+#> 8fb6741a6685fad0374f85ad3e16156c                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
+#> 310f3de009c95de5c938b8e811dfc96f                                                    d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae
 #> 7d3b39e8c0f0fdcb81b0c898a98c38f9                                                                                                                                     d__Bacteria
 #> fc211549300b0954dbb4a4bf57e8a605                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
 #> 53fad3d8c52f4b5a023ff92aee9c0f1a                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
-#> 5e37342d650cde6cfc5bbe2726b12e3e                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
-#> 56025f74cc8e54d4a054442d786ef096                                                                                                                d__Bacteria; p__Actinobacteriota
-#> d9e51d98f1c86a1c426552d252c944e4                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
-#> bc905dcc609da83d3620f1986e63a9f7                                                                                          d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria
-#> 90009df763e86e6eca7baa54f01551e6                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
+#> 5e37342d650cde6cfc5bbe2726b12e3e                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
+#> 56025f74cc8e54d4a054442d786ef096                                                                                                                  d__Bacteria; p__Actinomycetota
+#> d9e51d98f1c86a1c426552d252c944e4                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
+#> bc905dcc609da83d3620f1986e63a9f7                                                                                          d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria
+#> 90009df763e86e6eca7baa54f01551e6                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
 #> 6bbd12b392461134369d835715cd2765                                                   d__Bacteria; p__Acidobacteriota; c__Blastocatellia; o__Blastocatellales; f__Blastocatellaceae
-#> 83c88a72c2dab171c38aadd98aa2d389                                                                          d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales
+#> 83c88a72c2dab171c38aadd98aa2d389                                                                            d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales
 #> 2b93708de9f1c24ff6140814a599a3a8                                                                                   d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Cytophagales
 #> 671a53a2acbf0c8c7e240e446daf0000                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
-#> bfe35644221421300c0c17e00e465c05                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
-#> d12bdf20f24b92aa8ec94c6c3f60497f                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
-#> 3bdb72ce060bd89f107c5c2bc95399ed                                                                          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales
-#> e6a82be4b75aac8b928c1dfbe9ee9287                                                   d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
+#> bfe35644221421300c0c17e00e465c05                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
+#> d12bdf20f24b92aa8ec94c6c3f60497f                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> 3bdb72ce060bd89f107c5c2bc95399ed                                                                          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales
+#> e6a82be4b75aac8b928c1dfbe9ee9287                                                     d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
 #> e3a63ba0a0ec40fbf270a57c180e0d3c                                                     d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae
 #> 2877cf981b128a18f788ba5437c1afa6                                                                                              d__Bacteria; p__Acidobacteriota; c__Acidobacteriae
-#> c015bc50696fe3e3d94ace01d9dcd691                                                               d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae
+#> c015bc50696fe3e3d94ace01d9dcd691                                                             d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae
 #> eb2eeddf829080f8d9f25c6be5d507cd                                                           d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae
 #> b1fcda6d8df4c25c8e6d7124c076b1fe                                                   d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Pedosphaerales; f__Pedosphaeraceae
-#> de8bb5c39fb121fd048dfe0d639e6e8a                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
-#> a234ac03223c275785dedf6df3b2aeff                                                                                          d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria
-#> 9ea1641eeed1f51fc228c653076d1d08                                                d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
+#> de8bb5c39fb121fd048dfe0d639e6e8a                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> a234ac03223c275785dedf6df3b2aeff                                                                                          d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria
+#> 9ea1641eeed1f51fc228c653076d1d08                                                  d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
 #> 694b926113eb8291fea166446890c8fe                                                               d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Microscillaceae
-#> b2af163540d17007833dc819704afb28                                                                              d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales
-#> 6fc0ba1f8ff8f9259c9d492e59771755                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
-#> 7b8c1dba059eac7ec7f3cefa203f6b2d                                                      d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae
-#> 0b06028193ef1ce19f5339a8ba7d4448                                                                           d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales
+#> b2af163540d17007833dc819704afb28                                                                                d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Frankiales
+#> 6fc0ba1f8ff8f9259c9d492e59771755                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae
+#> 7b8c1dba059eac7ec7f3cefa203f6b2d                                                        d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae
+#> 0b06028193ef1ce19f5339a8ba7d4448                                                                             d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales
 #> 56b4ec05ef3bbded515ec3dd2d573197                                                               d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae
-#> fc9c84f8767611251f0eb93af4ca10db                                                d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
-#> d3616bc0d8925a452274c484c73406c3                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> 7986b8b93f3afce920bd19a5d2229c09                                                     d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Reyranellales; f__Reyranellaceae
-#> bc78ee7297b6912452be0865d113f7ad                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
-#> c472668b46b0d0f575108aa4170dd81f                                                                          d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales
-#> 2658a78c5ff06760389ce2e3a548b4a2                                                          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae
+#> fc9c84f8767611251f0eb93af4ca10db                                                  d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
+#> d3616bc0d8925a452274c484c73406c3                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> 7986b8b93f3afce920bd19a5d2229c09                                                     d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Reyranellales; f__Reyranellaceae
+#> bc78ee7297b6912452be0865d113f7ad                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> c472668b46b0d0f575108aa4170dd81f                                                                            d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales
+#> 2658a78c5ff06760389ce2e3a548b4a2                                                          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae
 #> 600c9e81fd1d1ddd5a37a5aa0f9f796d                                                                    d__Bacteria; p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae
 #> f8d0bb97f093d8e8630ea62ac8a1bf13                                                           d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Pirellulales; f__Pirellulaceae
-#> 6c685b83d63d6d56a9dcaba34215ae6b                                                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales
-#> e0e7e6208280a5846a8b66f00667f8ca                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> 6d1aa1c1f93c423a856a5dd3b62e5c70                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> e553e766ea0e08f1f9fa2debe7946af6                                                               d__Bacteria; p__Firmicutes; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae
-#> 0f1ef43f6b23a567aba80599766d70bc                                            d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Propionibacteriaceae
-#> 3c4ccaa45e8d148c9a17b5d0f3720cd2                                                 d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae
+#> 6c685b83d63d6d56a9dcaba34215ae6b                                                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales
+#> e0e7e6208280a5846a8b66f00667f8ca                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 6d1aa1c1f93c423a856a5dd3b62e5c70                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> e553e766ea0e08f1f9fa2debe7946af6                                                                d__Bacteria; p__Bacillota; c__Clostridia; o__Oscillospirales; f__Ruminococcaceae
+#> 0f1ef43f6b23a567aba80599766d70bc                                              d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Propionibacteriales; f__Propionibacteriaceae
+#> 3c4ccaa45e8d148c9a17b5d0f3720cd2                                                   d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae
 #> d9df6265d046a558d87d397b8a177d54                                                                  d__Bacteria; p__Myxococcota; c__Polyangia; o__Nannocystales; f__Nannocystaceae
-#> 4bbad82a39655a26a2de61b88c5af7fa                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> f5a6865451a3b138f4915c5ab445a0a7                                                    d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae
+#> 4bbad82a39655a26a2de61b88c5af7fa                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> f5a6865451a3b138f4915c5ab445a0a7                                                    d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae
 #> 4a86fc550fa1ac37aa480d37edea875f                                                         d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Isosphaerales; f__Isosphaeraceae
-#> 02fc21e72f66adea757b355edea4a369                                                                                             d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia
+#> 02fc21e72f66adea757b355edea4a369                                                                                               d__Bacteria; p__Actinomycetota; c__Acidimicrobiia
 #> 25cf10f4f15dab00925cef52b9f08442                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
-#> fa8c8b98d197c252368c160b43cefb98                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> c0b07d29aed1a875641aede53bc0a20c                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> 341433c1c8cc65ce47dcf32179d08fd8                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> 8bf175f329d16e4aa732cf2b32279df3                                                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales
-#> 062f7552b747dccab9586dff7275b5d9                                                   d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
-#> 059e124ad6ba8f98c3d21db28a075ea8                                                         d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
-#> 3d7a81faea3f783158352c9f739c8d17                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
+#> fa8c8b98d197c252368c160b43cefb98                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> c0b07d29aed1a875641aede53bc0a20c                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 341433c1c8cc65ce47dcf32179d08fd8                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> 8bf175f329d16e4aa732cf2b32279df3                                                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales
+#> 062f7552b747dccab9586dff7275b5d9                                                     d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
+#> 059e124ad6ba8f98c3d21db28a075ea8                                                         d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
+#> 3d7a81faea3f783158352c9f739c8d17                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
 #> 90be2fb2c82a98002d33ed7531e877e3                                                                                                                                     d__Bacteria
-#> b0e263cdd1c189fc1757d8189db14be2                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> b0e263cdd1c189fc1757d8189db14be2                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
 #> b962ce332fea338b05293d1a5a29cbca                                                   d__Bacteria; p__Acidobacteriota; c__Blastocatellia; o__Blastocatellales; f__Blastocatellaceae
 #> 7a310a8f8e4bcbfb717263bd5376994d                                                                  d__Bacteria; p__Myxococcota; c__Polyangia; o__Nannocystales; f__Nannocystaceae
 #> 57136cbdae8fe066c2bb4a661003719b                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
-#> 69fe46cab1cc9407470a2397bfc84103                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
-#> b88efba97658a6936bb053985d026ace                                                                                          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria
-#> 4d691fbbe2dbfb2815649fb72c757977                                           d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Steroidobacterales; f__Steroidobacteraceae
-#> 49192cc8a222d97b965b839ff5d0f333                                                     d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae
-#> 859873fcd088c294a92a13340744eb6f                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae
-#> 0a8c44ca4d744e313e6dc5b239fca562                                                                                                                      d__Bacteria; p__Firmicutes
-#> 09f94345824c82e8fe0d824cc4478fb5                                                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales
-#> 9dfbdb741fb0dc25d2206b8680bbf579                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
+#> 69fe46cab1cc9407470a2397bfc84103                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
+#> b88efba97658a6936bb053985d026ace                                                                                          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria
+#> 4d691fbbe2dbfb2815649fb72c757977                                           d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Steroidobacterales; f__Steroidobacteraceae
+#> 49192cc8a222d97b965b839ff5d0f333                                                       d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae
+#> 859873fcd088c294a92a13340744eb6f                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae
+#> 0a8c44ca4d744e313e6dc5b239fca562                                                                                                                       d__Bacteria; p__Bacillota
+#> 09f94345824c82e8fe0d824cc4478fb5                                                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales
+#> 9dfbdb741fb0dc25d2206b8680bbf579                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
 #> dc2bea463c720874cccd189ccdcf0e3e                                                                      d__Bacteria; p__Desulfobacterota; c__Desulfuromonadia; o__Desulfuromonadia
-#> 6273eb52991d528cf5281215f79b40a3                                                                        d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Planococcaceae
+#> 6273eb52991d528cf5281215f79b40a3                                                                         d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Planococcaceae
 #> dc4bcbe74986e44ec3a040b866dfda9e                                                                   d__Bacteria; p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Myxococcaceae
 #> 96ec4781ee61f4083792f252f1b6cd3a                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
-#> 9657d52acca51e701e7a3b7cedcfcc12                                                   d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae
-#> f65f183293d4710041057ab98f2c94ed                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> 9657d52acca51e701e7a3b7cedcfcc12                                                   d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae
+#> f65f183293d4710041057ab98f2c94ed                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
 #> 8f6b3783b31a2dd8640de3df92dbb9c4                                                                                                                                     d__Bacteria
-#> 0d90eb4842c9ad9126ed33c538c768ac                                                        d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Micrococcaceae
-#> 8d3ee46aaaf7728594014be61c649347                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae
-#> e011a95fda1f1f2bafc4e5b83b52d989                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> ef8ea65ba4c2e2da3ba9556a87d2385d                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> dbbb92eb3a8a3feaf96092d46f2b6a45                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> 06cb03cddd8a12dbfaf27e8984b395c4                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 0d90eb4842c9ad9126ed33c538c768ac                                                          d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales; f__Micrococcaceae
+#> 8d3ee46aaaf7728594014be61c649347                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae
+#> e011a95fda1f1f2bafc4e5b83b52d989                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> ef8ea65ba4c2e2da3ba9556a87d2385d                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> dbbb92eb3a8a3feaf96092d46f2b6a45                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> 06cb03cddd8a12dbfaf27e8984b395c4                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
 #> cdf134bb501c54d997945dabd44e35ff                                                           d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae
-#> f3c4561cc01a3b45ee3f134d709c6b94                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> b121442fd1eefe78ce4f4602aac1842e                                                        d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Micrococcaceae
-#> ba8707aa88a2a62939d9338189b2a733                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
-#> ecf7289628d49f9244469337ee1622cb                                                    d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae
-#> 9f06b400b93f859b11874b0bd7f09295                                                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales
+#> f3c4561cc01a3b45ee3f134d709c6b94                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> b121442fd1eefe78ce4f4602aac1842e                                                          d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales; f__Micrococcaceae
+#> ba8707aa88a2a62939d9338189b2a733                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> ecf7289628d49f9244469337ee1622cb                                                    d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae
+#> 9f06b400b93f859b11874b0bd7f09295                                                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales
 #> f775be5cf7c0dd2177006a44913503d5                                                   d__Bacteria; p__Acidobacteriota; c__Blastocatellia; o__Blastocatellales; f__Blastocatellaceae
-#> e87ceb10f2becb2a6c4cf0692b1923ee                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae
-#> 036574bb8e05f3b9a11ab7a4090d6950                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> 0267ba9db97e00ae01fc2cccbb6263e0                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> be4f701c1dbfbda16c5150af29430141                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
+#> e87ceb10f2becb2a6c4cf0692b1923ee                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae
+#> 036574bb8e05f3b9a11ab7a4090d6950                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> 0267ba9db97e00ae01fc2cccbb6263e0                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> be4f701c1dbfbda16c5150af29430141                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
 #> 655a66e6566798ade91f73b2942c0b63                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
-#> cd79f2696509d0ad906f5addba264079                                                                           d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae
-#> 07ea3284bda2bf7daf1251ad2744e4c4                                                                              d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales
-#> e3870da9de4a2b18a7ae9e9cae208e3e                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> cd79f2696509d0ad906f5addba264079                                                                            d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae
+#> 07ea3284bda2bf7daf1251ad2744e4c4                                                                                d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Frankiales
+#> e3870da9de4a2b18a7ae9e9cae208e3e                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
 #> e00bd59c1ea0ca9b1cc5f976801d4e1b                                                                   d__Bacteria; p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Myxococcaceae
 #> b39b381d0f533c9923c3b898ffab5614                                                                                                                                     d__Bacteria
-#> e2959f0552fa6df5707d9ec8b57816d6                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> 53157acd1642f973842d01e1cd287421                                                d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae
-#> 5991790d1c0aa8b73b2d7f906449a1f9                                                   d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae
-#> adee3552c211d9e33aaa28e82532bdea                                                d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
-#> 0089040d041888e3ae4aa4e0010a0e36                                                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales
-#> 8e876e13d051992c4c8616cf2db7d73a                                               d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae
-#> 179abbc5c1f1549ffd0d7ae6963e3783                                                                       d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Corynebacteriales
-#> 340d095f9a9fb445582b60e1282d985d                                                                                  d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Kallotenuales
+#> e2959f0552fa6df5707d9ec8b57816d6                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 53157acd1642f973842d01e1cd287421                                                d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae
+#> 5991790d1c0aa8b73b2d7f906449a1f9                                                   d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae
+#> adee3552c211d9e33aaa28e82532bdea                                                  d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
+#> 0089040d041888e3ae4aa4e0010a0e36                                                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales
+#> 8e876e13d051992c4c8616cf2db7d73a                                               d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae
+#> 179abbc5c1f1549ffd0d7ae6963e3783                                                                         d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Corynebacteriales
+#> 340d095f9a9fb445582b60e1282d985d                                                                                d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Kallotenuales
 #> 3d7e5432d8eaa3fa56ab7138605ea43d                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
-#> d4b233740db907d69035915e8657fa8d                                                                          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales
-#> b22119df3b1de76745abaac585b646f8                                                    d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae
+#> d4b233740db907d69035915e8657fa8d                                                                          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales
+#> b22119df3b1de76745abaac585b646f8                                                    d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae
 #> 64761a24fc66e7c93145217dd153b1ee                                                                    d__Bacteria; p__Myxococcota; c__Polyangia; o__Polyangiales; f__Polyangiaceae
-#> eb6d7f9e0601207fdcfc4a88947d513c                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> 0d20271e3e2dbc68e1de868599a9a1ae                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
-#> 369ea22772cb774950c830d0af7e8235                                                                                                                d__Bacteria; p__Actinobacteriota
-#> cae63066cfe088a49fcac50f119c9e2d                                                   d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
-#> d9c57ec20ed90e2cebf6cacc4f9a5511                                                    d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Hyphomicrobiaceae
-#> f5828cc3078b4c219a44c67e96e5d455                                                                                                                      d__Bacteria; p__Firmicutes
+#> eb6d7f9e0601207fdcfc4a88947d513c                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 0d20271e3e2dbc68e1de868599a9a1ae                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> 369ea22772cb774950c830d0af7e8235                                                                                                                  d__Bacteria; p__Actinomycetota
+#> cae63066cfe088a49fcac50f119c9e2d                                                     d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
+#> d9c57ec20ed90e2cebf6cacc4f9a5511                                                    d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Hyphomicrobiaceae
+#> f5828cc3078b4c219a44c67e96e5d455                                                                                                                       d__Bacteria; p__Bacillota
 #> 73847ac2778d4cba27fe9758ca129d6c                                                                                                                                     d__Bacteria
-#> d78003f13712da48d0bb36fd45116b91                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
+#> d78003f13712da48d0bb36fd45116b91                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
 #> eb40853d986ad72c82658d939f291ff2                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
-#> 5d675a3518222fc99c8cba34feaeac81                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> 3ba390ae11c4e76375af082eefe7e41f                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
-#> 3aa66daa4e560cf62c1833697bcd3837                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> 6f4388510be5ea70356f2257d8c57ddf                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> 5d675a3518222fc99c8cba34feaeac81                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> 3ba390ae11c4e76375af082eefe7e41f                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
+#> 3aa66daa4e560cf62c1833697bcd3837                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 6f4388510be5ea70356f2257d8c57ddf                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
 #> b33390d034148edf07d8a742778ddcbd                                                               d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Gemmatales; f__Gemmataceae
 #> 09225ec7044394bbd3b6811a6799e481                                                   d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Pedosphaerales; f__Pedosphaeraceae
-#> fe6fbf9b86e0f487911a856009fa4a1e                                                         d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
-#> 0aee6329e0b5b81449980151bf40205a                                                      d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae
-#> 0ef66a78236f90916afc2305f3ff6c80                                                         d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
-#> fb1eb41359005c2e3e308fb668f07220                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
+#> fe6fbf9b86e0f487911a856009fa4a1e                                                         d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
+#> 0aee6329e0b5b81449980151bf40205a                                                        d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae
+#> 0ef66a78236f90916afc2305f3ff6c80                                                         d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
+#> fb1eb41359005c2e3e308fb668f07220                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
 #> cb59c57800227006aead644df42b8986                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
 #> 138da9dc244c3292536cacb8df79467b                                                                   d__Bacteria; p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Myxococcaceae
 #> 72f92361ec0696cb8df985b93d277a25                                                   d__Bacteria; p__Acidobacteriota; c__Blastocatellia; o__Blastocatellales; f__Blastocatellaceae
-#> 4d5ab121763879fd59e8f00d35473540                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> 20032b2b586fee22805eccebe3059170                                                d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
-#> 710324ccc8cafa6fc9b38baf8299d8aa                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 4d5ab121763879fd59e8f00d35473540                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 20032b2b586fee22805eccebe3059170                                                  d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae
+#> 710324ccc8cafa6fc9b38baf8299d8aa                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
 #> 523e6b60340f4a215877b1c336822e50                                                               d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Microscillaceae
 #> 4501f98c83484fd902be11383c8d032b                                                                                                                                     d__Bacteria
 #> d4cbf23757aad57c91b058cbb05566e4                                                           d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae
-#> de7964d5c22112693ed5796bb9f04b0b                                                      d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae
-#> f4a283be42989b920b83ea73ec72b25b                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> 2f3111649d0850ab86799f8bbadc28f8                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
-#> b8acdd45cf33ab75fe4c0851a1787dc5                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> de7964d5c22112693ed5796bb9f04b0b                                                        d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Frankiales; f__Geodermatophilaceae
+#> f4a283be42989b920b83ea73ec72b25b                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 2f3111649d0850ab86799f8bbadc28f8                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
+#> b8acdd45cf33ab75fe4c0851a1787dc5                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
 #> 5bb7fec39744a6d4e4d61596dabc6886                                                           d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae
-#> e8eddfb37c4215c86813163a27f202a5                                                             d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia; f__Hungateiclostridiaceae
+#> e8eddfb37c4215c86813163a27f202a5                                                              d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridia; f__Hungateiclostridiaceae
 #> 826e188c911c0846fd927300127c80c0                                                                                                                                     d__Bacteria
-#> ff1fe599c44074ee6bdf919a119df93c                                                          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae
-#> aff00055d3876f624d67fb80bdb59934                                                                                                       d__Bacteria; p__Firmicutes; c__Clostridia
+#> ff1fe599c44074ee6bdf919a119df93c                                                          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae
+#> aff00055d3876f624d67fb80bdb59934                                                                                                        d__Bacteria; p__Bacillota; c__Clostridia
 #> 1beded194f3ae4b57715b45e50adef46                                                                                                                                     d__Bacteria
 #> 908d91feba7c1f1d8cc8a7145173d942                                                     d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae
 #> e7095743695f6d4337d01ceb9e29e224                                                                                              d__Bacteria; p__Acidobacteriota; c__Acidobacteriae
-#> 4cd420962855afdf0bc69bb268b846c7                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 4cd420962855afdf0bc69bb268b846c7                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
 #> 430ba5bea0fc08f65b69497bfbeb5c4b                                                   d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Pedosphaerales; f__Pedosphaeraceae
 #> e12cb2f0d2ce4401413176007dcd4158                                                   d__Bacteria; p__Acidobacteriota; c__Blastocatellia; o__Blastocatellales; f__Blastocatellaceae
 #> ec615213f6c7febb65c9f2e45e438111                                                                                                                                     d__Bacteria
 #> 412dd52cd54d0244ba8fc42ad140acda                                                     d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae
-#> 89192d9f779341d313f52aad0dc6a06f                                                     d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae
+#> 89192d9f779341d313f52aad0dc6a06f                                                     d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae
 #> ed543f92c61a06fc4e703655ce910a2f                                                                                      d__Bacteria; p__Myxococcota; c__Polyangia; o__Polyangiales
-#> fea1a70b0ef0f72e3bf27d8b295331a8                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
-#> 6afe805b36f5aa29e7f2096aac42ace1                                           d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis
-#> d9cc5a46831f24ec9192ae82dbc38b0a                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> fea1a70b0ef0f72e3bf27d8b295331a8                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
+#> 6afe805b36f5aa29e7f2096aac42ace1                                           d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis
+#> d9cc5a46831f24ec9192ae82dbc38b0a                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
 #> 0d3eb38eb502c4ad13bd5a7060295411                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
-#> 69a0ff5538a5490e291c75ce70325066                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> f91d545c815effa3c5afa83a8ad3397d                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
+#> 69a0ff5538a5490e291c75ce70325066                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> f91d545c815effa3c5afa83a8ad3397d                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae
 #> e6b032dea8e13c34af958fc48af09b58                                                     d__Bacteria; p__Desulfobacterota; c__Desulfobulbia; o__Desulfobulbales; f__Desulfocapsaceae
 #> 84a1b89045ab6285328f366224f3ec87                                                                   d__Bacteria; p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Myxococcaceae
-#> 4a6f0076e4ac71474b3c364294ad3b33                                                                           d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae
-#> 7bdd39e4e3ccc7000862b487510e67d6                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> 998aedf12cdf054f5e504a2e21d20498                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> 567c2640108006c8eca081ad4180e346                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
-#> e50a6625b9176b6856764b213013150f                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> 8d5a5ab7c784b0325a4a86a16fbba80e                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> 4a6f0076e4ac71474b3c364294ad3b33                                                                            d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae
+#> 7bdd39e4e3ccc7000862b487510e67d6                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 998aedf12cdf054f5e504a2e21d20498                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 567c2640108006c8eca081ad4180e346                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> e50a6625b9176b6856764b213013150f                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> 8d5a5ab7c784b0325a4a86a16fbba80e                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
 #> f58ae28a309fa3d5898d2eb46d9eb9e0                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
-#> 7ac65a8fd21111b68e7c2d6205112a83                                                             d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia; f__Hungateiclostridiaceae
-#> d7add64c8700f5a8cadf40c8c7f5ff67                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> 6bad9d981d3cf0f90262547180dc6371                                                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales
+#> 7ac65a8fd21111b68e7c2d6205112a83                                                              d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridia; f__Hungateiclostridiaceae
+#> d7add64c8700f5a8cadf40c8c7f5ff67                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> 6bad9d981d3cf0f90262547180dc6371                                                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales
 #> 149c0e63c83113e1246c0e041de67d9c                                                         d__Bacteria; p__Verrucomicrobiota; c__Chlamydiae; o__Chlamydiales; f__Parachlamydiaceae
-#> 6f196fae54ea90b5c11627c503c98940                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> b67c995d842e5b4b92fa0ce052603ef1                                           d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae
+#> 6f196fae54ea90b5c11627c503c98940                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> b67c995d842e5b4b92fa0ce052603ef1                                             d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae
 #> f44ffae67c7297e2c696b75fbd4e0f4c                                                           d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae
-#> 33997912cd952feaec18fbd11b31acac                                                          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae
+#> 33997912cd952feaec18fbd11b31acac                                                          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae
 #> 0a035423c4bf71a17566549f9b69448d                                                                                                                                     d__Bacteria
-#> f65a6f1f1e5a4bc5c733ba364c0096d3                                                         d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
-#> f15389a9f245465c33db3de72aeb17ba                                                                  d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae
-#> cd2b676d3c0785a60359c0d416701ee4                                                                                          d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria
+#> f65a6f1f1e5a4bc5c733ba364c0096d3                                                         d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae
+#> f15389a9f245465c33db3de72aeb17ba                                                                   d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridiales; f__Clostridiaceae
+#> cd2b676d3c0785a60359c0d416701ee4                                                                                          d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria
 #> 70ba2a378ebcd9a8f57b024a561cc6b1                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
-#> 0273707384afdd41e9d022b539094211                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
-#> f9ac98e876ecdb504202388d7ccdda5f                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 0273707384afdd41e9d022b539094211                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
+#> f9ac98e876ecdb504202388d7ccdda5f                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
 #> bdd9b87b782b8f935ecac62a9824e6a1                                                           d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Pirellulales; f__Pirellulaceae
-#> 1f12b97495668f1fc378a349546d1806                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> 83f1b4d776f6e08a6ba6f86634a1e5a9                                           d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae
-#> 49f614420449f6c7ecc8c9f4e137ad05                                                     d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae
+#> 1f12b97495668f1fc378a349546d1806                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> 83f1b4d776f6e08a6ba6f86634a1e5a9                                             d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae
+#> 49f614420449f6c7ecc8c9f4e137ad05                                                     d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae
 #> aba5aa00a1b262f27517eca64ee3333f                                                                   d__Bacteria; p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Myxococcaceae
 #> 8971980484eeabeef00145b93b699e30                                                                                      d__Bacteria; p__Myxococcota; c__Polyangia; o__Polyangiales
-#> c1347ae54b0fc1dd385a1ccf3b8061ce                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> c1347ae54b0fc1dd385a1ccf3b8061ce                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
 #> e9fe19783ebcc7e43a3a07ca8225db62                                                   d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Pedosphaerales; f__Pedosphaeraceae
-#> 7c523a5f0a7c736efd82afef84137901                                                                          d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales
-#> e13c07ec336c89db5183cc6e9e57ee6e                                                                                          d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria
-#> a017ce431ccadea609b501d46e64e55b                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 7c523a5f0a7c736efd82afef84137901                                                                            d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales
+#> e13c07ec336c89db5183cc6e9e57ee6e                                                                                          d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria
+#> a017ce431ccadea609b501d46e64e55b                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
 #> fadf38d03d4b944f5782a759591ec3ae                                                                                                                                     d__Bacteria
-#> 41bfda1c7f32205246e73a1e3e3ec4f4                                                                              d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Frankiales
-#> 9e4f3e697b70758a7a996f3dd4533650                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> 39c4f6caa7510ed108f3ebcf72f79edf                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
-#> 4aa083fe7c1b0639dbc48ec649e68a31                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
+#> 41bfda1c7f32205246e73a1e3e3ec4f4                                                                                d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Frankiales
+#> 9e4f3e697b70758a7a996f3dd4533650                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> 39c4f6caa7510ed108f3ebcf72f79edf                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> 4aa083fe7c1b0639dbc48ec649e68a31                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae
 #> fd2ac2e14b72b0e22a052e3ab4580471                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
 #> 4ee10294799bcfeab0c8ee567d5d9608                                                     d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Sphingobacteriales; f__Sphingobacteriaceae
 #> 46869f12c31de7a05781e930c25a1ccd                                                                   d__Bacteria; p__Myxococcota; c__Myxococcia; o__Myxococcales; f__Myxococcaceae
-#> 5e2548d6a970645d0ca943a72d207489                                                   d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
-#> 0538e1beed69f098c3f602130ee11a1c                                                                             d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales
+#> 5e2548d6a970645d0ca943a72d207489                                                     d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae
+#> 0538e1beed69f098c3f602130ee11a1c                                                                               d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales
 #> 991c563278c4e8c91ffebce3560fe51b                                                   d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Pedosphaerales; f__Pedosphaeraceae
 #> ce05f58164e61517198f7ab0e3304cb5                                                   d__Bacteria; p__Acidobacteriota; c__Blastocatellia; o__Blastocatellales; f__Blastocatellaceae
-#> fdbd0fed21bae91c05b2da268a025a89                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
+#> fdbd0fed21bae91c05b2da268a025a89                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae
 #> 7412d11595d77f26792071cd28a26760                                                           d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Opitutales; f__Opitutaceae
 #> 4b087e13957eb38128f63e1c99df23c3                                                             d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Cytophagales; f__Cyclobacteriaceae
-#> 310a6f0e6841db2ce75005cac942a972                                                                                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria
-#> 3df0fada803ac582802b47d4f4efe0c1                                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae
+#> 310a6f0e6841db2ce75005cac942a972                                                                                               d__Bacteria; p__Actinomycetota; c__Actinobacteria
+#> 3df0fada803ac582802b47d4f4efe0c1                                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae
 #> 3cd4e34c02ffdd1446df65bb54278c57                                                           d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Pirellulales; f__Pirellulaceae
 #> b14a1dea93554257791f16c2e94906b0                                                                                                                                     d__Bacteria
-#> 902a4435fc3af101e8a9b5f51550fa4d                                                 d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae
-#> 1995185b31349529f58964c2e5a3becd                                                     d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae
-#> 69b247c565afdeacee0240482b1ce536                                                             d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae
-#> 95ff1b9528acca018e9c4697a8625504                                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
-#> 132d26d3ce6ac2ab25ccb4dd171879d7                                                  d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Streptomycetales; f__Streptomycetaceae
+#> 902a4435fc3af101e8a9b5f51550fa4d                                                   d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae
+#> 1995185b31349529f58964c2e5a3becd                                                     d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae
+#> 69b247c565afdeacee0240482b1ce536                                                           d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae
+#> 95ff1b9528acca018e9c4697a8625504                                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae
+#> 132d26d3ce6ac2ab25ccb4dd171879d7                                                    d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Streptomycetales; f__Streptomycetaceae
 #> bf1a6e4f94ee8ba60cf79089139641b6                                                      d__Bacteria; p__Desulfobacterota; c__Desulfuromonadia; o__Geobacterales; f__Geobacteraceae
-#> 704189aa09f64b992b3a02ee001dc706                                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
-#> dea5ea27839ee67a31d18ba0bf0f7f65                                                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales
-#> 3840a4fff0250232f8570cae7c3514ba                                                                          d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales
-#> 31ecabc032997aaf41dd0d8def3ec93f                                                                d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae
-#> 024a0e0348ed9abe9ae1c48b1b7ba09e                                                             d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae
-#> fc1d9940419420113ce3fbfacc8d703a                                                        d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Micrococcaceae
+#> 704189aa09f64b992b3a02ee001dc706                                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae
+#> dea5ea27839ee67a31d18ba0bf0f7f65                                                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales
+#> 3840a4fff0250232f8570cae7c3514ba                                                                            d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales
+#> 31ecabc032997aaf41dd0d8def3ec93f                                                                 d__Bacteria; p__Bacillota; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae
+#> 024a0e0348ed9abe9ae1c48b1b7ba09e                                                           d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae
+#> fc1d9940419420113ce3fbfacc8d703a                                                          d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales; f__Micrococcaceae
 #> 0770fbf28cd307a08bf557af7ffecfd3                                                                       d__Bacteria; p__Patescibacteria; c__Saccharimonadia; o__Saccharimonadales
 #> 883cbe8e4d1d98f468355e8ea974d222                                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Chitinophagales; f__Chitinophagaceae
 #> cb6d6561383fb68f43f92a88a607749d                                                                                              d__Bacteria; p__Planctomycetota; c__Planctomycetes
-#> e07e0f1a9fbc696a9fe4f9b7739ae45b                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
-#> 73d8d8f999acfa13cba2277f7526897e                                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae
+#> e07e0f1a9fbc696a9fe4f9b7739ae45b                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Enterobacteriaceae
+#> 73d8d8f999acfa13cba2277f7526897e                                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae
 #> 5218274c354d41965abbf4b0751d6f3a                                                                                                                                     d__Bacteria
 #> 5c31570f706752fa4f7851aca5b5c291                            d__Bacteria; p__Abditibacteriota; c__Abditibacteria; o__Abditibacteriales; f__Abditibacteriaceae; g__Abditibacterium
 #> 6a5e71c8b86a52ab1dd5e61164103940                                        d__Bacteria; p__Acidobacteriota; c__Acidobacteriae; o__Bryobacterales; f__Bryobacteraceae; g__Bryobacter
@@ -332,46 +332,84 @@ collapse_table(
 #> b5709a57df9cbc8a741bb78a36f29c06                     d__Bacteria; p__Acidobacteriota; c__Vicinamibacteria; o__Vicinamibacterales; f__Vicinamibacteraceae; g__Vicinamibacteraceae
 #> 26698cc60893017ef0b1ab173688d3de                              d__Bacteria; p__Acidobacteriota; c__Vicinamibacteria; o__Vicinamibacterales; f__Vicinamibacteraceae; g__uncultured
 #> db64f0028b6518839ab7129c4b7ef72d                                       d__Bacteria; p__Acidobacteriota; c__Vicinamibacteria; o__Vicinamibacterales; f__uncultured; g__uncultured
-#> f46fb43262da299ec7f0084298cafa50                                   d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Acidimicrobiales; f__Acidimicrobiaceae; g__uncultured
-#> c45e7087de669be270881fc8ace0fad8                                           d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Actinomarinales; f__uncultured; g__uncultured
-#> 854a20d5019388e81b1e78419eb017fd                                                   d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__IMCC26256; f__IMCC26256; g__IMCC26256
-#> 9a2325ea015a8c5944047e3349cc1565                                                  d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Iamiaceae; g__Iamia
-#> c5305ae3c6adc90814d70ab48f4f071a                         d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__CL500-29_marine_group
-#> e230123ec3ce8654942ee1a000a80010                                 d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__Ilumatobacter
-#> 14e3c60cb885509667670151bc4a1df0                                    d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__uncultured
-#> 7fd7b7bece92bbbfcceb2dcf1e835a8e                                        d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae; g__IMCC26207
-#> c098d1fb769dd975c2332dfb70da489e                             d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae; g__Sva0996_marine_group
-#> 95dcdf1eb06b252e67dcdbdaffc505e8                                       d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae; g__uncultured
-#> c5399d0f9eda8f0815fd28a257952496                                            d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__Microtrichales; f__uncultured; g__uncultured
-#> c7388cc314e992819b8f97ea35280982                                                d__Bacteria; p__Actinobacteriota; c__Acidimicrobiia; o__uncultured; f__uncultured; g__uncultured
-#> ae8facc45d372f7108bd9499f74d1bfc                                                   d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__0319-7L14; f__0319-7L14; g__0319-7L14
-#> 16caf6f5bc653fb6ba668eb821076a21                                    d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Actinomycetales; f__Actinomycetaceae; g__Actinomyces
-#> e7e283b72ee15bcf0877c5eeb6137ebc                                d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Corynebacteriales; f__Mycobacteriaceae; g__Mycobacterium
-#> 1b3a779b384c73b33207dccd14b14fe6                                      d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Corynebacteriales; f__Nocardiaceae; g__Rhodococcus
-#> c8d1afdf7b395ffc22193c5dc2fd5dc3                                       d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Glycomycetales; f__Glycomycetaceae; g__Glycomyces
-#> 0e3ffc2a68378086e2480831acd1a025                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Intrasporangiaceae; g__Ornithinimicrobium
-#> 0ddf7339b608a340252b33f63fcc0019                                       d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__Agromyces
-#> 5fd4b2f7dee3fb0bde6f856ae266dbcb                            d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae; g__Virgisporangium
-#> e2f4786bc66410c07bd8b96b5d0e2d92                               d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae; g__Aeromicrobium
-#> c30aae8f5216c9536492d0beae74950f                                d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae; g__Nocardioides
-#> 9087ecee0806a80861788a17dd7e6809                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Propionibacteriales; f__Propionibacteriaceae; g__uncultured
-#> c29bc08418318360592b2b2717376a0a                            d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Pseudonocardiales; f__Pseudonocardiaceae; g__Actinophytocola
-#> f791c7db1a78d35e84803b5e03c01965                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Pseudonocardiales; f__Pseudonocardiaceae; g__Pseudonocardia
-#> 44b44fc4055a58c01f6d1e9de5e0d1d9                                 d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Streptomycetales; f__Streptomycetaceae; g__Streptomyces
-#> 342df9401103d274851d3bd80704508d                             d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Streptosporangiales; f__Streptosporangiaceae; g__Nonomuraea
-#> 0590e6672bb2c55c0ff54999a2b6dcfe                            d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Streptosporangiales; f__Thermomonosporaceae; g__Actinomadura
-#> d4e9147608bf883fdbbf9d23b17028d1                                                               d__Bacteria; p__Actinobacteriota; c__Coriobacteriia; o__OPB41; f__OPB41; g__OPB41
-#> db24794eb8667aed224401386223f671                                                        d__Bacteria; p__Actinobacteriota; c__MB-A2-108; o__MB-A2-108; f__MB-A2-108; g__MB-A2-108
-#> fe41e6fd9770030a21418b288930710f                                    d__Bacteria; p__Actinobacteriota; c__Rubrobacteria; o__Rubrobacterales; f__Rubrobacteriaceae; g__Rubrobacter
-#> 699f18f3b155bff97de941f2cfbbbadc                                                 d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales; f__Gaiellaceae; g__Gaiella
-#> 13870cf319997750e3b96bbb0b2f1aea                                               d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Gaiellales; f__uncultured; g__uncultured
-#> 7ca4fb1b1740406241acb862445cf311                                                d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__67-14; g__67-14
-#> 9c0569fb95451d009fd3754303eaed12                          d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__Conexibacter
-#> 1ac26a3c12288d8fbadd6aa61366b1b7                      d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__Parviterribacter
-#> 89f3ba99552605501b8acb816d288afe                       d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__Solirubrobacter
-#> b4051b5227746f04c1feb9d8979299ff                            d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__uncultured
-#> 087d358aaf77f81aaf50a623828865bb                                               d__Bacteria; p__Actinobacteriota; c__Thermoleophilia; o__uncultured; f__uncultured; g__uncultured
+#> f46fb43262da299ec7f0084298cafa50                                     d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Acidimicrobiales; f__Acidimicrobiaceae; g__uncultured
+#> c45e7087de669be270881fc8ace0fad8                                             d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Actinomarinales; f__uncultured; g__uncultured
+#> 854a20d5019388e81b1e78419eb017fd                                                     d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__IMCC26256; f__IMCC26256; g__IMCC26256
+#> 9a2325ea015a8c5944047e3349cc1565                                                    d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Iamiaceae; g__Iamia
+#> c5305ae3c6adc90814d70ab48f4f071a                           d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__CL500-29_marine_group
+#> e230123ec3ce8654942ee1a000a80010                                   d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__Ilumatobacter
+#> 14e3c60cb885509667670151bc4a1df0                                      d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Ilumatobacteraceae; g__uncultured
+#> 7fd7b7bece92bbbfcceb2dcf1e835a8e                                          d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae; g__IMCC26207
+#> c098d1fb769dd975c2332dfb70da489e                               d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae; g__Sva0996_marine_group
+#> 95dcdf1eb06b252e67dcdbdaffc505e8                                         d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__Microtrichaceae; g__uncultured
+#> c5399d0f9eda8f0815fd28a257952496                                              d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__Microtrichales; f__uncultured; g__uncultured
+#> c7388cc314e992819b8f97ea35280982                                                  d__Bacteria; p__Actinomycetota; c__Acidimicrobiia; o__uncultured; f__uncultured; g__uncultured
+#> ae8facc45d372f7108bd9499f74d1bfc                                                     d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__0319-7L14; f__0319-7L14; g__0319-7L14
+#> 16caf6f5bc653fb6ba668eb821076a21                                      d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Actinomycetales; f__Actinomycetaceae; g__Actinomyces
+#> e7e283b72ee15bcf0877c5eeb6137ebc                                  d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Corynebacteriales; f__Mycobacteriaceae; g__Mycobacterium
+#> 1b3a779b384c73b33207dccd14b14fe6                                        d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Corynebacteriales; f__Nocardiaceae; g__Rhodococcus
+#> c8d1afdf7b395ffc22193c5dc2fd5dc3                                         d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Glycomycetales; f__Glycomycetaceae; g__Glycomyces
+#> 0e3ffc2a68378086e2480831acd1a025                               d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales; f__Intrasporangiaceae; g__Ornithinimicrobium
+#> 0ddf7339b608a340252b33f63fcc0019                                         d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micrococcales; f__Microbacteriaceae; g__Agromyces
+#> 5fd4b2f7dee3fb0bde6f856ae266dbcb                              d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Micromonosporales; f__Micromonosporaceae; g__Virgisporangium
+#> e2f4786bc66410c07bd8b96b5d0e2d92                                 d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae; g__Aeromicrobium
+#> c30aae8f5216c9536492d0beae74950f                                  d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Propionibacteriales; f__Nocardioidaceae; g__Nocardioides
+#> 9087ecee0806a80861788a17dd7e6809                               d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Propionibacteriales; f__Propionibacteriaceae; g__uncultured
+#> c29bc08418318360592b2b2717376a0a                              d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Pseudonocardiales; f__Pseudonocardiaceae; g__Actinophytocola
+#> f791c7db1a78d35e84803b5e03c01965                               d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Pseudonocardiales; f__Pseudonocardiaceae; g__Pseudonocardia
+#> 44b44fc4055a58c01f6d1e9de5e0d1d9                                   d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Streptomycetales; f__Streptomycetaceae; g__Streptomyces
+#> 342df9401103d274851d3bd80704508d                               d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Streptosporangiales; f__Streptosporangiaceae; g__Nonomuraea
+#> 0590e6672bb2c55c0ff54999a2b6dcfe                              d__Bacteria; p__Actinomycetota; c__Actinobacteria; o__Streptosporangiales; f__Thermomonosporaceae; g__Actinomadura
+#> d4e9147608bf883fdbbf9d23b17028d1                                                                 d__Bacteria; p__Actinomycetota; c__Coriobacteriia; o__OPB41; f__OPB41; g__OPB41
+#> db24794eb8667aed224401386223f671                                                          d__Bacteria; p__Actinomycetota; c__MB-A2-108; o__MB-A2-108; f__MB-A2-108; g__MB-A2-108
+#> fe41e6fd9770030a21418b288930710f                                      d__Bacteria; p__Actinomycetota; c__Rubrobacteria; o__Rubrobacterales; f__Rubrobacteriaceae; g__Rubrobacter
+#> 699f18f3b155bff97de941f2cfbbbadc                                                   d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales; f__Gaiellaceae; g__Gaiella
+#> 13870cf319997750e3b96bbb0b2f1aea                                                 d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Gaiellales; f__uncultured; g__uncultured
+#> 7ca4fb1b1740406241acb862445cf311                                                  d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__67-14; g__67-14
+#> 9c0569fb95451d009fd3754303eaed12                            d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__Conexibacter
+#> 1ac26a3c12288d8fbadd6aa61366b1b7                        d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__Parviterribacter
+#> 89f3ba99552605501b8acb816d288afe                         d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__Solirubrobacter
+#> b4051b5227746f04c1feb9d8979299ff                              d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__Solirubrobacterales; f__Solirubrobacteraceae; g__uncultured
+#> 087d358aaf77f81aaf50a623828865bb                                                 d__Bacteria; p__Actinomycetota; c__Thermoleophilia; o__uncultured; f__uncultured; g__uncultured
 #> e451c4b3ff1c3dabeee296529b3a7a07                              d__Bacteria; p__Armatimonadota; c__Fimbriimonadia; o__Fimbriimonadales; f__Fimbriimonadaceae; g__Fimbriimonadaceae
+#> 0c544d5f3a49a010971a96d8c39e4905                                           d__Bacteria; p__Bacillota; c__Bacilli; o__Alicyclobacillales; f__Alicyclobacillaceae; g__Tumebacillus
+#> bab3f08e1d75f42987012cae451639ff                                                               d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus
+#> fa97a81b8c33569e2aa1fc9a3137b435                                                          d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Fictibacillus
+#> a4d08886c3c6c62efd5678339a07828b                                                            d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Geobacillus
+#> 11ed0972601847ec168473a6bc4eeba7                                                           d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Ureibacillus
+#> a6e4d88aa4b40402b1f94760d86b729c                                                   d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Planococcaceae; g__Paenisporosarcina
+#> 86deaff47d33946ede1b7c25c6bbe9f9                                        d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Salisediminibacteriaceae; g__Salipaludibacillus
+#> a1d3f1f8c151eaeb5cf12179861e0c87                                                d__Bacteria; p__Bacillota; c__Bacilli; o__Brevibacillales; f__Brevibacillaceae; g__Brevibacillus
+#> 3980891c22ccbb387b65f9e437b2f94f                                           d__Bacteria; p__Bacillota; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Turicibacter
+#> fc8ec321e0c2fc2a6de9abe98256b3f5                                            d__Bacteria; p__Bacillota; c__Bacilli; o__Exiguobacterales; f__Exiguobacteraceae; g__Exiguobacterium
+#> 84c11e6ffb29ebc2192f4b049b7dbddb                                                  d__Bacteria; p__Bacillota; c__Bacilli; o__Lactobacillales; f__Leuconostocaceae; g__Leuconostoc
+#> 82104585f0b2617c13eb69f0bbdf7d5a                                                d__Bacteria; p__Bacillota; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Streptococcus
+#> 61cd4918428d3b36910b9cb2fc45946a                                                 d__Bacteria; p__Bacillota; c__Bacilli; o__Paenibacillales; f__Paenibacillaceae; g__Ammoniphilus
+#> 0ab9a976935482bce5f8af4cc6685147                                                d__Bacteria; p__Bacillota; c__Bacilli; o__Paenibacillales; f__Paenibacillaceae; g__Paenibacillus
+#> 87be3450216b45c53851fd173582a2d0                                               d__Bacteria; p__Bacillota; c__Bacilli; o__Paenibacillales; f__Paenibacillaceae; g__Thermobacillus
+#> 93a51bb503fadf90121f518db980e158                                        d__Bacteria; p__Bacillota; c__Bacilli; o__Thermoactinomycetales; f__Thermoactinomycetaceae; g__Laceyella
+#> b70cd843161996e075a853900e699d0f                                       d__Bacteria; p__Bacillota; c__Bacilli; o__Thermoactinomycetales; f__Thermoactinomycetaceae; g__Planifilum
+#> 154b8be9eea158f93d27d314d8e0e2c8                                d__Bacteria; p__Bacillota; c__Bacilli; o__Thermoactinomycetales; f__Thermoactinomycetaceae; g__Thermoactinomyces
+#> 70691c2737cf7dc7c194de819f0e6cda                       d__Bacteria; p__Bacillota; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group
+#> 2ae1d80ead92f5991f58da14d000acd6                                          d__Bacteria; p__Bacillota; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__uncultured
+#> 44fa299492152518fec34b9fa4554648                                        d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridia; f__Hungateiclostridiaceae; g__Pseudobacteroides
+#> e15c8f9df87f363b0dbbf49de0bed249                                                  d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridiales; f__Caloramatoraceae; g__Fonticella
+#> 73689cad6eb4e86d9d0bb48c0da24463                                   d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1
+#> 234e15e82d64f2e1d61802fa8ea1998a                                  d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_10
+#> 88c76ddb1b24acffe65d8128e2f48244                                   d__Bacteria; p__Bacillota; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_8
+#> 5544139a16716cc6ef48b2c16c9613e9                                           d__Bacteria; p__Bacillota; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium
+#> 5b7fe68483e701059142cb531397b547                                                    d__Bacteria; p__Bacillota; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64                           d__Bacteria; p__Bacillota; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Anaerovorax
+#> 6b47ec9d1c70f07d16834e9a4e54aa70                  d__Bacteria; p__Bacillota; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Sporacetigenium
+#> f8752b4824d239cfb19f3216cc34941b                   d__Bacteria; p__Bacillota; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Sedimentibacteraceae; g__Sedimentibacter
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b                                                 d__Bacteria; p__Bacillota; c__Clostridia; o__Thermincolales; f__Thermincolaceae; g__Thermincola
+#> 8a6b88f9515bf2dfac09e6a69045a4fe                                                 d__Bacteria; p__Bacillota; c__Limnochordia; o__Limnochordia; f__Limnochordia; g__Hydrogenispora
+#> f5151c67af19c8471743ef3e2914f6b1                                d__Bacteria; p__Bacillota; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Sporomusaceae; g__Anaerospora
+#> c3842619fcbde52781c512c2561fca0b                              d__Bacteria; p__Bacillota; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Veillonellaceae; g__Veillonella
+#> b3b00faa9dee9fa6b3b33744f51da00e                                    d__Bacteria; p__Bacillota; c__Negativicutes; o__Veillonellales-Selenomonadales; f__uncultured; g__uncultured
+#> c4f04e28c6267ac6c5b05d403e8f91c3                                                        d__Bacteria; p__Bacillota; c__Negativicutes; o__uncultured; f__uncultured; g__uncultured
+#> 7fc06f107a6ddf6486ef2d43fcf23626                                   d__Bacteria; p__Bacillota; c__Symbiobacteriia; o__Symbiobacteriales; f__Symbiobacteraceae; g__Symbiobacterium
+#> 8d1dffcd377b338d2a0388637507b592                                        d__Bacteria; p__Bacillota; c__Symbiobacteriia; o__Symbiobacteriales; f__Symbiobacteraceae; g__uncultured
 #> 012871784f77c9dca7d446ddef2048d1                                           d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Paludibacteraceae; g__Paludibacter
 #> 95c6ce2788783bf2f83343deba23b8bd                                             d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Paludibacteraceae; g__uncultured
 #> 213227f244d97553a9a14c4e3fd04c98                                              d__Bacteria; p__Bacteroidota; c__Bacteroidia; o__Bacteroidales; f__Prolixibacteraceae; g__WCHB1-32
@@ -418,34 +456,34 @@ collapse_table(
 #> f179c10f8e86873c90ceb14b974a114e                                                      d__Bacteria; p__Bdellovibrionota; c__Oligoflexia; o__0319-6G20; f__0319-6G20; g__0319-6G20
 #> a23e8588a2240d7af6f65519158c902c                                            d__Bacteria; p__Bdellovibrionota; c__Oligoflexia; o__Oligoflexales; f__Oligoflexales; g__Oligoflexus
 #> 52034e0da6d5e7962369437956984e18                                                d__Bacteria; p__Bdellovibrionota; c__Oligoflexia; o__Oligoflexales; f__uncultured; g__uncultured
-#> 522d20c27cf4237b60f36ffdca056c19                                             d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae; g__Anaerolinea
-#> 957615aefb421e6ad4728e610b2bdfa6                                                  d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae; g__UTCFX1
-#> 5ccc74e70b8a82a6eebea3385738ece3                                              d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae; g__uncultured
-#> e5924fd11a48419c6ec0e2a7cb4e43ee                                   d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Ardenticatenales; f__Ardenticatenaceae; g__Ardenticatenaceae
-#> eef7be4b2531cb7e909b58e91af5640d                                          d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Ardenticatenales; f__Ardenticatenaceae; g__uncultured
-#> 4416cbc2026260fa4e2ed0a8feff1443                                                 d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Ardenticatenales; f__uncultured; g__uncultured
-#> 03f6091f5aacb69f06fc925acd1c9506                                               d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae; g__Litorilinea
-#> f655e5ddf5074d5e71bfa583926dec30                                                d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae; g__uncultured
-#> 9f733d39e588c7310499dd444cdd7812                                                    d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__RBG-13-54-9; f__RBG-13-54-9; g__RBG-13-54-9
-#> 2b413de5e05a1385bab229f50879628f                                                                        d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__SBR1031; f__A4b; g__A4b
-#> 178b596f2fe5cb6cefc5513917988d84                                                                      d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__SBR1031; f__A4b; g__OLB13
-#> aa94b014c726cf40983045bd606241c1                                                                d__Bacteria; p__Chloroflexi; c__Anaerolineae; o__SBR1031; f__SBR1031; g__SBR1031
-#> 55310b3aac4868c4e33b0a9492d7609a                                  d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Chloroflexales; f__Chloroflexaceae; g__Candidatus_Chloroploca
-#> c5d8d828df0e1baf5c2db05a6b8c4476                                              d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Chloroflexales; f__Chloroflexaceae; g__Chloronema
-#> 6ceb26f60606233a7728d3457af84380                                                d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Chloroflexales; f__Chloroflexaceae; g__FFCH7168
-#> 1ff83868d1c9ecf52d9b776e0b3fd896                                        d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Chloroflexales; f__Herpetosiphonaceae; g__Herpetosiphon
-#> 3edfccfb9f81b340854e84ee5102a4c1                                               d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Chloroflexales; f__Roseiflexaceae; g__uncultured
-#> 963dc552c551872800f2fcbc5663e5fd                                                          d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Kallotenuales; f__AKIW781; g__AKIW781
-#> 3fda8c20e5da9fbc3fb7c5c864559019                                                    d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Thermomicrobiales; f__AKYG1722; g__AKYG1722
-#> 6fd88fa7e883bdead3c5ba89da853e8d                                            d__Bacteria; p__Chloroflexi; c__Chloroflexia; o__Thermomicrobiales; f__JG30-KF-CM45; g__JG30-KF-CM45
-#> 35826fe826b7a9f202e8bef7b39d9a47                                                                      d__Bacteria; p__Chloroflexi; c__Dehalococcoidia; o__S085; f__S085; g__S085
-#> cc514f614ba146f489bf62b5a56074c5                                                     d__Bacteria; p__Chloroflexi; c__Gitt-GS-136; o__Gitt-GS-136; f__Gitt-GS-136; g__Gitt-GS-136
-#> 26260de3858081ce55e6f220b3ba25df                                                 d__Bacteria; p__Chloroflexi; c__JG30-KF-CM66; o__JG30-KF-CM66; f__JG30-KF-CM66; g__JG30-KF-CM66
-#> d6727a85782ffd2a069dccc23adaf521                                                                         d__Bacteria; p__Chloroflexi; c__KD4-96; o__KD4-96; f__KD4-96; g__KD4-96
-#> eb1a74c2ca8831ef945775de0827ddda                                                                   d__Bacteria; p__Chloroflexi; c__Ktedonobacteria; o__C0119; f__C0119; g__C0119
-#> 4ed3218615bbc1ed4da82d9806e4786b                                                                             d__Bacteria; p__Chloroflexi; c__OLB14; o__OLB14; f__OLB14; g__OLB14
-#> 8a3367e36ed4e416d5a77a7946cf6fc5                                                                                 d__Bacteria; p__Chloroflexi; c__TK10; o__TK10; f__TK10; g__TK10
-#> 56f45eba0496ed29fb7171041a2a950d                           d__Bacteria; p__Cyanobacteria; c__Sericytochromatia; o__Sericytochromatia; f__Sericytochromatia; g__Sericytochromatia
+#> 522d20c27cf4237b60f36ffdca056c19                                           d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae; g__Anaerolinea
+#> 957615aefb421e6ad4728e610b2bdfa6                                                d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae; g__UTCFX1
+#> 5ccc74e70b8a82a6eebea3385738ece3                                            d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Anaerolineales; f__Anaerolineaceae; g__uncultured
+#> e5924fd11a48419c6ec0e2a7cb4e43ee                                 d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Ardenticatenales; f__Ardenticatenaceae; g__Ardenticatenaceae
+#> eef7be4b2531cb7e909b58e91af5640d                                        d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Ardenticatenales; f__Ardenticatenaceae; g__uncultured
+#> 4416cbc2026260fa4e2ed0a8feff1443                                               d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Ardenticatenales; f__uncultured; g__uncultured
+#> 03f6091f5aacb69f06fc925acd1c9506                                             d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae; g__Litorilinea
+#> f655e5ddf5074d5e71bfa583926dec30                                              d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__Caldilineales; f__Caldilineaceae; g__uncultured
+#> 9f733d39e588c7310499dd444cdd7812                                                  d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__RBG-13-54-9; f__RBG-13-54-9; g__RBG-13-54-9
+#> 2b413de5e05a1385bab229f50879628f                                                                      d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__SBR1031; f__A4b; g__A4b
+#> 178b596f2fe5cb6cefc5513917988d84                                                                    d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__SBR1031; f__A4b; g__OLB13
+#> aa94b014c726cf40983045bd606241c1                                                              d__Bacteria; p__Chloroflexota; c__Anaerolineae; o__SBR1031; f__SBR1031; g__SBR1031
+#> 55310b3aac4868c4e33b0a9492d7609a                                d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Chloroflexales; f__Chloroflexaceae; g__Candidatus_Chloroploca
+#> c5d8d828df0e1baf5c2db05a6b8c4476                                            d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Chloroflexales; f__Chloroflexaceae; g__Chloronema
+#> 6ceb26f60606233a7728d3457af84380                                              d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Chloroflexales; f__Chloroflexaceae; g__FFCH7168
+#> 1ff83868d1c9ecf52d9b776e0b3fd896                                      d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Chloroflexales; f__Herpetosiphonaceae; g__Herpetosiphon
+#> 3edfccfb9f81b340854e84ee5102a4c1                                             d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Chloroflexales; f__Roseiflexaceae; g__uncultured
+#> 963dc552c551872800f2fcbc5663e5fd                                                        d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Kallotenuales; f__AKIW781; g__AKIW781
+#> 3fda8c20e5da9fbc3fb7c5c864559019                                                  d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Thermomicrobiales; f__AKYG1722; g__AKYG1722
+#> 6fd88fa7e883bdead3c5ba89da853e8d                                          d__Bacteria; p__Chloroflexota; c__Chloroflexia; o__Thermomicrobiales; f__JG30-KF-CM45; g__JG30-KF-CM45
+#> 35826fe826b7a9f202e8bef7b39d9a47                                                                    d__Bacteria; p__Chloroflexota; c__Dehalococcoidia; o__S085; f__S085; g__S085
+#> cc514f614ba146f489bf62b5a56074c5                                                   d__Bacteria; p__Chloroflexota; c__Gitt-GS-136; o__Gitt-GS-136; f__Gitt-GS-136; g__Gitt-GS-136
+#> 26260de3858081ce55e6f220b3ba25df                                               d__Bacteria; p__Chloroflexota; c__JG30-KF-CM66; o__JG30-KF-CM66; f__JG30-KF-CM66; g__JG30-KF-CM66
+#> d6727a85782ffd2a069dccc23adaf521                                                                       d__Bacteria; p__Chloroflexota; c__KD4-96; o__KD4-96; f__KD4-96; g__KD4-96
+#> eb1a74c2ca8831ef945775de0827ddda                                                                 d__Bacteria; p__Chloroflexota; c__Ktedonobacteria; o__C0119; f__C0119; g__C0119
+#> 4ed3218615bbc1ed4da82d9806e4786b                                                                           d__Bacteria; p__Chloroflexota; c__OLB14; o__OLB14; f__OLB14; g__OLB14
+#> 8a3367e36ed4e416d5a77a7946cf6fc5                                                                               d__Bacteria; p__Chloroflexota; c__TK10; o__TK10; f__TK10; g__TK10
+#> 56f45eba0496ed29fb7171041a2a950d                         d__Bacteria; p__Cyanobacteriota; c__Sericytochromatia; o__Sericytochromatia; f__Sericytochromatia; g__Sericytochromatia
 #> 9d2782f19e60ec0cf72e1dc46b1d1766                                                d__Bacteria; p__Deinococcota; c__Deinococci; o__Deinococcales; f__Deinococcaceae; g__Deinococcus
 #> 1559f8b64dc2bdc8cdc26ff8a5ffa4cb                                   d__Bacteria; p__Desulfobacterota; c__Desulfobulbia; o__Desulfobulbales; f__Desulfobulbaceae; g__Desulfobulbus
 #> 6d01f384a1cce140edea17dccd0f116d           d__Bacteria; p__Desulfobacterota; c__Desulfobulbia; o__Desulfobulbales; f__Desulfocapsaceae; g__[Desulfobacterium]_catecholicum_group
@@ -459,44 +497,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55                    d__Bacteria; p__Entotheonellaeota; c__Entotheonellia; o__Entotheonellales; f__Entotheonellaceae; g__Candidatus_Entotheonella
 #> 5d99ba689ad34e4393a905e8a725b72b                           d__Bacteria; p__Entotheonellaeota; c__Entotheonellia; o__Entotheonellales; f__Entotheonellaceae; g__Entotheonellaceae
 #> bfaa2d35e6dd13b9b32de811c6f92592                                 d__Bacteria; p__Fibrobacterota; c__Fibrobacteria; o__Fibrobacterales; f__Fibrobacteraceae; g__possible_genus_04
-#> 0c544d5f3a49a010971a96d8c39e4905                                          d__Bacteria; p__Firmicutes; c__Bacilli; o__Alicyclobacillales; f__Alicyclobacillaceae; g__Tumebacillus
-#> bab3f08e1d75f42987012cae451639ff                                                              d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus
-#> fa97a81b8c33569e2aa1fc9a3137b435                                                         d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Fictibacillus
-#> a4d08886c3c6c62efd5678339a07828b                                                           d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Geobacillus
-#> 11ed0972601847ec168473a6bc4eeba7                                                          d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Ureibacillus
-#> a6e4d88aa4b40402b1f94760d86b729c                                                  d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Planococcaceae; g__Paenisporosarcina
-#> 86deaff47d33946ede1b7c25c6bbe9f9                                       d__Bacteria; p__Firmicutes; c__Bacilli; o__Bacillales; f__Salisediminibacteriaceae; g__Salipaludibacillus
-#> a1d3f1f8c151eaeb5cf12179861e0c87                                               d__Bacteria; p__Firmicutes; c__Bacilli; o__Brevibacillales; f__Brevibacillaceae; g__Brevibacillus
-#> 3980891c22ccbb387b65f9e437b2f94f                                          d__Bacteria; p__Firmicutes; c__Bacilli; o__Erysipelotrichales; f__Erysipelotrichaceae; g__Turicibacter
-#> fc8ec321e0c2fc2a6de9abe98256b3f5                                           d__Bacteria; p__Firmicutes; c__Bacilli; o__Exiguobacterales; f__Exiguobacteraceae; g__Exiguobacterium
-#> 84c11e6ffb29ebc2192f4b049b7dbddb                                                 d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Leuconostocaceae; g__Leuconostoc
-#> 82104585f0b2617c13eb69f0bbdf7d5a                                               d__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Streptococcus
-#> 61cd4918428d3b36910b9cb2fc45946a                                                d__Bacteria; p__Firmicutes; c__Bacilli; o__Paenibacillales; f__Paenibacillaceae; g__Ammoniphilus
-#> 0ab9a976935482bce5f8af4cc6685147                                               d__Bacteria; p__Firmicutes; c__Bacilli; o__Paenibacillales; f__Paenibacillaceae; g__Paenibacillus
-#> 87be3450216b45c53851fd173582a2d0                                              d__Bacteria; p__Firmicutes; c__Bacilli; o__Paenibacillales; f__Paenibacillaceae; g__Thermobacillus
-#> 93a51bb503fadf90121f518db980e158                                       d__Bacteria; p__Firmicutes; c__Bacilli; o__Thermoactinomycetales; f__Thermoactinomycetaceae; g__Laceyella
-#> b70cd843161996e075a853900e699d0f                                      d__Bacteria; p__Firmicutes; c__Bacilli; o__Thermoactinomycetales; f__Thermoactinomycetaceae; g__Planifilum
-#> 154b8be9eea158f93d27d314d8e0e2c8                               d__Bacteria; p__Firmicutes; c__Bacilli; o__Thermoactinomycetales; f__Thermoactinomycetaceae; g__Thermoactinomyces
-#> 70691c2737cf7dc7c194de819f0e6cda                      d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__Christensenellaceae_R-7_group
-#> 2ae1d80ead92f5991f58da14d000acd6                                         d__Bacteria; p__Firmicutes; c__Clostridia; o__Christensenellales; f__Christensenellaceae; g__uncultured
-#> 44fa299492152518fec34b9fa4554648                                       d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridia; f__Hungateiclostridiaceae; g__Pseudobacteroides
-#> e15c8f9df87f363b0dbbf49de0bed249                                                 d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Caloramatoraceae; g__Fonticella
-#> 73689cad6eb4e86d9d0bb48c0da24463                                  d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_1
-#> 234e15e82d64f2e1d61802fa8ea1998a                                 d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_10
-#> 88c76ddb1b24acffe65d8128e2f48244                                  d__Bacteria; p__Firmicutes; c__Clostridia; o__Clostridiales; f__Clostridiaceae; g__Clostridium_sensu_stricto_8
-#> 5544139a16716cc6ef48b2c16c9613e9                                          d__Bacteria; p__Firmicutes; c__Clostridia; o__Lachnospirales; f__Lachnospiraceae; g__Lachnoclostridium
-#> 5b7fe68483e701059142cb531397b547                                                   d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptococcales; f__Peptococcaceae; g__uncultured
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64                          d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Anaerovoracaceae; g__Anaerovorax
-#> 6b47ec9d1c70f07d16834e9a4e54aa70                 d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Peptostreptococcaceae; g__Sporacetigenium
-#> f8752b4824d239cfb19f3216cc34941b                  d__Bacteria; p__Firmicutes; c__Clostridia; o__Peptostreptococcales-Tissierellales; f__Sedimentibacteraceae; g__Sedimentibacter
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b                                                d__Bacteria; p__Firmicutes; c__Clostridia; o__Thermincolales; f__Thermincolaceae; g__Thermincola
-#> 8a6b88f9515bf2dfac09e6a69045a4fe                                                d__Bacteria; p__Firmicutes; c__Limnochordia; o__Limnochordia; f__Limnochordia; g__Hydrogenispora
-#> f5151c67af19c8471743ef3e2914f6b1                               d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Sporomusaceae; g__Anaerospora
-#> c3842619fcbde52781c512c2561fca0b                             d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__Veillonellaceae; g__Veillonella
-#> b3b00faa9dee9fa6b3b33744f51da00e                                   d__Bacteria; p__Firmicutes; c__Negativicutes; o__Veillonellales-Selenomonadales; f__uncultured; g__uncultured
-#> c4f04e28c6267ac6c5b05d403e8f91c3                                                       d__Bacteria; p__Firmicutes; c__Negativicutes; o__uncultured; f__uncultured; g__uncultured
-#> 7fc06f107a6ddf6486ef2d43fcf23626                                  d__Bacteria; p__Firmicutes; c__Symbiobacteriia; o__Symbiobacteriales; f__Symbiobacteraceae; g__Symbiobacterium
-#> 8d1dffcd377b338d2a0388637507b592                                       d__Bacteria; p__Firmicutes; c__Symbiobacteriia; o__Symbiobacteriales; f__Symbiobacteraceae; g__uncultured
 #> 15410d762889d51818986bfcdb5d8965                                                             d__Bacteria; p__Gemmatimonadota; c__AKAU4049; o__AKAU4049; f__AKAU4049; g__AKAU4049
 #> 48f68e44e258de63575b8bf6cf565d52                                d__Bacteria; p__Gemmatimonadota; c__Gemmatimonadetes; o__Gemmatimonadales; f__Gemmatimonadaceae; g__Gemmatimonas
 #> 4712befe3685661e0fc0968859c369d5                             d__Bacteria; p__Gemmatimonadota; c__Gemmatimonadetes; o__Gemmatimonadales; f__Gemmatimonadaceae; g__Roseisolibacter
@@ -561,123 +561,123 @@ collapse_table(
 #> d625812c15c074c2e2b18099f97412c9                                    d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Planctomycetales; f__Schlesneriaceae; g__Planctopirus
 #> 17ef77f12e2a55717e910a5f6a625448                                           d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__Planctomycetales; f__uncultured; g__uncultured
 #> 7baf638fdd3f71166aafd22ecf410348                                                 d__Bacteria; p__Planctomycetota; c__Planctomycetes; o__uncultured; f__uncultured; g__uncultured
-#> 9436cda211f60f722865cd23ef75d4ed                                  d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Roseomonas
-#> c8ab0b20e740eb6b35e68d58f69736e4                                  d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae; g__Azospirillum
-#> 5e43f2d8be71399fc8d6736754cb42ac                                   d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae; g__Skermanella
-#> 19ad90ee1081a003406b02179ae63709                                         d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Azospirillales; f__uncultured; g__uncultured
-#> 0a25cdbd0660e68970c563c43a18f54a                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Brevundimonas
-#> 0aa6b210e902d8ab9d6f267407258ebb                            d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Phenylobacterium
-#> a864c36d0d898cc5abd94d6d6f0bd5be                                  d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__uncultured
-#> dea0dcb305ff0f27e3c36c7133cf933d                                     d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Caulobacterales; f__Hyphomonadaceae; g__Hirschia
-#> 463977baa69c7724fdc9407ad162714c                            d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Defluviicoccales; f__Defluviicoccaceae; g__Defluviicoccus
-#> fcb72326c29342bcfb052953466eafc6                                                  d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Dongiales; f__Dongiaceae; g__Dongia
-#> 5a554353f9ed728f0ab0631f29c8be2e                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Ferrovibrionales; f__Ferrovibrionaceae; g__Ferrovibrio
-#> a9dd27b48e443415a743bf9902f515c4                                        d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Micavibrionales; f__uncultured; g__uncultured
-#> 77a40bcf979c0099c52f19a3f1fe5217                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Micropepsales; f__Micropepsaceae; g__uncultured
-#> b4007ac525a9b409d70426e24421cff0                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Reyranellales; f__Reyranellaceae; g__Reyranella
-#> 406ba18a175c4c79efb25f48a6beafe4                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Reyranellales; f__Reyranellaceae; g__uncultured
-#> fe1c166755bc722cefd2e2a3b2b70672                                        d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Amb-16S-1323; g__Amb-16S-1323
-#> 8afd274849ac07c0ca66f8f5f143df3c                                           d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__Bosea
-#> 197301ed9d8728b5c061b99a17973161                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__Microvirga
-#> 14779f9dc3505598ad3d799e4ee676c4                                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__D05-2; g__D05-2
-#> 4085c246640eee043d523ce2d799023a                                              d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae; g__Devosia
-#> bba09a403e67c1381de01c86511f1057                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Hyphomicrobiaceae; g__Hyphomicrobium
-#> 392c59fee4e6b91d7654f2d3e3c65be8                                  d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Hyphomicrobiaceae; g__Pedomicrobium
-#> d2b05ae73ad5ed296d7add9e2bb2cce4                                            d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__KF-JG30-B3; g__KF-JG30-B3
-#> 8306a9473dabfd5918ea869dbfcd1291                                    d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Methyloligellaceae; g__uncultured
-#> 06064c372bb624503c2905d13f7691f5  d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium
-#> 3265692341e42dbd5cf4ed1938b906e3                                       d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Mesorhizobium
-#> da96a0797b9881a123795838b9f01140                              d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis; g__Nordella
-#> 0bdddf10e577657becec88e42001fd16                         d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis; g__Phreatobacter
-#> 168999a950ebe17e6d2ea1f90e557d91                            d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis; g__uncultured
-#> a266ffe9d38f626d106fa615da4618ef                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Bradyrhizobium
-#> 7706405d5bce7715f01d8b54188def42                                   d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Pseudolabrys
-#> 4b0cfc8899b466bd9992f7b22a5a06be                              d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Pseudorhodoplanes
-#> b81b2b4a7ca9eb2c23b170648dfaf22d                                    d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Rhodoplanes
-#> 75cf40872201f150cb5b191676f64b78                                     d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__uncultured
-#> c8e5794c58de9326084a62d3282d257e                                            d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhizobiales; f__uncultured; g__uncultured
-#> b0706a571f169c0bac7b4864052fcaa7                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Actibacterium
-#> 0388f969e3527b2938acc676d6757bdb                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Amaricoccus
-#> 2dfe751390aedfbd9f62dbb77d1f10b4                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Limibaculum
-#> 2548dc9697e1f9afe04a9012f40e2f0a                           d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Pseudorhodobacter
-#> 2f019615d5141a4ab00b1aab98882a33                                 d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Rhodobacter
-#> 629e4f0cf1826904ff74907b2507f58b          d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Roseobacter_clade_CHAB-I-5_lineage
-#> 774861f348cec8451102730c21a790b0                            d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Rubellimicrobium
-#> 11c0d6de28ab026a9ae17abe4efdd6bf                        d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodospirillales; f__Magnetospirillaceae; g__Magnetospirillum
-#> c11381dda0841c0d08cbfcef3a760aa3                        d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Rhodospirillales; f__Magnetospirillaceae; g__Telmatospirillum
-#> 3c9619d4f9db4ac6ad7151a0c9d86ad3                           d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Novosphingobium
-#> 7e2c72204a8c45b1b0ac39e0e6047098                               d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Sphingobium
-#> 8254e0f9f07709b62dd8483f3b25fad0                              d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Sphingomonas
-#> e78135f2886d427e678d12c446bf070e                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Thalassobaculales; f__uncultured; g__uncultured
-#> abec938a8d53e7471f3f476d50694be9                        d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Tistrellales; f__Geminicoccaceae; g__Candidatus_Alysiosphaera
-#> 4963567d2979bb761291aa98e0b8595b                                      d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__Tistrellales; f__Geminicoccaceae; g__uncultured
-#> d4de9d1453102564f35262faa3952266                                             d__Bacteria; p__Proteobacteria; c__Alphaproteobacteria; o__uncultured; f__uncultured; g__uncultured
-#> efa4a78c4b993e9d115841c8a02c795e                                       d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Aeromonadales; f__Aeromonadaceae; g__Aeromonas
-#> fcacd7424bf3543322ea3e9842d14e86                               d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Alteromonadales; f__Alteromonadaceae; g__Alishewanella
-#> f941e15ea7f7560191d57abc4d2bedd8                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Alcaligenaceae; g__Achromobacter
-#> ac294f5242de3c9b26e75502c48f6383                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Alcaligenaceae; g__Advenella
-#> 7b6a8e3f8bfa1bcd1b5fc55db048d005                                                d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__B1-7BS; g__B1-7BS
-#> c9e776ab599fe75db286675b698c9067                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae; g__Cupriavidus
-#> ebe5cb945f6d6d849c07424591f80753                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae; g__Lautropia
-#> f116387f77802409103a559e4205df06                                    d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Acidovorax
-#> 93f9939b261cddc9a57071b42771c1d4                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Aquabacterium
-#> 971a5f48b3418449ca7cf3e190a5e831                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Azohydromonas
-#> 730de992ca06a95e7193a93146a97cf2                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Comamonas
-#> 8fa8b4ac69784c26901e036d13ab2332                                       d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Delftia
-#> c363c9efaa85023b488b732b97e47270                                d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Hydrogenophaga
-#> 2e2181cc893ca1e1e677e888bf8af441                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Mitsuaria
-#> 86fa662da6869634e7f90f85e9ee4933                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Piscinibacter
-#> 9a02177f2c235a6eb62984d5aab151ff                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Pseudorhodoferax
-#> d6854be498e22b65da3c00572ee178f0                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Ramlibacter
-#> 015f364f150b230450da0a123e7bb8ab                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Rhizobacter
-#> af2c1b22758cd6653e8e841497d096e7                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Sphaerotilus
-#> e7f2fab8c0e7c365768a43ef71406605                                    d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Variovorax
-#> fb57cf192bce1876471f2f6181bf4b55                             d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae; g__Methylobacillus
-#> 6c740ce69c9f45bea684dc9e36054006                               d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae; g__Methylotenera
-#> 3b27c7bf279535d8e39664d8dc1d0daf                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae; g__UBA6140
-#> ceea3c29ad012c2918fb6aa21a44e8cb                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Neisseriaceae; g__Neisseria
-#> fa99ecdb27c1cc44fd866ee1da250c4c                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__Ellin6067
-#> 387cc83573db0e444e81c89a8a4f8f9c                                       d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__MND1
-#> c7a8d1af5f7f472671f700775de3e0a2                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__mle1-7
-#> 98a6a84550e07ea252cfd8a0f51042d4                                    d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Massilia
-#> 08b809a68126c38db786cafe9710b013                          d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Noviherbaspirillum
-#> 8db4cc0a5d2f03fce8efd2b8374ff359                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae; g__Azoarcus
-#> 3e7c7d38423c93b43a1d9865cf0bc4a6                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__SC-I-84; g__SC-I-84
-#> 6f02050760c030ed8cd1ed836697fa6b                                    d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__uncultured
-#> 8fc1865cfcae32f72c1b1570299e2ef3                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Burkholderiales; f__TRA3-20; g__TRA3-20
-#> 38cc138fac95b006929361093d840a00                                                            d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__CCD24; f__CCD24; g__CCD24
-#> f5f8eb63e22362509e2c7c78271305f2                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Cellvibrionales; f__Cellvibrionaceae; g__Cellvibrio
-#> 0bb238aaee3ccb7dc8dfa86dbc1ba9f7                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Cellvibrionales; f__Halieaceae; g__OM60(NOR5)_clade
-#> ca4546caf07edf5200cf79cea04aebcd                             d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Diplorickettsiales; f__Diplorickettsiaceae; g__Aquicella
-#> 893d12123eb7f623489a4f025a15ae7f                                         d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Erwiniaceae; g__Pantoea
-#> 192c5a817f48368339e519e0a0a907da                                       d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Enterobacterales; f__Yersiniaceae; g__Serratia
-#> 3467185ca92b7bec2523214605adabf0                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Gammaproteobacteria; f__Gammaproteobacteria; g__Gammaproteobacteria
-#> a2aae80d8fb922fe1074d243b59ce237                d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Gammaproteobacteria_Incertae_Sedis; f__Unknown_Family; g__Acidibacter
-#> f11233f16d4177d38ab1c0bfc649e056       d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Gammaproteobacteria_Incertae_Sedis; f__Unknown_Family; g__Candidatus_Berkiella
-#> b219ca7793ab9f5e441f2a68bc76152c                                d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Oceanospirillales; f__Alcanivoracaceae; g__Ketobacter
-#> e6e1848b51e705e55b3805703f088311                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Oceanospirillales; f__Halomonadaceae; g__Halomonas
-#> bd074b9bf365d11468bd76268d63b15b                                                         d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__PLTA13; f__PLTA13; g__PLTA13
-#> f381b492d6651c52fd09ce9351e7eb2d                                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pasteurellales; f__Pasteurellaceae; g__Haemophilus
-#> d9b31e1c30facc24fa778b1d65f5c457                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter
-#> 14a67c8c8cc31d203eac8109443fab5f                                      d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Cavicella
-#> 026ad0ea53fb202ebb770acf65705d6e                                     d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__uncultured
-#> 19ba9fea04969f975d6dc8d3da20d5e6                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Azotobacter
-#> 0fc4426ed7dccc48ce27cfff8083433d                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas
-#> 45ad90e179842705fa984962f131fd61                                                            d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__R7C24; f__R7C24; g__R7C24
-#> d284afab226d22fd0596221d17db23d3                        d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Steroidobacterales; f__Steroidobacteraceae; g__Steroidobacter
-#> 38194655ba17dbfd7fcc1ed42a57c169                            d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Steroidobacterales; f__Steroidobacteraceae; g__uncultured
-#> e30be5268bbebe597424bdf171cc1607                   d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Steroidobacterales; f__Woeseiaceae; g__JTB255_marine_benthic_group
-#> cb7ccdb4956134b452a3cb78d1751c57                                       d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Steroidobacterales; f__Woeseiaceae; g__Woeseia
-#> b585436677ac88dd4ac6239655f2a268                                              d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Vibrionales; f__Vibrionaceae; g__Vibrio
-#> f5d770eff5c9b9b0c859db57d175eb34                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__Ahniella
-#> 1b45ffbc88c788dcee2239e68901cf05                               d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__Luteibacter
-#> 3fd951cf7cc3a0740a1f20f8a9c6d2c2                                d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__uncultured
-#> 2027d3e90ccc4003f1954322e99db6a9                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Arenimonas
-#> 6157cb92771830955413f808e83fc420                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Luteimonas
-#> 6349506cac32056a214b04239bdc3a33                                  d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Lysobacter
-#> 2254a8d37cf537b1e35097d70b6ac91b                           d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Pseudoxanthomonas
-#> 38f3bc8ef8836574de0fcbeafd348b65                            d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Stenotrophomonas
-#> fec23c70ae0c70ecceea1487cd978ee5                                 d__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Thermomonas
+#> 9436cda211f60f722865cd23ef75d4ed                                  d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Acetobacterales; f__Acetobacteraceae; g__Roseomonas
+#> c8ab0b20e740eb6b35e68d58f69736e4                                  d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae; g__Azospirillum
+#> 5e43f2d8be71399fc8d6736754cb42ac                                   d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Azospirillales; f__Azospirillaceae; g__Skermanella
+#> 19ad90ee1081a003406b02179ae63709                                         d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Azospirillales; f__uncultured; g__uncultured
+#> 0a25cdbd0660e68970c563c43a18f54a                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Brevundimonas
+#> 0aa6b210e902d8ab9d6f267407258ebb                            d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__Phenylobacterium
+#> a864c36d0d898cc5abd94d6d6f0bd5be                                  d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Caulobacteraceae; g__uncultured
+#> dea0dcb305ff0f27e3c36c7133cf933d                                     d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Caulobacterales; f__Hyphomonadaceae; g__Hirschia
+#> 463977baa69c7724fdc9407ad162714c                            d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Defluviicoccales; f__Defluviicoccaceae; g__Defluviicoccus
+#> fcb72326c29342bcfb052953466eafc6                                                  d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Dongiales; f__Dongiaceae; g__Dongia
+#> 5a554353f9ed728f0ab0631f29c8be2e                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Ferrovibrionales; f__Ferrovibrionaceae; g__Ferrovibrio
+#> a9dd27b48e443415a743bf9902f515c4                                        d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Micavibrionales; f__uncultured; g__uncultured
+#> 77a40bcf979c0099c52f19a3f1fe5217                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Micropepsales; f__Micropepsaceae; g__uncultured
+#> b4007ac525a9b409d70426e24421cff0                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Reyranellales; f__Reyranellaceae; g__Reyranella
+#> 406ba18a175c4c79efb25f48a6beafe4                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Reyranellales; f__Reyranellaceae; g__uncultured
+#> fe1c166755bc722cefd2e2a3b2b70672                                        d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Amb-16S-1323; g__Amb-16S-1323
+#> 8afd274849ac07c0ca66f8f5f143df3c                                           d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__Bosea
+#> 197301ed9d8728b5c061b99a17973161                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Beijerinckiaceae; g__Microvirga
+#> 14779f9dc3505598ad3d799e4ee676c4                                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__D05-2; g__D05-2
+#> 4085c246640eee043d523ce2d799023a                                              d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Devosiaceae; g__Devosia
+#> bba09a403e67c1381de01c86511f1057                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Hyphomicrobiaceae; g__Hyphomicrobium
+#> 392c59fee4e6b91d7654f2d3e3c65be8                                  d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Hyphomicrobiaceae; g__Pedomicrobium
+#> d2b05ae73ad5ed296d7add9e2bb2cce4                                            d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__KF-JG30-B3; g__KF-JG30-B3
+#> 8306a9473dabfd5918ea869dbfcd1291                                    d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Methyloligellaceae; g__uncultured
+#> 06064c372bb624503c2905d13f7691f5  d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium
+#> 3265692341e42dbd5cf4ed1938b906e3                                       d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiaceae; g__Mesorhizobium
+#> da96a0797b9881a123795838b9f01140                              d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis; g__Nordella
+#> 0bdddf10e577657becec88e42001fd16                         d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis; g__Phreatobacter
+#> 168999a950ebe17e6d2ea1f90e557d91                            d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Rhizobiales_Incertae_Sedis; g__uncultured
+#> a266ffe9d38f626d106fa615da4618ef                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Bradyrhizobium
+#> 7706405d5bce7715f01d8b54188def42                                   d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Pseudolabrys
+#> 4b0cfc8899b466bd9992f7b22a5a06be                              d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Pseudorhodoplanes
+#> b81b2b4a7ca9eb2c23b170648dfaf22d                                    d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__Rhodoplanes
+#> 75cf40872201f150cb5b191676f64b78                                     d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__Xanthobacteraceae; g__uncultured
+#> c8e5794c58de9326084a62d3282d257e                                            d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhizobiales; f__uncultured; g__uncultured
+#> b0706a571f169c0bac7b4864052fcaa7                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Actibacterium
+#> 0388f969e3527b2938acc676d6757bdb                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Amaricoccus
+#> 2dfe751390aedfbd9f62dbb77d1f10b4                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Limibaculum
+#> 2548dc9697e1f9afe04a9012f40e2f0a                           d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Pseudorhodobacter
+#> 2f019615d5141a4ab00b1aab98882a33                                 d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Rhodobacter
+#> 629e4f0cf1826904ff74907b2507f58b          d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Roseobacter_clade_CHAB-I-5_lineage
+#> 774861f348cec8451102730c21a790b0                            d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodobacterales; f__Rhodobacteraceae; g__Rubellimicrobium
+#> 11c0d6de28ab026a9ae17abe4efdd6bf                        d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodospirillales; f__Magnetospirillaceae; g__Magnetospirillum
+#> c11381dda0841c0d08cbfcef3a760aa3                        d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Rhodospirillales; f__Magnetospirillaceae; g__Telmatospirillum
+#> 3c9619d4f9db4ac6ad7151a0c9d86ad3                           d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Novosphingobium
+#> 7e2c72204a8c45b1b0ac39e0e6047098                               d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Sphingobium
+#> 8254e0f9f07709b62dd8483f3b25fad0                              d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Sphingomonadales; f__Sphingomonadaceae; g__Sphingomonas
+#> e78135f2886d427e678d12c446bf070e                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Thalassobaculales; f__uncultured; g__uncultured
+#> abec938a8d53e7471f3f476d50694be9                        d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Tistrellales; f__Geminicoccaceae; g__Candidatus_Alysiosphaera
+#> 4963567d2979bb761291aa98e0b8595b                                      d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__Tistrellales; f__Geminicoccaceae; g__uncultured
+#> d4de9d1453102564f35262faa3952266                                             d__Bacteria; p__Pseudomonadota; c__Alphaproteobacteria; o__uncultured; f__uncultured; g__uncultured
+#> efa4a78c4b993e9d115841c8a02c795e                                       d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Aeromonadales; f__Aeromonadaceae; g__Aeromonas
+#> fcacd7424bf3543322ea3e9842d14e86                               d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Alteromonadales; f__Alteromonadaceae; g__Alishewanella
+#> f941e15ea7f7560191d57abc4d2bedd8                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Alcaligenaceae; g__Achromobacter
+#> ac294f5242de3c9b26e75502c48f6383                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Alcaligenaceae; g__Advenella
+#> 7b6a8e3f8bfa1bcd1b5fc55db048d005                                                d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__B1-7BS; g__B1-7BS
+#> c9e776ab599fe75db286675b698c9067                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae; g__Cupriavidus
+#> ebe5cb945f6d6d849c07424591f80753                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Burkholderiaceae; g__Lautropia
+#> f116387f77802409103a559e4205df06                                    d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Acidovorax
+#> 93f9939b261cddc9a57071b42771c1d4                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Aquabacterium
+#> 971a5f48b3418449ca7cf3e190a5e831                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Azohydromonas
+#> 730de992ca06a95e7193a93146a97cf2                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Comamonas
+#> 8fa8b4ac69784c26901e036d13ab2332                                       d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Delftia
+#> c363c9efaa85023b488b732b97e47270                                d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Hydrogenophaga
+#> 2e2181cc893ca1e1e677e888bf8af441                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Mitsuaria
+#> 86fa662da6869634e7f90f85e9ee4933                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Piscinibacter
+#> 9a02177f2c235a6eb62984d5aab151ff                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Pseudorhodoferax
+#> d6854be498e22b65da3c00572ee178f0                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Ramlibacter
+#> 015f364f150b230450da0a123e7bb8ab                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Rhizobacter
+#> af2c1b22758cd6653e8e841497d096e7                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Sphaerotilus
+#> e7f2fab8c0e7c365768a43ef71406605                                    d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Comamonadaceae; g__Variovorax
+#> fb57cf192bce1876471f2f6181bf4b55                             d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae; g__Methylobacillus
+#> 6c740ce69c9f45bea684dc9e36054006                               d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae; g__Methylotenera
+#> 3b27c7bf279535d8e39664d8dc1d0daf                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Methylophilaceae; g__UBA6140
+#> ceea3c29ad012c2918fb6aa21a44e8cb                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Neisseriaceae; g__Neisseria
+#> fa99ecdb27c1cc44fd866ee1da250c4c                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__Ellin6067
+#> 387cc83573db0e444e81c89a8a4f8f9c                                       d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__MND1
+#> c7a8d1af5f7f472671f700775de3e0a2                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Nitrosomonadaceae; g__mle1-7
+#> 98a6a84550e07ea252cfd8a0f51042d4                                    d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Massilia
+#> 08b809a68126c38db786cafe9710b013                          d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Oxalobacteraceae; g__Noviherbaspirillum
+#> 8db4cc0a5d2f03fce8efd2b8374ff359                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Rhodocyclaceae; g__Azoarcus
+#> 3e7c7d38423c93b43a1d9865cf0bc4a6                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__SC-I-84; g__SC-I-84
+#> 6f02050760c030ed8cd1ed836697fa6b                                    d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__Sutterellaceae; g__uncultured
+#> 8fc1865cfcae32f72c1b1570299e2ef3                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Burkholderiales; f__TRA3-20; g__TRA3-20
+#> 38cc138fac95b006929361093d840a00                                                            d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__CCD24; f__CCD24; g__CCD24
+#> f5f8eb63e22362509e2c7c78271305f2                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Cellvibrionales; f__Cellvibrionaceae; g__Cellvibrio
+#> 0bb238aaee3ccb7dc8dfa86dbc1ba9f7                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Cellvibrionales; f__Halieaceae; g__OM60(NOR5)_clade
+#> ca4546caf07edf5200cf79cea04aebcd                             d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Diplorickettsiales; f__Diplorickettsiaceae; g__Aquicella
+#> 893d12123eb7f623489a4f025a15ae7f                                         d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Erwiniaceae; g__Pantoea
+#> 192c5a817f48368339e519e0a0a907da                                       d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Enterobacterales; f__Yersiniaceae; g__Serratia
+#> 3467185ca92b7bec2523214605adabf0                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Gammaproteobacteria; f__Gammaproteobacteria; g__Gammaproteobacteria
+#> a2aae80d8fb922fe1074d243b59ce237                d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Gammaproteobacteria_Incertae_Sedis; f__Unknown_Family; g__Acidibacter
+#> f11233f16d4177d38ab1c0bfc649e056       d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Gammaproteobacteria_Incertae_Sedis; f__Unknown_Family; g__Candidatus_Berkiella
+#> b219ca7793ab9f5e441f2a68bc76152c                                d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Oceanospirillales; f__Alcanivoracaceae; g__Ketobacter
+#> e6e1848b51e705e55b3805703f088311                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Oceanospirillales; f__Halomonadaceae; g__Halomonas
+#> bd074b9bf365d11468bd76268d63b15b                                                         d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__PLTA13; f__PLTA13; g__PLTA13
+#> f381b492d6651c52fd09ce9351e7eb2d                                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pasteurellales; f__Pasteurellaceae; g__Haemophilus
+#> d9b31e1c30facc24fa778b1d65f5c457                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Acinetobacter
+#> 14a67c8c8cc31d203eac8109443fab5f                                      d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__Cavicella
+#> 026ad0ea53fb202ebb770acf65705d6e                                     d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Moraxellaceae; g__uncultured
+#> 19ba9fea04969f975d6dc8d3da20d5e6                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Azotobacter
+#> 0fc4426ed7dccc48ce27cfff8083433d                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas
+#> 45ad90e179842705fa984962f131fd61                                                            d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__R7C24; f__R7C24; g__R7C24
+#> d284afab226d22fd0596221d17db23d3                        d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Steroidobacterales; f__Steroidobacteraceae; g__Steroidobacter
+#> 38194655ba17dbfd7fcc1ed42a57c169                            d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Steroidobacterales; f__Steroidobacteraceae; g__uncultured
+#> e30be5268bbebe597424bdf171cc1607                   d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Steroidobacterales; f__Woeseiaceae; g__JTB255_marine_benthic_group
+#> cb7ccdb4956134b452a3cb78d1751c57                                       d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Steroidobacterales; f__Woeseiaceae; g__Woeseia
+#> b585436677ac88dd4ac6239655f2a268                                              d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Vibrionales; f__Vibrionaceae; g__Vibrio
+#> f5d770eff5c9b9b0c859db57d175eb34                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__Ahniella
+#> 1b45ffbc88c788dcee2239e68901cf05                               d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__Luteibacter
+#> 3fd951cf7cc3a0740a1f20f8a9c6d2c2                                d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Rhodanobacteraceae; g__uncultured
+#> 2027d3e90ccc4003f1954322e99db6a9                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Arenimonas
+#> 6157cb92771830955413f808e83fc420                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Luteimonas
+#> 6349506cac32056a214b04239bdc3a33                                  d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Lysobacter
+#> 2254a8d37cf537b1e35097d70b6ac91b                           d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Pseudoxanthomonas
+#> 38f3bc8ef8836574de0fcbeafd348b65                            d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Stenotrophomonas
+#> fec23c70ae0c70ecceea1487cd978ee5                                 d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Xanthomonadales; f__Xanthomonadaceae; g__Thermomonas
 #> 503d123a6c78c6fb280a6472bd61b51e                                                     d__Bacteria; p__Sumerlaeota; c__Sumerlaeia; o__Sumerlaeales; f__Sumerlaeaceae; g__Sumerlaea
 #> 9f33de8570c639e727465f1ee4d750f6                                          d__Bacteria; p__Verrucomicrobiota; c__Chlamydiae; o__Chlamydiales; f__Parachlamydiaceae; g__uncultured
 #> d68e1899fa65515135d9bd8d356b7e3d                d__Bacteria; p__Verrucomicrobiota; c__Verrucomicrobiae; o__Chthoniobacterales; f__Chthoniobacteraceae; g__Candidatus_Udaeobacter
@@ -1005,6 +1005,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff      0      0      0      0      0     0     0
 #> 087d358aaf77f81aaf50a623828865bb      0      0      0      0      0     0     0
 #> e451c4b3ff1c3dabeee296529b3a7a07      0      0      7      0     28     0    11
+#> 0c544d5f3a49a010971a96d8c39e4905      0      0      0      8      0     0     0
+#> bab3f08e1d75f42987012cae451639ff     25     12    117    202    389    24   244
+#> fa97a81b8c33569e2aa1fc9a3137b435      0      0     17     43      0     0    29
+#> a4d08886c3c6c62efd5678339a07828b      0      0      5     28      0     0    16
+#> 11ed0972601847ec168473a6bc4eeba7      0      0     10      0      0     0    12
+#> a6e4d88aa4b40402b1f94760d86b729c      0      0      0      0      0     0     9
+#> 86deaff47d33946ede1b7c25c6bbe9f9      0      0      0      0      0     0     0
+#> a1d3f1f8c151eaeb5cf12179861e0c87      0      0      0      0      0     0     5
+#> 3980891c22ccbb387b65f9e437b2f94f      0      0      0      3      0     0     0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5      0      0      0      0     25     0     0
+#> 84c11e6ffb29ebc2192f4b049b7dbddb      0      0      0      0      0     0     0
+#> 82104585f0b2617c13eb69f0bbdf7d5a      0      0      0      0      5     0     0
+#> 61cd4918428d3b36910b9cb2fc45946a      0      0      0      0      0     0     0
+#> 0ab9a976935482bce5f8af4cc6685147      0      0      0      0      0     0    16
+#> 87be3450216b45c53851fd173582a2d0      0      0      0     15      0     0     0
+#> 93a51bb503fadf90121f518db980e158      0      0      0     13      0     0     0
+#> b70cd843161996e075a853900e699d0f      0      0     26     95      0     0    37
+#> 154b8be9eea158f93d27d314d8e0e2c8      0      0      6     41      0     2    13
+#> 70691c2737cf7dc7c194de819f0e6cda      0      0     16      0     40     0    21
+#> 2ae1d80ead92f5991f58da14d000acd6      0      0      0      0      9     0     0
+#> 44fa299492152518fec34b9fa4554648      0      0      0      0      0     0     0
+#> e15c8f9df87f363b0dbbf49de0bed249      0      0      0      0     18     0     0
+#> 73689cad6eb4e86d9d0bb48c0da24463      0      0     11      0     21     0     0
+#> 234e15e82d64f2e1d61802fa8ea1998a      0      0      0      0     49     0    29
+#> 88c76ddb1b24acffe65d8128e2f48244      0      0      0      0      0     0     0
+#> 5544139a16716cc6ef48b2c16c9613e9      0      0      0      0      7     0     0
+#> 5b7fe68483e701059142cb531397b547      0      0      0      0      9     0     0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0      0      0      0     19     0     0
+#> 6b47ec9d1c70f07d16834e9a4e54aa70      0      0      0      0      0     0     0
+#> f8752b4824d239cfb19f3216cc34941b      0      0      0      0     61     0     0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0      0      0      0      0     0     0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe      0      0      0      0      0     0     0
+#> f5151c67af19c8471743ef3e2914f6b1      0      0      0      0      0     0     0
+#> c3842619fcbde52781c512c2561fca0b      0      0      0      0      0     0     0
+#> b3b00faa9dee9fa6b3b33744f51da00e      0      0      0      0      0     0     6
+#> c4f04e28c6267ac6c5b05d403e8f91c3      0      0      0      0      0     0     0
+#> 7fc06f107a6ddf6486ef2d43fcf23626      0      0      0      0      0     0     5
+#> 8d1dffcd377b338d2a0388637507b592      0      0      0      0      0     0     9
 #> 012871784f77c9dca7d446ddef2048d1      0      0      0      0      0     0     0
 #> 95c6ce2788783bf2f83343deba23b8bd      0      0      0      0      8     0     0
 #> 213227f244d97553a9a14c4e3fd04c98      0      0      5      0      0     0    15
@@ -1092,44 +1130,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55      0      0      0      0      7     0    14
 #> 5d99ba689ad34e4393a905e8a725b72b      0      0      0      0      0     0     6
 #> bfaa2d35e6dd13b9b32de811c6f92592      0      0      0      0      0     0     2
-#> 0c544d5f3a49a010971a96d8c39e4905      0      0      0      8      0     0     0
-#> bab3f08e1d75f42987012cae451639ff     25     12    117    202    389    24   244
-#> fa97a81b8c33569e2aa1fc9a3137b435      0      0     17     43      0     0    29
-#> a4d08886c3c6c62efd5678339a07828b      0      0      5     28      0     0    16
-#> 11ed0972601847ec168473a6bc4eeba7      0      0     10      0      0     0    12
-#> a6e4d88aa4b40402b1f94760d86b729c      0      0      0      0      0     0     9
-#> 86deaff47d33946ede1b7c25c6bbe9f9      0      0      0      0      0     0     0
-#> a1d3f1f8c151eaeb5cf12179861e0c87      0      0      0      0      0     0     5
-#> 3980891c22ccbb387b65f9e437b2f94f      0      0      0      3      0     0     0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5      0      0      0      0     25     0     0
-#> 84c11e6ffb29ebc2192f4b049b7dbddb      0      0      0      0      0     0     0
-#> 82104585f0b2617c13eb69f0bbdf7d5a      0      0      0      0      5     0     0
-#> 61cd4918428d3b36910b9cb2fc45946a      0      0      0      0      0     0     0
-#> 0ab9a976935482bce5f8af4cc6685147      0      0      0      0      0     0    16
-#> 87be3450216b45c53851fd173582a2d0      0      0      0     15      0     0     0
-#> 93a51bb503fadf90121f518db980e158      0      0      0     13      0     0     0
-#> b70cd843161996e075a853900e699d0f      0      0     26     95      0     0    37
-#> 154b8be9eea158f93d27d314d8e0e2c8      0      0      6     41      0     2    13
-#> 70691c2737cf7dc7c194de819f0e6cda      0      0     16      0     40     0    21
-#> 2ae1d80ead92f5991f58da14d000acd6      0      0      0      0      9     0     0
-#> 44fa299492152518fec34b9fa4554648      0      0      0      0      0     0     0
-#> e15c8f9df87f363b0dbbf49de0bed249      0      0      0      0     18     0     0
-#> 73689cad6eb4e86d9d0bb48c0da24463      0      0     11      0     21     0     0
-#> 234e15e82d64f2e1d61802fa8ea1998a      0      0      0      0     49     0    29
-#> 88c76ddb1b24acffe65d8128e2f48244      0      0      0      0      0     0     0
-#> 5544139a16716cc6ef48b2c16c9613e9      0      0      0      0      7     0     0
-#> 5b7fe68483e701059142cb531397b547      0      0      0      0      9     0     0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0      0      0      0     19     0     0
-#> 6b47ec9d1c70f07d16834e9a4e54aa70      0      0      0      0      0     0     0
-#> f8752b4824d239cfb19f3216cc34941b      0      0      0      0     61     0     0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0      0      0      0      0     0     0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe      0      0      0      0      0     0     0
-#> f5151c67af19c8471743ef3e2914f6b1      0      0      0      0      0     0     0
-#> c3842619fcbde52781c512c2561fca0b      0      0      0      0      0     0     0
-#> b3b00faa9dee9fa6b3b33744f51da00e      0      0      0      0      0     0     6
-#> c4f04e28c6267ac6c5b05d403e8f91c3      0      0      0      0      0     0     0
-#> 7fc06f107a6ddf6486ef2d43fcf23626      0      0      0      0      0     0     5
-#> 8d1dffcd377b338d2a0388637507b592      0      0      0      0      0     0     9
 #> 15410d762889d51818986bfcdb5d8965      0      0      2      0      0     0     0
 #> 48f68e44e258de63575b8bf6cf565d52      0      0      0     16      0     0    19
 #> 4712befe3685661e0fc0968859c369d5      0      0      0      0      0     0     0
@@ -1638,6 +1638,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff     0      0     0     0      0      0      0
 #> 087d358aaf77f81aaf50a623828865bb     0      0     0     0      0      0      0
 #> e451c4b3ff1c3dabeee296529b3a7a07     0      4     0     0      0      0      0
+#> 0c544d5f3a49a010971a96d8c39e4905     0      0     0     0      0      0      0
+#> bab3f08e1d75f42987012cae451639ff     6    175    72    77     85     69     89
+#> fa97a81b8c33569e2aa1fc9a3137b435     0      0     0     7      0      0      8
+#> a4d08886c3c6c62efd5678339a07828b     0      0     0     0      0      0     14
+#> 11ed0972601847ec168473a6bc4eeba7     0      0     0     0      0      0      0
+#> a6e4d88aa4b40402b1f94760d86b729c     0      0     0     0      0      0      0
+#> 86deaff47d33946ede1b7c25c6bbe9f9     0      0     0     0      0      0      0
+#> a1d3f1f8c151eaeb5cf12179861e0c87     0      0     0     0      0      0      0
+#> 3980891c22ccbb387b65f9e437b2f94f     0      0     0     0      0      0      0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5     0     67     0     0     32      0      0
+#> 84c11e6ffb29ebc2192f4b049b7dbddb     0      0     0     0      0      0      0
+#> 82104585f0b2617c13eb69f0bbdf7d5a     0      0     0     0      0      0      0
+#> 61cd4918428d3b36910b9cb2fc45946a     0      0     2     0      0      0      0
+#> 0ab9a976935482bce5f8af4cc6685147     0      0     0     0      0      0      0
+#> 87be3450216b45c53851fd173582a2d0     0      0     0     0      0      0      0
+#> 93a51bb503fadf90121f518db980e158     0      0     0     0      0      0      0
+#> b70cd843161996e075a853900e699d0f     0      0     0     0      0      0     11
+#> 154b8be9eea158f93d27d314d8e0e2c8     0      0     0    11      0      0      0
+#> 70691c2737cf7dc7c194de819f0e6cda     0     17     6     0      6     53      0
+#> 2ae1d80ead92f5991f58da14d000acd6     0      0     0     0      0      0      0
+#> 44fa299492152518fec34b9fa4554648     0      0     0     0      0      0      0
+#> e15c8f9df87f363b0dbbf49de0bed249     0      0     0     0      0      0      0
+#> 73689cad6eb4e86d9d0bb48c0da24463     0     17     0     0      0      0      0
+#> 234e15e82d64f2e1d61802fa8ea1998a     0     40     0    39     36      0     47
+#> 88c76ddb1b24acffe65d8128e2f48244     0      0     0     0      0     24      0
+#> 5544139a16716cc6ef48b2c16c9613e9     0      0     0     0      0      0      0
+#> 5b7fe68483e701059142cb531397b547     0      0     0     0      0      0      0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64     0      0     0     0      0      0      0
+#> 6b47ec9d1c70f07d16834e9a4e54aa70     0      0     0     0      0      0      7
+#> f8752b4824d239cfb19f3216cc34941b     0      0     0     0      0      0      0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b     0      0     0     0      0      0      0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe     0      0     0     0      0      0      0
+#> f5151c67af19c8471743ef3e2914f6b1     0      0     0     0      0      0      0
+#> c3842619fcbde52781c512c2561fca0b     0      0     0     0      0      0      0
+#> b3b00faa9dee9fa6b3b33744f51da00e     0      0     0     0      0      0      0
+#> c4f04e28c6267ac6c5b05d403e8f91c3     0      0     0     0      0      5      0
+#> 7fc06f107a6ddf6486ef2d43fcf23626     0      0     0     0      0      0      0
+#> 8d1dffcd377b338d2a0388637507b592     0      0     0     0      0      0      0
 #> 012871784f77c9dca7d446ddef2048d1     0      0     0     0      0      4      0
 #> 95c6ce2788783bf2f83343deba23b8bd     0      0     0     0      0      0      0
 #> 213227f244d97553a9a14c4e3fd04c98     0      0     0     0      0      0      2
@@ -1725,44 +1763,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55     0      7     0     0      0      0      0
 #> 5d99ba689ad34e4393a905e8a725b72b     0      0     0     0      0      0      0
 #> bfaa2d35e6dd13b9b32de811c6f92592     0      0     0     0      0      0      0
-#> 0c544d5f3a49a010971a96d8c39e4905     0      0     0     0      0      0      0
-#> bab3f08e1d75f42987012cae451639ff     6    175    72    77     85     69     89
-#> fa97a81b8c33569e2aa1fc9a3137b435     0      0     0     7      0      0      8
-#> a4d08886c3c6c62efd5678339a07828b     0      0     0     0      0      0     14
-#> 11ed0972601847ec168473a6bc4eeba7     0      0     0     0      0      0      0
-#> a6e4d88aa4b40402b1f94760d86b729c     0      0     0     0      0      0      0
-#> 86deaff47d33946ede1b7c25c6bbe9f9     0      0     0     0      0      0      0
-#> a1d3f1f8c151eaeb5cf12179861e0c87     0      0     0     0      0      0      0
-#> 3980891c22ccbb387b65f9e437b2f94f     0      0     0     0      0      0      0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5     0     67     0     0     32      0      0
-#> 84c11e6ffb29ebc2192f4b049b7dbddb     0      0     0     0      0      0      0
-#> 82104585f0b2617c13eb69f0bbdf7d5a     0      0     0     0      0      0      0
-#> 61cd4918428d3b36910b9cb2fc45946a     0      0     2     0      0      0      0
-#> 0ab9a976935482bce5f8af4cc6685147     0      0     0     0      0      0      0
-#> 87be3450216b45c53851fd173582a2d0     0      0     0     0      0      0      0
-#> 93a51bb503fadf90121f518db980e158     0      0     0     0      0      0      0
-#> b70cd843161996e075a853900e699d0f     0      0     0     0      0      0     11
-#> 154b8be9eea158f93d27d314d8e0e2c8     0      0     0    11      0      0      0
-#> 70691c2737cf7dc7c194de819f0e6cda     0     17     6     0      6     53      0
-#> 2ae1d80ead92f5991f58da14d000acd6     0      0     0     0      0      0      0
-#> 44fa299492152518fec34b9fa4554648     0      0     0     0      0      0      0
-#> e15c8f9df87f363b0dbbf49de0bed249     0      0     0     0      0      0      0
-#> 73689cad6eb4e86d9d0bb48c0da24463     0     17     0     0      0      0      0
-#> 234e15e82d64f2e1d61802fa8ea1998a     0     40     0    39     36      0     47
-#> 88c76ddb1b24acffe65d8128e2f48244     0      0     0     0      0     24      0
-#> 5544139a16716cc6ef48b2c16c9613e9     0      0     0     0      0      0      0
-#> 5b7fe68483e701059142cb531397b547     0      0     0     0      0      0      0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64     0      0     0     0      0      0      0
-#> 6b47ec9d1c70f07d16834e9a4e54aa70     0      0     0     0      0      0      7
-#> f8752b4824d239cfb19f3216cc34941b     0      0     0     0      0      0      0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b     0      0     0     0      0      0      0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe     0      0     0     0      0      0      0
-#> f5151c67af19c8471743ef3e2914f6b1     0      0     0     0      0      0      0
-#> c3842619fcbde52781c512c2561fca0b     0      0     0     0      0      0      0
-#> b3b00faa9dee9fa6b3b33744f51da00e     0      0     0     0      0      0      0
-#> c4f04e28c6267ac6c5b05d403e8f91c3     0      0     0     0      0      5      0
-#> 7fc06f107a6ddf6486ef2d43fcf23626     0      0     0     0      0      0      0
-#> 8d1dffcd377b338d2a0388637507b592     0      0     0     0      0      0      0
 #> 15410d762889d51818986bfcdb5d8965     0      0     0     0      0      0      0
 #> 48f68e44e258de63575b8bf6cf565d52     0      7     0     0      0      0      0
 #> 4712befe3685661e0fc0968859c369d5     0      0     0     0      0      0      0
@@ -2271,6 +2271,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff     0     0     4      0     0      0      0
 #> 087d358aaf77f81aaf50a623828865bb     0     0     0      0     0      0      0
 #> e451c4b3ff1c3dabeee296529b3a7a07     0     0    15      0     0      0      6
+#> 0c544d5f3a49a010971a96d8c39e4905     0     0     0      0     0      0      0
+#> bab3f08e1d75f42987012cae451639ff   482    65   186     65   145    142     29
+#> fa97a81b8c33569e2aa1fc9a3137b435     0     0     0      0     7     16      0
+#> a4d08886c3c6c62efd5678339a07828b     0     0     0      0     0      0      0
+#> 11ed0972601847ec168473a6bc4eeba7     0     0     0     17    32      0      0
+#> a6e4d88aa4b40402b1f94760d86b729c     0     0     0      0     0      8      0
+#> 86deaff47d33946ede1b7c25c6bbe9f9     0     0     0      0     0      0      0
+#> a1d3f1f8c151eaeb5cf12179861e0c87     0     0     0      0     0      0      0
+#> 3980891c22ccbb387b65f9e437b2f94f     0     0     0      0     0      0      0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5     0   179   133     70   137      0      0
+#> 84c11e6ffb29ebc2192f4b049b7dbddb     0     0     0      0     0      0      0
+#> 82104585f0b2617c13eb69f0bbdf7d5a     9     0     0      0     0      0      0
+#> 61cd4918428d3b36910b9cb2fc45946a     0     0     0      0     0      0      0
+#> 0ab9a976935482bce5f8af4cc6685147    41     0    11      0    12      0      0
+#> 87be3450216b45c53851fd173582a2d0     0     0     0      0     0      0      0
+#> 93a51bb503fadf90121f518db980e158     0     0     0      0     0      5      0
+#> b70cd843161996e075a853900e699d0f     0     0     0      0     0     28      0
+#> 154b8be9eea158f93d27d314d8e0e2c8     0     0     0      0     0     34      3
+#> 70691c2737cf7dc7c194de819f0e6cda     0    18     8      0     0     11     18
+#> 2ae1d80ead92f5991f58da14d000acd6     0     0     0      0     0      0      0
+#> 44fa299492152518fec34b9fa4554648     0     0     0     11     0      0      0
+#> e15c8f9df87f363b0dbbf49de0bed249     0     0     0      0     0      0      0
+#> 73689cad6eb4e86d9d0bb48c0da24463     0     0     0      0     0      0      0
+#> 234e15e82d64f2e1d61802fa8ea1998a     0     0    35      0    30     62      0
+#> 88c76ddb1b24acffe65d8128e2f48244     0     0     0      0     0     29     14
+#> 5544139a16716cc6ef48b2c16c9613e9     0     0     0      0     0      0      0
+#> 5b7fe68483e701059142cb531397b547     0     0     0      0     0      0      0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64     0     0     0      0     0      0      0
+#> 6b47ec9d1c70f07d16834e9a4e54aa70     0     0     0      0     0      0      0
+#> f8752b4824d239cfb19f3216cc34941b     0     0     0      0     0      0      0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b     0     0     0      0     0      0      0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe     0     0     7      0     0      0      0
+#> f5151c67af19c8471743ef3e2914f6b1     0     0     6      0     0      0      0
+#> c3842619fcbde52781c512c2561fca0b    19     0     0      0     0      0      0
+#> b3b00faa9dee9fa6b3b33744f51da00e     0     0     0      0     0      0      0
+#> c4f04e28c6267ac6c5b05d403e8f91c3     0     0     0      0     0      0      0
+#> 7fc06f107a6ddf6486ef2d43fcf23626     0     0     0      0     0      0      0
+#> 8d1dffcd377b338d2a0388637507b592     0     0     7      0     0      0      0
 #> 012871784f77c9dca7d446ddef2048d1     0     0     0      0     0      0      0
 #> 95c6ce2788783bf2f83343deba23b8bd     0     0     0      0     5      0      0
 #> 213227f244d97553a9a14c4e3fd04c98     0     0     0      0     0      0      0
@@ -2358,44 +2396,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55     4     0     0      0     0     11      4
 #> 5d99ba689ad34e4393a905e8a725b72b     0     0     0      0     0      0      0
 #> bfaa2d35e6dd13b9b32de811c6f92592     0     0     0      0     4      0      0
-#> 0c544d5f3a49a010971a96d8c39e4905     0     0     0      0     0      0      0
-#> bab3f08e1d75f42987012cae451639ff   482    65   186     65   145    142     29
-#> fa97a81b8c33569e2aa1fc9a3137b435     0     0     0      0     7     16      0
-#> a4d08886c3c6c62efd5678339a07828b     0     0     0      0     0      0      0
-#> 11ed0972601847ec168473a6bc4eeba7     0     0     0     17    32      0      0
-#> a6e4d88aa4b40402b1f94760d86b729c     0     0     0      0     0      8      0
-#> 86deaff47d33946ede1b7c25c6bbe9f9     0     0     0      0     0      0      0
-#> a1d3f1f8c151eaeb5cf12179861e0c87     0     0     0      0     0      0      0
-#> 3980891c22ccbb387b65f9e437b2f94f     0     0     0      0     0      0      0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5     0   179   133     70   137      0      0
-#> 84c11e6ffb29ebc2192f4b049b7dbddb     0     0     0      0     0      0      0
-#> 82104585f0b2617c13eb69f0bbdf7d5a     9     0     0      0     0      0      0
-#> 61cd4918428d3b36910b9cb2fc45946a     0     0     0      0     0      0      0
-#> 0ab9a976935482bce5f8af4cc6685147    41     0    11      0    12      0      0
-#> 87be3450216b45c53851fd173582a2d0     0     0     0      0     0      0      0
-#> 93a51bb503fadf90121f518db980e158     0     0     0      0     0      5      0
-#> b70cd843161996e075a853900e699d0f     0     0     0      0     0     28      0
-#> 154b8be9eea158f93d27d314d8e0e2c8     0     0     0      0     0     34      3
-#> 70691c2737cf7dc7c194de819f0e6cda     0    18     8      0     0     11     18
-#> 2ae1d80ead92f5991f58da14d000acd6     0     0     0      0     0      0      0
-#> 44fa299492152518fec34b9fa4554648     0     0     0     11     0      0      0
-#> e15c8f9df87f363b0dbbf49de0bed249     0     0     0      0     0      0      0
-#> 73689cad6eb4e86d9d0bb48c0da24463     0     0     0      0     0      0      0
-#> 234e15e82d64f2e1d61802fa8ea1998a     0     0    35      0    30     62      0
-#> 88c76ddb1b24acffe65d8128e2f48244     0     0     0      0     0     29     14
-#> 5544139a16716cc6ef48b2c16c9613e9     0     0     0      0     0      0      0
-#> 5b7fe68483e701059142cb531397b547     0     0     0      0     0      0      0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64     0     0     0      0     0      0      0
-#> 6b47ec9d1c70f07d16834e9a4e54aa70     0     0     0      0     0      0      0
-#> f8752b4824d239cfb19f3216cc34941b     0     0     0      0     0      0      0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b     0     0     0      0     0      0      0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe     0     0     7      0     0      0      0
-#> f5151c67af19c8471743ef3e2914f6b1     0     0     6      0     0      0      0
-#> c3842619fcbde52781c512c2561fca0b    19     0     0      0     0      0      0
-#> b3b00faa9dee9fa6b3b33744f51da00e     0     0     0      0     0      0      0
-#> c4f04e28c6267ac6c5b05d403e8f91c3     0     0     0      0     0      0      0
-#> 7fc06f107a6ddf6486ef2d43fcf23626     0     0     0      0     0      0      0
-#> 8d1dffcd377b338d2a0388637507b592     0     0     7      0     0      0      0
 #> 15410d762889d51818986bfcdb5d8965     0     0     0      0     0      0      0
 #> 48f68e44e258de63575b8bf6cf565d52     0     0    23      4    16      0      0
 #> 4712befe3685661e0fc0968859c369d5     0     0    18     20     0      0      0
@@ -2904,6 +2904,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff      0      0      0      0      0     0
 #> 087d358aaf77f81aaf50a623828865bb      0      0     10      0      0     0
 #> e451c4b3ff1c3dabeee296529b3a7a07      0      0      5     12      0     6
+#> 0c544d5f3a49a010971a96d8c39e4905      0      0     11      2      0     0
+#> bab3f08e1d75f42987012cae451639ff     57    238    165    191      0   111
+#> fa97a81b8c33569e2aa1fc9a3137b435      0     10      0      0      0     9
+#> a4d08886c3c6c62efd5678339a07828b      0      4      0      0      0     0
+#> 11ed0972601847ec168473a6bc4eeba7      0      0      0      0      0     0
+#> a6e4d88aa4b40402b1f94760d86b729c      0      0      0      0      0     0
+#> 86deaff47d33946ede1b7c25c6bbe9f9      0      0      0      0      0     3
+#> a1d3f1f8c151eaeb5cf12179861e0c87      0      0      0      0      0     0
+#> 3980891c22ccbb387b65f9e437b2f94f      0      0      0      0      0     0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5     12      0      0     16      0     0
+#> 84c11e6ffb29ebc2192f4b049b7dbddb      0      2      0      0      0     0
+#> 82104585f0b2617c13eb69f0bbdf7d5a      0      0      0      0      0     0
+#> 61cd4918428d3b36910b9cb2fc45946a      0      0      0      0      0     0
+#> 0ab9a976935482bce5f8af4cc6685147      0      0      0      0      2     0
+#> 87be3450216b45c53851fd173582a2d0      0      0      0      0      0     0
+#> 93a51bb503fadf90121f518db980e158      0      0      0      0      0     0
+#> b70cd843161996e075a853900e699d0f      0     16      0      0      0     0
+#> 154b8be9eea158f93d27d314d8e0e2c8      0     20      4      0      0     0
+#> 70691c2737cf7dc7c194de819f0e6cda      0      0      0      0      0     0
+#> 2ae1d80ead92f5991f58da14d000acd6      0      0      0      0      0     7
+#> 44fa299492152518fec34b9fa4554648      0      0      0      0      0    13
+#> e15c8f9df87f363b0dbbf49de0bed249      0      0      0      0      0     0
+#> 73689cad6eb4e86d9d0bb48c0da24463      0      0      0     15      0     0
+#> 234e15e82d64f2e1d61802fa8ea1998a     38     12     43      0      0     0
+#> 88c76ddb1b24acffe65d8128e2f48244      0      0      0     28      0     0
+#> 5544139a16716cc6ef48b2c16c9613e9      0      0      0      0      0     0
+#> 5b7fe68483e701059142cb531397b547      0      0      0      0      0     0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0      0      0      0      0     4
+#> 6b47ec9d1c70f07d16834e9a4e54aa70      0      0      0      0      0     0
+#> f8752b4824d239cfb19f3216cc34941b      0      0      0     43      0     0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0      0      0      4      0     0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe      0      0      0      0      0     0
+#> f5151c67af19c8471743ef3e2914f6b1      0      0      0      0      0     4
+#> c3842619fcbde52781c512c2561fca0b      0      0      0      0     10     0
+#> b3b00faa9dee9fa6b3b33744f51da00e      0      0      0      0      0     0
+#> c4f04e28c6267ac6c5b05d403e8f91c3      0      0      0      0      0     0
+#> 7fc06f107a6ddf6486ef2d43fcf23626      0      0      0      0      0     0
+#> 8d1dffcd377b338d2a0388637507b592      9      0     11      0      0     0
 #> 012871784f77c9dca7d446ddef2048d1      0      0      0      0      0     0
 #> 95c6ce2788783bf2f83343deba23b8bd      0      0      0      0      0     0
 #> 213227f244d97553a9a14c4e3fd04c98      0      0      0      0      0     0
@@ -2991,44 +3029,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55      0      5      5      0      0     0
 #> 5d99ba689ad34e4393a905e8a725b72b      0      0     14      0      0     0
 #> bfaa2d35e6dd13b9b32de811c6f92592      0      0      0      0      0     0
-#> 0c544d5f3a49a010971a96d8c39e4905      0      0     11      2      0     0
-#> bab3f08e1d75f42987012cae451639ff     57    238    165    191      0   111
-#> fa97a81b8c33569e2aa1fc9a3137b435      0     10      0      0      0     9
-#> a4d08886c3c6c62efd5678339a07828b      0      4      0      0      0     0
-#> 11ed0972601847ec168473a6bc4eeba7      0      0      0      0      0     0
-#> a6e4d88aa4b40402b1f94760d86b729c      0      0      0      0      0     0
-#> 86deaff47d33946ede1b7c25c6bbe9f9      0      0      0      0      0     3
-#> a1d3f1f8c151eaeb5cf12179861e0c87      0      0      0      0      0     0
-#> 3980891c22ccbb387b65f9e437b2f94f      0      0      0      0      0     0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5     12      0      0     16      0     0
-#> 84c11e6ffb29ebc2192f4b049b7dbddb      0      2      0      0      0     0
-#> 82104585f0b2617c13eb69f0bbdf7d5a      0      0      0      0      0     0
-#> 61cd4918428d3b36910b9cb2fc45946a      0      0      0      0      0     0
-#> 0ab9a976935482bce5f8af4cc6685147      0      0      0      0      2     0
-#> 87be3450216b45c53851fd173582a2d0      0      0      0      0      0     0
-#> 93a51bb503fadf90121f518db980e158      0      0      0      0      0     0
-#> b70cd843161996e075a853900e699d0f      0     16      0      0      0     0
-#> 154b8be9eea158f93d27d314d8e0e2c8      0     20      4      0      0     0
-#> 70691c2737cf7dc7c194de819f0e6cda      0      0      0      0      0     0
-#> 2ae1d80ead92f5991f58da14d000acd6      0      0      0      0      0     7
-#> 44fa299492152518fec34b9fa4554648      0      0      0      0      0    13
-#> e15c8f9df87f363b0dbbf49de0bed249      0      0      0      0      0     0
-#> 73689cad6eb4e86d9d0bb48c0da24463      0      0      0     15      0     0
-#> 234e15e82d64f2e1d61802fa8ea1998a     38     12     43      0      0     0
-#> 88c76ddb1b24acffe65d8128e2f48244      0      0      0     28      0     0
-#> 5544139a16716cc6ef48b2c16c9613e9      0      0      0      0      0     0
-#> 5b7fe68483e701059142cb531397b547      0      0      0      0      0     0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0      0      0      0      0     4
-#> 6b47ec9d1c70f07d16834e9a4e54aa70      0      0      0      0      0     0
-#> f8752b4824d239cfb19f3216cc34941b      0      0      0     43      0     0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0      0      0      4      0     0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe      0      0      0      0      0     0
-#> f5151c67af19c8471743ef3e2914f6b1      0      0      0      0      0     4
-#> c3842619fcbde52781c512c2561fca0b      0      0      0      0     10     0
-#> b3b00faa9dee9fa6b3b33744f51da00e      0      0      0      0      0     0
-#> c4f04e28c6267ac6c5b05d403e8f91c3      0      0      0      0      0     0
-#> 7fc06f107a6ddf6486ef2d43fcf23626      0      0      0      0      0     0
-#> 8d1dffcd377b338d2a0388637507b592      9      0     11      0      0     0
 #> 15410d762889d51818986bfcdb5d8965      0      0      0      0      0     0
 #> 48f68e44e258de63575b8bf6cf565d52      0     15     25      0      7    17
 #> 4712befe3685661e0fc0968859c369d5      0      0      0      0      0     0
@@ -3537,6 +3537,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff      0     0      0     0      0     0      0
 #> 087d358aaf77f81aaf50a623828865bb      0     0      0     0      0     0      0
 #> e451c4b3ff1c3dabeee296529b3a7a07      0     0      0     0      0     0      0
+#> 0c544d5f3a49a010971a96d8c39e4905      0     0      0     0      0     0      0
+#> bab3f08e1d75f42987012cae451639ff     18    44     14   158    122    78     41
+#> fa97a81b8c33569e2aa1fc9a3137b435      0     0      0     0     12     0      0
+#> a4d08886c3c6c62efd5678339a07828b      0     0      0     0     21     0      0
+#> 11ed0972601847ec168473a6bc4eeba7      0     0      0     0     14     0      0
+#> a6e4d88aa4b40402b1f94760d86b729c      0     0      0     0      0     0      0
+#> 86deaff47d33946ede1b7c25c6bbe9f9      0     0      0     0      0     0      0
+#> a1d3f1f8c151eaeb5cf12179861e0c87      0     0      0     0      0     0      0
+#> 3980891c22ccbb387b65f9e437b2f94f      0     0      0     0      0     0      0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5      0     0      0     0      0    40     51
+#> 84c11e6ffb29ebc2192f4b049b7dbddb      0     0      0     0      0     0      0
+#> 82104585f0b2617c13eb69f0bbdf7d5a      0     0      0     0      2     0      0
+#> 61cd4918428d3b36910b9cb2fc45946a      0     0      0     0      0     0      0
+#> 0ab9a976935482bce5f8af4cc6685147      0     2      0     0      0     0      0
+#> 87be3450216b45c53851fd173582a2d0      0     0      0     0     13     0      0
+#> 93a51bb503fadf90121f518db980e158      0     0      0     0      7     0      0
+#> b70cd843161996e075a853900e699d0f      0     0      0     0     56     0      0
+#> 154b8be9eea158f93d27d314d8e0e2c8      0     0      0     8     31     3      0
+#> 70691c2737cf7dc7c194de819f0e6cda      0     0      0    13      0     0     17
+#> 2ae1d80ead92f5991f58da14d000acd6      0     0      0     0      0     0      0
+#> 44fa299492152518fec34b9fa4554648      0     0      0     0      0     0      0
+#> e15c8f9df87f363b0dbbf49de0bed249      0     0      0    15      0     0      0
+#> 73689cad6eb4e86d9d0bb48c0da24463      0     0      0     0      0     0      0
+#> 234e15e82d64f2e1d61802fa8ea1998a      0     0      0    69      0    38     23
+#> 88c76ddb1b24acffe65d8128e2f48244      0     0      0     0      0     0      0
+#> 5544139a16716cc6ef48b2c16c9613e9      0     0      0     0      0     0      0
+#> 5b7fe68483e701059142cb531397b547      0     0      0     0      0     0      0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0     0      0     0      0     0      0
+#> 6b47ec9d1c70f07d16834e9a4e54aa70      0     0      0     0      0     0      0
+#> f8752b4824d239cfb19f3216cc34941b      0     0      0     0      0     0      0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0     0      0     0      0     0      0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe      0     0      0     0      0     0      0
+#> f5151c67af19c8471743ef3e2914f6b1      0     0      0     0      0     0      0
+#> c3842619fcbde52781c512c2561fca0b      0     0      0     0      0     0      0
+#> b3b00faa9dee9fa6b3b33744f51da00e      0     0      0     0      0     0      0
+#> c4f04e28c6267ac6c5b05d403e8f91c3      0     0      0     0      0     0      0
+#> 7fc06f107a6ddf6486ef2d43fcf23626      0     0      0     4      0     0      0
+#> 8d1dffcd377b338d2a0388637507b592      0     0      0    16      0     0      3
 #> 012871784f77c9dca7d446ddef2048d1      0     0      0     0      0     0      0
 #> 95c6ce2788783bf2f83343deba23b8bd      0     0      0     0      0     0      0
 #> 213227f244d97553a9a14c4e3fd04c98      0     0      0     0      0     0      0
@@ -3624,44 +3662,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55      0     0      8    10      0     0      0
 #> 5d99ba689ad34e4393a905e8a725b72b      0     0      0     6      0     0      0
 #> bfaa2d35e6dd13b9b32de811c6f92592      0     0      0     0      0     0      0
-#> 0c544d5f3a49a010971a96d8c39e4905      0     0      0     0      0     0      0
-#> bab3f08e1d75f42987012cae451639ff     18    44     14   158    122    78     41
-#> fa97a81b8c33569e2aa1fc9a3137b435      0     0      0     0     12     0      0
-#> a4d08886c3c6c62efd5678339a07828b      0     0      0     0     21     0      0
-#> 11ed0972601847ec168473a6bc4eeba7      0     0      0     0     14     0      0
-#> a6e4d88aa4b40402b1f94760d86b729c      0     0      0     0      0     0      0
-#> 86deaff47d33946ede1b7c25c6bbe9f9      0     0      0     0      0     0      0
-#> a1d3f1f8c151eaeb5cf12179861e0c87      0     0      0     0      0     0      0
-#> 3980891c22ccbb387b65f9e437b2f94f      0     0      0     0      0     0      0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5      0     0      0     0      0    40     51
-#> 84c11e6ffb29ebc2192f4b049b7dbddb      0     0      0     0      0     0      0
-#> 82104585f0b2617c13eb69f0bbdf7d5a      0     0      0     0      2     0      0
-#> 61cd4918428d3b36910b9cb2fc45946a      0     0      0     0      0     0      0
-#> 0ab9a976935482bce5f8af4cc6685147      0     2      0     0      0     0      0
-#> 87be3450216b45c53851fd173582a2d0      0     0      0     0     13     0      0
-#> 93a51bb503fadf90121f518db980e158      0     0      0     0      7     0      0
-#> b70cd843161996e075a853900e699d0f      0     0      0     0     56     0      0
-#> 154b8be9eea158f93d27d314d8e0e2c8      0     0      0     8     31     3      0
-#> 70691c2737cf7dc7c194de819f0e6cda      0     0      0    13      0     0     17
-#> 2ae1d80ead92f5991f58da14d000acd6      0     0      0     0      0     0      0
-#> 44fa299492152518fec34b9fa4554648      0     0      0     0      0     0      0
-#> e15c8f9df87f363b0dbbf49de0bed249      0     0      0    15      0     0      0
-#> 73689cad6eb4e86d9d0bb48c0da24463      0     0      0     0      0     0      0
-#> 234e15e82d64f2e1d61802fa8ea1998a      0     0      0    69      0    38     23
-#> 88c76ddb1b24acffe65d8128e2f48244      0     0      0     0      0     0      0
-#> 5544139a16716cc6ef48b2c16c9613e9      0     0      0     0      0     0      0
-#> 5b7fe68483e701059142cb531397b547      0     0      0     0      0     0      0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0     0      0     0      0     0      0
-#> 6b47ec9d1c70f07d16834e9a4e54aa70      0     0      0     0      0     0      0
-#> f8752b4824d239cfb19f3216cc34941b      0     0      0     0      0     0      0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0     0      0     0      0     0      0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe      0     0      0     0      0     0      0
-#> f5151c67af19c8471743ef3e2914f6b1      0     0      0     0      0     0      0
-#> c3842619fcbde52781c512c2561fca0b      0     0      0     0      0     0      0
-#> b3b00faa9dee9fa6b3b33744f51da00e      0     0      0     0      0     0      0
-#> c4f04e28c6267ac6c5b05d403e8f91c3      0     0      0     0      0     0      0
-#> 7fc06f107a6ddf6486ef2d43fcf23626      0     0      0     4      0     0      0
-#> 8d1dffcd377b338d2a0388637507b592      0     0      0    16      0     0      3
 #> 15410d762889d51818986bfcdb5d8965      3     4      0     0      0     0      0
 #> 48f68e44e258de63575b8bf6cf565d52      0     0      0     0      0     0      0
 #> 4712befe3685661e0fc0968859c369d5      0     0      0     0      0     0      0
@@ -4170,6 +4170,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff      0     0      0     0      0      0      0
 #> 087d358aaf77f81aaf50a623828865bb      0     0      0     0      0      0      0
 #> e451c4b3ff1c3dabeee296529b3a7a07      8    30      0     0      0      5      0
+#> 0c544d5f3a49a010971a96d8c39e4905      0     0      0     0      0      0      0
+#> bab3f08e1d75f42987012cae451639ff     79   215     30    42      0     79    107
+#> fa97a81b8c33569e2aa1fc9a3137b435      0     7      0     0      0      0      0
+#> a4d08886c3c6c62efd5678339a07828b      0     2      0     0      0      0      6
+#> 11ed0972601847ec168473a6bc4eeba7      0     0      0     0      0      0      0
+#> a6e4d88aa4b40402b1f94760d86b729c      0     0      0     0      0      0      0
+#> 86deaff47d33946ede1b7c25c6bbe9f9      0     0      0     0      0      0      0
+#> a1d3f1f8c151eaeb5cf12179861e0c87      0     0      0     0      0      0      0
+#> 3980891c22ccbb387b65f9e437b2f94f      0     0      0     0      0      0      0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5     34   102      0     0      0     11      0
+#> 84c11e6ffb29ebc2192f4b049b7dbddb      0     0      0     0      0      0      0
+#> 82104585f0b2617c13eb69f0bbdf7d5a      0     5      0     0      0      0      0
+#> 61cd4918428d3b36910b9cb2fc45946a      0     0      0     0      0      0      0
+#> 0ab9a976935482bce5f8af4cc6685147      0     0      0     0      0      0      0
+#> 87be3450216b45c53851fd173582a2d0      0     0      0     0      0      0      6
+#> 93a51bb503fadf90121f518db980e158      0     0      0     0      0      0      2
+#> b70cd843161996e075a853900e699d0f      0     0      0     6      0      0     10
+#> 154b8be9eea158f93d27d314d8e0e2c8      0     0      0     0      0      0      7
+#> 70691c2737cf7dc7c194de819f0e6cda      9    22      3     0      5      0      0
+#> 2ae1d80ead92f5991f58da14d000acd6      0     0      0     0      0      0      0
+#> 44fa299492152518fec34b9fa4554648      0     0      0     0      0      0      0
+#> e15c8f9df87f363b0dbbf49de0bed249      0     6      0     0      0      0      0
+#> 73689cad6eb4e86d9d0bb48c0da24463      0     0      0     0      0      0      0
+#> 234e15e82d64f2e1d61802fa8ea1998a      0    28      0    21      0     24      0
+#> 88c76ddb1b24acffe65d8128e2f48244      0     0      0     0      0      0      0
+#> 5544139a16716cc6ef48b2c16c9613e9      0     0      0     0      0      0      0
+#> 5b7fe68483e701059142cb531397b547      0     0      0     0      0      0      0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0    14      0     0      0      0      0
+#> 6b47ec9d1c70f07d16834e9a4e54aa70      0     0      0     0      0      0      0
+#> f8752b4824d239cfb19f3216cc34941b      0     0      0     0      0      0      0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0     0      0     0      0      0      0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe      0     0      0     0      0      0      0
+#> f5151c67af19c8471743ef3e2914f6b1      0     7      0     0      0      0      0
+#> c3842619fcbde52781c512c2561fca0b      0     0      0     0      0      0      0
+#> b3b00faa9dee9fa6b3b33744f51da00e      0     0      0     0      0      0      0
+#> c4f04e28c6267ac6c5b05d403e8f91c3      0     0      0     0      0      0      0
+#> 7fc06f107a6ddf6486ef2d43fcf23626      0     0      0     0      0      0      0
+#> 8d1dffcd377b338d2a0388637507b592      0     0      0     0      0      0      0
 #> 012871784f77c9dca7d446ddef2048d1      0     0      0     0      0      0      0
 #> 95c6ce2788783bf2f83343deba23b8bd      0     3      0     0      0      0      0
 #> 213227f244d97553a9a14c4e3fd04c98      0     0      0     0      0      0      0
@@ -4257,44 +4295,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55      0     6      0     0      0      0      0
 #> 5d99ba689ad34e4393a905e8a725b72b      3     0      0     0      0      0      0
 #> bfaa2d35e6dd13b9b32de811c6f92592      0     0      0     0      0      0      0
-#> 0c544d5f3a49a010971a96d8c39e4905      0     0      0     0      0      0      0
-#> bab3f08e1d75f42987012cae451639ff     79   215     30    42      0     79    107
-#> fa97a81b8c33569e2aa1fc9a3137b435      0     7      0     0      0      0      0
-#> a4d08886c3c6c62efd5678339a07828b      0     2      0     0      0      0      6
-#> 11ed0972601847ec168473a6bc4eeba7      0     0      0     0      0      0      0
-#> a6e4d88aa4b40402b1f94760d86b729c      0     0      0     0      0      0      0
-#> 86deaff47d33946ede1b7c25c6bbe9f9      0     0      0     0      0      0      0
-#> a1d3f1f8c151eaeb5cf12179861e0c87      0     0      0     0      0      0      0
-#> 3980891c22ccbb387b65f9e437b2f94f      0     0      0     0      0      0      0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5     34   102      0     0      0     11      0
-#> 84c11e6ffb29ebc2192f4b049b7dbddb      0     0      0     0      0      0      0
-#> 82104585f0b2617c13eb69f0bbdf7d5a      0     5      0     0      0      0      0
-#> 61cd4918428d3b36910b9cb2fc45946a      0     0      0     0      0      0      0
-#> 0ab9a976935482bce5f8af4cc6685147      0     0      0     0      0      0      0
-#> 87be3450216b45c53851fd173582a2d0      0     0      0     0      0      0      6
-#> 93a51bb503fadf90121f518db980e158      0     0      0     0      0      0      2
-#> b70cd843161996e075a853900e699d0f      0     0      0     6      0      0     10
-#> 154b8be9eea158f93d27d314d8e0e2c8      0     0      0     0      0      0      7
-#> 70691c2737cf7dc7c194de819f0e6cda      9    22      3     0      5      0      0
-#> 2ae1d80ead92f5991f58da14d000acd6      0     0      0     0      0      0      0
-#> 44fa299492152518fec34b9fa4554648      0     0      0     0      0      0      0
-#> e15c8f9df87f363b0dbbf49de0bed249      0     6      0     0      0      0      0
-#> 73689cad6eb4e86d9d0bb48c0da24463      0     0      0     0      0      0      0
-#> 234e15e82d64f2e1d61802fa8ea1998a      0    28      0    21      0     24      0
-#> 88c76ddb1b24acffe65d8128e2f48244      0     0      0     0      0      0      0
-#> 5544139a16716cc6ef48b2c16c9613e9      0     0      0     0      0      0      0
-#> 5b7fe68483e701059142cb531397b547      0     0      0     0      0      0      0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0    14      0     0      0      0      0
-#> 6b47ec9d1c70f07d16834e9a4e54aa70      0     0      0     0      0      0      0
-#> f8752b4824d239cfb19f3216cc34941b      0     0      0     0      0      0      0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0     0      0     0      0      0      0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe      0     0      0     0      0      0      0
-#> f5151c67af19c8471743ef3e2914f6b1      0     7      0     0      0      0      0
-#> c3842619fcbde52781c512c2561fca0b      0     0      0     0      0      0      0
-#> b3b00faa9dee9fa6b3b33744f51da00e      0     0      0     0      0      0      0
-#> c4f04e28c6267ac6c5b05d403e8f91c3      0     0      0     0      0      0      0
-#> 7fc06f107a6ddf6486ef2d43fcf23626      0     0      0     0      0      0      0
-#> 8d1dffcd377b338d2a0388637507b592      0     0      0     0      0      0      0
 #> 15410d762889d51818986bfcdb5d8965      0     0      0     0      0      0      0
 #> 48f68e44e258de63575b8bf6cf565d52      0    20      0     0      0      0      0
 #> 4712befe3685661e0fc0968859c369d5      0     0      0     0      0     14      0
@@ -4803,6 +4803,44 @@ collapse_table(
 #> b4051b5227746f04c1feb9d8979299ff      0      0      0     0      0
 #> 087d358aaf77f81aaf50a623828865bb      0      0      0     0      0
 #> e451c4b3ff1c3dabeee296529b3a7a07      0     12      0     0      0
+#> 0c544d5f3a49a010971a96d8c39e4905      0      0      0     0      0
+#> bab3f08e1d75f42987012cae451639ff     82    109      0     0     50
+#> fa97a81b8c33569e2aa1fc9a3137b435      0      0      0     0      0
+#> a4d08886c3c6c62efd5678339a07828b      0      0      0     0      0
+#> 11ed0972601847ec168473a6bc4eeba7      0      0      0     0      0
+#> a6e4d88aa4b40402b1f94760d86b729c      0      0      0     0      0
+#> 86deaff47d33946ede1b7c25c6bbe9f9      0      0      0     0      0
+#> a1d3f1f8c151eaeb5cf12179861e0c87      0      0      0     0      0
+#> 3980891c22ccbb387b65f9e437b2f94f      0      0      0     0      0
+#> fc8ec321e0c2fc2a6de9abe98256b3f5     27      0      0    13    127
+#> 84c11e6ffb29ebc2192f4b049b7dbddb      0      0      0     0      0
+#> 82104585f0b2617c13eb69f0bbdf7d5a      2     23      0     0      0
+#> 61cd4918428d3b36910b9cb2fc45946a      0      0      0     0      0
+#> 0ab9a976935482bce5f8af4cc6685147      0      0      0     0      0
+#> 87be3450216b45c53851fd173582a2d0      0      0      0     0      0
+#> 93a51bb503fadf90121f518db980e158      0      0      0     0      0
+#> b70cd843161996e075a853900e699d0f      0      0      0     0      0
+#> 154b8be9eea158f93d27d314d8e0e2c8      6      0      0     0      0
+#> 70691c2737cf7dc7c194de819f0e6cda     21      0      2     0     19
+#> 2ae1d80ead92f5991f58da14d000acd6      0      0      0     0      0
+#> 44fa299492152518fec34b9fa4554648      0      0      0     0      0
+#> e15c8f9df87f363b0dbbf49de0bed249      0      0      0     0      0
+#> 73689cad6eb4e86d9d0bb48c0da24463      0     14      0     0      0
+#> 234e15e82d64f2e1d61802fa8ea1998a     57      0      0     0     48
+#> 88c76ddb1b24acffe65d8128e2f48244     15      0      0     0      0
+#> 5544139a16716cc6ef48b2c16c9613e9      0      0      0     0      0
+#> 5b7fe68483e701059142cb531397b547      0      0      0     0      0
+#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0      0      0     0      0
+#> 6b47ec9d1c70f07d16834e9a4e54aa70      0      0      0     0      0
+#> f8752b4824d239cfb19f3216cc34941b      0      0      0     0      0
+#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0      0      0     0      0
+#> 8a6b88f9515bf2dfac09e6a69045a4fe      0      0      0     0      0
+#> f5151c67af19c8471743ef3e2914f6b1      0      0      0     0      0
+#> c3842619fcbde52781c512c2561fca0b      3     52      9     0      0
+#> b3b00faa9dee9fa6b3b33744f51da00e      0      0      0     0      0
+#> c4f04e28c6267ac6c5b05d403e8f91c3      0      0      0     0      0
+#> 7fc06f107a6ddf6486ef2d43fcf23626      0      0      0     0      0
+#> 8d1dffcd377b338d2a0388637507b592      0      0      0     0      2
 #> 012871784f77c9dca7d446ddef2048d1      0      0      0     0      0
 #> 95c6ce2788783bf2f83343deba23b8bd      0      0      0     0      0
 #> 213227f244d97553a9a14c4e3fd04c98      0      0      0     0      0
@@ -4890,44 +4928,6 @@ collapse_table(
 #> ce41c973bd4965a400989ec128890d55      3      5      0     0      0
 #> 5d99ba689ad34e4393a905e8a725b72b      0      6      0     0      0
 #> bfaa2d35e6dd13b9b32de811c6f92592      0      0      0     0      0
-#> 0c544d5f3a49a010971a96d8c39e4905      0      0      0     0      0
-#> bab3f08e1d75f42987012cae451639ff     82    109      0     0     50
-#> fa97a81b8c33569e2aa1fc9a3137b435      0      0      0     0      0
-#> a4d08886c3c6c62efd5678339a07828b      0      0      0     0      0
-#> 11ed0972601847ec168473a6bc4eeba7      0      0      0     0      0
-#> a6e4d88aa4b40402b1f94760d86b729c      0      0      0     0      0
-#> 86deaff47d33946ede1b7c25c6bbe9f9      0      0      0     0      0
-#> a1d3f1f8c151eaeb5cf12179861e0c87      0      0      0     0      0
-#> 3980891c22ccbb387b65f9e437b2f94f      0      0      0     0      0
-#> fc8ec321e0c2fc2a6de9abe98256b3f5     27      0      0    13    127
-#> 84c11e6ffb29ebc2192f4b049b7dbddb      0      0      0     0      0
-#> 82104585f0b2617c13eb69f0bbdf7d5a      2     23      0     0      0
-#> 61cd4918428d3b36910b9cb2fc45946a      0      0      0     0      0
-#> 0ab9a976935482bce5f8af4cc6685147      0      0      0     0      0
-#> 87be3450216b45c53851fd173582a2d0      0      0      0     0      0
-#> 93a51bb503fadf90121f518db980e158      0      0      0     0      0
-#> b70cd843161996e075a853900e699d0f      0      0      0     0      0
-#> 154b8be9eea158f93d27d314d8e0e2c8      6      0      0     0      0
-#> 70691c2737cf7dc7c194de819f0e6cda     21      0      2     0     19
-#> 2ae1d80ead92f5991f58da14d000acd6      0      0      0     0      0
-#> 44fa299492152518fec34b9fa4554648      0      0      0     0      0
-#> e15c8f9df87f363b0dbbf49de0bed249      0      0      0     0      0
-#> 73689cad6eb4e86d9d0bb48c0da24463      0     14      0     0      0
-#> 234e15e82d64f2e1d61802fa8ea1998a     57      0      0     0     48
-#> 88c76ddb1b24acffe65d8128e2f48244     15      0      0     0      0
-#> 5544139a16716cc6ef48b2c16c9613e9      0      0      0     0      0
-#> 5b7fe68483e701059142cb531397b547      0      0      0     0      0
-#> 0a0875a0acf4a28d1bc1c4d1d11aaa64      0      0      0     0      0
-#> 6b47ec9d1c70f07d16834e9a4e54aa70      0      0      0     0      0
-#> f8752b4824d239cfb19f3216cc34941b      0      0      0     0      0
-#> ec8a0768cd2fb426d7e6bfc2c4f50e5b      0      0      0     0      0
-#> 8a6b88f9515bf2dfac09e6a69045a4fe      0      0      0     0      0
-#> f5151c67af19c8471743ef3e2914f6b1      0      0      0     0      0
-#> c3842619fcbde52781c512c2561fca0b      3     52      9     0      0
-#> b3b00faa9dee9fa6b3b33744f51da00e      0      0      0     0      0
-#> c4f04e28c6267ac6c5b05d403e8f91c3      0      0      0     0      0
-#> 7fc06f107a6ddf6486ef2d43fcf23626      0      0      0     0      0
-#> 8d1dffcd377b338d2a0388637507b592      0      0      0     0      2
 #> 15410d762889d51818986bfcdb5d8965      0      0      0     0      0
 #> 48f68e44e258de63575b8bf6cf565d52      0      0      0     0      0
 #> 4712befe3685661e0fc0968859c369d5      0      0      0     0      0

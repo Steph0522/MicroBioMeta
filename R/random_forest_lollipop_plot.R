@@ -32,10 +32,10 @@
 #' @export
 #'
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
-#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #'
 #' random_forest_lollipop_plot(
@@ -64,6 +64,7 @@ random_forest_lollipop_plot <- function(table,
 
     ncols <- ncol(table)
     table_numeric <- table[-ncols]
+    table[[ncols]] <- .mbm_update_phyla(table[[ncols]])
     taxonomy <- table[ncols]
 
     if (ncol(table_numeric) < nrow(table_numeric)) {
@@ -125,35 +126,9 @@ random_forest_lollipop_plot <- function(table,
                     paste0("other ", stringr::str_extract(taxonomy, "p__[^;]*") %>% sub("p__", "", .)),
                 TRUE ~ "Unclassified"
             ),
-            Phylum = dplyr::case_when(
-                Phylum == "p__Proteobacteria" ~ "Pseudomonadota",
-                Phylum == "p__Actinobacteriota" ~ "Actinomycetota",
-                Phylum == "p__Bacteroidetes" ~ "Bacteroidota",
-                Phylum == "p__Firmicutes" ~ "Bacillota",
-                TRUE ~ sub("^p__", "", as.character(Phylum))
-            ),
+            Phylum = sub("^(p__|D_1__)", "", as.character(Phylum)),
             row_id = paste0("row", dplyr::row_number())
         )
-    updated_phyla <- c(
-        "p__Proteobacteria", "p__Actinobacteriota",
-        "p__Bacteroidetes", "p__Firmicutes"
-    )
-    present_phyla <- intersect(updated_phyla, top_asvs$Phylum)
-
-    if (length(present_phyla) > 0) {
-        old_new <- data.frame(
-            Old = c("Proteobacteria", "Actinobacteriota", "Bacteroidetes", "Firmicutes"),
-            New = c("Pseudomonadota", "Actinomycetota", "Bacteroidota", "Bacillota")
-        )
-
-        changes <- old_new[old_new$Old %in% sub("^p__", "", present_phyla), ]
-
-        warning(
-            "Note: Some bacterial phylum names have been updated to match NCBI's revised taxonomy:\n",
-            paste(sprintf("  - '%s' changed to '%s'", changes$Old, changes$New), collapse = "\n"),
-            "\nReference: https://ncbiinsights.ncbi.nlm.nih.gov/2021/12/10/ncbi-taxonomy-prokaryote-phyla-added/"
-        )
-    }
     n_phyla <- length(unique(top_asvs.modified$Phylum))
     if (!is.null(group_colors)) {
         if (length(group_colors) < n_phyla) {

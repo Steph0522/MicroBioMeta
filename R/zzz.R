@@ -430,6 +430,88 @@ utils::globalVariables(c(
     )
 }
 
+.mbm_phylum_names <- c(
+    Acidobacteria = "Acidobacteriota",
+    Actinobacteria = "Actinomycetota",
+    Actinobacteriota = "Actinomycetota",
+    Aquificae = "Aquificota",
+    Armatimonadetes = "Armatimonadota",
+    Bacteroidetes = "Bacteroidota",
+    Balneolaeota = "Balneolota",
+    Caldiserica = "Caldisericota",
+    Calditrichaeota = "Calditrichota",
+    Campilobacterota = "Campylobacterota",
+    Chlamydiae = "Chlamydiota",
+    Chlorobi = "Chlorobiota",
+    Chloroflexi = "Chloroflexota",
+    Chrysiogenetes = "Chrysiogenota",
+    Cyanobacteria = "Cyanobacteriota",
+    Deferribacteres = "Deferribacterota",
+    "Deinococcus-Thermus" = "Deinococcota",
+    Dictyoglomi = "Dictyoglomota",
+    Elusimicrobia = "Elusimicrobiota",
+    Fibrobacteres = "Fibrobacterota",
+    Firmicutes = "Bacillota",
+    Fusobacteria = "Fusobacteriota",
+    Gemmatimonadetes = "Gemmatimonadota",
+    Ignavibacteriae = "Ignavibacteriota",
+    Kiritimatiellaeota = "Kiritimatiellota",
+    Lentisphaerae = "Lentisphaerota",
+    Nitrospirae = "Nitrospirota",
+    Planctomycetes = "Planctomycetota",
+    Proteobacteria = "Pseudomonadota",
+    Rhodothermaeota = "Rhodothermota",
+    Spirochaetes = "Spirochaetota",
+    Synergistetes = "Synergistota",
+    Tenericutes = "Mycoplasmatota",
+    Thermodesulfobacteria = "Thermodesulfobacteriota",
+    Thermotogae = "Thermotogota",
+    Verrucomicrobia = "Verrucomicrobiota"
+)
+
+.mbm_env <- new.env(parent = emptyenv())
+
+.mbm_update_phyla <- function(taxonomy) {
+    taxonomy <- as.character(taxonomy)
+    values <- unique(taxonomy[!is.na(taxonomy)])
+    if (length(values) == 0) {
+        return(taxonomy)
+    }
+    updated <- values
+    changed <- character(0)
+    for (old in names(.mbm_phylum_names)) {
+        pattern <- paste0(
+            "^([^;]*;\\s*(?:p__|D_1__)?)", gsub("-", "\\-", old, fixed = TRUE),
+            "(?=\\s*(?:;|$))"
+        )
+        hit <- grepl(pattern, updated, perl = TRUE)
+        if (any(hit)) {
+            updated[hit] <- sub(pattern, paste0("\\1", .mbm_phylum_names[[old]]),
+                updated[hit],
+                perl = TRUE
+            )
+            changed <- c(changed, old)
+        }
+    }
+    if (length(changed) == 0) {
+        return(taxonomy)
+    }
+    shown <- if (is.null(.mbm_env$phyla_shown)) character(0) else .mbm_env$phyla_shown
+    new_msg <- setdiff(changed, shown)
+    if (length(new_msg) > 0) {
+        message(
+            "Phylum names were updated to their validly published names ",
+            "(Oren & Garrity 2021, used by NCBI Taxonomy): ",
+            paste(sprintf("%s -> %s", new_msg, .mbm_phylum_names[new_msg]),
+                collapse = ", "
+            ),
+            " (shown once per session)."
+        )
+        .mbm_env$phyla_shown <- c(shown, new_msg)
+    }
+    updated[match(taxonomy, values)]
+}
+
 .mbm_shorten_labels <- function(x, max_length = 35, composite = TRUE) {
     if (composite) x <- .mbm_composite_genus(x)
     if (!is.null(max_length)) {

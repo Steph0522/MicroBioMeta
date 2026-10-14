@@ -68,10 +68,10 @@
 #' @export
 #'
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
-#' metadata_path <- system.file("extdata", "metadata_bacteria.txt", package = "MicroBioMeta")
+#' metadata_path <- system.file("extdata", "subset_metadata_bacteria.txt", package = "MicroBioMeta")
 #' metadata <- read.delim(metadata_path, check.names = FALSE)
 #'
 #' # group_col must have exactly two groups; Location has two
@@ -147,6 +147,7 @@ aldex_heatmap_plot <- function(table,
     )
     if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
     names(table)[tax_col] <- "taxonomy"
+    table$taxonomy <- .mbm_update_phyla(table$taxonomy)
 
     table <- table %>% tibble::rownames_to_column(var = "OTUID")
     table_counts <- table %>%

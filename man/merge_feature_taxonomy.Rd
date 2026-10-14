@@ -32,7 +32,7 @@ columns. A single taxonomy column is renamed to \code{taxonomy}.
 This function joins a feature table (counts per sample) with the corresponding taxonomy data.
 }
 \examples{
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 full_table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 feature_table <- full_table[, setdiff(colnames(full_table), "taxonomy")]

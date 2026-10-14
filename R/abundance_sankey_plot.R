@@ -30,7 +30,7 @@
 #' @export
 #'
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' abundance_sankey_plot(
@@ -61,6 +61,7 @@ abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
 
     tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
     if (length(tax_col) != 1) stop("There is no taxonomy column in the table")
+    table[[tax_col]] <- .mbm_update_phyla(table[[tax_col]])
 
     table <- table[, c(setdiff(seq_len(ncol(table)), tax_col), tax_col)]
 
@@ -133,12 +134,6 @@ abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
             dplyr::rename(abund = ".") %>%
             dplyr::mutate(taxRank = toupper(substr(level, 1, 1))) %>%
             tibble::rownames_to_column("Taxon") %>%
-            dplyr::mutate(
-                Taxon = gsub("Firmicutes", "Bacillota-D", Taxon),
-                Taxon = gsub("Proteobacteria", "Pseudomonadota", Taxon),
-                Taxon = gsub("Actinobacteriota", "Actinomycetota", Taxon),
-                Taxon = gsub("Cyanobacteria", "Cyanobacteriota", Taxon)
-            ) %>%
             dplyr::filter(!endsWith(Taxon, "NA")) %>%
             tibble::column_to_rownames("Taxon")
     }

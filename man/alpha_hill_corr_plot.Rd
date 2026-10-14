@@ -63,7 +63,7 @@ against the sequencing depth (total reads), with a regression line and the
 correlation coefficient, combining the three panels in one figure.
 }
 \examples{
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 # Always tagged A/B/C (see panel_label_case and panel_labels to customize)

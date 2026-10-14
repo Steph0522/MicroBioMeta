@@ -42,7 +42,7 @@ Features not resolved to that level are kept as they are. Optionally
 converts the counts to relative abundance and saves the collapsed table.
 }
 \examples{
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 collapse_table(

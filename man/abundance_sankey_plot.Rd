@@ -55,7 +55,7 @@ Creates an interactive Sankey diagram (with networkD3) of how the relative
 abundance flows across taxonomic ranks.
 }
 \examples{
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 abundance_sankey_plot(

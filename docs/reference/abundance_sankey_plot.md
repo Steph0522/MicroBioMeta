@@ -74,7 +74,7 @@ file.
 ## Examples
 
 ``` r
-table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 
 abundance_sankey_plot(
@@ -84,5 +84,5 @@ abundance_sankey_plot(
     taxRanks     = c("P", "C", "G", "S"),
     taxonomy_db  = "silva"
 )
-#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpaEBJAJ/sankey_output.html
+#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\Rtmp2NtpuO/sankey_output.html
 ```

@@ -22,7 +22,7 @@
 #'   pivoted to one row per taxon/sample combination).
 #' @export
 #' @examples
-#' table_path <- system.file("extdata", "tabla_bacteria.txt", package = "MicroBioMeta")
+#' table_path <- system.file("extdata", "subset_table_bacteria.txt", package = "MicroBioMeta")
 #' table <- read.delim(table_path, row.names = 1, check.names = FALSE)
 #'
 #' collapse_table(
@@ -54,6 +54,7 @@ collapse_table <- function(table,
     }
 
     table$taxonomy <- gsub("(;__)+$", "", table$taxonomy)
+    table$taxonomy <- .mbm_update_phyla(table$taxonomy)
 
     level_idx <- switch(level,
         kingdom = 1,

@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-🍄 Este tutorial muestra cómo usar `MicroBioMeta` con datos de **metagenómica shotgun**, como alternativa al flujo de trabajo de amplicón (metabarcoding) cubierto en la [viñeta de Amplicón](metabarcoding_es.html). Las funciones y la mayoría de sus parámetros son exactamente los mismos en ambos flujos de trabajo, así que no se vuelven a explicar aquí, solo lo que es específico de los datos metagenómicos.
+🍄 Este tutorial muestra cómo usar `MicroBioMeta` con datos de **metagenómica shotgun**, como alternativa al flujo de trabajo de amplicón (metabarcoding) cubierto en la [viñeta de Amplicón](metabarcoding_es.html). Las funciones y la mayoría de sus parámetros son exactamente los mismos en ambos flujos de trabajo, así que no se vuelven a explicar aquí; solo se explica lo que es específico de los datos metagenómicos. Las instrucciones de instalación están en la [viñeta de Amplicón](metabarcoding_es.html).
 
 Para este ejemplo, las lecturas fueron clasificadas taxonómicamente con [`Kraken2`](https://ccb.jhu.edu/software/kraken2/) [@wood2019kraken2] y corregidas en abundancia a nivel de especie con [`Bracken`](https://ccb.jhu.edu/software/bracken/) [@lu2017bracken].
 
@@ -36,14 +36,14 @@ Datos crudos, metadatos y los scripts originales del análisis: [github.com/Step
 ## Cargar los datos
 Primero, carguemos `MicroBioMeta` y `tidyverse` (usado para el manejo de datos):
 
-```{r "start", message=FALSE}
+```{r load, message=FALSE}
 library("MicroBioMeta")
 library(tidyverse)
 ```
 
 Cada muestra se procesó por separado, así que los reportes `bracken_species` se combinaron de antemano en una sola tabla (una columna por muestra, llamada `kraken_pluspfp_<id_metagenome>_report_bracken_species`) con una columna **`taxonomy`** ya agregada como última columna:
 
-```{r cargar-los-datos-1}
+```{r data-1}
 table_kraken <- read.delim(
     system.file("extdata", "table_kraken.txt", package = "MicroBioMeta"),
     row.names = 1, check.names = FALSE
@@ -54,11 +54,11 @@ table_kraken[1:3, c(1:2, ncol(table_kraken))]
 
 La taxonomía ya está en la tabla, así que no hace falta usar la función `merge_feature_taxonomy()`.
 
-⚠️ Las cadenas de taxonomía de Kraken2 usan un prefijo `k__`/`p__`/`c__`/... como SILVA/GTDB, pero los rangos están separados por `"; "` (punto y coma **y espacio**) en vez de `";"`. `MicroBioMeta` ya tiene esto contemplado en cualquier lugar donde exista un argumento `taxonomy_db`, solo pasa `taxonomy_db = "Kraken2"`.
+⚠️ Las cadenas de taxonomía de Kraken2 usan un prefijo `k__`/`p__`/`c__`/... como SILVA, pero los rangos están separados por `"; "` (punto y coma **y espacio**) en vez de `";"`. `MicroBioMeta` ya tiene esto contemplado en cualquier lugar donde exista un argumento `taxonomy_db`, solo pasa `taxonomy_db = "Kraken2"`.
 
 Ahora, carguemos los metadatos:
 
-```{r cargar-los-datos-2}
+```{r data-2}
 metadata_meta <- read.delim(
     system.file("extdata", "metadata_metagenomic.txt", package = "MicroBioMeta"),
     check.names = FALSE
@@ -69,7 +69,7 @@ head(metadata_meta[, 1:10])
 
 Los nombres de columna de Kraken codifican un número `id_metagenome` (por ejemplo, `kraken_pluspfp_100_report_bracken_species`) en vez del ID real de la muestra, así que lo recuperamos con una expresión regular y usamos `metadata_meta$id_metagenome` para renombrar cada columna a su `SampleID`:
 
-```{r cargar-los-datos-3}
+```{r data-3}
 sample_cols <- setdiff(colnames(table_kraken), "taxonomy")
 
 id_metagenome <- as.integer(gsub("kraken_pluspfp_|_report_bracken_species", "", sample_cols))
@@ -80,18 +80,18 @@ colnames(table_kraken)[match(sample_cols, colnames(table_kraken))] <-
 
 Renombremos y demos formato a los metadatos:
 
-```{r cargar-los-datos-4}
+```{r data-4}
 metadata_meta$Polygon <- factor(paste0("Pol", metadata_meta$Poligono), levels = paste0("Pol", 1:6))
 metadata_meta$Site <- as.character(metadata_meta$Sitio)
 ```
 
-```{r cargar-los-datos-5}
+```{r data-5}
 table_meta <- table_kraken[, c(metadata_meta$SAMPLEID, "taxonomy")]
 ```
 
 Las coordenadas se tomaron y cargaron así:
 
-```{r cargar-los-datos-6}
+```{r data-6}
 coord_meta <- read.csv(
     system.file("extdata", "coord_metagenomic.csv", package = "MicroBioMeta")
 ) %>%
@@ -111,7 +111,7 @@ metadata_meta <- metadata_meta %>%
 
 Para mostrarlo, guardamos la tabla de Kraken2 en un `TreeSummarizedExperiment`, con una columna de taxonomía por rango, como lo haría `mia`:
 
-```{r from-objects-1, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE), message=FALSE}
+```{r tse-1, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE), message=FALSE}
 counts <- as.matrix(table_meta[, metadata_meta$SAMPLEID])
 
 ranks <- tidyr::separate(
@@ -134,7 +134,7 @@ tse
 
 `from_tse()` regresa una lista con los dos data frames:
 
-```{r from-objects-2, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE)}
+```{r tse-2, eval=requireNamespace("TreeSummarizedExperiment", quietly = TRUE)}
 mbm <- from_tse(tse, assay_name = "counts")
 
 mbm$table[1:3, c(1:2, ncol(mbm$table))]
@@ -145,7 +145,7 @@ y se pueden usar directo en cualquier función, por ejemplo `abundance_bar_plot(
 
 Con un objeto `phyloseq` funciona igual:
 
-```{r from-objects-3, eval=FALSE}
+```{r tse-3, eval=FALSE}
 mbm <- from_phyloseq(physeq)
 ```
 
@@ -153,7 +153,7 @@ mbm <- from_phyloseq(physeq)
 ### Barplot de abundancia
 Misma función que en la viñeta de amplicón; la única diferencia es `taxonomy_db = "Kraken2"`, que le indica a la lógica de parseo de taxonomía que espere cadenas estilo Kraken2/Bracken.
 
-```{r barplot-de-abundancia-7, fig.width=9, fig.height=6}
+```{r bar, fig.width=9, fig.height=6}
 abundance_bar_plot(
     table = table_meta,
     metadata = metadata_meta,
@@ -171,7 +171,7 @@ abundance_bar_plot(
 ### Heatmap de abundancia
 Los taxones de Kraken2/Bracken no son ASVs, así que aquí se usa `feature_prefix = "Taxon"` en vez del prefijo `"ASV"` por defecto para las etiquetas de fila. `condition2` agrega una segunda barra de anotación, aquí el sitio de muestreo dentro de cada polígono.
 
-```{r heatmap-de-abundancia-8, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
+```{r heat, warning=FALSE, fig.width=8.5, fig.height=5.5, out.width="85%"}
 abundance_heatmap_plot(
     table = table_meta,
     metadata = metadata_meta,
@@ -189,7 +189,7 @@ Como en la viñeta de metabarcoding, primero se puede usar `alpha_hill_corr_plot
 ### Visualización de diversidad alfa
 `fill_col` es igual a `x_col` aquí, así que la leyenda solo repetiría las etiquetas del eje x - `show_legend = FALSE` la quita.
 
-```{r visualizaci-n-de-diversidad-alfa-10, warning=FALSE, fig.width=9, fig.height=5}
+```{r alpha, warning=FALSE, fig.width=9, fig.height=5}
 alpha_hill_plot(
     table = table_meta,
     metadata = metadata_meta,
@@ -204,11 +204,11 @@ alpha_hill_plot(
 )
 ```
 
-La riqueza (*q*=0) está casi saturada y plana entre bloques aquí — esta tabla de Bracken a nivel de género simplemente no tiene mucho margen para variar en *q*=0 — mientras que *q*=1 y *q*=2 (que ponderan por abundancia relativa) sí capturan diferencias entre bloques.
+La riqueza (*q*=0) está casi saturada y plana entre polígonos aquí — esta tabla de Bracken a nivel de especie tiene solo 87 especies de hongos, 83 de ellas presentes en las 36 muestras, así que hay poco margen para variar en *q*=0 — mientras que *q*=1 y *q*=2 (que ponderan por abundancia relativa) sí capturan diferencias entre polígonos.
 
 ### Diversidad alfa a lo largo de un gradiente continuo
 
-```{r diversidad-alfa-a-lo-largo-de-un-gradiente-continuo-11, warning=FALSE, fig.height=4, fig.width=10}
+```{r alpha-gradient, warning=FALSE, fig.height=4, fig.width=10}
 alpha_decay_plot(
     table = table_meta,
     metadata = metadata_meta,
@@ -225,7 +225,7 @@ La diversidad en *q*=1 y *q*=2 aumenta significativamente con el pH del suelo; *
 
 Aquí usamos la disimilitud de **Bray-Curtis**, que toma en cuenta la abundancia de cada taxón, con una ordenación **NMDS**. NMDS parte de configuraciones al azar, así que usamos `set.seed()` para obtener siempre la misma figura:
 
-```{r ordenaci-n-de-la-composici-n-de-la-comunidad-12, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
+```{r ord, warning=FALSE, message=FALSE, fig.width=8, fig.height=6}
 set.seed(123)
 beta_ord_plot(
     table = table_meta,
@@ -242,7 +242,7 @@ beta_ord_plot(
 
 El resultado es una figura de la tabla (un ggplot), así que se puede combinar con otros gráficos (p. ej. `cowplot::plot_grid()`) o guardar con `ggplot2::ggsave()`. Usa `save_table = TRUE` para obtener también los resultados en un archivo de texto.
 
-```{r pruebas-estad-sticas-para-diversidad-beta-13, fig.width=8, fig.height=4}
+```{r permanova, fig.width=8, fig.height=4}
 beta_test_table(
     table = table_meta,
     metadata = metadata_meta,
@@ -258,7 +258,7 @@ beta_test_table(
 
 `beta_decay_plot()` evalúa si las comunidades geográficamente más cercanas también son más similares en composición, mediante una prueba de Mantel [@mantel1967test]:
 
-```{r decaimiento-de-la-similitud-comunitaria-con-la-distancia-14, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
+```{r decay, warning=FALSE, fig.width=5.5, fig.height=4.2, out.width="70%"}
 beta_decay_plot(
     table    = table_meta,
     metadata = metadata_meta,
@@ -272,16 +272,16 @@ Las comunidades geográficamente más cercanas son significativamente más simil
 
 ## Análisis de abundancia diferencial
 
-Para las versiones de heatmap (ALDEx2 [@fernandes2014aldex2]) y ANCOMBC2 [@lin2020ancombc] necesitamos un subconjunto de 2 grupos del `Polygon` de 6 niveles; en esta parte compararemos Polygon 2 y 5:
+Para las versiones de heatmap (ALDEx2 [@fernandes2014aldex2]) y ANCOM-BC2 [@lin2024ancombc2] necesitamos un subconjunto de 2 grupos del `Polygon` de 6 niveles; en esta parte compararemos Polygon 2 y 5:
 
-```{r an-lisis-de-abundancia-diferencial-15}
+```{r diff-1}
 metadata_meta_compar <- metadata_meta %>%
     filter(Polygon == "Pol2" | Polygon == "Pol5")
 
 table_meta_compar <- table_meta[, c(match(metadata_meta_compar$SAMPLEID, colnames(table_meta)), ncol(table_meta))]
 ```
 
-```{r an-lisis-de-abundancia-diferencial-16, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
+```{r diff-2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
 aldex_heatmap_plot(
     table = table_meta_compar,
     metadata = metadata_meta_compar,
@@ -289,7 +289,7 @@ aldex_heatmap_plot(
 )
 ```
 
-```{r an-lisis-de-abundancia-diferencial-17, fig.width=8, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
+```{r diff-3, fig.width=8, fig.height=6, message=FALSE, warning=FALSE, out.width="50%"}
 ancombc_plot(
     table = table_meta_compar,
     metadata = metadata_meta_compar,
@@ -304,11 +304,11 @@ ancombc_plot(
 
 `random_forest_lollipop_plot()` usa un modelo Random Forest [@breiman2001randomforest] para encontrar los taxones que mejor predicen el polígono:
 
-```{r identificando-taxones-importantes-18, fig.width=7, fig.height=6, out.width="60%"}
+```{r rf-1, fig.width=7, fig.height=6, out.width="60%"}
 random_forest_lollipop_plot(table = table_meta, metadata = metadata_meta, top_n = 10, variable_to_predict = "Polygon")
 ```
 
-```{r identificando-taxones-importantes-19, fig.width=8, fig.height=9, out.width="60%"}
+```{r rf-2, fig.width=8, fig.height=9, out.width="60%"}
 ratios_bubble_plot(
     table = table_meta_compar,
     metadata = metadata_meta_compar,
@@ -323,15 +323,15 @@ ratios_bubble_plot(
 
 Los metadatos ya traen las variables fisicoquímicas del suelo medidas para estas muestras, así que, como en la viñeta de amplicón, las variables se eligen por nombre con `env_vars` (no hace falta una tabla ambiental aparte):
 
-```{r an-lisis-ambientales-20}
+```{r env-table}
 env_vars_meta <- metadata_meta %>%
-    dplyr::select(pH:ARENA) %>%
+    dplyr::select(pH:ARENA, -type, -type2) %>%
     colnames()
 ```
 
 ### Correlación entre variables ambientales y abundancia taxonómica
 
-```{r correlaci-n-entre-variables-ambientales-y-abundancia-taxon-mica-21, fig.width=9, fig.height=3.2}
+```{r corr-env, fig.width=9, fig.height=3.2}
 corr_env_abund_plot(
     table = table_meta,
     metadata = metadata_meta,
@@ -344,7 +344,7 @@ corr_env_abund_plot(
 
 ### Ordenación restringida (CCA)
 
-```{r ordenaci-n-restringida-cca-23, fig.width=8, fig.height=6}
+```{r cca, fig.width=8, fig.height=6}
 cca_rda_biplot(
     table = table_meta,
     metadata = metadata_meta,
@@ -363,6 +363,6 @@ cca_rda_biplot(
 
 ## Información de la sesión
 
-```{r informaci-n-de-la-sesi-n-24}
+```{r session}
 sessionInfo()
 ```
