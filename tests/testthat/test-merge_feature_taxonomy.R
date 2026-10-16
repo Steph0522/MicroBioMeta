@@ -47,6 +47,41 @@ test_that("merge_feature_taxonomy errors when there are no matching IDs at all",
     )
 })
 
+test_that("merge_feature_taxonomy matches by ID when IDs are in the first column", {
+    table <- data.frame(
+        `#OTU ID` = c("OTU1", "OTU2", "OTU3"),
+        Sample1 = c(10, 20, 30),
+        check.names = FALSE
+    )
+    taxonomy <- data.frame(
+        `Feature ID` = c("OTU3", "OTU1", "OTU2"),
+        Taxon = c("p__Proteobacteria", "p__Firmicutes", "p__Bacteroidota"),
+        check.names = FALSE
+    )
+
+    expect_message(
+        expect_message(
+            result <- merge_feature_taxonomy(table, taxonomy),
+            "first column"
+        ),
+        "first column"
+    )
+    expect_equal(colnames(result), c("Sample1", "taxonomy"))
+    expect_equal(result["OTU1", "taxonomy"], "p__Firmicutes")
+    expect_equal(result["OTU3", "taxonomy"], "p__Proteobacteria")
+    expect_equal(result["OTU3", "Sample1"], 30)
+})
+
+test_that("merge_feature_taxonomy errors when IDs cannot be found", {
+    table <- data.frame(Sample1 = c(10, 20), Sample2 = c(1, 2))
+    taxonomy <- data.frame(Taxon = c("p__A", "p__B"), row.names = c("OTU1", "OTU2"))
+
+    expect_error(
+        merge_feature_taxonomy(table, taxonomy),
+        "no feature IDs as row names"
+    )
+})
+
 test_that("merge_feature_taxonomy writes a table to disk when save_table = TRUE", {
     table <- data.frame(Sample1 = 10, row.names = "OTU1")
     taxonomy <- data.frame(Taxon = "d__Bacteria", row.names = "OTU1")

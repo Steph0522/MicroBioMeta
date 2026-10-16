@@ -13,10 +13,13 @@ merge_feature_taxonomy(
 }
 \arguments{
 \item{table}{A data frame with features in rows and samples in columns. Row
-names must hold the feature IDs (OTUs, ASVs, species...).}
+names must hold the feature IDs (OTUs, ASVs, species...). If the table has
+no row names (e.g. read without \code{row.names = 1}), its first column is
+used as feature IDs.}
 
-\item{taxonomy}{A data frame or matrix with the taxonomy. Row names must
-match the feature IDs of \code{table}.}
+\item{taxonomy}{A data frame or matrix with the taxonomy. Row names (or, if
+absent, the first column) must hold the feature IDs of \code{table}.
+Features are matched by ID, so both inputs can be in any order.}
 
 \item{save_table}{Logical. If \code{TRUE}, saves the merged table as a
 tab-delimited file. Default \code{FALSE}.}

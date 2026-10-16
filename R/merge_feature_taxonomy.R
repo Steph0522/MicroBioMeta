@@ -3,9 +3,12 @@
 #' This function joins a feature table (counts per sample) with the corresponding taxonomy data.
 #'
 #' @param table A data frame with features in rows and samples in columns. Row
-#'   names must hold the feature IDs (OTUs, ASVs, species...).
-#' @param taxonomy A data frame or matrix with the taxonomy. Row names must
-#'   match the feature IDs of \code{table}.
+#'   names must hold the feature IDs (OTUs, ASVs, species...). If the table has
+#'   no row names (e.g. read without \code{row.names = 1}), its first column is
+#'   used as feature IDs.
+#' @param taxonomy A data frame or matrix with the taxonomy. Row names (or, if
+#'   absent, the first column) must hold the feature IDs of \code{table}.
+#'   Features are matched by ID, so both inputs can be in any order.
 #' @param save_table Logical. If \code{TRUE}, saves the merged table as a
 #'   tab-delimited file. Default \code{FALSE}.
 #' @param table_filename Character. Name or path of the saved file (used when
@@ -29,8 +32,8 @@
 merge_feature_taxonomy <- function(table, taxonomy,
                                    save_table = FALSE,
                                    table_filename = "merged_feature_taxonomy.txt") {
-    table <- as.data.frame(table)
-    taxonomy <- as.data.frame(taxonomy)
+    table <- ids_to_rownames(as.data.frame(table), "table")
+    taxonomy <- ids_to_rownames(as.data.frame(taxonomy), "taxonomy")
 
     ids_table <- rownames(table)
     ids_taxonomy <- rownames(taxonomy)
@@ -73,4 +76,28 @@ merge_feature_taxonomy <- function(table, taxonomy,
     }
 
     return(joined)
+}
+
+# Feature IDs must be row names. If a data frame was read without
+# `row.names = 1`, its row names are just "1", "2", ... and matching on them
+# pairs features by position. In that case take the IDs from the first column
+# (when it holds unique character IDs) or stop.
+ids_to_rownames <- function(df, arg) {
+    if (.row_names_info(df) > 0) {
+        return(df)
+    }
+    first <- df[[1]]
+    if (ncol(df) > 1 && (is.character(first) || is.factor(first)) &&
+        !anyNA(first) && !anyDuplicated(first)) {
+        message(
+            "`", arg, "` has no feature IDs as row names; using its first column (\"",
+            colnames(df)[1], "\") as feature IDs."
+        )
+        rownames(df) <- as.character(first)
+        return(df[, -1, drop = FALSE])
+    }
+    stop(
+        "`", arg, "` has no feature IDs as row names. Read it with ",
+        "`row.names = 1` or set its row names to the feature IDs."
+    )
 }
