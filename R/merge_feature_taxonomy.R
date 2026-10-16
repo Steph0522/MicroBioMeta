@@ -78,10 +78,6 @@ merge_feature_taxonomy <- function(table, taxonomy,
     return(joined)
 }
 
-# Feature IDs must be row names. If a data frame was read without
-# `row.names = 1`, its row names are just "1", "2", ... and matching on them
-# pairs features by position. In that case take the IDs from the first column
-# (when it holds unique character IDs) or stop.
 ids_to_rownames <- function(df, arg) {
     if (.row_names_info(df) > 0) {
         return(df)
