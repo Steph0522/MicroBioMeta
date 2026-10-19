@@ -37,6 +37,8 @@ the first column). They cover:
   log-ratios.
 - **Environmental variables**: correlations and CCA/RDA biplots.
 
+<img src="man/figures/workflow.png" alt="MicroBioMeta workflow and functions" width="100%"/>
+
 ## 💻 Installation
 
 `MicroBioMeta` is not on Bioconductor yet. For now, install it from
