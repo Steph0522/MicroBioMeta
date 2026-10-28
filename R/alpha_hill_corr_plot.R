@@ -94,7 +94,7 @@ alpha_hill_corr_plot <- function(table,
         add.params = list(color = "#D55E00", fill = "#56B4E9"),
         cor.coeff.args = list(
             method = method,
-            label.x = 3,
+            label.x.npc = "left",
             label.sep = "\n",
             p.accuracy = 0.001,
             r.accuracy = 0.001,
@@ -106,6 +106,7 @@ alpha_hill_corr_plot <- function(table,
     ) +
         base_theme +
         ggplot2::labs(y = expression(paste(italic("q"), "=0", " (number of total features)"))) +
+        ggplot2::scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
         ggplot2::theme(aspect.ratio = aspect_ratio_theme)
 
     q1_vs_depth <- ggpubr::ggscatter(
@@ -116,7 +117,7 @@ alpha_hill_corr_plot <- function(table,
         add.params = list(color = "#D55E00", fill = "#56B4E9"),
         cor.coeff.args = list(
             method = method,
-            label.x = 3,
+            label.x.npc = "left",
             label.sep = "\n",
             p.accuracy = 0.001,
             r.accuracy = 0.001,
@@ -128,6 +129,7 @@ alpha_hill_corr_plot <- function(table,
     ) +
         base_theme +
         ggplot2::labs(y = expression(paste(italic("q"), "=1", " (number of frequent features)"))) +
+        ggplot2::scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
         ggplot2::theme(aspect.ratio = aspect_ratio_theme)
 
     q2_vs_depth <- ggpubr::ggscatter(
@@ -138,7 +140,7 @@ alpha_hill_corr_plot <- function(table,
         add.params = list(color = "#D55E00", fill = "#56B4E9"),
         cor.coeff.args = list(
             method = method,
-            label.x = 3,
+            label.x.npc = "left",
             label.sep = "\n",
             p.accuracy = 0.001,
             r.accuracy = 0.001,
@@ -150,6 +152,7 @@ alpha_hill_corr_plot <- function(table,
     ) +
         base_theme +
         ggplot2::labs(y = expression(paste(italic("q"), "=2", " (number of dominant features)"))) +
+        ggplot2::scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
         ggplot2::theme(aspect.ratio = aspect_ratio_theme)
 
 

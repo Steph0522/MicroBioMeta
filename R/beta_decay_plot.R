@@ -18,8 +18,9 @@
 #'   defines the groups. If given, only pairs of samples from the same group are
 #'   kept, with one color per group. Optional; \code{NULL} (default) for no
 #'   groups.
-#' @param palette Palette name (\code{"colorb"} (default), \code{"grey"},
-#'   \code{"viridis"} or \code{"brewer"}) or a vector of colors, one per group.
+#' @param palette Palette name (\code{"colorb"} (default), \code{"safe"},
+#'   \code{"earth"}, \code{"grey"}, \code{"viridis"} or \code{"brewer"}) or a
+#'   vector of colors, one per group.
 #'   Only used when \code{group_col} is given.
 #' @param distance Character. Dissimilarity metric passed to
 #'   \code{vegan::vegdist}. Common options: \code{"jaccard"} (default),
@@ -334,6 +335,8 @@ beta_decay_plot <- function(
             ggplot2::scale_color_manual(name = group_col, values = palette)
         } else {
             switch(palette,
+                "safe" = ggplot2::scale_color_manual(name = group_col, values = .mbm_safe_colors(length(unique(groups)))),
+                "earth" = ggplot2::scale_color_manual(name = group_col, values = .mbm_earth_colors(length(unique(groups)))),
                 "grey" = ggplot2::scale_color_grey(name = group_col, start = 0.7, end = 0.2),
                 "viridis" = ggplot2::scale_color_viridis_d(name = group_col),
                 "brewer" = ggplot2::scale_color_brewer(name = group_col, palette = "Set2"),

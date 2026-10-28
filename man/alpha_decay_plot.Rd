@@ -54,8 +54,9 @@ from the linear model to the annotation label.}
 three q0/q1/q2 panels in a row; \code{"vertical"} in a column.}
 
 \item{palette}{Character. Palette name: \code{"colorb"} (default,
-colorblind-friendly Okabe-Ito), \code{"grey"}, \code{"viridis"} or
-\code{"brewer"}.}
+colorblind-friendly Okabe-Ito), \code{"safe"} (colorblind-friendly CARTO
+"Safe"), \code{"earth"} (CARTO "Earth", brown to teal; best for two or
+ordered groups), \code{"grey"}, \code{"viridis"} or \code{"brewer"}.}
 
 \item{group_colors}{Optional character vector of colors, one per group,
 named after the groups or in their order. Overrides \code{palette}.}

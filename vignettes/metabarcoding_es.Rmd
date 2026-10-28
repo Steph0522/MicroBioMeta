@@ -229,6 +229,35 @@ abundance_bar_plot(
 )
 ```
 
+`palette` cambia los colores de los taxones: `"default"` (los colores brillantes de arriba), `"brewer"` (las paletas cualitativas de RColorBrewer unidas, sin grises; muchos colores distintos, pero no apta para daltónicos) o `"safe"` (la paleta "Safe", apta para daltónicos; tiene 11 colores, así que conviene `top_n` de 11 o menos, si no los colores se interpolan). El taxón más abundante recibe el primer color. `taxa_colors` fija el color de taxones concretos (un vector con nombres, p. ej. `c(Fusarium = "#E31A1C")`), lo que mantiene el mismo color de un taxón entre figuras:
+
+```{r bar-3, fig.width=9, fig.height=6}
+abundance_bar_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Treatment",
+    facet_by = "Type_of_soil",
+    add_remained = TRUE,
+    label = "Genera",
+    x_label_angle = 45,
+    palette = "brewer"
+)
+```
+
+```{r bar-4, fig.width=9, fig.height=6}
+abundance_bar_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Treatment",
+    facet_by = "Type_of_soil",
+    top_n = 10,
+    add_remained = TRUE,
+    label = "Genera",
+    x_label_angle = 45,
+    palette = "safe"
+)
+```
+
 ### Heatmaps de abundancia
 Nota que los archivos de entrada son los mismos que en la función anterior, y esto es consistente en todas las funciones de aquí en adelante.
 
@@ -348,6 +377,21 @@ alpha_hill_plot(
     facet_orientation = "horizontal",
     show_legend = FALSE,
     save_table = FALSE
+)
+```
+
+`palette` define los colores de los grupos en `alpha_hill_plot()`, `alpha_diversity_plot()`, `alpha_decay_plot()`, `beta_ord_plot()` y `beta_decay_plot()`: `"colorb"` (por defecto, la paleta Okabe-Ito, apta para daltónicos), `"safe"` (la paleta "Safe" de CARTO, apta para daltónicos; como en `rcartocolor::carto_pal()`, con 3 a 11 grupos el último es gris), `"earth"` (la paleta "Earth" de CARTO, de café a azul verdoso; mejor para dos grupos o grupos ordenados, porque los colores intermedios son pálidos), `"grey"`, `"viridis"` o `"brewer"`. `group_colors` reemplaza a `palette` con tus propios colores. Aquí el ejemplo de hongos de arriba con `"safe"`:
+
+```{r alpha-pal, warning=FALSE, fig.width=9, fig.height=7}
+alpha_hill_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    facet_by = "Treatment",
+    facet_orientation = "horizontal",
+    show_legend = FALSE,
+    palette = "safe"
 )
 ```
 
@@ -546,6 +590,22 @@ beta_ord_plot(
     shape_col = "Treatment",
     distance = "bray",
     ordination = "NMDS"
+)
+```
+
+Las mismas opciones de `palette` sirven para la ordenación. Con `"earth"` y dos grupos (aquí solo rizósfera y raíces) las muestras salen en café y azul verdoso:
+
+```{r ord-pal, fig.width=8, fig.height=6}
+set.seed(123)
+two_soils <- metadata_fungi[metadata_fungi$Type_of_soil %in% c("Rhizosphere", "Roots"), ]
+beta_ord_plot(
+    table = table_fung,
+    metadata = two_soils,
+    group_col = "Type_of_soil",
+    shape_col = "Treatment",
+    distance = "bray",
+    ordination = "NMDS",
+    palette = "earth"
 )
 ```
 

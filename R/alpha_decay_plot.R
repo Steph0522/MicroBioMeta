@@ -21,8 +21,9 @@
 #' @param facet_orientation Character. \code{"horizontal"} (default) puts the
 #'   three q0/q1/q2 panels in a row; \code{"vertical"} in a column.
 #' @param palette Character. Palette name: \code{"colorb"} (default,
-#'   colorblind-friendly Okabe-Ito), \code{"grey"}, \code{"viridis"} or
-#'   \code{"brewer"}.
+#'   colorblind-friendly Okabe-Ito), \code{"safe"} (colorblind-friendly CARTO
+#'   "Safe"), \code{"earth"} (CARTO "Earth", brown to teal; best for two or
+#'   ordered groups), \code{"grey"}, \code{"viridis"} or \code{"brewer"}.
 #' @param group_colors Optional character vector of colors, one per group,
 #'   named after the groups or in their order. Overrides \code{palette}.
 #' @param x_axis_title Character. Title of the x-axis. If \code{NULL}
@@ -236,6 +237,7 @@ alpha_decay_plot <- function(
             dplyr::mutate(x_pos = Inf, hjust = 1.05, vjust = 1.1, y_pos = Inf)
     }
 
+    n_groups <- if (!is.null(group_col)) length(unique(hills_long[[group_col]])) else 1
     colorb_default <- if (!is.null(group_col) && length(unique(hills_long[[group_col]])) == 2) {
         .mbm_colors_2group
     } else {
@@ -246,6 +248,8 @@ alpha_decay_plot <- function(
     } else {
         switch(palette,
             "colorb" = ggplot2::scale_color_manual(values = colorb_default),
+            "safe" = ggplot2::scale_color_manual(values = .mbm_safe_colors(n_groups)),
+            "earth" = ggplot2::scale_color_manual(values = .mbm_earth_colors(n_groups)),
             "grey" = ggplot2::scale_color_grey(start = 0.7, end = 0.2),
             "viridis" = ggplot2::scale_color_viridis_d(option = "plasma"),
             "brewer" = ggplot2::scale_color_brewer(palette = "Set2"),

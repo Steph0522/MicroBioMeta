@@ -44,8 +44,9 @@ defines the groups. If given, only pairs of samples from the same group are
 kept, with one color per group. Optional; \code{NULL} (default) for no
 groups.}
 
-\item{palette}{Palette name (\code{"colorb"} (default), \code{"grey"},
-\code{"viridis"} or \code{"brewer"}) or a vector of colors, one per group.
+\item{palette}{Palette name (\code{"colorb"} (default), \code{"safe"},
+\code{"earth"}, \code{"grey"}, \code{"viridis"} or \code{"brewer"}) or a
+vector of colors, one per group.
 Only used when \code{group_col} is given.}
 
 \item{distance}{Character. Dissimilarity metric passed to

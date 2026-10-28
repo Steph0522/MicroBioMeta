@@ -19,6 +19,8 @@ abundance_bar_plot(
   x_label_angle = 0,
   strip_text_bold = FALSE,
   strip_color = "grey",
+  palette = "default",
+  taxa_colors = NULL,
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
@@ -68,6 +70,18 @@ bold. Default \code{FALSE}.}
 
 \item{strip_color}{Character. Background color of the facet strips (used
 when \code{facet_by} is set). Default \code{"grey"}.}
+
+\item{palette}{Character. Palette for the taxa: \code{"default"} (bright
+colors, the original MicroBioMeta palette), \code{"brewer"} (the
+qualitative RColorBrewer palettes Accent, Dark2, Paired, Pastel1, Pastel2,
+Set1, Set2 and Set3 joined, without greys; not colorblind-friendly) or
+\code{"safe"} (colorblind-friendly "Safe" palette, 11 colors; with more
+taxa the colors are interpolated and are no longer fully colorblind-safe).
+The most abundant taxon gets the first color. Default \code{"default"}.}
+
+\item{taxa_colors}{Optional named character vector of colors, one per taxon
+(names = taxa as shown in the legend). Taxa not named keep the
+\code{palette} colors. Default \code{NULL}.}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}

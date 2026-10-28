@@ -75,8 +75,10 @@ facet by. Optional; \code{NULL} (default) for none.}
 Case-insensitive.}
 
 \item{palette}{Character. Palette name: \code{"colorb"} (default,
-colorblind-friendly Okabe-Ito), \code{"grey"}, \code{"viridis"} or
-\code{"brewer"}. Case-insensitive.}
+colorblind-friendly Okabe-Ito), \code{"safe"} (colorblind-friendly CARTO
+"Safe"), \code{"earth"} (CARTO "Earth", brown to teal; best for two or
+ordered groups), \code{"grey"}, \code{"viridis"} or \code{"brewer"}.
+Case-insensitive.}
 
 \item{group_colors}{Optional character vector of colors, one per group,
 named after the groups or in their order. Overrides \code{palette}.}

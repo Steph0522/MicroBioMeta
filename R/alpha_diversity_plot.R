@@ -31,8 +31,10 @@
 #'   \code{facet_by} facets in columns; \code{"vertical"} in rows.
 #'   Case-insensitive.
 #' @param palette Character. Palette name: \code{"colorb"} (default,
-#'   colorblind-friendly Okabe-Ito), \code{"grey"}, \code{"viridis"} or
-#'   \code{"brewer"}. Case-insensitive.
+#'   colorblind-friendly Okabe-Ito), \code{"safe"} (colorblind-friendly CARTO
+#'   "Safe"), \code{"earth"} (CARTO "Earth", brown to teal; best for two or
+#'   ordered groups), \code{"grey"}, \code{"viridis"} or \code{"brewer"}.
+#'   Case-insensitive.
 #' @param group_colors Optional character vector of colors, one per group,
 #'   named after the groups or in their order. Overrides \code{palette}.
 #' @param n_cols Integer. Number of columns of the facet grid. If \code{NULL}
@@ -193,6 +195,8 @@ alpha_diversity_plot <- function(
     } else {
         switch(palette,
             "colorb" = ggplot2::scale_fill_manual(values = colorb_default),
+            "safe" = ggplot2::scale_fill_manual(values = .mbm_safe_colors(length(unique(results[[fill_col]])))),
+            "earth" = ggplot2::scale_fill_manual(values = .mbm_earth_colors(length(unique(results[[fill_col]])))),
             "grey" = ggplot2::scale_fill_grey(start = 0.9, end = 0.3),
             "viridis" = ggplot2::scale_fill_viridis_d(option = "plasma"),
             "brewer" = ggplot2::scale_fill_brewer(palette = "Set2"),
@@ -389,7 +393,8 @@ alpha_diversity_plot <- function(
                     )
             }
 
-            if (col_idx != 1) {
+            # with free_y each panel has its own scale, so every panel keeps its y-axis labels
+            if (col_idx != 1 && !free_y) {
                 p_cell <- p_cell + ggplot2::theme(
                     axis.text.y  = ggplot2::element_text(colour = NA),
                     axis.ticks.y = ggplot2::element_line(colour = NA)

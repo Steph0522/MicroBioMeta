@@ -54,7 +54,9 @@ colors}; which scale it produces depends on whether \code{group_col} is
 discrete or continuous.
 \itemize{
 \item Named, discrete \code{group_col}: one of \code{"colorb"}
-(default; qualitative colorblind-friendly palette), \code{"grey"},
+(default; qualitative colorblind-friendly palette), \code{"safe"}
+(colorblind-friendly CARTO "Safe"), \code{"earth"} (CARTO "Earth",
+brown to teal; best for two or ordered groups), \code{"grey"},
 \code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
 \item Named, continuous \code{group_col}: \code{"viridis"} (default;
 \code{option = "cividis"})

@@ -407,6 +407,31 @@ utils::globalVariables(c(
 
 .mbm_colors_2group <- c("#E69F00", "#56B4E9")
 
+# CARTO "Safe" in its original order; like rcartocolor::carto_pal(), with 3-11
+# groups the last one is grey
+.mbm_safe_colors <- function(n) {
+    safe <- c(
+        "#88CCEE", "#CC6677", "#DDCC77", "#117733", "#332288", "#AA4499",
+        "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888"
+    )
+    if (n <= 2) return(safe[seq_len(n)])
+    if (n <= 12) return(c(safe[seq_len(n - 1)], "#888888"))
+    grDevices::colorRampPalette(safe[1:11])(n)
+}
+
+# CARTO "Earth" (brown to teal); best for two groups or ordered groups
+.mbm_earth_colors <- function(n) {
+    if (n <= 2) return(c("#A16928", "#2887A1")[seq_len(n)])
+    grDevices::colorRampPalette(c("#A16928", "#EDEAC2", "#2887A1"))(n)
+}
+
+# Qualitative RColorBrewer palettes joined, without repeats or greys
+.mbm_colors_brewer_qual <- function() {
+    pals <- c(Accent = 8, Dark2 = 8, Paired = 12, Pastel1 = 9, Pastel2 = 8, Set1 = 9, Set2 = 8, Set3 = 12)
+    cols <- toupper(unlist(Map(function(p, n) scales::brewer_pal(palette = p)(n), names(pals), pals), use.names = FALSE))
+    setdiff(unique(cols), c("#666666", "#999999", "#B3B3B3", "#CCCCCC", "#D9D9D9", "#F2F2F2"))
+}
+
 .mbm_colors_safe <- c(
     "#CC6677", "#332288", "#999933", "#882255",
     "#44AA99", "#AA4499", "#661100", "#88CCEE",

@@ -30,6 +30,16 @@
 #'   bold. Default \code{FALSE}.
 #' @param strip_color Character. Background color of the facet strips (used
 #'   when \code{facet_by} is set). Default \code{"grey"}.
+#' @param palette Character. Palette for the taxa: \code{"default"} (bright
+#'   colors, the original MicroBioMeta palette), \code{"brewer"} (the
+#'   qualitative RColorBrewer palettes Accent, Dark2, Paired, Pastel1, Pastel2,
+#'   Set1, Set2 and Set3 joined, without greys; not colorblind-friendly) or
+#'   \code{"safe"} (colorblind-friendly "Safe" palette, 11 colors; with more
+#'   taxa the colors are interpolated and are no longer fully colorblind-safe).
+#'   The most abundant taxon gets the first color. Default \code{"default"}.
+#' @param taxa_colors Optional named character vector of colors, one per taxon
+#'   (names = taxa as shown in the legend). Taxa not named keep the
+#'   \code{palette} colors. Default \code{NULL}.
 #' @param aspect_ratio Numeric. Aspect ratio (height/width) of each panel.
 #'   Default \code{NULL} (automatic).
 #' @param add_remained Logical. If \code{TRUE}, adds an "Other" category with
@@ -83,12 +93,15 @@ abundance_bar_plot <- function(table,
                                x_label_angle = 0,
                                strip_text_bold = FALSE,
                                strip_color = "grey",
+                               palette = "default",
+                               taxa_colors = NULL,
                                aspect_ratio = NULL,
                                add_remained = FALSE,
                                save_table = FALSE,
                                table_filename = "relative_abundance.txt") {
     taxonomy_db <- .mbm_taxonomy_db(taxonomy_db)
     level <- .mbm_check_level(level)
+    palette <- match.arg(tolower(palette), c("default", "brewer", "safe"))
 
     .mbm_check_table(table)
     tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
@@ -247,17 +260,32 @@ abundance_bar_plot <- function(table,
     tax_levels <- levels(avg_by_group$taxonomy)
     tax_levels_no_other <- setdiff(tax_levels, c("Other", "Unclassified"))
 
-    cbPalette <- grDevices::colorRampPalette(
-        c(
-            "#99ff10", "#0099CC", "#ff6600", "#FF0066", "#99FF33",
-            "#CC00cc", "#009E73", "#F0E442", "#0072B2", "#ff9900",
-            "#56B4E9", "#FFFFFF", "#99ff90", "#ffff00", "#FF0000"
-        )
-    )(length(tax_levels_no_other))
-
-    names(cbPalette) <- tax_levels_no_other
+    if (palette == "default") {
+        cbPalette <- grDevices::colorRampPalette(
+            c(
+                "#99ff10", "#0099CC", "#ff6600", "#FF0066", "#99FF33",
+                "#CC00cc", "#009E73", "#F0E442", "#0072B2", "#ff9900",
+                "#56B4E9", "#FFFFFF", "#99ff90", "#ffff00", "#FF0000"
+            )
+        )(length(tax_levels_no_other))
+        names(cbPalette) <- tax_levels_no_other
+    } else {
+        base_cols <- if (palette == "brewer") .mbm_colors_brewer_qual() else .mbm_safe_colors(12)[1:11]
+        n_tax <- length(tax_levels_no_other)
+        cbPalette <- if (n_tax <= length(base_cols)) {
+            base_cols[seq_len(n_tax)]
+        } else {
+            grDevices::colorRampPalette(base_cols)(n_tax)
+        }
+        # most abundant taxon first
+        names(cbPalette) <- rev(tax_levels_no_other)
+    }
     cbPalette["Other"] <- "#D3D3D3"
     cbPalette["Unclassified"] <- "#666666"
+    if (!is.null(taxa_colors)) {
+        if (is.null(names(taxa_colors))) stop("`taxa_colors` must be a named vector (names = taxa).", call. = FALSE)
+        cbPalette[names(taxa_colors)] <- taxa_colors
+    }
 
     p <- ggplot2::ggplot(
         avg_by_group,

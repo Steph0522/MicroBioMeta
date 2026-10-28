@@ -229,6 +229,35 @@ abundance_bar_plot(
 )
 ```
 
+`palette` changes the colors of the taxa: `"default"` (the bright colors above), `"brewer"` (the qualitative RColorBrewer palettes joined, without greys; many distinct colors, but not colorblind-friendly) or `"safe"` (the colorblind-friendly "Safe" palette; it has 11 colors, so keep `top_n` at 11 or less, otherwise the colors are interpolated). The most abundant taxon gets the first color. `taxa_colors` fixes the color of specific taxa (a named vector, e.g. `c(Fusarium = "#E31A1C")`), which keeps the same color for a taxon across figures:
+
+```{r bar-3, fig.width=9, fig.height=6}
+abundance_bar_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Treatment",
+    facet_by = "Type_of_soil",
+    add_remained = TRUE,
+    label = "Genera",
+    x_label_angle = 45,
+    palette = "brewer"
+)
+```
+
+```{r bar-4, fig.width=9, fig.height=6}
+abundance_bar_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Treatment",
+    facet_by = "Type_of_soil",
+    top_n = 10,
+    add_remained = TRUE,
+    label = "Genera",
+    x_label_angle = 45,
+    palette = "safe"
+)
+```
+
 ### Abundance heatmaps
 Notice that the input files are the same as the previous function and this is consistent with all functions from now on. 
 
@@ -347,6 +376,21 @@ alpha_hill_plot(
     facet_orientation = "horizontal",
     show_legend = FALSE,
     save_table = FALSE
+)
+```
+
+`palette` sets the group colors in `alpha_hill_plot()`, `alpha_diversity_plot()`, `alpha_decay_plot()`, `beta_ord_plot()` and `beta_decay_plot()`: `"colorb"` (default, the colorblind-friendly Okabe-Ito palette), `"safe"` (the colorblind-friendly CARTO "Safe" palette; as in `rcartocolor::carto_pal()`, with 3 to 11 groups the last one is grey), `"earth"` (CARTO "Earth", brown to teal; best for two groups or ordered groups, since the middle colors are pale), `"grey"`, `"viridis"` or `"brewer"`. `group_colors` overrides `palette` with your own colors. Here the fungal example above with `"safe"`:
+
+```{r alpha-pal, warning=FALSE, fig.width=9, fig.height=7}
+alpha_hill_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    facet_by = "Treatment",
+    facet_orientation = "horizontal",
+    show_legend = FALSE,
+    palette = "safe"
 )
 ```
 
@@ -545,6 +589,22 @@ beta_ord_plot(
     shape_col = "Treatment",
     distance = "bray",
     ordination = "NMDS"
+)
+```
+
+The same `palette` options apply to the ordination. With `"earth"` and two groups (here only rhizosphere and roots) the samples are brown and teal:
+
+```{r ord-pal, fig.width=8, fig.height=6}
+set.seed(123)
+two_soils <- metadata_fungi[metadata_fungi$Type_of_soil %in% c("Rhizosphere", "Roots"), ]
+beta_ord_plot(
+    table = table_fung,
+    metadata = two_soils,
+    group_col = "Type_of_soil",
+    shape_col = "Treatment",
+    distance = "bray",
+    ordination = "NMDS",
+    palette = "earth"
 )
 ```
 

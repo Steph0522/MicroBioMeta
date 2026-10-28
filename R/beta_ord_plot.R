@@ -29,7 +29,9 @@
 #'   discrete or continuous.
 #'   \itemize{
 #'     \item Named, discrete \code{group_col}: one of \code{"colorb"}
-#'       (default; qualitative colorblind-friendly palette), \code{"grey"},
+#'       (default; qualitative colorblind-friendly palette), \code{"safe"}
+#'       (colorblind-friendly CARTO "Safe"), \code{"earth"} (CARTO "Earth",
+#'       brown to teal; best for two or ordered groups), \code{"grey"},
 #'       \code{"viridis"}, or \code{"brewer"} (\code{"Set2"}).
 #'     \item Named, continuous \code{group_col}: \code{"viridis"} (default;
 #'       \code{option = "cividis"})
@@ -251,6 +253,16 @@ beta_ord_plot <- function(table, metadata,
                         ggplot2::scale_fill_brewer(name = legend_name, palette = "Set2")
                     } else {
                         ggplot2::scale_color_brewer(name = legend_name, palette = "Set2")
+                    },
+                    "safe" = ,
+                    "earth" = {
+                        n_groups <- length(unique(merged[[group_col]]))
+                        cols <- if (palette == "safe") .mbm_safe_colors(n_groups) else .mbm_earth_colors(n_groups)
+                        if (fill) {
+                            ggplot2::scale_fill_manual(name = legend_name, values = cols)
+                        } else {
+                            ggplot2::scale_color_manual(name = legend_name, values = cols)
+                        }
                     },
                     if (fill) {
                         ggplot2::scale_fill_manual(name = legend_name, values = colorb_default)
