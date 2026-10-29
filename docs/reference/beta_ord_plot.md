@@ -72,8 +72,9 @@ beta_ord_plot(
   it produces depends on whether `group_col` is discrete or continuous.
 
   - Named, discrete `group_col`: one of `"colorb"` (default; qualitative
-    colorblind-friendly palette), `"grey"`, `"viridis"`, or `"brewer"`
-    (`"Set2"`).
+    colorblind-friendly palette), `"safe"` (colorblind-friendly CARTO
+    "Safe"), `"earth"` (CARTO "Earth", brown to teal; best for two or
+    ordered groups), `"grey"`, `"viridis"`, or `"brewer"` (`"Set2"`).
 
   - Named, continuous `group_col`: `"viridis"` (default;
     `option = "cividis"`) or `"gradient"`

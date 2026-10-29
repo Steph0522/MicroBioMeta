@@ -61,9 +61,9 @@ beta_decay_plot(
 
 - palette:
 
-  Palette name (`"colorb"` (default), `"grey"`, `"viridis"` or
-  `"brewer"`) or a vector of colors, one per group. Only used when
-  `group_col` is given.
+  Palette name (`"colorb"` (default), `"safe"`, `"earth"`, `"grey"`,
+  `"viridis"` or `"brewer"`) or a vector of colors, one per group. Only
+  used when `group_col` is given.
 
 - distance:
 

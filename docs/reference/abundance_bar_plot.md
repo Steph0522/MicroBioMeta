@@ -21,6 +21,8 @@ abundance_bar_plot(
   x_label_angle = 0,
   strip_text_bold = FALSE,
   strip_color = "grey",
+  palette = "default",
+  taxa_colors = NULL,
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
@@ -97,6 +99,23 @@ abundance_bar_plot(
 
   Character. Background color of the facet strips (used when `facet_by`
   is set). Default `"grey"`.
+
+- palette:
+
+  Character. Palette for the taxa: `"default"` (bright colors, the
+  original MicroBioMeta palette), `"brewer"` (the qualitative
+  RColorBrewer palettes Accent, Dark2, Paired, Pastel1, Pastel2, Set1,
+  Set2 and Set3 joined, without greys; not colorblind-friendly) or
+  `"safe"` (colorblind-friendly "Safe" palette, 11 colors; with more
+  taxa the colors are interpolated and are no longer fully
+  colorblind-safe). The most abundant taxon gets the first color.
+  Default `"default"`.
+
+- taxa_colors:
+
+  Optional named character vector of colors, one per taxon (names = taxa
+  as shown in the legend). Taxa not named keep the `palette` colors.
+  Default `NULL`.
 
 - aspect_ratio:
 

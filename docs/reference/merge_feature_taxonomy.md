@@ -19,12 +19,15 @@ merge_feature_taxonomy(
 - table:
 
   A data frame with features in rows and samples in columns. Row names
-  must hold the feature IDs (OTUs, ASVs, species...).
+  must hold the feature IDs (OTUs, ASVs, species...). If the table has
+  no row names (e.g. read without `row.names = 1`), its first column is
+  used as feature IDs.
 
 - taxonomy:
 
-  A data frame or matrix with the taxonomy. Row names must match the
-  feature IDs of `table`.
+  A data frame or matrix with the taxonomy. Row names (or, if absent,
+  the first column) must hold the feature IDs of `table`. Features are
+  matched by ID, so both inputs can be in any order.
 
 - save_table:
 

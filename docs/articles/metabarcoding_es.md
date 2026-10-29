@@ -301,6 +301,49 @@ abundance_bar_plot(
 
 ![](metabarcoding_es_files/figure-html/bar-2-1.png)
 
+`palette` cambia los colores de los taxones: `"default"` (los colores
+brillantes de arriba), `"brewer"` (las paletas cualitativas de
+RColorBrewer unidas, sin grises; muchos colores distintos, pero no apta
+para daltónicos) o `"safe"` (la paleta “Safe”, apta para daltónicos;
+tiene 11 colores, así que conviene `top_n` de 11 o menos, si no los
+colores se interpolan). El taxón más abundante recibe el primer color.
+`taxa_colors` fija el color de taxones concretos (un vector con nombres,
+p. ej. `c(Fusarium = "#E31A1C")`), lo que mantiene el mismo color de un
+taxón entre figuras:
+
+``` r
+
+abundance_bar_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Treatment",
+    facet_by = "Type_of_soil",
+    add_remained = TRUE,
+    label = "Genera",
+    x_label_angle = 45,
+    palette = "brewer"
+)
+```
+
+![](metabarcoding_es_files/figure-html/bar-3-1.png)
+
+``` r
+
+abundance_bar_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Treatment",
+    facet_by = "Type_of_soil",
+    top_n = 10,
+    add_remained = TRUE,
+    label = "Genera",
+    x_label_angle = 45,
+    palette = "safe"
+)
+```
+
+![](metabarcoding_es_files/figure-html/bar-4-1.png)
+
 ### Heatmaps de abundancia
 
 Nota que los archivos de entrada son los mismos que en la función
@@ -514,6 +557,38 @@ alpha_hill_plot(
 ```
 
 ![](metabarcoding_es_files/figure-html/alpha-2-1.png)
+
+`palette` define los colores de los grupos en
+[`alpha_hill_plot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_hill_plot.md),
+[`alpha_diversity_plot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_diversity_plot.md),
+[`alpha_decay_plot()`](https://steph0522.github.io/MicroBioMeta/reference/alpha_decay_plot.md),
+[`beta_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_ord_plot.md)
+y
+[`beta_decay_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_decay_plot.md):
+`"colorb"` (por defecto, la paleta Okabe-Ito, apta para daltónicos),
+`"safe"` (la paleta “Safe” de CARTO, apta para daltónicos; como en
+[`rcartocolor::carto_pal()`](https://jakubnowosad.com/rcartocolor/reference/carto_pal.html),
+con 3 a 11 grupos el último es gris), `"earth"` (la paleta “Earth” de
+CARTO, de café a azul verdoso; mejor para dos grupos o grupos ordenados,
+porque los colores intermedios son pálidos), `"grey"`, `"viridis"` o
+`"brewer"`. `group_colors` reemplaza a `palette` con tus propios
+colores. Aquí el ejemplo de hongos de arriba con `"safe"`:
+
+``` r
+
+alpha_hill_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    facet_by = "Treatment",
+    facet_orientation = "horizontal",
+    show_legend = FALSE,
+    palette = "safe"
+)
+```
+
+![](metabarcoding_es_files/figure-html/alpha-pal-1.png)
 
 También podemos visualizar otras métricas considerando índices clásicos
 de diversidad alfa:
@@ -875,6 +950,61 @@ beta_ord_plot(
     ## ℹ Adding new coordinate system, which will replace the existing one.
 
 ![](metabarcoding_es_files/figure-html/ord-2-1.png)
+
+Las mismas opciones de `palette` sirven para la ordenación. Con
+`"earth"` y dos grupos (aquí solo rizósfera y raíces) las muestras salen
+en café y azul verdoso:
+
+``` r
+
+set.seed(123)
+two_soils <- metadata_fungi[metadata_fungi$Type_of_soil %in% c("Rhizosphere", "Roots"), ]
+beta_ord_plot(
+    table = table_fung,
+    metadata = two_soils,
+    group_col = "Type_of_soil",
+    shape_col = "Treatment",
+    distance = "bray",
+    ordination = "NMDS",
+    palette = "earth"
+)
+```
+
+    ## 24 sample(s) of the table are not in metadata and were left out: 2.15NR, 2.3NR, 3.4NR, 5.8NR, 4.12NR, 6.16NR, ...
+
+    ## Run 0 stress 0.1585519 
+    ## Run 1 stress 0.1597513 
+    ## Run 2 stress 0.1662 
+    ## Run 3 stress 0.1674693 
+    ## Run 4 stress 0.1656775 
+    ## Run 5 stress 0.1953534 
+    ## Run 6 stress 0.1674693 
+    ## Run 7 stress 0.1715927 
+    ## Run 8 stress 0.1656775 
+    ## Run 9 stress 0.1741946 
+    ## Run 10 stress 0.1661295 
+    ## Run 11 stress 0.1606366 
+    ## Run 12 stress 0.2013608 
+    ## Run 13 stress 0.192845 
+    ## Run 14 stress 0.1597513 
+    ## Run 15 stress 0.1605729 
+    ## Run 16 stress 0.2012972 
+    ## Run 17 stress 0.1656775 
+    ## Run 18 stress 0.1674693 
+    ## Run 19 stress 0.1583596 
+    ## ... New best solution
+    ## ... Procrustes: rmse 0.01384944  max resid 0.07095103 
+    ## Run 20 stress 0.1597513 
+    ## Run 21 stress 0.1583596 
+    ## ... New best solution
+    ## ... Procrustes: rmse 3.993104e-06  max resid 1.371094e-05 
+    ## ... Similar to previous best
+    ## *** Best solution repeated 1 times
+
+    ## Coordinate system already present.
+    ## ℹ Adding new coordinate system, which will replace the existing one.
+
+![](metabarcoding_es_files/figure-html/ord-pal-1.png)
 
 ### Pruebas estadísticas para diversidad beta
 

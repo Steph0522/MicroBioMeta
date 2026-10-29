@@ -84,5 +84,5 @@ abundance_sankey_plot(
     taxRanks     = c("P", "C", "G", "S"),
     taxonomy_db  = "silva"
 )
-#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\Rtmp2NtpuO/sankey_output.html
+#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpkZ7ngV/sankey_output.html
 ```

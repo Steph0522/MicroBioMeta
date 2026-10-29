@@ -77,7 +77,9 @@ alpha_decay_plot(
 - palette:
 
   Character. Palette name: `"colorb"` (default, colorblind-friendly
-  Okabe-Ito), `"grey"`, `"viridis"` or `"brewer"`.
+  Okabe-Ito), `"safe"` (colorblind-friendly CARTO "Safe"), `"earth"`
+  (CARTO "Earth", brown to teal; best for two or ordered groups),
+  `"grey"`, `"viridis"` or `"brewer"`.
 
 - group_colors:
 

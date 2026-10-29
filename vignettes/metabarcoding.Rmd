@@ -578,7 +578,7 @@ beta_ord_plot(
 )
 ```
 
-For the fungi 🍄 we use a different combination: **Bray-Curtis** dissimilarity, which weights taxa by their abundance, with an **NMDS** ordination. NMDS starts from random configurations, so `set.seed()` is used here too:
+For the fungi 🍄 we use a different combination: the **Aitchison** distance (Euclidean distance between clr-transformed abundances, with a pseudocount of 0.5 for the zeros), which respects the compositional nature of the data, with an **NMDS** ordination. NMDS starts from random configurations, so `set.seed()` is used here too:
 
 ```{r ord-2, fig.width=8, fig.height=6}
 set.seed(123)
@@ -587,7 +587,7 @@ beta_ord_plot(
     metadata = metadata_fungi,
     group_col = "Type_of_soil",
     shape_col = "Treatment",
-    distance = "bray",
+    distance = "aitchison",
     ordination = "NMDS"
 )
 ```
@@ -602,7 +602,7 @@ beta_ord_plot(
     metadata = two_soils,
     group_col = "Type_of_soil",
     shape_col = "Treatment",
-    distance = "bray",
+    distance = "aitchison",
     ordination = "NMDS",
     palette = "earth"
 )
@@ -617,7 +617,7 @@ The `permutations` parameter determines the number of permutations used to estim
 
 ⚠️ **NOTE: Each function has a `save_table` option that saves the values behind the plot as a tab-delimited file**.
 
-`distance` matches the ordination of each dataset above (`compositional` for bacteria, `bray` for fungi), so the significance test evaluates the same notion of dissimilarity shown in the plot.
+`distance` matches the ordination of each dataset above (`compositional` for bacteria, `aitchison` for fungi), so the significance test evaluates the same notion of dissimilarity shown in the plot.
 
 The result is a table figure (a ggplot), so it can be combined with other plots (e.g. `cowplot::plot_grid()`) or saved with `ggplot2::ggsave()`. Use `save_table = TRUE` to also get the results as a text file.
 
@@ -640,7 +640,7 @@ beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil*Treatment",
-    distance = "bray",
+    distance = "aitchison",
     test = "permanova",
     permutations = 999
 )

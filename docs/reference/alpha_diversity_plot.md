@@ -102,7 +102,9 @@ alpha_diversity_plot(
 - palette:
 
   Character. Palette name: `"colorb"` (default, colorblind-friendly
-  Okabe-Ito), `"grey"`, `"viridis"` or `"brewer"`. Case-insensitive.
+  Okabe-Ito), `"safe"` (colorblind-friendly CARTO "Safe"), `"earth"`
+  (CARTO "Earth", brown to teal; best for two or ordered groups),
+  `"grey"`, `"viridis"` or `"brewer"`. Case-insensitive.
 
 - group_colors:
 
