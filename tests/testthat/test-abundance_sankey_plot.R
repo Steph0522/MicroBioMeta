@@ -78,3 +78,33 @@ test_that("abundance_sankey_plot leaves no _files folder next to the HTML", {
     expect_true(file.exists(html))
     expect_false(dir.exists(file.path(out_dir, "s_files")))
 })
+
+test_that("abundance_sankey_plot links follow the hierarchy and leave no orphan nodes", {
+    tab <- data.frame(
+        S1 = c(50, 30, 5, 2), S2 = c(40, 35, 4, 3),
+        taxonomy = c(
+            "d__Bacteria; p__Pseudomonadota; c__Gammaproteobacteria; o__Pseudomonadales; f__Pseudomonadaceae; g__Pseudomonas",
+            "d__Bacteria; p__Acidobacteriota; c__Vicinamibacteria; o__Vicinamibacterales; f__uncultured; g__uncultured",
+            "d__Bacteria; p__Bacillota; c__Bacilli; o__Bacillales; f__Bacillaceae; g__Bacillus",
+            "d__Bacteria; p__Chloroflexota; c__KD4-96; o__KD4-96; f__KD4-96; g__KD4-96"
+        ),
+        row.names = paste0("OTU", 1:4)
+    )
+    out <- tempfile(fileext = ".txt")
+    on.exit(unlink(out), add = TRUE)
+    suppressMessages(abundance_sankey_plot(
+        table = tab, taxonomy_db = "silva", maxn = 2,
+        taxRanks = c("P", "C", "O", "F", "G"),
+        save_table = TRUE, table_filename = out
+    ))
+    saved <- utils::read.delim(out, check.names = FALSE)
+    nodes <- saved[saved$table_type == "node", ]
+    links <- saved[saved$table_type == "link", ]
+    depth <- nodes$depth
+    # every link goes to the next column
+    expect_true(all(depth[links$target + 1] - depth[links$source + 1] == 1))
+    # every node has at least one link
+    expect_true(all((seq_len(nrow(nodes)) - 1) %in% c(links$source, links$target)))
+    # "other Vicinamibacterales" (family and genus) are two different nodes
+    expect_equal(sum(nodes$name == "other Vicinamibacterales"), 2)
+})

@@ -9,6 +9,9 @@
 #'   the interactive diagram to. If \code{NULL} (default), nothing is written
 #'   to disk; the diagram is only returned.
 #' @param maxn Integer. Maximum number of taxa per rank. Default \code{25}.
+#'   At each rank the most abundant taxa are chosen among the children of the
+#'   taxa kept at the previous rank, so every flow follows the hierarchy
+#'   without skipping columns.
 #' @param taxRanks Character vector of the ranks to show, as one-letter codes:
 #'   \code{"D"} (domain), \code{"K"} (kingdom), \code{"P"}, \code{"C"},
 #'   \code{"O"}, \code{"F"}, \code{"G"} and \code{"S"}. Default all of them.
@@ -150,48 +153,45 @@ abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
         tibble::rownames_to_column("ids") %>%
         dplyr::mutate(name = stringr::str_extract(ids, "[^_]+$")) %>%
         dplyr::filter(!name %in% c("NA", "Bacteria", "Bacteria_Patescibacteria")) %>%
-        dplyr::filter(taxRank %in% taxRanks) %>%
-        dplyr::group_by(taxRank) %>%
-        dplyr::slice_max(order_by = abund, n = maxn, with_ties = FALSE) %>%
-        dplyr::ungroup()
+        dplyr::filter(taxRank %in% taxRanks)
 
-    splits <- strsplit(my_report$ids, "_")
-    sel <- vapply(splits, length, integer(1)) >= 3
-    splits <- splits[sel]
+    # Rank by rank, the top `maxn` taxa are chosen only among the children of the
+    # taxa kept at the previous rank, so no link skips a column
+    rank_depth <- c(K = 1, P = 2, C = 3, O = 4, F = 5, G = 6, S = 7)
+    valid_ranks <- names(rank_depth)[names(rank_depth) %in% my_report$taxRank]
+    ancestor <- function(ids, rank) {
+        vapply(strsplit(ids, "_"), function(x) paste(x[seq_len(rank_depth[[rank]])], collapse = "_"), character(1))
+    }
+    kept <- NULL
+    for (i in seq_along(valid_ranks)) {
+        level <- my_report[my_report$taxRank == valid_ranks[i], ]
+        level$parent <- NA_character_
+        if (i > 1) {
+            level$parent <- ancestor(level$ids, valid_ranks[i - 1])
+            level <- level[level$parent %in% kept$ids, ]
+        }
+        level <- utils::head(level[order(-level$abund), ], maxn)
+        kept <- dplyr::bind_rows(kept, level)
+    }
 
-    links <- data.frame(
-        do.call(
-            rbind,
-            lapply(splits, function(x) utils::tail(x[x %in% my_report$name], 2))
-        ),
-        stringsAsFactors = FALSE
-    )
-    colnames(links) <- c("source", "target")
+    # Nodes are identified by their full lineage (a name can repeat across ranks,
+    # e.g. "other Vicinamibacterales" as family and genus)
+    links <- kept[!is.na(kept$parent) & kept$abund > 0, c("parent", "ids", "abund")]
+    colnames(links) <- c("source", "target", "value")
+    kept <- kept[kept$ids %in% c(links$source, links$target), ]
 
-    links$value <- vapply(seq_len(nrow(links)), function(i) {
-        val <- my_report$abund[my_report$name == links$target[i]]
-        if (length(val) == 1) val else NA_real_
-    }, numeric(1))
-
-    links <- links[!is.na(links$value) & links$value > 0, ]
-
-    valid_ranks <- taxRanks[taxRanks %in% unique(my_report$taxRank)]
     taxRank_to_depth <- setNames(seq_along(valid_ranks) - 1, valid_ranks)
-
     nodes <- data.frame(
-        name = my_report$name,
-        depth = taxRank_to_depth[my_report$taxRank],
-        value = my_report$abund,
+        name = kept$name,
+        depth = unname(taxRank_to_depth[kept$taxRank]),
+        value = kept$abund,
         stringsAsFactors = FALSE
     )
 
-    names_id <- setNames(seq_len(nrow(nodes)) - 1, nodes$name)
-    links$source <- names_id[links$source]
-    links$target <- names_id[links$target]
-    links <- links[!is.na(links$source) & !is.na(links$target), ]
-    links <- links[links$source != links$target, ]
-
-    nodes$name <- sub("^._", "", nodes$name)
+    names_id <- setNames(seq_len(nrow(kept)) - 1, kept$ids)
+    links$source <- unname(names_id[links$source])
+    links$target <- unname(names_id[links$target])
+    links <- as.data.frame(links)
     links$type <- sub(" .*", "", nodes[links$source + 1, "name"])
 
     if (save_table) {
@@ -220,6 +220,8 @@ abundance_sankey_plot <- function(table, output_file = NULL, maxn = 25,
         fontFamily = "serif",
         fontSize = 12,
         nodeWidth = 15,
+        nodePadding = 12,
+        sinksRight = FALSE,
         iterations = 64,
         width = width,
         height = height

@@ -893,10 +893,12 @@ beta_ord_plot(
 
 ![](metabarcoding_es_files/figure-html/ord-1-1.png)
 
-Para los hongos 🍄 usamos otra combinación: la disimilitud de
-**Bray-Curtis**, que pondera los taxones por su abundancia, con una
-ordenación **NMDS**. NMDS parte de configuraciones al azar, así que aquí
-también se usa [`set.seed()`](https://rdrr.io/r/base/Random.html):
+Para los hongos 🍄 usamos otra combinación: la distancia de
+**Aitchison** (distancia euclidiana entre abundancias transformadas con
+clr, con un pseudoconteo de 0.5 para los ceros), que respeta la
+naturaleza composicional de los datos, con una ordenación **NMDS**. NMDS
+parte de configuraciones al azar, así que aquí también se usa
+[`set.seed()`](https://rdrr.io/r/base/Random.html):
 
 ``` r
 
@@ -906,44 +908,82 @@ beta_ord_plot(
     metadata = metadata_fungi,
     group_col = "Type_of_soil",
     shape_col = "Treatment",
-    distance = "bray",
+    distance = "aitchison",
     ordination = "NMDS"
 )
 ```
 
-    ## Run 0 stress 0.1282494 
-    ## Run 1 stress 0.137064 
-    ## Run 2 stress 0.1268558 
+    ## Run 0 stress 0.1631777 
+    ## Run 1 stress 0.1747676 
+    ## Run 2 stress 0.1788677 
+    ## Run 3 stress 0.1724494 
+    ## Run 4 stress 0.174368 
+    ## Run 5 stress 0.1751198 
+    ## Run 6 stress 0.1613992 
     ## ... New best solution
-    ## ... Procrustes: rmse 0.01348788  max resid 0.06322113 
-    ## Run 3 stress 0.131974 
-    ## Run 4 stress 0.1284548 
-    ## Run 5 stress 0.165162 
-    ## Run 6 stress 0.1272512 
-    ## ... Procrustes: rmse 0.007298609  max resid 0.05473952 
-    ## Run 7 stress 0.1402745 
-    ## Run 8 stress 0.1268558 
-    ## ... Procrustes: rmse 3.561058e-06  max resid 1.719656e-05 
-    ## ... Similar to previous best
-    ## Run 9 stress 0.1272512 
-    ## ... Procrustes: rmse 0.007300011  max resid 0.05475023 
-    ## Run 10 stress 0.1274534 
-    ## Run 11 stress 0.1315103 
-    ## Run 12 stress 0.1309372 
-    ## Run 13 stress 0.1301517 
-    ## Run 14 stress 0.1268558 
+    ## ... Procrustes: rmse 0.02957683  max resid 0.2284652 
+    ## Run 7 stress 0.1728812 
+    ## Run 8 stress 0.1675984 
+    ## Run 9 stress 0.1706965 
+    ## Run 10 stress 0.1631796 
+    ## Run 11 stress 0.1738474 
+    ## Run 12 stress 0.1735345 
+    ## Run 13 stress 0.180774 
+    ## Run 14 stress 0.1717278 
+    ## Run 15 stress 0.1723691 
+    ## Run 16 stress 0.1756675 
+    ## Run 17 stress 0.1695155 
+    ## Run 18 stress 0.1709421 
+    ## Run 19 stress 0.1731061 
+    ## Run 20 stress 0.1712802 
+    ## Run 21 stress 0.1800891 
+    ## Run 22 stress 0.1695798 
+    ## Run 23 stress 0.1725931 
+    ## Run 24 stress 0.1768397 
+    ## Run 25 stress 0.1769576 
+    ## Run 26 stress 0.1713124 
+    ## Run 27 stress 0.173321 
+    ## Run 28 stress 0.1769959 
+    ## Run 29 stress 0.1718878 
+    ## Run 30 stress 0.1724497 
+    ## Run 31 stress 0.1738618 
+    ## Run 32 stress 0.1656096 
+    ## Run 33 stress 0.1767856 
+    ## Run 34 stress 0.1808511 
+    ## Run 35 stress 0.1678102 
+    ## Run 36 stress 0.1787447 
+    ## Run 37 stress 0.1677597 
+    ## Run 38 stress 0.1785802 
+    ## Run 39 stress 0.1729088 
+    ## Run 40 stress 0.1640917 
+    ## Run 41 stress 0.1726657 
+    ## Run 42 stress 0.1644402 
+    ## Run 43 stress 0.1723528 
+    ## Run 44 stress 0.1774955 
+    ## Run 45 stress 0.1724814 
+    ## Run 46 stress 0.1694897 
+    ## Run 47 stress 0.1746428 
+    ## Run 48 stress 0.1630726 
+    ## Run 49 stress 0.1773036 
+    ## Run 50 stress 0.1738002 
+    ## Run 51 stress 0.1662302 
+    ## Run 52 stress 0.1733641 
+    ## Run 53 stress 0.1745676 
+    ## Run 54 stress 0.175421 
+    ## Run 55 stress 0.1778171 
+    ## Run 56 stress 0.1747699 
+    ## Run 57 stress 0.168567 
+    ## Run 58 stress 0.1766613 
+    ## Run 59 stress 0.174107 
+    ## Run 60 stress 0.1765053 
+    ## Run 61 stress 0.1747332 
+    ## Run 62 stress 0.1643157 
+    ## Run 63 stress 0.1734078 
+    ## Run 64 stress 0.1769872 
+    ## Run 65 stress 0.161399 
     ## ... New best solution
-    ## ... Procrustes: rmse 4.203426e-06  max resid 1.973148e-05 
+    ## ... Procrustes: rmse 0.0001168501  max resid 0.0008224879 
     ## ... Similar to previous best
-    ## Run 15 stress 0.1272512 
-    ## ... Procrustes: rmse 0.007293077  max resid 0.05469673 
-    ## Run 16 stress 0.1574605 
-    ## Run 17 stress 0.1272512 
-    ## ... Procrustes: rmse 0.00729887  max resid 0.05473141 
-    ## Run 18 stress 0.1366118 
-    ## Run 19 stress 0.1272606 
-    ## ... Procrustes: rmse 0.02929663  max resid 0.1521837 
-    ## Run 20 stress 0.1361393 
     ## *** Best solution repeated 1 times
 
     ## Coordinate system already present.
@@ -964,7 +1004,7 @@ beta_ord_plot(
     metadata = two_soils,
     group_col = "Type_of_soil",
     shape_col = "Treatment",
-    distance = "bray",
+    distance = "aitchison",
     ordination = "NMDS",
     palette = "earth"
 )
@@ -972,32 +1012,54 @@ beta_ord_plot(
 
     ## 24 sample(s) of the table are not in metadata and were left out: 2.15NR, 2.3NR, 3.4NR, 5.8NR, 4.12NR, 6.16NR, ...
 
-    ## Run 0 stress 0.1585519 
-    ## Run 1 stress 0.1597513 
-    ## Run 2 stress 0.1662 
-    ## Run 3 stress 0.1674693 
-    ## Run 4 stress 0.1656775 
-    ## Run 5 stress 0.1953534 
-    ## Run 6 stress 0.1674693 
-    ## Run 7 stress 0.1715927 
-    ## Run 8 stress 0.1656775 
-    ## Run 9 stress 0.1741946 
-    ## Run 10 stress 0.1661295 
-    ## Run 11 stress 0.1606366 
-    ## Run 12 stress 0.2013608 
-    ## Run 13 stress 0.192845 
-    ## Run 14 stress 0.1597513 
-    ## Run 15 stress 0.1605729 
-    ## Run 16 stress 0.2012972 
-    ## Run 17 stress 0.1656775 
-    ## Run 18 stress 0.1674693 
-    ## Run 19 stress 0.1583596 
+    ## Run 0 stress 0.1613579 
+    ## Run 1 stress 0.167936 
+    ## Run 2 stress 0.1741998 
+    ## Run 3 stress 0.1586655 
     ## ... New best solution
-    ## ... Procrustes: rmse 0.01384944  max resid 0.07095103 
-    ## Run 20 stress 0.1597513 
-    ## Run 21 stress 0.1583596 
+    ## ... Procrustes: rmse 0.05735529  max resid 0.2141165 
+    ## Run 4 stress 0.1752963 
+    ## Run 5 stress 0.1702012 
+    ## Run 6 stress 0.1572048 
     ## ... New best solution
-    ## ... Procrustes: rmse 3.993104e-06  max resid 1.371094e-05 
+    ## ... Procrustes: rmse 0.03486978  max resid 0.1965548 
+    ## Run 7 stress 0.1641706 
+    ## Run 8 stress 0.178726 
+    ## Run 9 stress 0.1572043 
+    ## ... New best solution
+    ## ... Procrustes: rmse 0.0002054122  max resid 0.001020204 
+    ## ... Similar to previous best
+    ## Run 10 stress 0.1703991 
+    ## Run 11 stress 0.1774032 
+    ## Run 12 stress 0.1715792 
+    ## Run 13 stress 0.1586654 
+    ## Run 14 stress 0.1615929 
+    ## Run 15 stress 0.1635535 
+    ## Run 16 stress 0.1764619 
+    ## Run 17 stress 0.1745564 
+    ## Run 18 stress 0.1718304 
+    ## Run 19 stress 0.1572043 
+    ## ... Procrustes: rmse 0.000198919  max resid 0.0009162075 
+    ## ... Similar to previous best
+    ## Run 20 stress 0.1571698 
+    ## ... New best solution
+    ## ... Procrustes: rmse 0.03217919  max resid 0.1959502 
+    ## Run 21 stress 0.1739316 
+    ## Run 22 stress 0.1641683 
+    ## Run 23 stress 0.1639571 
+    ## Run 24 stress 0.1769227 
+    ## Run 25 stress 0.175224 
+    ## Run 26 stress 0.1675499 
+    ## Run 27 stress 0.1680774 
+    ## Run 28 stress 0.3974775 
+    ## Run 29 stress 0.1737917 
+    ## Run 30 stress 0.1750785 
+    ## Run 31 stress 0.1607813 
+    ## Run 32 stress 0.1609478 
+    ## Run 33 stress 0.1700308 
+    ## Run 34 stress 0.1795983 
+    ## Run 35 stress 0.1571699 
+    ## ... Procrustes: rmse 0.0001752981  max resid 0.0008364405 
     ## ... Similar to previous best
     ## *** Best solution repeated 1 times
 
@@ -1039,9 +1101,9 @@ que se usa tal cual.
 valores detrás del gráfico en un archivo delimitado por tabuladores**.
 
 `distance` coincide con la ordenación de cada conjunto de datos de
-arriba (`compositional` para bacterias, `bray` para hongos), de modo que
-la prueba de significancia evalúa la misma noción de disimilitud que se
-muestra en el gráfico.
+arriba (`compositional` para bacterias, `aitchison` para hongos), de
+modo que la prueba de significancia evalúa la misma noción de
+disimilitud que se muestra en el gráfico.
 
 El resultado es una figura de la tabla (un ggplot), así que se puede
 combinar con otros gráficos (p. ej.
@@ -1084,7 +1146,7 @@ beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil*Treatment",
-    distance = "bray",
+    distance = "aitchison",
     test = "permanova",
     permutations = 999
 )

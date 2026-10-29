@@ -34,7 +34,10 @@ abundance_sankey_plot(
 
 - maxn:
 
-  Integer. Maximum number of taxa per rank. Default `25`.
+  Integer. Maximum number of taxa per rank. Default `25`. At each rank
+  the most abundant taxa are chosen among the children of the taxa kept
+  at the previous rank, so every flow follows the hierarchy without
+  skipping columns.
 
 - taxRanks:
 
@@ -84,5 +87,5 @@ abundance_sankey_plot(
     taxRanks     = c("P", "C", "G", "S"),
     taxonomy_db  = "silva"
 )
-#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpkZ7ngV/sankey_output.html
+#> Sankey diagram saved to: C:\Users\HP\AppData\Local\Temp\RtmpgPVp44/sankey_output.html
 ```

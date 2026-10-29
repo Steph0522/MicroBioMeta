@@ -24,7 +24,10 @@ The last column must be named \code{taxonomy}, containing full taxonomic strings
 the interactive diagram to. If \code{NULL} (default), nothing is written
 to disk; the diagram is only returned.}
 
-\item{maxn}{Integer. Maximum number of taxa per rank. Default \code{25}.}
+\item{maxn}{Integer. Maximum number of taxa per rank. Default \code{25}.
+At each rank the most abundant taxa are chosen among the children of the
+taxa kept at the previous rank, so every flow follows the hierarchy
+without skipping columns.}
 
 \item{taxRanks}{Character vector of the ranks to show, as one-letter codes:
 \code{"D"} (domain), \code{"K"} (kingdom), \code{"P"}, \code{"C"},
