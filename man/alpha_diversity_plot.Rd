@@ -108,8 +108,11 @@ title).}
 \item{y_axis_title}{Character. Title of the y-axis. Default \code{"Diversity
 measure"}.}
 
-\item{free_y}{Logical. If \code{TRUE}, the y-axis scale is free across
-facets. Default \code{FALSE}.}
+\item{free_y}{Logical. Each index always has its own y-axis scale (Chao1,
+Shannon and Simpson have very different ranges). If \code{FALSE} (default),
+that scale is shared by all the panels of the same index, so the groups
+can be compared across facets. If \code{TRUE}, every panel gets its own
+scale.}
 
 \item{rarefy_depth}{Integer. If given, the samples are rarefied to this
 depth (\code{vegan::rrarefy()}) before computing the indices. Default

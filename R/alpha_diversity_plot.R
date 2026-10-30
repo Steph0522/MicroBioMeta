@@ -53,8 +53,11 @@
 #'   title).
 #' @param y_axis_title Character. Title of the y-axis. Default \code{"Diversity
 #'   measure"}.
-#' @param free_y Logical. If \code{TRUE}, the y-axis scale is free across
-#'   facets. Default \code{FALSE}.
+#' @param free_y Logical. Each index always has its own y-axis scale (Chao1,
+#'   Shannon and Simpson have very different ranges). If \code{FALSE} (default),
+#'   that scale is shared by all the panels of the same index, so the groups
+#'   can be compared across facets. If \code{TRUE}, every panel gets its own
+#'   scale.
 #' @param rarefy_depth Integer. If given, the samples are rarefied to this
 #'   depth (\code{vegan::rrarefy()}) before computing the indices. Default
 #'   \code{NULL} (no rarefaction).
@@ -179,8 +182,10 @@ alpha_diversity_plot <- function(
         message("Table saved as: ", table_filename)
     }
 
-    results[[fill_col]] <- factor(results[[fill_col]], levels = unique(results[[fill_col]]))
-    results[[x_col]] <- factor(results[[x_col]], levels = unique(results[[x_col]]))
+    # keep the levels of a factor (e.g. TC, TD, TED); otherwise sort the groups
+    group_levels <- function(x) if (is.factor(x)) levels(droplevels(x)) else sort(unique(x))
+    results[[fill_col]] <- factor(results[[fill_col]], levels = group_levels(results[[fill_col]]))
+    results[[x_col]] <- factor(results[[x_col]], levels = group_levels(results[[x_col]]))
 
     results_largo <- tidyr::pivot_longer(
         results,
@@ -204,8 +209,9 @@ alpha_diversity_plot <- function(
         )
     }
 
-    facet_scales <- if (free_y) "free_y" else "fixed"
-
+    # The indices have very different ranges (Chao1 in the hundreds, Simpson below 1), so
+    # each index always keeps its own y scale. free_y = FALSE shares it among the panels of
+    # the same index; free_y = TRUE gives every panel its own scale.
     use_grid_compose <- is.null(facet_by2) &&
         identical(facet_orientation, "horizontal")
 
@@ -215,11 +221,15 @@ alpha_diversity_plot <- function(
         } else {
             stats::as.formula(paste("Index +", facet_by, "~", facet_by2))
         }
+        # vertical: the index is in the rows, so a row-wise free scale is shared by its panels;
+        # horizontal: the index is in the columns, so every panel needs its own scale
         ggh4x::facet_nested(
             formula_facet,
             nest_line = ggplot2::element_line(colour = "black"),
-            scales = facet_scales,
-            axes = "x"
+            scales = "free_y",
+            independent = if (free_y || facet_orientation == "horizontal") "y" else "none",
+            axes = "x",
+            remove_labels = "x"
         )
     } else if (!is.null(facet_by)) {
         formula_facet <- if (facet_orientation == "horizontal") {
@@ -233,13 +243,15 @@ alpha_diversity_plot <- function(
                 formula_facet,
                 scales = "free_y",
                 independent = "y",
-                axes = "x"
+                axes = "x",
+                remove_labels = "x"
             )
         } else {
             ggh4x::facet_grid2(
                 formula_facet,
-                scales = "fixed",
-                axes = "x"
+                scales = "free_y",
+                axes = "x",
+                remove_labels = "x"
             )
         }
     } else {
@@ -255,8 +267,9 @@ alpha_diversity_plot <- function(
             } else {
                 NULL
             },
-            scales = if (free_y) "free_y" else "fixed",
-            axes = "all_x"
+            scales = "free_y",
+            axes = "all_x",
+            axis.labels = "margins"
         )
     }
 
@@ -304,7 +317,14 @@ alpha_diversity_plot <- function(
         row_levels <- if (has_facet_by) sort(unique(as.character(results_largo[[facet_by]]))) else "__all__"
         n_rows_grid <- length(row_levels)
         n_cols_grid <- length(col_levels)
-        y_range <- if (!free_y) range(results_largo$value, na.rm = TRUE) else NULL
+        # free_y = FALSE: one scale per index (column), shared by its rows
+        y_ranges <- if (!free_y) {
+            lapply(stats::setNames(col_levels, col_levels), function(i) {
+                range(results_largo$value[results_largo$Index == i], na.rm = TRUE)
+            })
+        } else {
+            NULL
+        }
         y_title_cell <- .mbm_row_axis_title(y_axis_title, n_rows_grid)
 
         panel_letters <- if (!is.null(panel_labels)) {
@@ -337,7 +357,7 @@ alpha_diversity_plot <- function(
                 capa_error +
                 fill_scale +
                 {
-                    if (!is.null(y_range)) ggplot2::coord_cartesian(ylim = y_range)
+                    if (!is.null(y_ranges)) ggplot2::coord_cartesian(ylim = y_ranges[[index_val]])
                 } +
                 ggplot2::labs(
                     x = if (row_idx == n_rows_grid) x_axis_title else NULL,
@@ -393,13 +413,7 @@ alpha_diversity_plot <- function(
                     )
             }
 
-            # with free_y each panel has its own scale, so every panel keeps its y-axis labels
-            if (col_idx != 1 && !free_y) {
-                p_cell <- p_cell + ggplot2::theme(
-                    axis.text.y  = ggplot2::element_text(colour = NA),
-                    axis.ticks.y = ggplot2::element_line(colour = NA)
-                )
-            }
+            # every column is a different index (and scale), so all keep their y-axis labels
             if (row_idx != n_rows_grid) {
                 p_cell <- p_cell + ggplot2::theme(
                     axis.text.x  = .mbm_x_text(x_label_angle, colour = NA),

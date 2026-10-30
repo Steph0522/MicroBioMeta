@@ -107,8 +107,10 @@ title).}
 \item{y_axis_title}{Character. Title of the y-axis. Default \code{"Effective
 number of features"}.}
 
-\item{free_y}{Logical. If \code{TRUE}, the y-axis scale is free across
-facets. Default \code{FALSE}.}
+\item{free_y}{Logical. Each order q always has its own y-axis scale (q0
+is usually much larger than q2). If \code{FALSE} (default), that scale is
+shared by all the panels of the same order, so the groups can be compared
+across facets. If \code{TRUE}, every panel gets its own scale.}
 
 \item{panel_label_case}{Character. Case of the panel tags (added to every
 panel): \code{"upper"} (default; A, B, C) or \code{"lower"} (a, b, c).

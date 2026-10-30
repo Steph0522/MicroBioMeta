@@ -52,8 +52,10 @@
 #'   title).
 #' @param y_axis_title Character. Title of the y-axis. Default \code{"Effective
 #'   number of features"}.
-#' @param free_y Logical. If \code{TRUE}, the y-axis scale is free across
-#'   facets. Default \code{FALSE}.
+#' @param free_y Logical. Each order q always has its own y-axis scale (q0
+#'   is usually much larger than q2). If \code{FALSE} (default), that scale is
+#'   shared by all the panels of the same order, so the groups can be compared
+#'   across facets. If \code{TRUE}, every panel gets its own scale.
 #' @param panel_label_case Character. Case of the panel tags (added to every
 #'   panel): \code{"upper"} (default; A, B, C) or \code{"lower"} (a, b, c).
 #'   Ignored if \code{panel_labels} is given.
@@ -183,7 +185,8 @@ alpha_hill_plot <- function(
         )
     }
 
-    facet_scales <- if (free_y) "free_y" else "fixed"
+    # Each order q always keeps its own y scale. free_y = FALSE shares it among the
+    # panels of the same order; free_y = TRUE gives every panel its own scale.
     q_labeller <- .mbm_q_labeller(strip_text_bold)
 
     use_grid_compose <- is.null(facet_by2) &&
@@ -195,12 +198,16 @@ alpha_hill_plot <- function(
         } else {
             stats::as.formula(paste("q +", facet_by, "~", facet_by2))
         }
+        # vertical: q is in the rows, so a row-wise free scale is shared by its panels;
+        # horizontal: q is in the columns, so every panel needs its own scale
         ggh4x::facet_nested(
             formula_facet,
             nest_line = ggplot2::element_line(colour = "black"),
-            scales = facet_scales,
+            scales = "free_y",
+            independent = if (free_y || facet_orientation == "horizontal") "y" else "none",
             labeller = ggplot2::labeller(q = q_labeller),
-            axes = "x"
+            axes = "x",
+            remove_labels = "x"
         )
     } else if (!is.null(facet_by)) {
         formula_facet <- if (facet_orientation == "horizontal") {
@@ -215,14 +222,16 @@ alpha_hill_plot <- function(
                 scales = "free_y",
                 independent = "y",
                 labeller = ggplot2::labeller(q = q_labeller),
-                axes = "x"
+                axes = "x",
+                remove_labels = "x"
             )
         } else {
             ggh4x::facet_grid2(
                 formula_facet,
-                scales = "fixed",
+                scales = "free_y",
                 labeller = ggplot2::labeller(q = q_labeller),
-                axes = "x"
+                axes = "x",
+                remove_labels = "x"
             )
         }
     } else {
@@ -238,7 +247,7 @@ alpha_hill_plot <- function(
             } else {
                 NULL
             },
-            scales = if (free_y) "free_y" else "fixed",
+            scales = "free_y",
             labeller = q_labeller
         )
     }
@@ -294,7 +303,14 @@ alpha_hill_plot <- function(
         }
         n_rows_grid <- length(row_levels)
         n_cols_grid <- length(col_levels)
-        y_range <- if (!free_y) range(results_largo$value, na.rm = TRUE) else NULL
+        # free_y = FALSE: one scale per order q, shared by its panels
+        y_ranges <- if (!free_y) {
+            lapply(stats::setNames(q_levels, q_levels), function(i) {
+                range(results_largo$value[results_largo$q == i], na.rm = TRUE)
+            })
+        } else {
+            NULL
+        }
         y_title_cell <- .mbm_row_axis_title(y_axis_title, n_rows_grid)
 
         panel_letters <- if (!is.null(panel_labels)) {
@@ -328,7 +344,7 @@ alpha_hill_plot <- function(
                 capa_error +
                 fill_scale +
                 {
-                    if (!is.null(y_range)) ggplot2::coord_cartesian(ylim = y_range)
+                    if (!is.null(y_ranges)) ggplot2::coord_cartesian(ylim = y_ranges[[q_val]])
                 } +
                 ggplot2::labs(
                     x = if (row_idx == n_rows_grid) x_axis_title else NULL,
@@ -384,13 +400,7 @@ alpha_hill_plot <- function(
                     )
             }
 
-            # with free_y each panel has its own scale, so every panel keeps its y-axis labels
-            if (col_idx != 1 && !free_y) {
-                p_cell <- p_cell + ggplot2::theme(
-                    axis.text.y  = ggplot2::element_text(colour = NA),
-                    axis.ticks.y = ggplot2::element_line(colour = NA)
-                )
-            }
+            # every column is a different order q (and scale), so all keep their y-axis labels
             if (row_idx != n_rows_grid) {
                 p_cell <- p_cell + ggplot2::theme(
                     axis.text.x  = .mbm_x_text(x_label_angle, colour = NA),
