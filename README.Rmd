@@ -32,10 +32,11 @@ with a `taxonomy` column at the end) and a metadata table (sample IDs in
 the first column). They cover:
 
 - **Composition**: bar plots, heatmaps and Sankey diagrams.
-- **Alpha diversity**: Hill numbers, classic indices, diversity along
-  continuous gradients and Venn diagrams.
-- **Beta diversity**: ordinations, PERMANOVA/betadisper, turnover and
-  nestedness partitions, and distance-decay.
+- **Alpha diversity**: taxonomic, phylogenetic and functional Hill
+  numbers, classic indices (including Faith's PD and Rao's Q), diversity
+  along continuous gradients and Venn diagrams.
+- **Beta diversity**: ordinations, PERMANOVA/betadisper, Hill-number
+  dissimilarities, turnover and nestedness partitions, and distance-decay.
 - **Differential abundance**: ALDEx2, ANCOM-BC2, random forest and
   log-ratios.
 - **Environmental variables**: correlations and CCA/RDA biplots.
