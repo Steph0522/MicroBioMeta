@@ -329,7 +329,7 @@ utils::globalVariables(c(
             ),
             axis.text.x = ggplot2::element_text(size = 12, color = "black"),
             axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-            axis.title.x = ggplot2::element_text(size = 14, color = "black"),
+            axis.title.x = ggplot2::element_text(size = 14, color = "black", margin = ggplot2::margin(t = 8)),
             axis.title.y = ggplot2::element_text(size = 14, color = "black"),
             legend.title = ggplot2::element_text(
                 size = 14, face = "bold",

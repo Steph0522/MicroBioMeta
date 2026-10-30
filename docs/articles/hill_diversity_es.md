@@ -306,7 +306,7 @@ beta_ord_plot(
     table = table_fung,
     metadata = metadata_fungi,
     distance = "U",
-    q = 0,
+    q = 1,
     ordination = "PCoA",
     group_col = "Type_of_soil",
     legend_title = "Type of soil",
@@ -341,11 +341,13 @@ recibe los mismos argumentos. Un PERMANOVA ([Anderson
 2001](#ref-anderson2001permanova)) prueba si los grupos difieren, y
 betadisper ([Anderson 2006](#ref-anderson2006distance)) si difiere su
 dispersión. Reporta ambos: un PERMANOVA significativo con dispersiones
-desiguales puede reflejar diferencias de dispersión, no de posición. En
-este ejemplo betadisper es significativo, así que lee el PERMANOVA de
-`Type_of_soil` con eso en mente.
+desiguales puede reflejar diferencias de dispersión, no de posición.
 
-Taxonómica, en $`q = 1`$:
+Usamos $`q = 1`$ y el mismo modelo para los tres tipos. En ese orden el
+suelo y el tratamiento difieren en todos, y la interacción solo en el
+filogenético.
+
+Taxonómica:
 
 ``` r
 
@@ -360,21 +362,7 @@ beta_test_table(
 
 ![](hill_diversity_es_files/figure-html/permanova-tax-1.png)
 
-``` r
-
-beta_test_table(
-    table = table_fung,
-    metadata = metadata_fungi,
-    formula_str = "Type_of_soil",
-    test = "betadisper",
-    distance = "U",
-    q = 1
-)
-```
-
-![](hill_diversity_es_files/figure-html/betadisper-tax-1.png)
-
-Filogenética, en $`q = 0`$ (UniFrac no ponderado):
+Filogenética:
 
 ``` r
 
@@ -383,7 +371,7 @@ beta_test_table(
     metadata = metadata_fungi,
     formula_str = "Type_of_soil * Treatment",
     distance = "U",
-    q = 0,
+    q = 1,
     diversity = "phylogenetic",
     tree = tree_fungi
 )
@@ -391,23 +379,7 @@ beta_test_table(
 
 ![](hill_diversity_es_files/figure-html/permanova-phylo-1.png)
 
-``` r
-
-beta_test_table(
-    table = table_fung,
-    metadata = metadata_fungi,
-    formula_str = "Type_of_soil",
-    test = "betadisper",
-    distance = "U",
-    q = 0,
-    diversity = "phylogenetic",
-    tree = tree_fungi
-)
-```
-
-![](hill_diversity_es_files/figure-html/betadisper-phylo-1.png)
-
-Funcional, en $`q = 1`$:
+Funcional:
 
 ``` r
 
@@ -424,21 +396,26 @@ beta_test_table(
 
 ![](hill_diversity_es_files/figure-html/permanova-func-1.png)
 
+`test = "betadisper"` funciona igual para los tres tipos. Aquí está el
+filogenético. En $`q = 1`$ las dispersiones difieren entre tipos de
+suelo en los tres, así que lee el PERMANOVA de `Type_of_soil` con eso en
+mente.
+
 ``` r
 
 beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil",
-    test = "betadisper",
     distance = "U",
     q = 1,
-    diversity = "functional",
-    traits = traits_fungi
+    test = "betadisper",
+    diversity = "phylogenetic",
+    tree = tree_fungi
 )
 ```
 
-![](hill_diversity_es_files/figure-html/betadisper-func-1.png)
+![](hill_diversity_es_files/figure-html/betadisper-1.png)
 
 ## Referencias
 

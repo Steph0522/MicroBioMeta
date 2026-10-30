@@ -120,7 +120,7 @@ alpha_hill_plot(
 )
 ```
 
-```{r alpha-phylo}
+```{r alpha-phylo, fig.height=10}
 alpha_hill_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -233,7 +233,7 @@ beta_ord_plot(
     table = table_fung,
     metadata = metadata_fungi,
     distance = "U",
-    q = 0,
+    q = 1,
     ordination = "PCoA",
     group_col = "Type_of_soil",
     legend_title = "Type of soil",
@@ -242,7 +242,7 @@ beta_ord_plot(
 )
 ```
 
-```{r ord-func, fig.height=5}
+```{r ord-func, fig.width=7.5, fig.height=6.5, out.width="75%"}
 beta_ord_plot(
     table = table_fung,
     metadata = metadata_fungi,
@@ -258,10 +258,11 @@ beta_ord_plot(
 
 ### PERMANOVA and betadisper
 
-`beta_test_table()` takes the same arguments. A PERMANOVA [@anderson2001permanova] tests whether the groups differ, and betadisper [@anderson2006distance] whether their dispersion does. Report both: a significant PERMANOVA with unequal dispersions may reflect differences in dispersion, not in position. In this example betadisper is significant, so read the PERMANOVA of `Type_of_soil` with that in mind.
+`beta_test_table()` takes the same arguments. A PERMANOVA [@anderson2001permanova] tests whether the groups differ, and betadisper [@anderson2006distance] whether their dispersion does. Report both: a significant PERMANOVA with unequal dispersions may reflect differences in dispersion, not in position.
 
-Taxonomic, at $q = 1$:
+We use $q = 1$ and the same model for all three types. At that order soil and treatment differ in all of them, and the interaction only in the phylogenetic one.
 
+Taxonomic:
 ```{r permanova-tax, fig.width=6.5, fig.height=2, out.width="65%"}
 beta_test_table(
     table = table_fung,
@@ -272,46 +273,22 @@ beta_test_table(
 )
 ```
 
-```{r betadisper-tax, fig.width=6.5, fig.height=1.2, out.width="65%"}
-beta_test_table(
-    table = table_fung,
-    metadata = metadata_fungi,
-    formula_str = "Type_of_soil",
-    test = "betadisper",
-    distance = "U",
-    q = 1
-)
-```
 
-Phylogenetic, at $q = 0$ (unweighted UniFrac):
-
+Phylogenetic:
 ```{r permanova-phylo, fig.width=6.5, fig.height=2, out.width="65%"}
 beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil * Treatment",
     distance = "U",
-    q = 0,
+    q = 1,
     diversity = "phylogenetic",
     tree = tree_fungi
 )
 ```
 
-```{r betadisper-phylo, fig.width=6.5, fig.height=1.2, out.width="65%"}
-beta_test_table(
-    table = table_fung,
-    metadata = metadata_fungi,
-    formula_str = "Type_of_soil",
-    test = "betadisper",
-    distance = "U",
-    q = 0,
-    diversity = "phylogenetic",
-    tree = tree_fungi
-)
-```
 
-Functional, at $q = 1$:
-
+Functional:
 ```{r permanova-func, fig.width=6.5, fig.height=2, out.width="65%"}
 beta_test_table(
     table = table_fung,
@@ -324,18 +301,21 @@ beta_test_table(
 )
 ```
 
-```{r betadisper-func, fig.width=6.5, fig.height=1.2, out.width="65%"}
+
+`test = "betadisper"` works the same way for the three types. Here is the phylogenetic one. At $q = 1$ the dispersions differ between types of soil in all three, so read the PERMANOVA of `Type_of_soil` with that in mind.
+```{r betadisper, fig.width=6.5, fig.height=1.2, out.width="65%"}
 beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil",
-    test = "betadisper",
     distance = "U",
     q = 1,
-    diversity = "functional",
-    traits = traits_fungi
+    test = "betadisper",
+    diversity = "phylogenetic",
+    tree = tree_fungi
 )
 ```
+
 
 ## References
 
