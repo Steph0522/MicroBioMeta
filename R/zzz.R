@@ -645,7 +645,7 @@ utils::globalVariables(c(
 ))
 
 # Taxa shared by the table and the tree/traits: hilldiv3 requires them to match exactly.
-.mbm_hill_align <- function(table, diversity, tree, traits) {
+.mbm_hill_align <- function(table, diversity, tree, traits, tau = NULL) {
     diversity <- tolower(diversity)
     if (!diversity %in% c("taxonomic", "phylogenetic", "functional")) {
         stop("Invalid diversity. Use 'taxonomic', 'phylogenetic' or 'functional'.")
@@ -666,30 +666,35 @@ utils::globalVariables(c(
     if (length(shared) < nrow(table)) {
         warning(nrow(table) - length(shared), " of ", nrow(table), " taxa dropped: not found in ", source_name)
     }
-    list(
-        counts = as.matrix(table[shared, , drop = FALSE]),
-        type = diversity,
-        tree = if (phylogenetic) ape::keep.tip(tree, shared),
-        dist = if (!phylogenetic) hilldiv3::traits2dist(traits[shared, , drop = FALSE])
-    )
+    counts <- as.matrix(table[shared, , drop = FALSE])
+    if (phylogenetic) {
+        return(list(counts = counts, type = diversity, tree = ape::keep.tip(tree, shared)))
+    }
+    d <- as.matrix(hilldiv3::traits2dist(traits[shared, , drop = FALSE]))
+    if (is.null(tau)) {
+        # mean distance between two reads of the pooled samples, the default of Chao et al. (2019)
+        p <- rowSums(counts) / sum(counts)
+        tau <- sum(p %*% d %*% p)
+    }
+    list(counts = counts, type = diversity, dist = d, tau = tau)
 }
 
 # Phylogenetic or functional Hill numbers (q0-q2), one row per sample.
-.mbm_hill_weighted <- function(table, diversity, tree, traits) {
-    x <- .mbm_hill_align(table, diversity, tree, traits)
+.mbm_hill_weighted <- function(table, diversity, tree, traits, tau = NULL) {
+    x <- .mbm_hill_align(table, diversity, tree, traits, tau)
     hill <- suppressMessages(
-        hilldiv3::hilldiv(x$counts, tree = x$tree, dist = x$dist, type = x$type, out = "matrix")
+        hilldiv3::hilldiv(x$counts, tree = x$tree, dist = x$dist, tau = x$tau, type = x$type, out = "matrix")
     )
     as.data.frame(hill[colnames(x$counts), , drop = FALSE])
 }
 
 # Hill-number dissimilarity (metric U, C, V or S) between the columns of a taxa x samples table.
-.mbm_hill_dist <- function(table, metric, q, diversity, tree, traits) {
+.mbm_hill_dist <- function(table, metric, q, diversity, tree, traits, tau = NULL) {
     if (length(q) != 1) stop("`q` must be a single order, e.g. 0, 1 or 2.")
-    x <- .mbm_hill_align(table, diversity, tree, traits)
+    x <- .mbm_hill_align(table, diversity, tree, traits, tau)
     suppressMessages(hilldiv3::hillpair(x$counts,
         q = q, metric = toupper(metric),
-        tree = x$tree, dist = x$dist, type = x$type
+        tree = x$tree, dist = x$dist, tau = x$tau, type = x$type
     ))
 }
 
@@ -704,7 +709,7 @@ utils::globalVariables(c(
         faith <- apply(counts > 0, 2, function(present) sum(edge_length[unique(unlist(paths[present]))]))
         return(data.frame("Faith PD" = faith, check.names = FALSE))
     }
-    d <- as.matrix(x$dist)[rownames(counts), rownames(counts)]
+    d <- x$dist
     rao <- apply(counts, 2, function(n) {
         p <- n / sum(n)
         sum(p %*% d %*% p)

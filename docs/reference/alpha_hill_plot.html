@@ -92,7 +92,8 @@ metadata variables and with statistical comparisons between groups.</p>
 <span>  table_filename <span class="op">=</span> <span class="st">"hill.txt"</span>,</span>
 <span>  diversity <span class="op">=</span> <span class="st">"taxonomic"</span>,</span>
 <span>  tree <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  traits <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  traits <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tau <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -210,7 +211,7 @@ title).</p></dd>
 <dd><p>Character. Title of the y-axis. Default <code>NULL</code>: the
 unit of <code>diversity</code>: <code>"Effective number of features"</code>,
 <code>"Effective number of lineages"</code> or <code>"Effective number of
-functionally distinct features"</code>.</p></dd>
+functional groups"</code>.</p></dd>
 
 
 <dt id="arg-free-y">free_y<a class="anchor" aria-label="anchor" href="#arg-free-y"></a></dt>
@@ -268,8 +269,8 @@ tab-delimited file. Default <code>FALSE</code>.</p></dd>
 abundances), <code>"phylogenetic"</code> (needs <code>tree</code>) or <code>"functional"</code>
 (needs <code>traits</code>), computed with <code><a href="https://alberdilab.github.io/hilldiv3/reference/hilldiv.html" class="external-link">hilldiv3::hilldiv()</a></code>.
 Phylogenetic values are effective numbers of lineages read at one common
-tree depth (<code>reference = "pool"</code>), so a sample can fall slightly below</p><ol><li><p>Functional values are effective numbers of functionally distinct
-features at the largest pairwise distance. Case-insensitive.</p></li>
+tree depth (<code>reference = "pool"</code>), so a sample can fall slightly below</p><ol><li><p>Functional values are effective numbers of functional groups at the
+threshold <code>tau</code>. Case-insensitive.</p></li>
 </ol></dd>
 
 
@@ -284,6 +285,13 @@ whose tip labels are the taxa of <code>table</code>. Used when
 EC or KO copy numbers predicted per ASV by PICRUSt2), converted to Gower
 distances with <code><a href="https://alberdilab.github.io/hilldiv3/reference/traits2dist.html" class="external-link">hilldiv3::traits2dist()</a></code>. Used when
 <code>diversity = "functional"</code>.</p></dd>
+
+
+<dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
+<dd><p>Numeric. Threshold of functional distinctiveness: taxa at this
+distance or more count as different functional groups. <code>NULL</code> (default)
+uses the mean distance between two reads of the pooled samples (Chao et al.
+2019). Used when <code>diversity = "functional"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

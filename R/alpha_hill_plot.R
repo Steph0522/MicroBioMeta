@@ -53,7 +53,7 @@
 #' @param y_axis_title Character. Title of the y-axis. Default \code{NULL}: the
 #'   unit of \code{diversity}: \code{"Effective number of features"},
 #'   \code{"Effective number of lineages"} or \code{"Effective number of
-#'   functionally distinct features"}.
+#'   functional groups"}.
 #' @param free_y Logical. Each order q always has its own y-axis scale (q0
 #'   is usually much larger than q2). If \code{FALSE} (default), that scale is
 #'   shared by all the panels of the same order, so the groups can be compared
@@ -82,8 +82,8 @@
 #'   (needs \code{traits}), computed with \code{hilldiv3::hilldiv()}.
 #'   Phylogenetic values are effective numbers of lineages read at one common
 #'   tree depth (\code{reference = "pool"}), so a sample can fall slightly below
-#'   1. Functional values are effective numbers of functionally distinct
-#'   features at the largest pairwise distance. Case-insensitive.
+#'   1. Functional values are effective numbers of functional groups at the
+#'   threshold \code{tau}. Case-insensitive.
 #' @param tree A rooted \code{phylo} tree (e.g. from \code{ape::read.tree()})
 #'   whose tip labels are the taxa of \code{table}. Used when
 #'   \code{diversity = "phylogenetic"}.
@@ -91,6 +91,10 @@
 #'   EC or KO copy numbers predicted per ASV by PICRUSt2), converted to Gower
 #'   distances with \code{hilldiv3::traits2dist()}. Used when
 #'   \code{diversity = "functional"}.
+#' @param tau Numeric. Threshold of functional distinctiveness: taxa at this
+#'   distance or more count as different functional groups. \code{NULL} (default)
+#'   uses the mean distance between two reads of the pooled samples (Chao et al.
+#'   2019). Used when \code{diversity = "functional"}.
 #'
 #' @return A ggplot object.
 #' @export
@@ -149,7 +153,8 @@ alpha_hill_plot <- function(
   table_filename = "hill.txt",
   diversity = "taxonomic",
   tree = NULL,
-  traits = NULL
+  traits = NULL,
+  tau = NULL
 ) {
     type <- tolower(type)
     facet_orientation <- tolower(facet_orientation)
@@ -160,7 +165,7 @@ alpha_hill_plot <- function(
         y_axis_title <- switch(diversity,
             "taxonomic" = "Effective number of features",
             "phylogenetic" = "Effective number of lineages",
-            "functional" = "Effective number of functionally distinct features",
+            "functional" = "Effective number of functional groups",
             stop("Invalid diversity. Use 'taxonomic', 'phylogenetic' or 'functional'.")
         )
     }
@@ -180,7 +185,7 @@ alpha_hill_plot <- function(
             q2 = hillR::hill_taxa(comm = table, q = 2)
         )
     } else {
-        .mbm_hill_weighted(table, diversity, tree, traits)
+        .mbm_hill_weighted(table, diversity, tree, traits, tau)
     }
     results <- data.frame(hill, metadata)
 

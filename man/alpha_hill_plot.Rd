@@ -37,7 +37,8 @@ alpha_hill_plot(
   table_filename = "hill.txt",
   diversity = "taxonomic",
   tree = NULL,
-  traits = NULL
+  traits = NULL,
+  tau = NULL
 )
 }
 \arguments{
@@ -110,7 +111,7 @@ title).}
 \item{y_axis_title}{Character. Title of the y-axis. Default \code{NULL}: the
 unit of \code{diversity}: \code{"Effective number of features"},
 \code{"Effective number of lineages"} or \code{"Effective number of
-functionally distinct features"}.}
+functional groups"}.}
 
 \item{free_y}{Logical. Each order q always has its own y-axis scale (q0
 is usually much larger than q2). If \code{FALSE} (default), that scale is
@@ -150,8 +151,8 @@ abundances), \code{"phylogenetic"} (needs \code{tree}) or \code{"functional"}
 Phylogenetic values are effective numbers of lineages read at one common
 tree depth (\code{reference = "pool"}), so a sample can fall slightly below
 \enumerate{
-\item Functional values are effective numbers of functionally distinct
-features at the largest pairwise distance. Case-insensitive.
+\item Functional values are effective numbers of functional groups at the
+threshold \code{tau}. Case-insensitive.
 }}
 
 \item{tree}{A rooted \code{phylo} tree (e.g. from \code{ape::read.tree()})
@@ -162,6 +163,11 @@ whose tip labels are the taxa of \code{table}. Used when
 EC or KO copy numbers predicted per ASV by PICRUSt2), converted to Gower
 distances with \code{hilldiv3::traits2dist()}. Used when
 \code{diversity = "functional"}.}
+
+\item{tau}{Numeric. Threshold of functional distinctiveness: taxa at this
+distance or more count as different functional groups. \code{NULL} (default)
+uses the mean distance between two reads of the pooled samples (Chao et al.
+2019). Used when \code{diversity = "functional"}.}
 }
 \value{
 A ggplot object.

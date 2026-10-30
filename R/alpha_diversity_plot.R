@@ -388,8 +388,10 @@ alpha_diversity_plot <- function(
                     fill = legend_title
                 ) +
                 cell_theme
-            if (!is.null(aspect_ratio)) {
-                p_cell <- p_cell + ggplot2::theme(aspect.ratio = aspect_ratio)
+            # a single index (Faith PD, Rao Q) would otherwise stretch over the whole device
+            cell_aspect <- if (is.null(aspect_ratio) && n_cols_grid == 1) 1 else aspect_ratio
+            if (!is.null(cell_aspect)) {
+                p_cell <- p_cell + ggplot2::theme(aspect.ratio = cell_aspect)
             }
 
             if (!is.null(stat)) {

@@ -23,7 +23,8 @@ beta_ord_plot(
   q = 1,
   diversity = "taxonomic",
   tree = NULL,
-  traits = NULL
+  traits = NULL,
+  tau = NULL
 )
 }
 \arguments{
@@ -112,6 +113,11 @@ loadings (one table) as a tab-delimited file. Default \code{FALSE}.}
 
 \item{traits}{A data frame with taxa in rows and traits in columns. Used when
 \code{diversity = "functional"}.}
+
+\item{tau}{Numeric. Threshold of functional distinctiveness: taxa at this
+distance or more count as different functional groups. \code{NULL} (default)
+uses the mean distance between two reads of the pooled samples (Chao et al.
+2019). Used when \code{diversity = "functional"}.}
 }
 \value{
 A ggplot object.

@@ -71,6 +71,10 @@
 #'   \code{table}. Used when \code{diversity = "phylogenetic"}.
 #' @param traits A data frame with taxa in rows and traits in columns. Used when
 #'   \code{diversity = "functional"}.
+#' @param tau Numeric. Threshold of functional distinctiveness: taxa at this
+#'   distance or more count as different functional groups. \code{NULL} (default)
+#'   uses the mean distance between two reads of the pooled samples (Chao et al.
+#'   2019). Used when \code{diversity = "functional"}.
 #' @details With \code{distance = "compositional"} and \code{mc_samples = 1},
 #'   the clr values come from one random Monte Carlo instance of
 #'   \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
@@ -110,7 +114,8 @@ beta_ord_plot <- function(table, metadata,
                           q = 1,
                           diversity = "taxonomic",
                           tree = NULL,
-                          traits = NULL) {
+                          traits = NULL,
+                          tau = NULL) {
     requireNamespace("vegan")
     requireNamespace("ggplot2")
     requireNamespace("ggrepel")
@@ -170,7 +175,7 @@ beta_ord_plot <- function(table, metadata,
         dist_matrix <- vegan::vegdist(t(otu_table), method = "bray", binary = TRUE)
         otu_trans <- NULL
     } else if (distance %in% c("u", "c", "v", "s")) {
-        dist_matrix <- .mbm_hill_dist(otu_table, distance, q, diversity, tree, traits)
+        dist_matrix <- .mbm_hill_dist(otu_table, distance, q, diversity, tree, traits, tau)
         otu_trans <- NULL
     } else {
         dist_matrix <- vegan::vegdist(t(otu_table), method = distance)
@@ -323,11 +328,12 @@ beta_ord_plot <- function(table, metadata,
             x = x_lab,
             y = y_lab,
             title = if (identical(title, "auto")) {
-                paste(ordination, "-", if (distance %in% c("u", "c", "v", "s")) {
-                    paste0(toupper(distance), " (q = ", q, ", ", tolower(diversity), ")")
+                if (distance %in% c("u", "c", "v", "s")) {
+                    bquote(bold(.(ordination) ~ "-" ~ .(toupper(distance)) ~
+                        "(" * bolditalic(q) ~ "=" ~ .(q) * "," ~ .(tolower(diversity)) * ")"))
                 } else {
-                    distance
-                })
+                    paste(ordination, "-", distance)
+                }
             } else {
                 title
             },

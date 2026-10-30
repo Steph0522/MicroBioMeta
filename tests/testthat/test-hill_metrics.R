@@ -55,9 +55,18 @@ test_that("Faith PD counts each branch once up to the root", {
 
 test_that("Rao Q fits the functional Hill number of order 2", {
     rao <- .mbm_classic_weighted(counts, "functional", NULL, traits)[[1]]
-    q2 <- .mbm_hill_weighted(counts, "functional", NULL, traits)$q2
     tau <- max(hilldiv3::traits2dist(traits))
+    q2 <- .mbm_hill_weighted(counts, "functional", NULL, traits, tau = tau)$q2
     expect_equal(1 / (1 - rao / tau), q2)
+})
+
+test_that("tau defaults to the mean distance of the pooled samples", {
+    p <- rowSums(counts) / sum(counts)
+    d <- as.matrix(hilldiv3::traits2dist(traits))
+    expect_equal(
+        .mbm_hill_weighted(counts, "functional", NULL, traits),
+        .mbm_hill_weighted(counts, "functional", NULL, traits, tau = sum(p %*% d %*% p))
+    )
 })
 
 test_that("alpha_diversity_plot draws Faith PD and Rao Q and keeps hashed taxa", {

@@ -118,9 +118,11 @@ sets how much weight the abundances get:</p>
 </tr>
 </tbody>
 </table>
-<p>The same idea extends to two other dimensions of diversity. Here each
-one has its own unit, so <strong>the values of the three types cannot be
-compared with each other</strong>: compare groups within a type.</p>
+<p>The same idea extends to two other dimensions of diversity <span class="citation">(<a href="#ref-chao2014unifying">Chao et al.
+2014</a>)</span>. All three are effective numbers, in species or lineage
+equivalents <span class="citation">(<a href="#ref-chao2021measuring">Chao et al. 2021</a>)</span>, but they
+count different things: taxa, lineages or functional groups. Always say
+which one you report.</p>
 <table class="table">
 <colgroup>
 <col width="25%">
@@ -153,7 +155,7 @@ compared with each other</strong>: compare groups within a type.</p>
 <td>How different their traits are <span class="citation">(<a href="#ref-chao2019attribute">Chao et al. 2019</a>)</span>
 </td>
 <td>Traits per taxon</td>
-<td>Effective number of functionally distinct features</td>
+<td>Effective number of functional groups</td>
 </tr>
 </tbody>
 </table>
@@ -235,7 +237,9 @@ title follows the unit of each type.</p>
 <span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
+<span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="hill_diversity_files/figure-html/alpha-tax-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -245,7 +249,9 @@ title follows the unit of each type.</p>
 <span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
 <span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"phylogenetic"</span>,</span>
 <span>    tree <span class="op">=</span> <span class="va">tree_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -257,20 +263,26 @@ title follows the unit of each type.</p>
 <span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    facet_by <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
 <span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"functional"</span>,</span>
-<span>    traits <span class="op">=</span> <span class="va">traits_fungi</span>,</span>
-<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span></span>
+<span>    traits <span class="op">=</span> <span class="va">traits_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="hill_diversity_files/figure-html/alpha-func-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Two details of these values:</p>
 <ul>
-<li>The phylogenetic values are read at one common tree depth, so
+<li>The phylogenetic values are read at one common depth, the mean tree
+depth of the samples <span class="citation">(<a href="#ref-chiu2014phylogenetic">Chiu et al. 2014</a>)</span>, so
 samples are comparable. For that reason a sample can fall slightly below
-1.</li>
-<li>Functional values depend on a distance threshold; here it is the
-largest distance between two taxa, the default of
-<code>hilldiv3</code>.</li>
+1. <code>iNEXT.3D</code> uses the age of the root instead, so its values
+are not the same.</li>
+<li>Functional values depend on a threshold
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>:
+taxa at that distance or more count as different functional groups. By
+default it is the mean distance between two reads of the pooled samples
+<span class="citation">(<a href="#ref-chao2019attribute">Chao et al.
+2019</a>)</span>, and you can change it with <code>tau</code>.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -321,22 +333,26 @@ with <code>diversity</code>:</p>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
 <span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"phylogenetic"</span>,</span>
 <span>    tree <span class="op">=</span> <span class="va">tree_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="hill_diversity_files/figure-html/classic-phylo-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="hill_diversity_files/figure-html/classic-phylo-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_diversity_plot.html">alpha_diversity_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>    x_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
 <span>    fill_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    x_axis_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
 <span>    show_legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"kruskal.test"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"functional"</span>,</span>
 <span>    traits <span class="op">=</span> <span class="va">traits_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="hill_diversity_files/figure-html/classic-func-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="hill_diversity_files/figure-html/classic-func-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
 <p>These indices are related to the Hill numbers but they are not the
 same quantity. Faith’s PD is the phylogenetic
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q = 0</annotation></semantics></math>
@@ -344,12 +360,12 @@ before dividing by the depth of the tree, and Rao’s Q gives the
 functional
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">q = 2</annotation></semantics></math>
 through
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>Q</mi><mi>/</mi><mi>τ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 / (1 - Q / \tau)</annotation></semantics></math>,
-where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>Q</mi><mi>/</mi><mi>τ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 / (1 - Q / \tau)</annotation></semantics></math>
+when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>
-is the distance threshold. Choose the classic index if you need to
-compare with studies that report it, and the Hill number if you want
-every type in the same framework.</p>
+is the largest distance between two taxa. Choose the classic index if
+you need to compare with studies that report it, and the Hill number if
+you want every type in the same framework.</p>
 </div>
 <div class="section level2">
 <h2 id="beta-diversity">Beta diversity<a class="anchor" aria-label="anchor" href="#beta-diversity"></a>
@@ -358,57 +374,74 @@ every type in the same framework.</p>
 <h3 id="the-metrics">The metrics<a class="anchor" aria-label="anchor" href="#the-metrics"></a>
 </h3>
 <p><code><a href="https://alberdilab.github.io/hilldiv3/reference/hillpair.html" class="external-link">hilldiv3::hillpair()</a></code> turns the Hill numbers into
-dissimilarities between samples <span class="citation">(<a href="#ref-jost2007partitioning">Jost 2007</a>; <a href="#ref-chiu2014phylogenetic">Chiu et al. 2014</a>)</span>. In
+dissimilarities between samples <span class="citation">(<a href="#ref-jost2007partitioning">Jost 2007</a>; <a href="#ref-chiu2014phylogenetic">Chiu et al. 2014</a>; <a href="#ref-chao2023rarefaction">Chao et al. 2023</a>)</span>. In
 <code>MicroBioMeta</code> they are one more option of
 <code>distance</code>, next to <code>"jaccard"</code> or
 <code>"aitchison"</code>, with the order set by <code>q</code>. They
 range from 0 (identical samples) to 1 (nothing shared), so they have no
 unit problem.</p>
 <table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
 <thead><tr class="header">
 <th><code>distance</code></th>
 <th>Type</th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q = 0</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q = 1</annotation></semantics></math></th>
-<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">q = 2</annotation></semantics></math></th>
+<th>Taxonomic:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q = 0</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math>
+</th>
+<th>Phylogenetic:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q = 0</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math>
+</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td><code>"U"</code></td>
 <td>Jaccard type</td>
-<td>Jaccard</td>
-<td>Horn</td>
-<td>Regional overlap</td>
+<td>Jaccard, Horn, regional overlap</td>
+<td>Phylo-Jaccard (unweighted UniFrac), phylo-Horn,
+phylo-regional-overlap</td>
 </tr>
 <tr class="even">
 <td><code>"C"</code></td>
 <td>Sørensen type</td>
-<td>Sørensen</td>
-<td>Horn</td>
-<td>Morisita-Horn</td>
+<td>Sørensen, Horn, Morisita-Horn</td>
+<td>Phylo-Sørensen (PhyloSor), phylo-Horn, phylo-Morisita-Horn</td>
 </tr>
 <tr class="odd">
-<td><code>"V"</code></td>
-<td>Sørensen-type turnover</td>
-<td>Sørensen</td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
 <td><code>"S"</code></td>
 <td>Jaccard-type turnover</td>
-<td>Jaccard</td>
-<td></td>
-<td></td>
+<td>Jaccard, no name, Morisita-Horn</td>
+<td>Phylo-Jaccard, no name, phylo-Morisita-Horn</td>
+</tr>
+<tr class="even">
+<td><code>"V"</code></td>
+<td>Sørensen-type turnover</td>
+<td>Sørensen, no name, no name</td>
+<td>Phylo-Sørensen, no name, no name</td>
 </tr>
 </tbody>
 </table>
-<p>With <code>diversity = "phylogenetic"</code> and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q = 0</annotation></semantics></math>,
-<code>"U"</code> is the unweighted UniFrac <span class="citation">(<a href="#ref-lozupone2005unifrac">Lozupone and Knight 2005</a>)</span>. It
-is a good default if you already use Jaccard. At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q = 1</annotation></semantics></math>
-it is related to the weighted UniFrac, but it is not the same value.</p>
+<p>The phylogenetic names come from <span class="citation">Chiu et al.
+(<a href="#ref-chiu2014phylogenetic">2014</a>)</span>, and PhyloSor from
+<span class="citation">Bryant et al. (<a href="#ref-bryant2008microbes">2008</a>)</span>; UniFrac is from <span class="citation">Lozupone and Knight (<a href="#ref-lozupone2005unifrac">2005</a>)</span>. The functional
+versions have no names of their own: <span class="citation">Chao et al.
+(<a href="#ref-chao2019attribute">2019</a>)</span> calls them
+Sørensen-type and Jaccard-type functional measures, so report them that
+way, with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>τ</mi><annotation encoding="application/x-tex">\tau</annotation></semantics></math>.
+At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q = 1</annotation></semantics></math>,
+<code>"U"</code> is phylo-Horn, not the weighted UniFrac.</p>
 <p>These metrics describe the differences in Hill-number terms; they are
 not compositional. If your main analysis uses CLR/Aitchison, keep it
 there and use these as a complement.</p>
@@ -418,7 +451,11 @@ there and use these as a complement.</p>
 </h3>
 <p>The Hill metrics work with <code>ordination = "PCoA"</code> or
 <code>"NMDS"</code>, the same as any distance that is not
-<code>"compositional"</code>.</p>
+<code>"compositional"</code>. <code><a href="../reference/beta_ord_plot.html">beta_ord_plot()</a></code> keeps the
+same scale on both axes, so the plot gets flat when the first axis
+explains most of the variation. In the functional example we add
+<code><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">ggplot2::coord_cartesian()</a></code> to fill the figure; keep in mind
+that the axes no longer share a scale.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_ord_plot.html">beta_ord_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
@@ -426,7 +463,8 @@ there and use these as a complement.</p>
 <span>    distance <span class="op">=</span> <span class="st">"U"</span>,</span>
 <span>    q <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    ordination <span class="op">=</span> <span class="st">"PCoA"</span>,</span>
-<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span></span>
+<span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    legend_title <span class="op">=</span> <span class="st">"Type of soil"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="hill_diversity_files/figure-html/ord-tax-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -437,6 +475,7 @@ there and use these as a complement.</p>
 <span>    q <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>    ordination <span class="op">=</span> <span class="st">"PCoA"</span>,</span>
 <span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    legend_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"phylogenetic"</span>,</span>
 <span>    tree <span class="op">=</span> <span class="va">tree_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -449,9 +488,10 @@ there and use these as a complement.</p>
 <span>    q <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    ordination <span class="op">=</span> <span class="st">"PCoA"</span>,</span>
 <span>    group_col <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    legend_title <span class="op">=</span> <span class="st">"Type of soil"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"functional"</span>,</span>
 <span>    traits <span class="op">=</span> <span class="va">traits_fungi</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html" class="external-link">coord_cartesian</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="hill_diversity_files/figure-html/ord-func-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -465,7 +505,31 @@ significant PERMANOVA with unequal dispersions may reflect differences
 in dispersion, not in position. In this example betadisper is
 significant, so read the PERMANOVA of <code>Type_of_soil</code> with
 that in mind.</p>
+<p>Taxonomic, at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q = 1</annotation></semantics></math>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil * Treatment"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"U"</span>,</span>
+<span>    q <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="hill_diversity_files/figure-html/permanova-tax-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    test <span class="op">=</span> <span class="st">"betadisper"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"U"</span>,</span>
+<span>    q <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="hill_diversity_files/figure-html/betadisper-tax-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
+<p>Phylogenetic, at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q = 0</annotation></semantics></math>
+(unweighted UniFrac):</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
@@ -475,19 +539,44 @@ that in mind.</p>
 <span>    diversity <span class="op">=</span> <span class="st">"phylogenetic"</span>,</span>
 <span>    tree <span class="op">=</span> <span class="va">tree_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="hill_diversity_files/figure-html/permanova-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p><img src="hill_diversity_files/figure-html/permanova-phylo-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
 <span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
 <span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    test <span class="op">=</span> <span class="st">"betadisper"</span>,</span>
 <span>    distance <span class="op">=</span> <span class="st">"U"</span>,</span>
 <span>    q <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>    test <span class="op">=</span> <span class="st">"betadisper"</span>,</span>
 <span>    diversity <span class="op">=</span> <span class="st">"phylogenetic"</span>,</span>
 <span>    tree <span class="op">=</span> <span class="va">tree_fungi</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="hill_diversity_files/figure-html/betadisper-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="hill_diversity_files/figure-html/betadisper-phylo-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
+<p>Functional, at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q = 1</annotation></semantics></math>:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil * Treatment"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"U"</span>,</span>
+<span>    q <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    diversity <span class="op">=</span> <span class="st">"functional"</span>,</span>
+<span>    traits <span class="op">=</span> <span class="va">traits_fungi</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="hill_diversity_files/figure-html/permanova-func-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/beta_test_table.html">beta_test_table</a></span><span class="op">(</span></span>
+<span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">metadata_fungi</span>,</span>
+<span>    formula_str <span class="op">=</span> <span class="st">"Type_of_soil"</span>,</span>
+<span>    test <span class="op">=</span> <span class="st">"betadisper"</span>,</span>
+<span>    distance <span class="op">=</span> <span class="st">"U"</span>,</span>
+<span>    q <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    diversity <span class="op">=</span> <span class="st">"functional"</span>,</span>
+<span>    traits <span class="op">=</span> <span class="va">traits_fungi</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="hill_diversity_files/figure-html/betadisper-func-1.png" class="r-plt" alt="" width="65%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level2">
@@ -515,17 +604,45 @@ et al.</span> 2019. <span>“Reproducible, Interactive, Scalable and
 Extensible Microbiome Data Science Using <span>QIIME</span> 2.”</span>
 <em>Nature Biotechnology</em> 37 (8): 852–57. <a href="https://doi.org/10.1038/s41587-019-0209-9" class="external-link">https://doi.org/10.1038/s41587-019-0209-9</a>.
 </div>
+<div id="ref-bryant2008microbes" class="csl-entry">
+Bryant, Jessica A., Christine Lamanna, Hélène Morlon, Andrew J.
+Kerkhoff, Brian J. Enquist, and Jessica L. Green. 2008. <span>“Microbes
+on Mountainsides: Contrasting Elevational Patterns of Bacterial and
+Plant Diversity.”</span> <em>Proceedings of the National Academy of
+Sciences</em> 105 (supplement_1): 11505–11. <a href="https://doi.org/10.1073/pnas.0801920105" class="external-link">https://doi.org/10.1073/pnas.0801920105</a>.
+</div>
 <div id="ref-chao2010phylogenetic" class="csl-entry">
 Chao, Anne, Chun-Huo Chiu, and Lou Jost. 2010. <span>“Phylogenetic
 Diversity Measures Based on <span>Hill</span> Numbers.”</span>
 <em>Philosophical Transactions of the Royal Society B: Biological
 Sciences</em> 365 (1558): 3599–609. <a href="https://doi.org/10.1098/rstb.2010.0272" class="external-link">https://doi.org/10.1098/rstb.2010.0272</a>.
 </div>
+<div id="ref-chao2014unifying" class="csl-entry">
+Chao, Anne, Chun-Huo Chiu, and Lou Jost. 2014. <span>“Unifying Species
+Diversity, Phylogenetic Diversity, Functional Diversity, and Related
+Similarity and Differentiation Measures Through <span>Hill</span>
+Numbers.”</span> <em>Annual Review of Ecology, Evolution, and
+Systematics</em> 45 (1): 297–324. <a href="https://doi.org/10.1146/annurev-ecolsys-120213-091540" class="external-link">https://doi.org/10.1146/annurev-ecolsys-120213-091540</a>.
+</div>
 <div id="ref-chao2019attribute" class="csl-entry">
 Chao, Anne, Chun-Huo Chiu, Sébastien Villéger, et al. 2019. <span>“An
 Attribute-Diversity Approach to Functional Diversity, Functional Beta
 Diversity, and Related (Dis)similarity Measures.”</span> <em>Ecological
 Monographs</em> 89 (2): e01343. <a href="https://doi.org/10.1002/ecm.1343" class="external-link">https://doi.org/10.1002/ecm.1343</a>.
+</div>
+<div id="ref-chao2021measuring" class="csl-entry">
+Chao, Anne, Peter A. Henderson, Chun-Huo Chiu, et al. 2021.
+<span>“Measuring Temporal Change in Alpha Diversity: A Framework
+Integrating Taxonomic, Phylogenetic and Functional Diversity and the
+<span class="nocase">iNEXT.3D</span> Standardization.”</span>
+<em>Methods in Ecology and Evolution</em> 12 (10): 1926–40. <a href="https://doi.org/10.1111/2041-210X.13682" class="external-link">https://doi.org/10.1111/2041-210X.13682</a>.
+</div>
+<div id="ref-chao2023rarefaction" class="csl-entry">
+Chao, Anne, Simon Thorn, Chun-Huo Chiu, et al. 2023. <span>“Rarefaction
+and Extrapolation with Beta Diversity Under a Framework of
+<span>Hill</span> Numbers: The <span class="nocase">iNEXT.beta3D</span>
+Standardization.”</span> <em>Ecological Monographs</em> 93 (4): e1588.
+<a href="https://doi.org/10.1002/ecm.1588" class="external-link">https://doi.org/10.1002/ecm.1588</a>.
 </div>
 <div id="ref-chiu2014phylogenetic" class="csl-entry">
 Chiu, Chun-Huo, Lou Jost, and Anne Chao. 2014. <span>“Phylogenetic Beta
@@ -565,7 +682,7 @@ Biology</em> 21 (1): 24–43. <a href="https://doi.org/10.1016/0040-5809(82)9000
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.6.1 (2026-06-24 ucrt)</span></span>
 <span><span class="co">## Platform: x86_64-w64-mingw32/x64</span></span>

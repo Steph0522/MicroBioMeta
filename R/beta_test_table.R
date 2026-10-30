@@ -40,6 +40,10 @@
 #'   \code{table}. Used when \code{diversity = "phylogenetic"}.
 #' @param traits A data frame with taxa in rows and traits in columns. Used when
 #'   \code{diversity = "functional"}.
+#' @param tau Numeric. Threshold of functional distinctiveness: taxa at this
+#'   distance or more count as different functional groups. \code{NULL} (default)
+#'   uses the mean distance between two reads of the pooled samples (Chao et al.
+#'   2019). Used when \code{diversity = "functional"}.
 #' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
 #'   \code{distance = "compositional"}. With \code{1} (default) the clr values
 #'   of one random instance are used: fast, but the result changes
@@ -112,7 +116,8 @@ beta_test_table <- function(table,
                             q = 1,
                             diversity = "taxonomic",
                             tree = NULL,
-                            traits = NULL) {
+                            traits = NULL,
+                            tau = NULL) {
     test <- match.arg(tolower(test), c("permanova", "betadisper"))
     distance <- tolower(distance)
     is_square_dist <- is.matrix(table) && nrow(table) == ncol(table) &&
@@ -197,7 +202,7 @@ beta_test_table <- function(table,
     } else if (distance %in% c("aitchison", "robust.aitchison")) {
         dist_matrix <- vegan::vegdist(table, method = distance, pseudocount = 0.5)
     } else if (distance %in% c("u", "c", "v", "s")) {
-        dist_matrix <- .mbm_hill_dist(t(table), distance, q, diversity, tree, traits)
+        dist_matrix <- .mbm_hill_dist(t(table), distance, q, diversity, tree, traits, tau)
     } else {
         dist_matrix <- vegan::vegdist(table, method = distance)
     }
@@ -241,6 +246,7 @@ beta_test_table <- function(table,
 
     tabla_display <- tabla
     names(tabla_display)[names(tabla_display) == "R2"] <- "R\u00b2"
+    tabla_display$Term <- gsub("_", " ", tabla_display$Term)
 
     tab <- ggpubr::ggtexttable(tabla_display,
         rows = NULL,

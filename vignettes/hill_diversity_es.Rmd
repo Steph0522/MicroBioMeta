@@ -38,13 +38,13 @@ El orden $q$ define cuánto peso reciben las abundancias:
 | $q = 1$ | Proporcional a su abundancia | Exponencial de Shannon |
 | $q = 2$ | Sobre todo los dominantes | Inverso de Simpson |
 
-La misma idea se extiende a otras dos dimensiones de la diversidad. Aquí cada una tiene su propia unidad, así que **los valores de los tres tipos no se comparan entre sí**: compara grupos dentro de un mismo tipo.
+La misma idea se extiende a otras dos dimensiones de la diversidad [@chao2014unifying]. Las tres son números efectivos, en equivalentes de especies o linajes [@chao2021measuring], pero cuentan cosas distintas: taxones, linajes o grupos funcionales. Di siempre cuál reportas.
 
 | `diversity` | Qué toma en cuenta | Qué necesitas | Unidad |
 |---|---|---|---|
 | `"taxonomic"` | Abundancias | La tabla | Número efectivo de features |
 | `"phylogenetic"` | Qué tan emparentados están los taxones [@chao2010phylogenetic] | Árbol enraizado | Número efectivo de linajes |
-| `"functional"` | Qué tan distintos son sus rasgos [@chao2019attribute] | Rasgos por taxón | Número efectivo de features funcionalmente distintos |
+| `"functional"` | Qué tan distintos son sus rasgos [@chao2019attribute] | Rasgos por taxón | Número efectivo de grupos funcionales |
 
 ## Preparar los datos
 
@@ -114,7 +114,9 @@ alpha_hill_plot(
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
     facet_by = "Treatment",
-    show_legend = FALSE
+    x_axis_title = "Type of soil",
+    show_legend = FALSE,
+    stat = "kruskal.test"
 )
 ```
 
@@ -125,30 +127,33 @@ alpha_hill_plot(
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
     facet_by = "Treatment",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
 ```
 
-```{r alpha-func}
+```{r alpha-func, fig.height=10}
 alpha_hill_plot(
     table = table_fung,
     metadata = metadata_fungi,
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
     facet_by = "Treatment",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "functional",
-    traits = traits_fungi,
-    stat = "kruskal.test"
+    traits = traits_fungi
 )
 ```
 
 Dos detalles de estos valores:
 
-- Los valores filogenéticos se leen a una misma profundidad del árbol, para que las muestras sean comparables. Por eso una muestra puede quedar apenas por debajo de 1.
-- Los valores funcionales dependen de un umbral de distancia; aquí es la mayor distancia entre dos taxones, el valor por defecto de `hilldiv3`.
+- Los valores filogenéticos se leen a una misma profundidad, la profundidad media del árbol en las muestras [@chiu2014phylogenetic], para que las muestras sean comparables. Por eso una muestra puede quedar apenas por debajo de 1. `iNEXT.3D` usa en cambio la edad de la raíz, así que sus valores no son iguales.
+- Los valores funcionales dependen de un umbral $\tau$: los taxones a esa distancia o más cuentan como grupos funcionales distintos. Por defecto es la distancia media entre dos lecturas de las muestras juntas [@chao2019attribute], y puedes cambiarlo con `tau`.
 
 ## Índices clásicos
 
@@ -160,52 +165,56 @@ Dos detalles de estos valores:
 | `"phylogenetic"` | PD de Faith [@faith1992conservation] | Suma de longitudes de rama hasta la raíz | Longitud de rama |
 | `"functional"` | Q de Rao [@rao1982diversity] | Distancia media entre dos lecturas al azar | Distancia (Gower) |
 
-```{r classic-phylo, fig.height=4}
+```{r classic-phylo, fig.width=4.5, fig.height=4.5, out.width="50%"}
 alpha_diversity_plot(
     table = table_fung,
     metadata = metadata_fungi,
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
 ```
 
-```{r classic-func, fig.height=4}
+```{r classic-func, fig.width=4.5, fig.height=4.5, out.width="50%"}
 alpha_diversity_plot(
     table = table_fung,
     metadata = metadata_fungi,
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "functional",
     traits = traits_fungi
 )
 ```
 
-Estos índices se relacionan con los números de Hill, pero no son la misma cantidad. El PD de Faith es el $q = 0$ filogenético antes de dividir entre la profundidad del árbol, y la Q de Rao da el $q = 2$ funcional mediante $1 / (1 - Q / \tau)$, donde $\tau$ es el umbral de distancia. Elige el índice clásico si necesitas comparar con estudios que lo reportan, y el número de Hill si quieres todos los tipos en un mismo marco.
+Estos índices se relacionan con los números de Hill, pero no son la misma cantidad. El PD de Faith es el $q = 0$ filogenético antes de dividir entre la profundidad del árbol, y la Q de Rao da el $q = 2$ funcional mediante $1 / (1 - Q / \tau)$ cuando $\tau$ es la mayor distancia entre dos taxones. Elige el índice clásico si necesitas comparar con estudios que lo reportan, y el número de Hill si quieres todos los tipos en un mismo marco.
 
 ## Diversidad beta
 
 ### Las métricas
 
-`hilldiv3::hillpair()` convierte los números de Hill en disimilitudes entre muestras [@jost2007partitioning; @chiu2014phylogenetic]. En `MicroBioMeta` son una opción más de `distance`, junto a `"jaccard"` o `"aitchison"`, con el orden definido por `q`. Van de 0 (muestras idénticas) a 1 (nada compartido), así que no tienen problema de unidades.
+`hilldiv3::hillpair()` convierte los números de Hill en disimilitudes entre muestras [@jost2007partitioning; @chiu2014phylogenetic; @chao2023rarefaction]. En `MicroBioMeta` son una opción más de `distance`, junto a `"jaccard"` o `"aitchison"`, con el orden definido por `q`. Van de 0 (muestras idénticas) a 1 (nada compartido), así que no tienen problema de unidades.
 
-| `distance` | Tipo | $q = 0$ | $q = 1$ | $q = 2$ |
-|---|---|---|---|---|
-| `"U"` | Tipo Jaccard | Jaccard | Horn | Solapamiento regional |
-| `"C"` | Tipo Sørensen | Sørensen | Horn | Morisita-Horn |
-| `"V"` | Recambio tipo Sørensen | Sørensen | | |
-| `"S"` | Recambio tipo Jaccard | Jaccard | | |
+| `distance` | Tipo | Taxonómica: $q = 0$, $1$, $2$ | Filogenética: $q = 0$, $1$, $2$ |
+|---|---|---|---|
+| `"U"` | Tipo Jaccard | Jaccard, Horn, solapamiento regional | Phylo-Jaccard (UniFrac no ponderado), phylo-Horn, phylo-regional-overlap |
+| `"C"` | Tipo Sørensen | Sørensen, Horn, Morisita-Horn | Phylo-Sørensen (PhyloSor), phylo-Horn, phylo-Morisita-Horn |
+| `"S"` | Recambio tipo Jaccard | Jaccard, sin nombre, Morisita-Horn | Phylo-Jaccard, sin nombre, phylo-Morisita-Horn |
+| `"V"` | Recambio tipo Sørensen | Sørensen, sin nombre, sin nombre | Phylo-Sørensen, sin nombre, sin nombre |
 
-Con `diversity = "phylogenetic"` y $q = 0$, `"U"` es el UniFrac no ponderado [@lozupone2005unifrac]. Es una buena opción por defecto si ya usas Jaccard. En $q = 1$ se relaciona con el UniFrac ponderado, pero no da el mismo valor.
+Los nombres filogenéticos vienen de @chiu2014phylogenetic, y PhyloSor de @bryant2008microbes; UniFrac es de @lozupone2005unifrac. Las versiones funcionales no tienen nombres propios: @chao2019attribute las llama medidas funcionales tipo Sørensen y tipo Jaccard, así que repórtalas así, con $q$ y $\tau$. En $q = 1$, `"U"` es phylo-Horn, no el UniFrac ponderado.
 
 Estas métricas describen las diferencias en términos de números de Hill; no son composicionales. Si tu análisis principal usa CLR/Aitchison, mantenlo y usa estas como complemento.
 
 ### Ordenación
 
-Las métricas de Hill funcionan con `ordination = "PCoA"` o `"NMDS"`, igual que cualquier distancia que no sea `"compositional"`.
+Las métricas de Hill funcionan con `ordination = "PCoA"` o `"NMDS"`, igual que cualquier distancia que no sea `"compositional"`. `beta_ord_plot()` mantiene la misma escala en los dos ejes, así que la gráfica se achata cuando el primer eje explica casi toda la variación. En el ejemplo funcional agregamos `ggplot2::coord_cartesian()` para llenar la figura; ten en cuenta que los ejes ya no comparten escala.
 
 ```{r ord-tax, fig.height=5}
 beta_ord_plot(
@@ -214,7 +223,8 @@ beta_ord_plot(
     distance = "U",
     q = 1,
     ordination = "PCoA",
-    group_col = "Type_of_soil"
+    group_col = "Type_of_soil",
+    legend_title = "Type of soil"
 )
 ```
 
@@ -226,6 +236,7 @@ beta_ord_plot(
     q = 0,
     ordination = "PCoA",
     group_col = "Type_of_soil",
+    legend_title = "Type of soil",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
@@ -239,16 +250,42 @@ beta_ord_plot(
     q = 1,
     ordination = "PCoA",
     group_col = "Type_of_soil",
+    legend_title = "Type of soil",
     diversity = "functional",
     traits = traits_fungi
-)
+) + ggplot2::coord_cartesian()
 ```
 
 ### PERMANOVA y betadisper
 
 `beta_test_table()` recibe los mismos argumentos. Un PERMANOVA [@anderson2001permanova] prueba si los grupos difieren, y betadisper [@anderson2006distance] si difiere su dispersión. Reporta ambos: un PERMANOVA significativo con dispersiones desiguales puede reflejar diferencias de dispersión, no de posición. En este ejemplo betadisper es significativo, así que lee el PERMANOVA de `Type_of_soil` con eso en mente.
 
-```{r permanova}
+Taxonómica, en $q = 1$:
+
+```{r permanova-tax, fig.width=6.5, fig.height=2, out.width="65%"}
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil * Treatment",
+    distance = "U",
+    q = 1
+)
+```
+
+```{r betadisper-tax, fig.width=6.5, fig.height=1.2, out.width="65%"}
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil",
+    test = "betadisper",
+    distance = "U",
+    q = 1
+)
+```
+
+Filogenética, en $q = 0$ (UniFrac no ponderado):
+
+```{r permanova-phylo, fig.width=6.5, fig.height=2, out.width="65%"}
 beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
@@ -260,16 +297,43 @@ beta_test_table(
 )
 ```
 
-```{r betadisper}
+```{r betadisper-phylo, fig.width=6.5, fig.height=1.2, out.width="65%"}
 beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil",
+    test = "betadisper",
     distance = "U",
     q = 0,
-    test = "betadisper",
     diversity = "phylogenetic",
     tree = tree_fungi
+)
+```
+
+Funcional, en $q = 1$:
+
+```{r permanova-func, fig.width=6.5, fig.height=2, out.width="65%"}
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil * Treatment",
+    distance = "U",
+    q = 1,
+    diversity = "functional",
+    traits = traits_fungi
+)
+```
+
+```{r betadisper-func, fig.width=6.5, fig.height=1.2, out.width="65%"}
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil",
+    test = "betadisper",
+    distance = "U",
+    q = 1,
+    diversity = "functional",
+    traits = traits_fungi
 )
 ```
 

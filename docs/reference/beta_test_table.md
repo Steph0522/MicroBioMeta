@@ -22,7 +22,8 @@ beta_test_table(
   q = 1,
   diversity = "taxonomic",
   tree = NULL,
-  traits = NULL
+  traits = NULL,
+  tau = NULL
 )
 ```
 
@@ -115,6 +116,13 @@ beta_test_table(
 
   A data frame with taxa in rows and traits in columns. Used when
   `diversity = "functional"`.
+
+- tau:
+
+  Numeric. Threshold of functional distinctiveness: taxa at this
+  distance or more count as different functional groups. `NULL`
+  (default) uses the mean distance between two reads of the pooled
+  samples (Chao et al. 2019). Used when `diversity = "functional"`.
 
 ## Value
 

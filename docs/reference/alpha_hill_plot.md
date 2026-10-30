@@ -41,7 +41,8 @@ alpha_hill_plot(
   table_filename = "hill.txt",
   diversity = "taxonomic",
   tree = NULL,
-  traits = NULL
+  traits = NULL,
+  tau = NULL
 )
 ```
 
@@ -155,7 +156,7 @@ alpha_hill_plot(
   Character. Title of the y-axis. Default `NULL`: the unit of
   `diversity`: `"Effective number of features"`,
   `"Effective number of lineages"` or
-  `"Effective number of functionally distinct features"`.
+  `"Effective number of functional groups"`.
 
 - free_y:
 
@@ -214,8 +215,8 @@ alpha_hill_plot(
   common tree depth (`reference = "pool"`), so a sample can fall
   slightly below
 
-  1.  Functional values are effective numbers of functionally distinct
-      features at the largest pairwise distance. Case-insensitive.
+  1.  Functional values are effective numbers of functional groups at
+      the threshold `tau`. Case-insensitive.
 
 - tree:
 
@@ -231,6 +232,13 @@ alpha_hill_plot(
   distances with
   [`hilldiv3::traits2dist()`](https://alberdilab.github.io/hilldiv3/reference/traits2dist.html).
   Used when `diversity = "functional"`.
+
+- tau:
+
+  Numeric. Threshold of functional distinctiveness: taxa at this
+  distance or more count as different functional groups. `NULL`
+  (default) uses the mean distance between two reads of the pooled
+  samples (Chao et al. 2019). Used when `diversity = "functional"`.
 
 ## Value
 

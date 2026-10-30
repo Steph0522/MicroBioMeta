@@ -30,15 +30,17 @@ The order $`q`$ sets how much weight the abundances get:
 | $`q = 1`$ | In proportion to their abundance | Exponential of Shannon |
 | $`q = 2`$ | Mostly the dominant ones         | Inverse of Simpson     |
 
-The same idea extends to two other dimensions of diversity. Here each
-one has its own unit, so **the values of the three types cannot be
-compared with each other**: compare groups within a type.
+The same idea extends to two other dimensions of diversity ([Chao et al.
+2014](#ref-chao2014unifying)). All three are effective numbers, in
+species or lineage equivalents ([Chao et al.
+2021](#ref-chao2021measuring)), but they count different things: taxa,
+lineages or functional groups. Always say which one you report.
 
 | `diversity` | What it takes into account | What you need | Unit |
 |----|----|----|----|
 | `"taxonomic"` | Abundances | The table | Effective number of features |
 | `"phylogenetic"` | How related the taxa are ([Chao et al. 2010](#ref-chao2010phylogenetic)) | Rooted tree | Effective number of lineages |
-| `"functional"` | How different their traits are ([Chao et al. 2019](#ref-chao2019attribute)) | Traits per taxon | Effective number of functionally distinct features |
+| `"functional"` | How different their traits are ([Chao et al. 2019](#ref-chao2019attribute)) | Traits per taxon | Effective number of functional groups |
 
 ## Preparing the data
 
@@ -127,7 +129,9 @@ alpha_hill_plot(
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
     facet_by = "Treatment",
-    show_legend = FALSE
+    x_axis_title = "Type of soil",
+    show_legend = FALSE,
+    stat = "kruskal.test"
 )
 ```
 
@@ -141,7 +145,9 @@ alpha_hill_plot(
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
     facet_by = "Treatment",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
@@ -157,10 +163,11 @@ alpha_hill_plot(
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
     facet_by = "Treatment",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "functional",
-    traits = traits_fungi,
-    stat = "kruskal.test"
+    traits = traits_fungi
 )
 ```
 
@@ -168,10 +175,15 @@ alpha_hill_plot(
 
 Two details of these values:
 
-- The phylogenetic values are read at one common tree depth, so samples
-  are comparable. For that reason a sample can fall slightly below 1.
-- Functional values depend on a distance threshold; here it is the
-  largest distance between two taxa, the default of `hilldiv3`.
+- The phylogenetic values are read at one common depth, the mean tree
+  depth of the samples ([Chiu et al. 2014](#ref-chiu2014phylogenetic)),
+  so samples are comparable. For that reason a sample can fall slightly
+  below 1. `iNEXT.3D` uses the age of the root instead, so its values
+  are not the same.
+- Functional values depend on a threshold $`\tau`$: taxa at that
+  distance or more count as different functional groups. By default it
+  is the mean distance between two reads of the pooled samples ([Chao et
+  al. 2019](#ref-chao2019attribute)), and you can change it with `tau`.
 
 ## Classic indices
 
@@ -191,7 +203,9 @@ alpha_diversity_plot(
     metadata = metadata_fungi,
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
@@ -206,7 +220,9 @@ alpha_diversity_plot(
     metadata = metadata_fungi,
     x_col = "Type_of_soil",
     fill_col = "Type_of_soil",
+    x_axis_title = "Type of soil",
     show_legend = FALSE,
+    stat = "kruskal.test",
     diversity = "functional",
     traits = traits_fungi
 )
@@ -217,10 +233,10 @@ alpha_diversity_plot(
 These indices are related to the Hill numbers but they are not the same
 quantity. Faith’s PD is the phylogenetic $`q = 0`$ before dividing by
 the depth of the tree, and Rao’s Q gives the functional $`q = 2`$
-through $`1 / (1 - Q / \tau)`$, where $`\tau`$ is the distance
-threshold. Choose the classic index if you need to compare with studies
-that report it, and the Hill number if you want every type in the same
-framework.
+through $`1 / (1 - Q / \tau)`$ when $`\tau`$ is the largest distance
+between two taxa. Choose the classic index if you need to compare with
+studies that report it, and the Hill number if you want every type in
+the same framework.
 
 ## Beta diversity
 
@@ -229,22 +245,27 @@ framework.
 [`hilldiv3::hillpair()`](https://alberdilab.github.io/hilldiv3/reference/hillpair.html)
 turns the Hill numbers into dissimilarities between samples ([Jost
 2007](#ref-jost2007partitioning); [Chiu et al.
-2014](#ref-chiu2014phylogenetic)). In `MicroBioMeta` they are one more
+2014](#ref-chiu2014phylogenetic); [Chao et al.
+2023](#ref-chao2023rarefaction)). In `MicroBioMeta` they are one more
 option of `distance`, next to `"jaccard"` or `"aitchison"`, with the
 order set by `q`. They range from 0 (identical samples) to 1 (nothing
 shared), so they have no unit problem.
 
-| `distance` | Type                   | $`q = 0`$ | $`q = 1`$ | $`q = 2`$        |
-|------------|------------------------|-----------|-----------|------------------|
-| `"U"`      | Jaccard type           | Jaccard   | Horn      | Regional overlap |
-| `"C"`      | Sørensen type          | Sørensen  | Horn      | Morisita-Horn    |
-| `"V"`      | Sørensen-type turnover | Sørensen  |           |                  |
-| `"S"`      | Jaccard-type turnover  | Jaccard   |           |                  |
+| `distance` | Type | Taxonomic: $`q = 0`$, $`1`$, $`2`$ | Phylogenetic: $`q = 0`$, $`1`$, $`2`$ |
+|----|----|----|----|
+| `"U"` | Jaccard type | Jaccard, Horn, regional overlap | Phylo-Jaccard (unweighted UniFrac), phylo-Horn, phylo-regional-overlap |
+| `"C"` | Sørensen type | Sørensen, Horn, Morisita-Horn | Phylo-Sørensen (PhyloSor), phylo-Horn, phylo-Morisita-Horn |
+| `"S"` | Jaccard-type turnover | Jaccard, no name, Morisita-Horn | Phylo-Jaccard, no name, phylo-Morisita-Horn |
+| `"V"` | Sørensen-type turnover | Sørensen, no name, no name | Phylo-Sørensen, no name, no name |
 
-With `diversity = "phylogenetic"` and $`q = 0`$, `"U"` is the unweighted
-UniFrac ([Lozupone and Knight 2005](#ref-lozupone2005unifrac)). It is a
-good default if you already use Jaccard. At $`q = 1`$ it is related to
-the weighted UniFrac, but it is not the same value.
+The phylogenetic names come from Chiu et al.
+([2014](#ref-chiu2014phylogenetic)), and PhyloSor from Bryant et al.
+([2008](#ref-bryant2008microbes)); UniFrac is from Lozupone and Knight
+([2005](#ref-lozupone2005unifrac)). The functional versions have no
+names of their own: Chao et al. ([2019](#ref-chao2019attribute)) calls
+them Sørensen-type and Jaccard-type functional measures, so report them
+that way, with $`q`$ and $`\tau`$. At $`q = 1`$, `"U"` is phylo-Horn,
+not the weighted UniFrac.
 
 These metrics describe the differences in Hill-number terms; they are
 not compositional. If your main analysis uses CLR/Aitchison, keep it
@@ -254,6 +275,11 @@ there and use these as a complement.
 
 The Hill metrics work with `ordination = "PCoA"` or `"NMDS"`, the same
 as any distance that is not `"compositional"`.
+[`beta_ord_plot()`](https://steph0522.github.io/MicroBioMeta/reference/beta_ord_plot.md)
+keeps the same scale on both axes, so the plot gets flat when the first
+axis explains most of the variation. In the functional example we add
+[`ggplot2::coord_cartesian()`](https://ggplot2.tidyverse.org/reference/coord_cartesian.html)
+to fill the figure; keep in mind that the axes no longer share a scale.
 
 ``` r
 
@@ -263,7 +289,8 @@ beta_ord_plot(
     distance = "U",
     q = 1,
     ordination = "PCoA",
-    group_col = "Type_of_soil"
+    group_col = "Type_of_soil",
+    legend_title = "Type of soil"
 )
 ```
 
@@ -278,6 +305,7 @@ beta_ord_plot(
     q = 0,
     ordination = "PCoA",
     group_col = "Type_of_soil",
+    legend_title = "Type of soil",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
@@ -294,9 +322,10 @@ beta_ord_plot(
     q = 1,
     ordination = "PCoA",
     group_col = "Type_of_soil",
+    legend_title = "Type of soil",
     diversity = "functional",
     traits = traits_fungi
-)
+) + ggplot2::coord_cartesian()
 ```
 
 ![](hill_diversity_files/figure-html/ord-func-1.png)
@@ -312,6 +341,37 @@ dispersions may reflect differences in dispersion, not in position. In
 this example betadisper is significant, so read the PERMANOVA of
 `Type_of_soil` with that in mind.
 
+Taxonomic, at $`q = 1`$:
+
+``` r
+
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil * Treatment",
+    distance = "U",
+    q = 1
+)
+```
+
+![](hill_diversity_files/figure-html/permanova-tax-1.png)
+
+``` r
+
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil",
+    test = "betadisper",
+    distance = "U",
+    q = 1
+)
+```
+
+![](hill_diversity_files/figure-html/betadisper-tax-1.png)
+
+Phylogenetic, at $`q = 0`$ (unweighted UniFrac):
+
 ``` r
 
 beta_test_table(
@@ -325,7 +385,7 @@ beta_test_table(
 )
 ```
 
-![](hill_diversity_files/figure-html/permanova-1.png)
+![](hill_diversity_files/figure-html/permanova-phylo-1.png)
 
 ``` r
 
@@ -333,15 +393,48 @@ beta_test_table(
     table = table_fung,
     metadata = metadata_fungi,
     formula_str = "Type_of_soil",
+    test = "betadisper",
     distance = "U",
     q = 0,
-    test = "betadisper",
     diversity = "phylogenetic",
     tree = tree_fungi
 )
 ```
 
-![](hill_diversity_files/figure-html/betadisper-1.png)
+![](hill_diversity_files/figure-html/betadisper-phylo-1.png)
+
+Functional, at $`q = 1`$:
+
+``` r
+
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil * Treatment",
+    distance = "U",
+    q = 1,
+    diversity = "functional",
+    traits = traits_fungi
+)
+```
+
+![](hill_diversity_files/figure-html/permanova-func-1.png)
+
+``` r
+
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil",
+    test = "betadisper",
+    distance = "U",
+    q = 1,
+    diversity = "functional",
+    traits = traits_fungi
+)
+```
+
+![](hill_diversity_files/figure-html/betadisper-func-1.png)
 
 ## References
 
@@ -363,15 +456,38 @@ Bolyen, Evan, Jai Ram Rideout, Matthew R. Dillon, et al. 2019.
 Science Using QIIME 2.” *Nature Biotechnology* 37 (8): 852–57.
 <https://doi.org/10.1038/s41587-019-0209-9>.
 
+Bryant, Jessica A., Christine Lamanna, Hélène Morlon, Andrew J.
+Kerkhoff, Brian J. Enquist, and Jessica L. Green. 2008. “Microbes on
+Mountainsides: Contrasting Elevational Patterns of Bacterial and Plant
+Diversity.” *Proceedings of the National Academy of Sciences* 105
+(supplement_1): 11505–11. <https://doi.org/10.1073/pnas.0801920105>.
+
 Chao, Anne, Chun-Huo Chiu, and Lou Jost. 2010. “Phylogenetic Diversity
 Measures Based on Hill Numbers.” *Philosophical Transactions of the
 Royal Society B: Biological Sciences* 365 (1558): 3599–609.
 <https://doi.org/10.1098/rstb.2010.0272>.
 
+Chao, Anne, Chun-Huo Chiu, and Lou Jost. 2014. “Unifying Species
+Diversity, Phylogenetic Diversity, Functional Diversity, and Related
+Similarity and Differentiation Measures Through Hill Numbers.” *Annual
+Review of Ecology, Evolution, and Systematics* 45 (1): 297–324.
+<https://doi.org/10.1146/annurev-ecolsys-120213-091540>.
+
 Chao, Anne, Chun-Huo Chiu, Sébastien Villéger, et al. 2019. “An
 Attribute-Diversity Approach to Functional Diversity, Functional Beta
 Diversity, and Related (Dis)similarity Measures.” *Ecological
 Monographs* 89 (2): e01343. <https://doi.org/10.1002/ecm.1343>.
+
+Chao, Anne, Peter A. Henderson, Chun-Huo Chiu, et al. 2021. “Measuring
+Temporal Change in Alpha Diversity: A Framework Integrating Taxonomic,
+Phylogenetic and Functional Diversity and the iNEXT.3D Standardization.”
+*Methods in Ecology and Evolution* 12 (10): 1926–40.
+<https://doi.org/10.1111/2041-210X.13682>.
+
+Chao, Anne, Simon Thorn, Chun-Huo Chiu, et al. 2023. “Rarefaction and
+Extrapolation with Beta Diversity Under a Framework of Hill Numbers: The
+iNEXT.beta3D Standardization.” *Ecological Monographs* 93 (4): e1588.
+<https://doi.org/10.1002/ecm.1588>.
 
 Chiu, Chun-Huo, Lou Jost, and Anne Chao. 2014. “Phylogenetic Beta
 Diversity, Similarity, and Differentiation Measures Based on Hill
