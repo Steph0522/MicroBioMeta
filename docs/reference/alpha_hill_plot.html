@@ -25,10 +25,12 @@ metadata variables and with statistical comparisons between groups."><meta name=
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>English</h6></li>
     <li><a class="dropdown-item" href="../articles/metabarcoding.html">Metabarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/metagenomic.html">Metagenomic</a></li>
+    <li><a class="dropdown-item" href="../articles/hill_diversity.html">Hill numbers</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Español</h6></li>
     <li><a class="dropdown-item" href="../articles/metabarcoding_es.html">Amplicón</a></li>
     <li><a class="dropdown-item" href="../articles/metagenomic_es.html">Metagenómica</a></li>
+    <li><a class="dropdown-item" href="../articles/hill_diversity_es.html">Números de Hill</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -78,7 +80,7 @@ metadata variables and with statistical comparisons between groups.</p>
 <span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>  x_axis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  y_axis_title <span class="op">=</span> <span class="st">"Effective number of features"</span>,</span>
+<span>  y_axis_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  free_y <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  panel_label_case <span class="op">=</span> <span class="st">"upper"</span>,</span>
 <span>  panel_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -87,7 +89,10 @@ metadata variables and with statistical comparisons between groups.</p>
 <span>  strip_text_bold <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  aspect_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"hill.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"hill.txt"</span>,</span>
+<span>  diversity <span class="op">=</span> <span class="st">"taxonomic"</span>,</span>
+<span>  tree <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  traits <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -202,13 +207,17 @@ title).</p></dd>
 
 
 <dt id="arg-y-axis-title">y_axis_title<a class="anchor" aria-label="anchor" href="#arg-y-axis-title"></a></dt>
-<dd><p>Character. Title of the y-axis. Default <code>"Effective
-number of features"</code>.</p></dd>
+<dd><p>Character. Title of the y-axis. Default <code>NULL</code>: the
+unit of <code>diversity</code>: <code>"Effective number of features"</code>,
+<code>"Effective number of lineages"</code> or <code>"Effective number of
+functionally distinct features"</code>.</p></dd>
 
 
 <dt id="arg-free-y">free_y<a class="anchor" aria-label="anchor" href="#arg-free-y"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, the y-axis scale is free across
-facets. Default <code>FALSE</code>.</p></dd>
+<dd><p>Logical. Each order q always has its own y-axis scale (q0
+is usually much larger than q2). If <code>FALSE</code> (default), that scale is
+shared by all the panels of the same order, so the groups can be compared
+across facets. If <code>TRUE</code>, every panel gets its own scale.</p></dd>
 
 
 <dt id="arg-panel-label-case">panel_label_case<a class="anchor" aria-label="anchor" href="#arg-panel-label-case"></a></dt>
@@ -252,6 +261,29 @@ tab-delimited file. Default <code>FALSE</code>.</p></dd>
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. Name or path of the saved file (used when
 <code>save_table = TRUE</code>). Default <code>"hill.txt"</code>.</p></dd>
+
+
+<dt id="arg-diversity">diversity<a class="anchor" aria-label="anchor" href="#arg-diversity"></a></dt>
+<dd><p>Character. <code>"taxonomic"</code> (default, Hill numbers of the
+abundances), <code>"phylogenetic"</code> (needs <code>tree</code>) or <code>"functional"</code>
+(needs <code>traits</code>), computed with <code><a href="https://alberdilab.github.io/hilldiv3/reference/hilldiv.html" class="external-link">hilldiv3::hilldiv()</a></code>.
+Phylogenetic values are effective numbers of lineages read at one common
+tree depth (<code>reference = "pool"</code>), so a sample can fall slightly below</p><ol><li><p>Functional values are effective numbers of functionally distinct
+features at the largest pairwise distance. Case-insensitive.</p></li>
+</ol></dd>
+
+
+<dt id="arg-tree">tree<a class="anchor" aria-label="anchor" href="#arg-tree"></a></dt>
+<dd><p>A rooted <code>phylo</code> tree (e.g. from <code><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">ape::read.tree()</a></code>)
+whose tip labels are the taxa of <code>table</code>. Used when
+<code>diversity = "phylogenetic"</code>.</p></dd>
+
+
+<dt id="arg-traits">traits<a class="anchor" aria-label="anchor" href="#arg-traits"></a></dt>
+<dd><p>A data frame with taxa in rows and traits in columns (e.g. the
+EC or KO copy numbers predicted per ASV by PICRUSt2), converted to Gower
+distances with <code><a href="https://alberdilab.github.io/hilldiv3/reference/traits2dist.html" class="external-link">hilldiv3::traits2dist()</a></code>. Used when
+<code>diversity = "functional"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

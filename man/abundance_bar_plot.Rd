@@ -21,6 +21,7 @@ abundance_bar_plot(
   strip_color = "grey",
   palette = "default",
   taxa_colors = NULL,
+  taxa_order = "ascending",
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
@@ -82,6 +83,10 @@ The most abundant taxon gets the first color. Default \code{"default"}.}
 \item{taxa_colors}{Optional named character vector of colors, one per taxon
 (names = taxa as shown in the legend). Taxa not named keep the
 \code{palette} colors. Default \code{NULL}.}
+
+\item{taxa_order}{Character. Order of the taxa in the bars and the legend:
+\code{"ascending"} (default; the most abundant taxon at the bottom of both)
+or \code{"descending"} (the most abundant taxon at the top of both).}
 
 \item{aspect_ratio}{Numeric. Aspect ratio (height/width) of each panel.
 Default \code{NULL} (automatic).}

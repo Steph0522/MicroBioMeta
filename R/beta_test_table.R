@@ -12,7 +12,9 @@
 #'   columns of \code{metadata} (e.g. \code{"Type_of_soil*Treatment"}).
 #' @param distance Character. Distance metric: \code{"compositional"} (CLR with
 #'   ALDEx2), \code{"aitchison"}, \code{"robust.aitchison"} or any other method
-#'   of \code{vegan::vegdist()} (e.g. \code{"bray"}, \code{"jaccard"}). Default
+#'   of \code{vegan::vegdist()} (e.g. \code{"bray"}, \code{"jaccard"}), or the
+#'   Hill-number dissimilarities \code{"U"}, \code{"C"}, \code{"V"} or \code{"S"}
+#'   of \code{hilldiv3::hillpair()} (see \code{q}). Default
 #'   \code{"euclidean"}. Case-insensitive. Ignored when \code{table} is already a
 #'   distance.
 #' @param test Statistical test to run: one of \code{"permanova"} (default) or
@@ -28,6 +30,16 @@
 #'   tab-delimited file. Default \code{FALSE}.
 #' @param table_filename Character. Name or path of the saved file (used when
 #'   \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.
+#' @param q Numeric. Order of the Hill-number dissimilarities \code{"U"},
+#'   \code{"C"}, \code{"V"} and \code{"S"}: 0 (presence/absence), 1 (default) or
+#'   2 (dominant taxa). Ignored by the other distances.
+#' @param diversity Character. What the Hill-number dissimilarities use:
+#'   \code{"taxonomic"} (default), \code{"phylogenetic"} (needs \code{tree}) or
+#'   \code{"functional"} (needs \code{traits}). Case-insensitive.
+#' @param tree A rooted \code{phylo} tree whose tip labels are the taxa of
+#'   \code{table}. Used when \code{diversity = "phylogenetic"}.
+#' @param traits A data frame with taxa in rows and traits in columns. Used when
+#'   \code{diversity = "functional"}.
 #' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
 #'   \code{distance = "compositional"}. With \code{1} (default) the clr values
 #'   of one random instance are used: fast, but the result changes
@@ -96,7 +108,11 @@ beta_test_table <- function(table,
                             strata_var = NULL,
                             digits = 3,
                             save_table = FALSE,
-                            table_filename = "beta_test_results.txt") {
+                            table_filename = "beta_test_results.txt",
+                            q = 1,
+                            diversity = "taxonomic",
+                            tree = NULL,
+                            traits = NULL) {
     test <- match.arg(tolower(test), c("permanova", "betadisper"))
     distance <- tolower(distance)
     is_square_dist <- is.matrix(table) && nrow(table) == ncol(table) &&
@@ -180,6 +196,8 @@ beta_test_table <- function(table,
         dist_matrix <- stats::dist(clr_samples, method = "euclidean")
     } else if (distance %in% c("aitchison", "robust.aitchison")) {
         dist_matrix <- vegan::vegdist(table, method = distance, pseudocount = 0.5)
+    } else if (distance %in% c("u", "c", "v", "s")) {
+        dist_matrix <- .mbm_hill_dist(t(table), distance, q, diversity, tree, traits)
     } else {
         dist_matrix <- vegan::vegdist(table, method = distance)
     }

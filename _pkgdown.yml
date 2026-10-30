@@ -23,12 +23,16 @@ navbar:
         href: articles/metabarcoding.html
       - text: Metagenomic
         href: articles/metagenomic.html
+      - text: Hill numbers
+        href: articles/hill_diversity.html
       - text: -------
       - text: Español
       - text: Amplicón
         href: articles/metabarcoding_es.html
       - text: Metagenómica
         href: articles/metagenomic_es.html
+      - text: Números de Hill
+        href: articles/hill_diversity_es.html
     installation:
       text: Installation
       href: articles/installation.html

@@ -22,7 +22,11 @@ beta_ord_plot(
   top_n = 5,
   title = "auto",
   save_table = FALSE,
-  table_filename = "ordination_scores.txt"
+  table_filename = "ordination_scores.txt",
+  q = 1,
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 ```
 
@@ -42,7 +46,10 @@ beta_ord_plot(
 
   Distance method: one of `"euclidean"`, `"bray"`, `"jaccard"`,
   `"sorensen"`, `"compositional"` (default; CLR/Aitchison via ALDEx2),
-  `"aitchison"`, or `"robust.aitchison"`. Case-insensitive. Note:
+  `"aitchison"`, `"robust.aitchison"`, or the Hill-number
+  dissimilarities `"U"`, `"C"`, `"V"` or `"S"` of
+  [`hilldiv3::hillpair()`](https://alberdilab.github.io/hilldiv3/reference/hillpair.html)
+  (with PCoA or NMDS; see `q`). Case-insensitive. Note:
   `ordination = "PCA"` requires `distance = "compositional"`.
 
 - mc_samples:
@@ -126,6 +133,28 @@ beta_ord_plot(
 
   Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"ordination_scores.txt"`.
+
+- q:
+
+  Numeric. Order of the Hill-number dissimilarities `"U"`, `"C"`, `"V"`
+  and `"S"`: 0 (presence/absence), 1 (default) or 2 (dominant taxa).
+  Ignored by the other distances.
+
+- diversity:
+
+  Character. What the Hill-number dissimilarities use: `"taxonomic"`
+  (default), `"phylogenetic"` (needs `tree`) or `"functional"` (needs
+  `traits`). Case-insensitive.
+
+- tree:
+
+  A rooted `phylo` tree whose tip labels are the taxa of `table`. Used
+  when `diversity = "phylogenetic"`.
+
+- traits:
+
+  A data frame with taxa in rows and traits in columns. Used when
+  `diversity = "functional"`.
 
 ## Value
 

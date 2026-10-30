@@ -1,8 +1,9 @@
 #' Alpha diversity indices plot
 #'
-#' Computes the Chao1, Shannon and Simpson indices of each sample and plots
-#' them as box plots or bar plots, one panel per index, optionally faceted by
-#' one or two metadata variables and with statistical comparisons between
+#' Computes the Chao1, Shannon and Simpson indices of each sample (or Faith's
+#' phylogenetic diversity or Rao's quadratic entropy, see \code{diversity}) and
+#' plots them as box plots or bar plots, one panel per index, optionally faceted
+#' by one or two metadata variables and with statistical comparisons between
 #' groups.
 #'
 #' @param table A data frame with taxa in rows and samples in columns. The last
@@ -51,8 +52,9 @@
 #' @param title Character. Plot title. \code{NULL} (default) shows no title.
 #' @param x_axis_title Character. Title of the x-axis. Default \code{NULL} (no
 #'   title).
-#' @param y_axis_title Character. Title of the y-axis. Default \code{"Diversity
-#'   measure"}.
+#' @param y_axis_title Character. Title of the y-axis. Default \code{NULL}:
+#'   \code{"Diversity measure"}, \code{"Branch length"} (Faith PD) or
+#'   \code{"Mean functional distance"} (Rao Q).
 #' @param free_y Logical. Each index always has its own y-axis scale (Chao1,
 #'   Shannon and Simpson have very different ranges). If \code{FALSE} (default),
 #'   that scale is shared by all the panels of the same index, so the groups
@@ -80,6 +82,15 @@
 #'   tab-delimited file. Default \code{FALSE}.
 #' @param table_filename Character. Name or path of the saved file (used when
 #'   \code{save_table = TRUE}). Default \code{"diversity.txt"}.
+#' @param diversity Character. \code{"taxonomic"} (default; Chao1, Shannon and
+#'   Simpson), \code{"phylogenetic"} (Faith's PD, the summed branch length up to
+#'   the root; needs \code{tree}) or \code{"functional"} (Rao's Q, the mean
+#'   Gower distance between two random reads; needs \code{traits}).
+#'   Case-insensitive.
+#' @param tree A rooted \code{phylo} tree whose tip labels are the taxa of
+#'   \code{table}. Used when \code{diversity = "phylogenetic"}.
+#' @param traits A data frame with taxa in rows and traits in columns. Used when
+#'   \code{diversity = "functional"}.
 #'
 #' @return A ggplot object.
 #' @export
@@ -128,7 +139,7 @@ alpha_diversity_plot <- function(
   legend_title = NULL,
   legend_position = "bottom",
   x_axis_title = NULL,
-  y_axis_title = "Diversity measure",
+  y_axis_title = NULL,
   free_y = FALSE,
   rarefy_depth = NULL,
   panel_label_case = "upper",
@@ -138,12 +149,24 @@ alpha_diversity_plot <- function(
   strip_text_bold = FALSE,
   aspect_ratio = NULL,
   save_table = FALSE,
-  table_filename = "diversity.txt"
+  table_filename = "diversity.txt",
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 ) {
     type <- tolower(type)
     facet_orientation <- tolower(facet_orientation)
     palette <- tolower(palette)
     panel_label_case <- tolower(panel_label_case)
+    diversity <- tolower(diversity)
+    if (is.null(y_axis_title)) {
+        y_axis_title <- switch(diversity,
+            "taxonomic" = "Diversity measure",
+            "phylogenetic" = "Branch length",
+            "functional" = "Mean functional distance",
+            stop("Invalid diversity. Use 'taxonomic', 'phylogenetic' or 'functional'.")
+        )
+    }
 
     colnames(metadata)[1] <- "SAMPLEID"
 
@@ -151,23 +174,23 @@ alpha_diversity_plot <- function(
     common_samples <- intersect(colnames(table), sample_order)
     if (length(common_samples) == 0) stop("No matching sample names between table and metadata.")
     table <- table[, common_samples, drop = FALSE]
-    table <- data.frame(t(table))
+    table <- data.frame(t(table), check.names = FALSE)
 
     if (!is.null(rarefy_depth) && rarefy_depth > 0) {
         table <- vegan::rrarefy(table, sample = rarefy_depth)
     }
 
-    est_richness <- vegan::estimateR(table)
-    chao1 <- est_richness["S.chao1", ]
-    shannon <- vegan::diversity(table, index = "shannon")
-    simpson <- vegan::diversity(table, index = "simpson")
+    indices <- if (diversity == "taxonomic") {
+        data.frame(
+            Chao1 = as.numeric(vegan::estimateR(table)["S.chao1", ]),
+            Shannon = vegan::diversity(table, index = "shannon"),
+            Simpson = vegan::diversity(table, index = "simpson")
+        )
+    } else {
+        .mbm_classic_weighted(t(table), diversity, tree, traits)
+    }
 
-    results <- data.frame(
-        SAMPLEID = rownames(table),
-        Chao1 = as.numeric(chao1),
-        Shannon = shannon,
-        Simpson = simpson
-    )
+    results <- data.frame(SAMPLEID = rownames(table), indices, check.names = FALSE)
 
     results <- dplyr::left_join(results, metadata, by = "SAMPLEID")
 
@@ -189,7 +212,7 @@ alpha_diversity_plot <- function(
 
     results_largo <- tidyr::pivot_longer(
         results,
-        cols = c("Chao1", "Shannon", "Simpson"),
+        cols = dplyr::all_of(names(indices)),
         names_to = "Index",
         values_to = "value"
     )
@@ -209,9 +232,7 @@ alpha_diversity_plot <- function(
         )
     }
 
-    # The indices have very different ranges (Chao1 in the hundreds, Simpson below 1), so
-    # each index always keeps its own y scale. free_y = FALSE shares it among the panels of
-    # the same index; free_y = TRUE gives every panel its own scale.
+ 
     use_grid_compose <- is.null(facet_by2) &&
         identical(facet_orientation, "horizontal")
 
@@ -221,8 +242,7 @@ alpha_diversity_plot <- function(
         } else {
             stats::as.formula(paste("Index +", facet_by, "~", facet_by2))
         }
-        # vertical: the index is in the rows, so a row-wise free scale is shared by its panels;
-        # horizontal: the index is in the columns, so every panel needs its own scale
+      
         ggh4x::facet_nested(
             formula_facet,
             nest_line = ggplot2::element_line(colour = "black"),
@@ -320,7 +340,10 @@ alpha_diversity_plot <- function(
         # free_y = FALSE: one scale per index (column), shared by its rows
         y_ranges <- if (!free_y) {
             lapply(stats::setNames(col_levels, col_levels), function(i) {
-                range(results_largo$value[results_largo$Index == i], na.rm = TRUE)
+                # leave room above the data for the p-value label
+                y_range <- range(results_largo$value[results_largo$Index == i], na.rm = TRUE)
+                if (!is.null(stat)) y_range[2] <- y_range[2] + diff(y_range) * 0.2
+                y_range
             })
         } else {
             NULL
@@ -413,7 +436,6 @@ alpha_diversity_plot <- function(
                     )
             }
 
-            # every column is a different index (and scale), so all keep their y-axis labels
             if (row_idx != n_rows_grid) {
                 p_cell <- p_cell + ggplot2::theme(
                     axis.text.x  = .mbm_x_text(x_label_angle, colour = NA),

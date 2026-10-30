@@ -21,10 +21,12 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>English</h6></li>
     <li><a class="dropdown-item" href="../articles/metabarcoding.html">Metabarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/metagenomic.html">Metagenomic</a></li>
+    <li><a class="dropdown-item" href="../articles/hill_diversity.html">Hill numbers</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Español</h6></li>
     <li><a class="dropdown-item" href="../articles/metabarcoding_es.html">Amplicón</a></li>
     <li><a class="dropdown-item" href="../articles/metagenomic_es.html">Metagenómica</a></li>
+    <li><a class="dropdown-item" href="../articles/hill_diversity_es.html">Números de Hill</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -68,6 +70,7 @@
 <span>  strip_color <span class="op">=</span> <span class="st">"grey"</span>,</span>
 <span>  palette <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  taxa_colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  taxa_order <span class="op">=</span> <span class="st">"ascending"</span>,</span>
 <span>  aspect_ratio <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  add_remained <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -164,6 +167,12 @@ The most abundant taxon gets the first color. Default <code>"default"</code>.</p
 <dd><p>Optional named character vector of colors, one per taxon
 (names = taxa as shown in the legend). Taxa not named keep the
 <code>palette</code> colors. Default <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-taxa-order">taxa_order<a class="anchor" aria-label="anchor" href="#arg-taxa-order"></a></dt>
+<dd><p>Character. Order of the taxa in the bars and the legend:
+<code>"ascending"</code> (default; the most abundant taxon at the bottom of both)
+or <code>"descending"</code> (the most abundant taxon at the top of both).</p></dd>
 
 
 <dt id="arg-aspect-ratio">aspect_ratio<a class="anchor" aria-label="anchor" href="#arg-aspect-ratio"></a></dt>

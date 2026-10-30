@@ -18,7 +18,11 @@ beta_test_table(
   strata_var = NULL,
   digits = 3,
   save_table = FALSE,
-  table_filename = "beta_test_results.txt"
+  table_filename = "beta_test_results.txt",
+  q = 1,
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 ```
 
@@ -44,8 +48,11 @@ beta_test_table(
   Character. Distance metric: `"compositional"` (CLR with ALDEx2),
   `"aitchison"`, `"robust.aitchison"` or any other method of
   [`vegan::vegdist()`](https://vegandevs.github.io/vegan/reference/vegdist.html)
-  (e.g. `"bray"`, `"jaccard"`). Default `"euclidean"`. Case-insensitive.
-  Ignored when `table` is already a distance.
+  (e.g. `"bray"`, `"jaccard"`), or the Hill-number dissimilarities
+  `"U"`, `"C"`, `"V"` or `"S"` of
+  [`hilldiv3::hillpair()`](https://alberdilab.github.io/hilldiv3/reference/hillpair.html)
+  (see `q`). Default `"euclidean"`. Case-insensitive. Ignored when
+  `table` is already a distance.
 
 - test:
 
@@ -86,6 +93,28 @@ beta_test_table(
 
   Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"beta_test_results.txt"`.
+
+- q:
+
+  Numeric. Order of the Hill-number dissimilarities `"U"`, `"C"`, `"V"`
+  and `"S"`: 0 (presence/absence), 1 (default) or 2 (dominant taxa).
+  Ignored by the other distances.
+
+- diversity:
+
+  Character. What the Hill-number dissimilarities use: `"taxonomic"`
+  (default), `"phylogenetic"` (needs `tree`) or `"functional"` (needs
+  `traits`). Case-insensitive.
+
+- tree:
+
+  A rooted `phylo` tree whose tip labels are the taxa of `table`. Used
+  when `diversity = "phylogenetic"`.
+
+- traits:
+
+  A data frame with taxa in rows and traits in columns. Used when
+  `diversity = "functional"`.
 
 ## Value
 

@@ -23,6 +23,7 @@ abundance_bar_plot(
   strip_color = "grey",
   palette = "default",
   taxa_colors = NULL,
+  taxa_order = "ascending",
   aspect_ratio = NULL,
   add_remained = FALSE,
   save_table = FALSE,
@@ -116,6 +117,12 @@ abundance_bar_plot(
   Optional named character vector of colors, one per taxon (names = taxa
   as shown in the legend). Taxa not named keep the `palette` colors.
   Default `NULL`.
+
+- taxa_order:
+
+  Character. Order of the taxa in the bars and the legend: `"ascending"`
+  (default; the most abundant taxon at the bottom of both) or
+  `"descending"` (the most abundant taxon at the top of both).
 
 - aspect_ratio:
 

@@ -15,7 +15,11 @@ beta_test_table(
   strata_var = NULL,
   digits = 3,
   save_table = FALSE,
-  table_filename = "beta_test_results.txt"
+  table_filename = "beta_test_results.txt",
+  q = 1,
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 }
 \arguments{
@@ -30,7 +34,9 @@ columns of \code{metadata} (e.g. \code{"Type_of_soil*Treatment"}).}
 
 \item{distance}{Character. Distance metric: \code{"compositional"} (CLR with
 ALDEx2), \code{"aitchison"}, \code{"robust.aitchison"} or any other method
-of \code{vegan::vegdist()} (e.g. \code{"bray"}, \code{"jaccard"}). Default
+of \code{vegan::vegdist()} (e.g. \code{"bray"}, \code{"jaccard"}), or the
+Hill-number dissimilarities \code{"U"}, \code{"C"}, \code{"V"} or \code{"S"}
+of \code{hilldiv3::hillpair()} (see \code{q}). Default
 \code{"euclidean"}. Case-insensitive. Ignored when \code{table} is already a
 distance.}
 
@@ -60,6 +66,20 @@ tab-delimited file. Default \code{FALSE}.}
 
 \item{table_filename}{Character. Name or path of the saved file (used when
 \code{save_table = TRUE}). Default \code{"beta_test_results.txt"}.}
+
+\item{q}{Numeric. Order of the Hill-number dissimilarities \code{"U"},
+\code{"C"}, \code{"V"} and \code{"S"}: 0 (presence/absence), 1 (default) or
+2 (dominant taxa). Ignored by the other distances.}
+
+\item{diversity}{Character. What the Hill-number dissimilarities use:
+\code{"taxonomic"} (default), \code{"phylogenetic"} (needs \code{tree}) or
+\code{"functional"} (needs \code{traits}). Case-insensitive.}
+
+\item{tree}{A rooted \code{phylo} tree whose tip labels are the taxa of
+\code{table}. Used when \code{diversity = "phylogenetic"}.}
+
+\item{traits}{A data frame with taxa in rows and traits in columns. Used when
+\code{diversity = "functional"}.}
 }
 \value{
 A ggplot object (\code{ggpubr::ggtexttable()}) with the results

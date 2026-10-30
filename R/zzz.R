@@ -644,6 +644,74 @@ utils::globalVariables(c(
     "row_id"
 ))
 
+# Taxa shared by the table and the tree/traits: hilldiv3 requires them to match exactly.
+.mbm_hill_align <- function(table, diversity, tree, traits) {
+    diversity <- tolower(diversity)
+    if (!diversity %in% c("taxonomic", "phylogenetic", "functional")) {
+        stop("Invalid diversity. Use 'taxonomic', 'phylogenetic' or 'functional'.")
+    }
+    if (diversity == "taxonomic") {
+        return(list(counts = as.matrix(table), type = "neutral", tree = NULL, dist = NULL))
+    }
+    phylogenetic <- diversity == "phylogenetic"
+    if (phylogenetic && !inherits(tree, "phylo")) {
+        stop("diversity = 'phylogenetic' needs `tree`, a phylo object.")
+    }
+    if (!phylogenetic && is.null(traits)) {
+        stop("diversity = 'functional' needs `traits`.")
+    }
+    source_name <- if (phylogenetic) "tree." else "traits."
+    shared <- intersect(rownames(table), if (phylogenetic) tree$tip.label else rownames(traits))
+    if (length(shared) == 0) stop("No matching taxa between table and ", source_name)
+    if (length(shared) < nrow(table)) {
+        warning(nrow(table) - length(shared), " of ", nrow(table), " taxa dropped: not found in ", source_name)
+    }
+    list(
+        counts = as.matrix(table[shared, , drop = FALSE]),
+        type = diversity,
+        tree = if (phylogenetic) ape::keep.tip(tree, shared),
+        dist = if (!phylogenetic) hilldiv3::traits2dist(traits[shared, , drop = FALSE])
+    )
+}
+
+# Phylogenetic or functional Hill numbers (q0-q2), one row per sample.
+.mbm_hill_weighted <- function(table, diversity, tree, traits) {
+    x <- .mbm_hill_align(table, diversity, tree, traits)
+    hill <- suppressMessages(
+        hilldiv3::hilldiv(x$counts, tree = x$tree, dist = x$dist, type = x$type, out = "matrix")
+    )
+    as.data.frame(hill[colnames(x$counts), , drop = FALSE])
+}
+
+# Hill-number dissimilarity (metric U, C, V or S) between the columns of a taxa x samples table.
+.mbm_hill_dist <- function(table, metric, q, diversity, tree, traits) {
+    if (length(q) != 1) stop("`q` must be a single order, e.g. 0, 1 or 2.")
+    x <- .mbm_hill_align(table, diversity, tree, traits)
+    suppressMessages(hilldiv3::hillpair(x$counts,
+        q = q, metric = toupper(metric),
+        tree = x$tree, dist = x$dist, type = x$type
+    ))
+}
+
+# Faith's PD (root included) or Rao's Q of each column of a taxa x samples table.
+.mbm_classic_weighted <- function(table, diversity, tree, traits) {
+    x <- .mbm_hill_align(table, diversity, tree, traits)
+    counts <- x$counts
+    if (x$type == "phylogenetic") {
+        edge_length <- numeric(max(x$tree$edge))
+        edge_length[x$tree$edge[, 2]] <- x$tree$edge.length
+        paths <- ape::nodepath(x$tree)[match(rownames(counts), x$tree$tip.label)]
+        faith <- apply(counts > 0, 2, function(present) sum(edge_length[unique(unlist(paths[present]))]))
+        return(data.frame("Faith PD" = faith, check.names = FALSE))
+    }
+    d <- as.matrix(x$dist)[rownames(counts), rownames(counts)]
+    rao <- apply(counts, 2, function(n) {
+        p <- n / sum(n)
+        sum(p %*% d %*% p)
+    })
+    data.frame("Rao Q" = rao, check.names = FALSE)
+}
+
 .mbm_hill_pairwise <- function(comm, q) {
     comm <- as.matrix(comm)
     sites <- rownames(comm)

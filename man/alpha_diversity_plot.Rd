@@ -25,7 +25,7 @@ alpha_diversity_plot(
   legend_title = NULL,
   legend_position = "bottom",
   x_axis_title = NULL,
-  y_axis_title = "Diversity measure",
+  y_axis_title = NULL,
   free_y = FALSE,
   rarefy_depth = NULL,
   panel_label_case = "upper",
@@ -35,7 +35,10 @@ alpha_diversity_plot(
   strip_text_bold = FALSE,
   aspect_ratio = NULL,
   save_table = FALSE,
-  table_filename = "diversity.txt"
+  table_filename = "diversity.txt",
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 }
 \arguments{
@@ -105,8 +108,9 @@ when \code{facet_by} is set). Default \code{"grey"}.}
 \item{x_axis_title}{Character. Title of the x-axis. Default \code{NULL} (no
 title).}
 
-\item{y_axis_title}{Character. Title of the y-axis. Default \code{"Diversity
-measure"}.}
+\item{y_axis_title}{Character. Title of the y-axis. Default \code{NULL}:
+\code{"Diversity measure"}, \code{"Branch length"} (Faith PD) or
+\code{"Mean functional distance"} (Rao Q).}
 
 \item{free_y}{Logical. Each index always has its own y-axis scale (Chao1,
 Shannon and Simpson have very different ranges). If \code{FALSE} (default),
@@ -144,14 +148,27 @@ tab-delimited file. Default \code{FALSE}.}
 
 \item{table_filename}{Character. Name or path of the saved file (used when
 \code{save_table = TRUE}). Default \code{"diversity.txt"}.}
+
+\item{diversity}{Character. \code{"taxonomic"} (default; Chao1, Shannon and
+Simpson), \code{"phylogenetic"} (Faith's PD, the summed branch length up to
+the root; needs \code{tree}) or \code{"functional"} (Rao's Q, the mean
+Gower distance between two random reads; needs \code{traits}).
+Case-insensitive.}
+
+\item{tree}{A rooted \code{phylo} tree whose tip labels are the taxa of
+\code{table}. Used when \code{diversity = "phylogenetic"}.}
+
+\item{traits}{A data frame with taxa in rows and traits in columns. Used when
+\code{diversity = "functional"}.}
 }
 \value{
 A ggplot object.
 }
 \description{
-Computes the Chao1, Shannon and Simpson indices of each sample and plots
-them as box plots or bar plots, one panel per index, optionally faceted by
-one or two metadata variables and with statistical comparisons between
+Computes the Chao1, Shannon and Simpson indices of each sample (or Faith's
+phylogenetic diversity or Rao's quadratic entropy, see \code{diversity}) and
+plots them as box plots or bar plots, one panel per index, optionally faceted
+by one or two metadata variables and with statistical comparisons between
 groups.
 }
 \examples{

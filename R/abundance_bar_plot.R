@@ -40,6 +40,9 @@
 #' @param taxa_colors Optional named character vector of colors, one per taxon
 #'   (names = taxa as shown in the legend). Taxa not named keep the
 #'   \code{palette} colors. Default \code{NULL}.
+#' @param taxa_order Character. Order of the taxa in the bars and the legend:
+#'   \code{"ascending"} (default; the most abundant taxon at the bottom of both)
+#'   or \code{"descending"} (the most abundant taxon at the top of both).
 #' @param aspect_ratio Numeric. Aspect ratio (height/width) of each panel.
 #'   Default \code{NULL} (automatic).
 #' @param add_remained Logical. If \code{TRUE}, adds an "Other" category with
@@ -95,6 +98,7 @@ abundance_bar_plot <- function(table,
                                strip_color = "grey",
                                palette = "default",
                                taxa_colors = NULL,
+                               taxa_order = "ascending",
                                aspect_ratio = NULL,
                                add_remained = FALSE,
                                save_table = FALSE,
@@ -102,6 +106,7 @@ abundance_bar_plot <- function(table,
     taxonomy_db <- .mbm_taxonomy_db(taxonomy_db)
     level <- .mbm_check_level(level)
     palette <- match.arg(tolower(palette), c("default", "brewer", "safe"))
+    taxa_order <- match.arg(tolower(taxa_order), c("ascending", "descending"))
 
     .mbm_check_table(table)
     tax_col <- grep("taxonomy|Taxonomy|taxon|Taxa|taxa|Taxon", names(table), ignore.case = TRUE)
@@ -255,10 +260,11 @@ abundance_bar_plot <- function(table,
         dplyr::pull(taxonomy)
 
     taxonomy_order <- unique(c(setdiff(taxonomy_order, c("Other", "Unclassified")), "Unclassified", "Other"))
-    avg_by_group$taxonomy <- factor(avg_by_group$taxonomy, levels = rev(taxonomy_order))
+    avg_by_group$taxonomy <- factor(avg_by_group$taxonomy,
+        levels = if (taxa_order == "descending") taxonomy_order else rev(taxonomy_order)
+    )
 
-    tax_levels <- levels(avg_by_group$taxonomy)
-    tax_levels_no_other <- setdiff(tax_levels, c("Other", "Unclassified"))
+    tax_levels_no_other <- rev(setdiff(taxonomy_order, c("Other", "Unclassified")))
 
     if (palette == "default") {
         cbPalette <- grDevices::colorRampPalette(

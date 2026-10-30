@@ -36,6 +36,8 @@ Imports:
     scales,
     vegan,
     hillR,
+    hilldiv3,
+    ape,
     betapart,
     ALDEx2,
     rlang,

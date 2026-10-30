@@ -50,8 +50,10 @@
 #' @param title Character. Plot title. \code{NULL} (default) shows no title.
 #' @param x_axis_title Character. Title of the x-axis. Default \code{NULL} (no
 #'   title).
-#' @param y_axis_title Character. Title of the y-axis. Default \code{"Effective
-#'   number of features"}.
+#' @param y_axis_title Character. Title of the y-axis. Default \code{NULL}: the
+#'   unit of \code{diversity}: \code{"Effective number of features"},
+#'   \code{"Effective number of lineages"} or \code{"Effective number of
+#'   functionally distinct features"}.
 #' @param free_y Logical. Each order q always has its own y-axis scale (q0
 #'   is usually much larger than q2). If \code{FALSE} (default), that scale is
 #'   shared by all the panels of the same order, so the groups can be compared
@@ -75,6 +77,20 @@
 #'   tab-delimited file. Default \code{FALSE}.
 #' @param table_filename Character. Name or path of the saved file (used when
 #'   \code{save_table = TRUE}). Default \code{"hill.txt"}.
+#' @param diversity Character. \code{"taxonomic"} (default, Hill numbers of the
+#'   abundances), \code{"phylogenetic"} (needs \code{tree}) or \code{"functional"}
+#'   (needs \code{traits}), computed with \code{hilldiv3::hilldiv()}.
+#'   Phylogenetic values are effective numbers of lineages read at one common
+#'   tree depth (\code{reference = "pool"}), so a sample can fall slightly below
+#'   1. Functional values are effective numbers of functionally distinct
+#'   features at the largest pairwise distance. Case-insensitive.
+#' @param tree A rooted \code{phylo} tree (e.g. from \code{ape::read.tree()})
+#'   whose tip labels are the taxa of \code{table}. Used when
+#'   \code{diversity = "phylogenetic"}.
+#' @param traits A data frame with taxa in rows and traits in columns (e.g. the
+#'   EC or KO copy numbers predicted per ASV by PICRUSt2), converted to Gower
+#'   distances with \code{hilldiv3::traits2dist()}. Used when
+#'   \code{diversity = "functional"}.
 #'
 #' @return A ggplot object.
 #' @export
@@ -121,7 +137,7 @@ alpha_hill_plot <- function(
   legend_title = NULL,
   legend_position = "bottom",
   x_axis_title = NULL,
-  y_axis_title = "Effective number of features",
+  y_axis_title = NULL,
   free_y = FALSE,
   panel_label_case = "upper",
   panel_labels = NULL,
@@ -130,12 +146,24 @@ alpha_hill_plot <- function(
   strip_text_bold = FALSE,
   aspect_ratio = NULL,
   save_table = FALSE,
-  table_filename = "hill.txt"
+  table_filename = "hill.txt",
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 ) {
     type <- tolower(type)
     facet_orientation <- tolower(facet_orientation)
     palette <- tolower(palette)
     panel_label_case <- tolower(panel_label_case)
+    diversity <- tolower(diversity)
+    if (is.null(y_axis_title)) {
+        y_axis_title <- switch(diversity,
+            "taxonomic" = "Effective number of features",
+            "phylogenetic" = "Effective number of lineages",
+            "functional" = "Effective number of functionally distinct features",
+            stop("Invalid diversity. Use 'taxonomic', 'phylogenetic' or 'functional'.")
+        )
+    }
 
     sample_order <- metadata[[1]]
     common_samples <- intersect(colnames(table), sample_order)
@@ -143,14 +171,18 @@ alpha_hill_plot <- function(
 
     table <- table[, common_samples, drop = FALSE]
     metadata <- metadata[match(common_samples, metadata[[1]]), , drop = FALSE]
-    table <- data.frame(t(table))
 
-    results <- data.frame(
-        q0 = hillR::hill_taxa(comm = table, q = 0),
-        q1 = hillR::hill_taxa(comm = table, q = 1),
-        q2 = hillR::hill_taxa(comm = table, q = 2),
-        metadata
-    )
+    hill <- if (diversity == "taxonomic") {
+        table <- data.frame(t(table))
+        data.frame(
+            q0 = hillR::hill_taxa(comm = table, q = 0),
+            q1 = hillR::hill_taxa(comm = table, q = 1),
+            q2 = hillR::hill_taxa(comm = table, q = 2)
+        )
+    } else {
+        .mbm_hill_weighted(table, diversity, tree, traits)
+    }
+    results <- data.frame(hill, metadata)
 
     if (save_table) {
         utils::write.table(
@@ -198,8 +230,7 @@ alpha_hill_plot <- function(
         } else {
             stats::as.formula(paste("q +", facet_by, "~", facet_by2))
         }
-        # vertical: q is in the rows, so a row-wise free scale is shared by its panels;
-        # horizontal: q is in the columns, so every panel needs its own scale
+
         ggh4x::facet_nested(
             formula_facet,
             nest_line = ggplot2::element_line(colour = "black"),
@@ -306,7 +337,10 @@ alpha_hill_plot <- function(
         # free_y = FALSE: one scale per order q, shared by its panels
         y_ranges <- if (!free_y) {
             lapply(stats::setNames(q_levels, q_levels), function(i) {
-                range(results_largo$value[results_largo$q == i], na.rm = TRUE)
+                # leave room above the data for the p-value label
+                y_range <- range(results_largo$value[results_largo$q == i], na.rm = TRUE)
+                if (!is.null(stat)) y_range[2] <- y_range[2] + diff(y_range) * 0.2
+                y_range
             })
         } else {
             NULL

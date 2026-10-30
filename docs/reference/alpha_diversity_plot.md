@@ -1,9 +1,10 @@
 # Alpha diversity indices plot
 
-Computes the Chao1, Shannon and Simpson indices of each sample and plots
-them as box plots or bar plots, one panel per index, optionally faceted
-by one or two metadata variables and with statistical comparisons
-between groups.
+Computes the Chao1, Shannon and Simpson indices of each sample (or
+Faith's phylogenetic diversity or Rao's quadratic entropy, see
+`diversity`) and plots them as box plots or bar plots, one panel per
+index, optionally faceted by one or two metadata variables and with
+statistical comparisons between groups.
 
 ## Usage
 
@@ -29,7 +30,7 @@ alpha_diversity_plot(
   legend_title = NULL,
   legend_position = "bottom",
   x_axis_title = NULL,
-  y_axis_title = "Diversity measure",
+  y_axis_title = NULL,
   free_y = FALSE,
   rarefy_depth = NULL,
   panel_label_case = "upper",
@@ -39,7 +40,10 @@ alpha_diversity_plot(
   strip_text_bold = FALSE,
   aspect_ratio = NULL,
   save_table = FALSE,
-  table_filename = "diversity.txt"
+  table_filename = "diversity.txt",
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 ```
 
@@ -150,12 +154,15 @@ alpha_diversity_plot(
 
 - y_axis_title:
 
-  Character. Title of the y-axis. Default `"Diversity measure"`.
+  Character. Title of the y-axis. Default `NULL`: `"Diversity measure"`,
+  `"Branch length"` (Faith PD) or `"Mean functional distance"` (Rao Q).
 
 - free_y:
 
-  Logical. If `TRUE`, the y-axis scale is free across facets. Default
-  `FALSE`.
+  Logical. Each index always has its own y-axis scale (Chao1, Shannon
+  and Simpson have very different ranges). If `FALSE` (default), that
+  scale is shared by all the panels of the same index, so the groups can
+  be compared across facets. If `TRUE`, every panel gets its own scale.
 
 - rarefy_depth:
 
@@ -202,6 +209,23 @@ alpha_diversity_plot(
 
   Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"diversity.txt"`.
+
+- diversity:
+
+  Character. `"taxonomic"` (default; Chao1, Shannon and Simpson),
+  `"phylogenetic"` (Faith's PD, the summed branch length up to the root;
+  needs `tree`) or `"functional"` (Rao's Q, the mean Gower distance
+  between two random reads; needs `traits`). Case-insensitive.
+
+- tree:
+
+  A rooted `phylo` tree whose tip labels are the taxa of `table`. Used
+  when `diversity = "phylogenetic"`.
+
+- traits:
+
+  A data frame with taxa in rows and traits in columns. Used when
+  `diversity = "functional"`.
 
 ## Value
 

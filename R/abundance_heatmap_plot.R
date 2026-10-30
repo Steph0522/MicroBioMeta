@@ -215,6 +215,8 @@ abundance_heatmap_plot <- function(table,
         tibble::rownames_to_column(var = OTU_ID) %>%
         dplyr::inner_join(metadata, by = OTU_ID)
 
+    abundance_breaks <- c(0.001, 0.005, 0.01, 0.10, 0.20, 1, 2, 5, 10, 25, 50, 75)
+
     heatmap <- heat %>%
         tibble::column_to_rownames(var = OTU_ID) %>%
         dplyr::select(all_of(ordered_taxa)) %>%
@@ -222,7 +224,7 @@ abundance_heatmap_plot <- function(table,
         as.data.frame() %>%
         dplyr::mutate(dplyr::across(dplyr::everything(), ~ as.numeric(.))) %>%
         dplyr::mutate(dplyr::across(dplyr::everything(), ~ as.numeric(findInterval(
-            ., c(0.001, 0.005, 0.01, 0.10, 0.20, 1, 2, 5, 10, 25, 50, 75),
+            ., abundance_breaks,
             left.open = TRUE
         ))))
 
@@ -419,7 +421,8 @@ abundance_heatmap_plot <- function(table,
 
     heats <- ComplexHeatmap::Heatmap(
         heatmap,
-        col = my_palette,
+        # fixed scale: a plain color vector would stretch over the classes present
+        col = circlize::colorRamp2(seq_along(my_palette) - 1, my_palette),
         heatmap_legend_param = list(
             direction = "horizontal",
             labels_gp = grid::gpar(fontsize = 12, fontfamily = "serif"),
@@ -427,7 +430,10 @@ abundance_heatmap_plot <- function(table,
             legend_gp = grid::gpar(fontsize = 12, fontfamily = "serif"),
             title = "Relative abundance (%)",
             title_position = "topcenter",
-            at = 0:12
+            # the matrix holds abundance classes: label them in %
+            at = 0:13,
+            labels = c(0, abundance_breaks, 100),
+            legend_width = grid::unit(100, "mm")
         ),
         rect_gp = grid::gpar(col = "black", lwd = 0.5),
         row_names_gp = gp_rows,

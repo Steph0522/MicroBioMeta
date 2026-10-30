@@ -19,7 +19,11 @@ beta_ord_plot(
   top_n = 5,
   title = "auto",
   save_table = FALSE,
-  table_filename = "ordination_scores.txt"
+  table_filename = "ordination_scores.txt",
+  q = 1,
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 }
 \arguments{
@@ -31,7 +35,9 @@ Its first column must hold the sample IDs (the column names of \code{table}).}
 
 \item{distance}{Distance method: one of \code{"euclidean"}, \code{"bray"},
 \code{"jaccard"}, \code{"sorensen"}, \code{"compositional"} (default; CLR/Aitchison via
-ALDEx2), \code{"aitchison"}, or \code{"robust.aitchison"}. Case-insensitive.
+ALDEx2), \code{"aitchison"}, \code{"robust.aitchison"}, or the Hill-number
+dissimilarities \code{"U"}, \code{"C"}, \code{"V"} or \code{"S"} of \code{hilldiv3::hillpair()}
+(with PCoA or NMDS; see \code{q}). Case-insensitive.
 Note: \code{ordination = "PCA"} requires \code{distance = "compositional"}.}
 
 \item{mc_samples}{Number of ALDEx2 Monte Carlo instances used when
@@ -92,6 +98,20 @@ loadings (one table) as a tab-delimited file. Default \code{FALSE}.}
 
 \item{table_filename}{Character. Name or path of the saved file (used when
 \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.}
+
+\item{q}{Numeric. Order of the Hill-number dissimilarities \code{"U"},
+\code{"C"}, \code{"V"} and \code{"S"}: 0 (presence/absence), 1 (default) or
+2 (dominant taxa). Ignored by the other distances.}
+
+\item{diversity}{Character. What the Hill-number dissimilarities use:
+\code{"taxonomic"} (default), \code{"phylogenetic"} (needs \code{tree}) or
+\code{"functional"} (needs \code{traits}). Case-insensitive.}
+
+\item{tree}{A rooted \code{phylo} tree whose tip labels are the taxa of
+\code{table}. Used when \code{diversity = "phylogenetic"}.}
+
+\item{traits}{A data frame with taxa in rows and traits in columns. Used when
+\code{diversity = "functional"}.}
 }
 \value{
 A ggplot object.

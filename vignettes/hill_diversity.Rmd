@@ -1,0 +1,284 @@
+---
+title: "Hill numbers: taxonomic, phylogenetic and functional diversity"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+    fig_caption: true
+bibliography: references.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Hill numbers: taxonomic, phylogenetic and functional diversity}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    fig.align = "center",
+    out.width = "100%",
+    fig.width = 11,
+    fig.height = 7,
+    warning = FALSE,
+    message = FALSE
+)
+```
+
+`MicroBioMeta` computes diversity and returns the figure ready for publication. This tutorial explains the Hill-number framework and how to use it in the functions that work with it: `alpha_hill_plot()` and `alpha_diversity_plot()` for alpha diversity, and `beta_ord_plot()` and `beta_test_table()` for beta diversity. The calculations with a tree or with traits come from `hilldiv3` [@alberdi2019guide].
+
+## Why Hill numbers
+
+Hill numbers [@hill1973diversity; @jost2007partitioning] express diversity as an **effective number**: how many equally abundant taxa would give the same diversity as the sample. A sample with a value of 10 is twice as diverse as one with a value of 5, a statement that does not hold for the Shannon or Simpson indices.
+
+The order $q$ sets how much weight the abundances get:
+
+| Order | Weight of the taxa | Equivalent to |
+|---|---|---|
+| $q = 0$ | All count the same | Richness |
+| $q = 1$ | In proportion to their abundance | Exponential of Shannon |
+| $q = 2$ | Mostly the dominant ones | Inverse of Simpson |
+
+The same idea extends to two other dimensions of diversity. Here each one has its own unit, so **the values of the three types cannot be compared with each other**: compare groups within a type.
+
+| `diversity` | What it takes into account | What you need | Unit |
+|---|---|---|---|
+| `"taxonomic"` | Abundances | The table | Effective number of features |
+| `"phylogenetic"` | How related the taxa are [@chao2010phylogenetic] | Rooted tree | Effective number of lineages |
+| `"functional"` | How different their traits are [@chao2019attribute] | Traits per taxon | Effective number of functionally distinct features |
+
+## Preparing the data
+
+We use the fungal example of the package (arbuscular mycorrhizal fungi, 18S).
+
+```{r data}
+library(MicroBioMeta)
+
+table_fungi <- read.delim(
+    system.file("extdata", "table_fungi.txt", package = "MicroBioMeta"),
+    row.names = 1, check.names = FALSE
+)
+taxonomy_fungi <- read.delim(
+    system.file("extdata", "taxonomy_fungi.txt", package = "MicroBioMeta"),
+    check.names = FALSE
+)
+metadata_fungi <- read.delim(
+    system.file("extdata", "metadata_fungi.txt", package = "MicroBioMeta"),
+    check.names = FALSE
+)
+metadata_fungi <- metadata_fungi[metadata_fungi$SAMPLEID %in% colnames(table_fungi), ]
+table_fungi <- table_fungi[, metadata_fungi$SAMPLEID]
+
+table_fung <- merge_feature_taxonomy(table = table_fungi, taxonomy = taxonomy_fungi)
+```
+
+### The tree
+
+The tip labels must be the taxa of the table. With QIIME 2 [@bolyen2019qiime2], the tree comes from the representative sequences, and `exported-tree/tree.nwk` is what you read in R:
+
+```{bash, eval=FALSE}
+qiime phylogeny align-to-tree-mafft-fasttree \
+    --i-sequences rep-seqs.qza \
+    --output-dir phylogeny
+qiime tools export --input-path phylogeny/rooted_tree.qza --output-path exported-tree
+```
+
+```{r tree}
+tree_fungi <- ape::read.tree(
+    system.file("extdata", "tree_fungi.nwk", package = "MicroBioMeta")
+)
+```
+
+Check the tree before you use it: a few spurious sequences on a very long branch can flatten $q = 1$ and $q = 2$, because that branch dominates the tree. In this example we removed three *Unassigned* ASVs (10 reads) for that reason.
+
+### The traits
+
+`traits` is a table with taxa in rows and traits in columns. Any measured trait works. For microbial communities a common source is the table of gene families predicted per ASV by PICRUSt2 [@douglas2020picrust2], such as `EC_predicted.tsv`. Those are predictions, not measurements, so report them as such.
+
+```{r traits}
+traits_fungi <- read.delim(
+    system.file("extdata", "traits_fungi.txt", package = "MicroBioMeta"),
+    row.names = 1, check.names = FALSE
+)
+```
+
+Taxa that are in the table but not in the tree or the traits are dropped with a warning that says how many. Here that happens with the three ASVs above.
+
+## Alpha diversity with Hill numbers
+
+`alpha_hill_plot()` uses the same call for all three types. Only `diversity` and its input change, and the y-axis title follows the unit of each type.
+
+```{r alpha-tax}
+alpha_hill_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    facet_by = "Treatment",
+    show_legend = FALSE
+)
+```
+
+```{r alpha-phylo}
+alpha_hill_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    facet_by = "Treatment",
+    show_legend = FALSE,
+    diversity = "phylogenetic",
+    tree = tree_fungi
+)
+```
+
+```{r alpha-func}
+alpha_hill_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    facet_by = "Treatment",
+    show_legend = FALSE,
+    diversity = "functional",
+    traits = traits_fungi,
+    stat = "kruskal.test"
+)
+```
+
+Two details of these values:
+
+- The phylogenetic values are read at one common tree depth, so samples are comparable. For that reason a sample can fall slightly below 1.
+- Functional values depend on a distance threshold; here it is the largest distance between two taxa, the default of `hilldiv3`.
+
+## Classic indices
+
+`alpha_diversity_plot()` shows the classic indices, also with `diversity`:
+
+| `diversity` | Index | Meaning | Unit |
+|---|---|---|---|
+| `"taxonomic"` | Chao1, Shannon, Simpson | Richness and evenness | Different in each index |
+| `"phylogenetic"` | Faith's PD [@faith1992conservation] | Summed branch length up to the root | Branch length |
+| `"functional"` | Rao's Q [@rao1982diversity] | Mean distance between two random reads | Distance (Gower) |
+
+```{r classic-phylo, fig.height=4}
+alpha_diversity_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    show_legend = FALSE,
+    diversity = "phylogenetic",
+    tree = tree_fungi
+)
+```
+
+```{r classic-func, fig.height=4}
+alpha_diversity_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    x_col = "Type_of_soil",
+    fill_col = "Type_of_soil",
+    show_legend = FALSE,
+    diversity = "functional",
+    traits = traits_fungi
+)
+```
+
+These indices are related to the Hill numbers but they are not the same quantity. Faith's PD is the phylogenetic $q = 0$ before dividing by the depth of the tree, and Rao's Q gives the functional $q = 2$ through $1 / (1 - Q / \tau)$, where $\tau$ is the distance threshold. Choose the classic index if you need to compare with studies that report it, and the Hill number if you want every type in the same framework.
+
+## Beta diversity
+
+### The metrics
+
+`hilldiv3::hillpair()` turns the Hill numbers into dissimilarities between samples [@jost2007partitioning; @chiu2014phylogenetic]. In `MicroBioMeta` they are one more option of `distance`, next to `"jaccard"` or `"aitchison"`, with the order set by `q`. They range from 0 (identical samples) to 1 (nothing shared), so they have no unit problem.
+
+| `distance` | Type | $q = 0$ | $q = 1$ | $q = 2$ |
+|---|---|---|---|---|
+| `"U"` | Jaccard type | Jaccard | Horn | Regional overlap |
+| `"C"` | Sørensen type | Sørensen | Horn | Morisita-Horn |
+| `"V"` | Sørensen-type turnover | Sørensen | | |
+| `"S"` | Jaccard-type turnover | Jaccard | | |
+
+With `diversity = "phylogenetic"` and $q = 0$, `"U"` is the unweighted UniFrac [@lozupone2005unifrac]. It is a good default if you already use Jaccard. At $q = 1$ it is related to the weighted UniFrac, but it is not the same value.
+
+These metrics describe the differences in Hill-number terms; they are not compositional. If your main analysis uses CLR/Aitchison, keep it there and use these as a complement.
+
+### Ordination
+
+The Hill metrics work with `ordination = "PCoA"` or `"NMDS"`, the same as any distance that is not `"compositional"`.
+
+```{r ord-tax, fig.height=5}
+beta_ord_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    distance = "U",
+    q = 1,
+    ordination = "PCoA",
+    group_col = "Type_of_soil"
+)
+```
+
+```{r ord-phylo, fig.height=5}
+beta_ord_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    distance = "U",
+    q = 0,
+    ordination = "PCoA",
+    group_col = "Type_of_soil",
+    diversity = "phylogenetic",
+    tree = tree_fungi
+)
+```
+
+```{r ord-func, fig.height=5}
+beta_ord_plot(
+    table = table_fung,
+    metadata = metadata_fungi,
+    distance = "U",
+    q = 1,
+    ordination = "PCoA",
+    group_col = "Type_of_soil",
+    diversity = "functional",
+    traits = traits_fungi
+)
+```
+
+### PERMANOVA and betadisper
+
+`beta_test_table()` takes the same arguments. A PERMANOVA [@anderson2001permanova] tests whether the groups differ, and betadisper [@anderson2006distance] whether their dispersion does. Report both: a significant PERMANOVA with unequal dispersions may reflect differences in dispersion, not in position. In this example betadisper is significant, so read the PERMANOVA of `Type_of_soil` with that in mind.
+
+```{r permanova}
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil * Treatment",
+    distance = "U",
+    q = 0,
+    diversity = "phylogenetic",
+    tree = tree_fungi
+)
+```
+
+```{r betadisper}
+beta_test_table(
+    table = table_fung,
+    metadata = metadata_fungi,
+    formula_str = "Type_of_soil",
+    distance = "U",
+    q = 0,
+    test = "betadisper",
+    diversity = "phylogenetic",
+    tree = tree_fungi
+)
+```
+
+## References
+
+<div id="refs"></div>
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

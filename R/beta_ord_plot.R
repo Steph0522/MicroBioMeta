@@ -10,7 +10,9 @@
 #' Its first column must hold the sample IDs (the column names of `table`).
 #' @param distance Distance method: one of `"euclidean"`, `"bray"`,
 #'   `"jaccard"`, `"sorensen"`, `"compositional"` (default; CLR/Aitchison via
-#'   ALDEx2), `"aitchison"`, or `"robust.aitchison"`. Case-insensitive.
+#'   ALDEx2), `"aitchison"`, `"robust.aitchison"`, or the Hill-number
+#'   dissimilarities `"U"`, `"C"`, `"V"` or `"S"` of `hilldiv3::hillpair()`
+#'   (with PCoA or NMDS; see `q`). Case-insensitive.
 #'   Note: `ordination = "PCA"` requires `distance = "compositional"`.
 #' @param mc_samples Number of ALDEx2 Monte Carlo instances used when
 #'   \code{distance = "compositional"}. With \code{1} (default) the clr values
@@ -59,6 +61,16 @@
 #'   loadings (one table) as a tab-delimited file. Default \code{FALSE}.
 #' @param table_filename Character. Name or path of the saved file (used when
 #'   \code{save_table = TRUE}). Default \code{"ordination_scores.txt"}.
+#' @param q Numeric. Order of the Hill-number dissimilarities \code{"U"},
+#'   \code{"C"}, \code{"V"} and \code{"S"}: 0 (presence/absence), 1 (default) or
+#'   2 (dominant taxa). Ignored by the other distances.
+#' @param diversity Character. What the Hill-number dissimilarities use:
+#'   \code{"taxonomic"} (default), \code{"phylogenetic"} (needs \code{tree}) or
+#'   \code{"functional"} (needs \code{traits}). Case-insensitive.
+#' @param tree A rooted \code{phylo} tree whose tip labels are the taxa of
+#'   \code{table}. Used when \code{diversity = "phylogenetic"}.
+#' @param traits A data frame with taxa in rows and traits in columns. Used when
+#'   \code{diversity = "functional"}.
 #' @details With \code{distance = "compositional"} and \code{mc_samples = 1},
 #'   the clr values come from one random Monte Carlo instance of
 #'   \code{ALDEx2::aldex.clr()}; call \code{set.seed()} before the function
@@ -94,7 +106,11 @@ beta_ord_plot <- function(table, metadata,
                           top_n = 5,
                           title = "auto",
                           save_table = FALSE,
-                          table_filename = "ordination_scores.txt") {
+                          table_filename = "ordination_scores.txt",
+                          q = 1,
+                          diversity = "taxonomic",
+                          tree = NULL,
+                          traits = NULL) {
     requireNamespace("vegan")
     requireNamespace("ggplot2")
     requireNamespace("ggrepel")
@@ -152,6 +168,9 @@ beta_ord_plot <- function(table, metadata,
         otu_trans <- NULL
     } else if (distance == "sorensen") {
         dist_matrix <- vegan::vegdist(t(otu_table), method = "bray", binary = TRUE)
+        otu_trans <- NULL
+    } else if (distance %in% c("u", "c", "v", "s")) {
+        dist_matrix <- .mbm_hill_dist(otu_table, distance, q, diversity, tree, traits)
         otu_trans <- NULL
     } else {
         dist_matrix <- vegan::vegdist(t(otu_table), method = distance)
@@ -304,7 +323,11 @@ beta_ord_plot <- function(table, metadata,
             x = x_lab,
             y = y_lab,
             title = if (identical(title, "auto")) {
-                paste(ordination, "-", distance)
+                paste(ordination, "-", if (distance %in% c("u", "c", "v", "s")) {
+                    paste0(toupper(distance), " (q = ", q, ", ", tolower(diversity), ")")
+                } else {
+                    distance
+                })
             } else {
                 title
             },

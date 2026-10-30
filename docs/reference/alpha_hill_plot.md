@@ -29,7 +29,7 @@ alpha_hill_plot(
   legend_title = NULL,
   legend_position = "bottom",
   x_axis_title = NULL,
-  y_axis_title = "Effective number of features",
+  y_axis_title = NULL,
   free_y = FALSE,
   panel_label_case = "upper",
   panel_labels = NULL,
@@ -38,7 +38,10 @@ alpha_hill_plot(
   strip_text_bold = FALSE,
   aspect_ratio = NULL,
   save_table = FALSE,
-  table_filename = "hill.txt"
+  table_filename = "hill.txt",
+  diversity = "taxonomic",
+  tree = NULL,
+  traits = NULL
 )
 ```
 
@@ -149,13 +152,17 @@ alpha_hill_plot(
 
 - y_axis_title:
 
-  Character. Title of the y-axis. Default
-  `"Effective number of features"`.
+  Character. Title of the y-axis. Default `NULL`: the unit of
+  `diversity`: `"Effective number of features"`,
+  `"Effective number of lineages"` or
+  `"Effective number of functionally distinct features"`.
 
 - free_y:
 
-  Logical. If `TRUE`, the y-axis scale is free across facets. Default
-  `FALSE`.
+  Logical. Each order q always has its own y-axis scale (q0 is usually
+  much larger than q2). If `FALSE` (default), that scale is shared by
+  all the panels of the same order, so the groups can be compared across
+  facets. If `TRUE`, every panel gets its own scale.
 
 - panel_label_case:
 
@@ -196,6 +203,34 @@ alpha_hill_plot(
 
   Character. Name or path of the saved file (used when
   `save_table = TRUE`). Default `"hill.txt"`.
+
+- diversity:
+
+  Character. `"taxonomic"` (default, Hill numbers of the abundances),
+  `"phylogenetic"` (needs `tree`) or `"functional"` (needs `traits`),
+  computed with
+  [`hilldiv3::hilldiv()`](https://alberdilab.github.io/hilldiv3/reference/hilldiv.html).
+  Phylogenetic values are effective numbers of lineages read at one
+  common tree depth (`reference = "pool"`), so a sample can fall
+  slightly below
+
+  1.  Functional values are effective numbers of functionally distinct
+      features at the largest pairwise distance. Case-insensitive.
+
+- tree:
+
+  A rooted `phylo` tree (e.g. from
+  [`ape::read.tree()`](https://rdrr.io/pkg/ape/man/read.tree.html))
+  whose tip labels are the taxa of `table`. Used when
+  `diversity = "phylogenetic"`.
+
+- traits:
+
+  A data frame with taxa in rows and traits in columns (e.g. the EC or
+  KO copy numbers predicted per ASV by PICRUSt2), converted to Gower
+  distances with
+  [`hilldiv3::traits2dist()`](https://alberdilab.github.io/hilldiv3/reference/traits2dist.html).
+  Used when `diversity = "functional"`.
 
 ## Value
 

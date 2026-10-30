@@ -25,10 +25,12 @@ PCA, PCoA or NMDS ordination."><meta name="twitter:card" content="summary_large_
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>English</h6></li>
     <li><a class="dropdown-item" href="../articles/metabarcoding.html">Metabarcoding</a></li>
     <li><a class="dropdown-item" href="../articles/metagenomic.html">Metagenomic</a></li>
+    <li><a class="dropdown-item" href="../articles/hill_diversity.html">Hill numbers</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Español</h6></li>
     <li><a class="dropdown-item" href="../articles/metabarcoding_es.html">Amplicón</a></li>
     <li><a class="dropdown-item" href="../articles/metagenomic_es.html">Metagenómica</a></li>
+    <li><a class="dropdown-item" href="../articles/hill_diversity_es.html">Números de Hill</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -72,7 +74,11 @@ PCA, PCoA or NMDS ordination.</p>
 <span>  top_n <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  save_table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  table_filename <span class="op">=</span> <span class="st">"ordination_scores.txt"</span></span>
+<span>  table_filename <span class="op">=</span> <span class="st">"ordination_scores.txt"</span>,</span>
+<span>  q <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  diversity <span class="op">=</span> <span class="st">"taxonomic"</span>,</span>
+<span>  tree <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  traits <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -93,7 +99,9 @@ Its first column must hold the sample IDs (the column names of <code>table</code
 <dt id="arg-distance">distance<a class="anchor" aria-label="anchor" href="#arg-distance"></a></dt>
 <dd><p>Distance method: one of <code>"euclidean"</code>, <code>"bray"</code>,
 <code>"jaccard"</code>, <code>"sorensen"</code>, <code>"compositional"</code> (default; CLR/Aitchison via
-ALDEx2), <code>"aitchison"</code>, or <code>"robust.aitchison"</code>. Case-insensitive.
+ALDEx2), <code>"aitchison"</code>, <code>"robust.aitchison"</code>, or the Hill-number
+dissimilarities <code>"U"</code>, <code>"C"</code>, <code>"V"</code> or <code>"S"</code> of <code><a href="https://alberdilab.github.io/hilldiv3/reference/hillpair.html" class="external-link">hilldiv3::hillpair()</a></code>
+(with PCoA or NMDS; see <code>q</code>). Case-insensitive.
 Note: <code>ordination = "PCA"</code> requires <code>distance = "compositional"</code>.</p></dd>
 
 
@@ -176,6 +184,28 @@ loadings (one table) as a tab-delimited file. Default <code>FALSE</code>.</p></d
 <dt id="arg-table-filename">table_filename<a class="anchor" aria-label="anchor" href="#arg-table-filename"></a></dt>
 <dd><p>Character. Name or path of the saved file (used when
 <code>save_table = TRUE</code>). Default <code>"ordination_scores.txt"</code>.</p></dd>
+
+
+<dt id="arg-q">q<a class="anchor" aria-label="anchor" href="#arg-q"></a></dt>
+<dd><p>Numeric. Order of the Hill-number dissimilarities <code>"U"</code>,
+<code>"C"</code>, <code>"V"</code> and <code>"S"</code>: 0 (presence/absence), 1 (default) or
+2 (dominant taxa). Ignored by the other distances.</p></dd>
+
+
+<dt id="arg-diversity">diversity<a class="anchor" aria-label="anchor" href="#arg-diversity"></a></dt>
+<dd><p>Character. What the Hill-number dissimilarities use:
+<code>"taxonomic"</code> (default), <code>"phylogenetic"</code> (needs <code>tree</code>) or
+<code>"functional"</code> (needs <code>traits</code>). Case-insensitive.</p></dd>
+
+
+<dt id="arg-tree">tree<a class="anchor" aria-label="anchor" href="#arg-tree"></a></dt>
+<dd><p>A rooted <code>phylo</code> tree whose tip labels are the taxa of
+<code>table</code>. Used when <code>diversity = "phylogenetic"</code>.</p></dd>
+
+
+<dt id="arg-traits">traits<a class="anchor" aria-label="anchor" href="#arg-traits"></a></dt>
+<dd><p>A data frame with taxa in rows and traits in columns. Used when
+<code>diversity = "functional"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
