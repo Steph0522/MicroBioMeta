@@ -64,3 +64,19 @@ test_that("collapse_table keeps every sample column, in table order", {
         "no longer takes `metadata`"
     )
 })
+
+test_that("collapse_table also sums features not resolved to the level that share taxonomy", {
+    table <- data.frame(
+        taxonomy = c(
+            "d__Eukaryota;p__Ascomycota;c__Sordariomycetes",
+            "d__Eukaryota;p__Ascomycota;c__Sordariomycetes",
+            "d__Eukaryota;p__Ascomycota;c__Sordariomycetes;o__Hypocreales;f__Nectriaceae;g__Fusarium"
+        ),
+        S1 = c(1, 2, 10), S2 = c(3, 4, 20),
+        row.names = c("A1", "A2", "A3")
+    )
+    collapsed <- collapse_table(table, level = "genus")$collapsed_table
+    expect_equal(nrow(collapsed), 2)
+    sordario <- collapsed[collapsed$taxonomy == "d__Eukaryota;p__Ascomycota;c__Sordariomycetes", ]
+    expect_equal(c(sordario$S1, sordario$S2), c(3, 7))
+})

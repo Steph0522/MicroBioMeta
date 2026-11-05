@@ -30,7 +30,7 @@ tab-delimited text.
   TD = Moderate_drought, TED = Severe_drought). It is built from the full
   files with `make_subset_bacteria.R`.
 
-## 18S rRNA (fungi)
+## 18S rRNA (microbial eukaryotes)
 
 Source: Hereira-Pacheco, S.E., Estrada-Torres, A., Dendooven, L. &
 Navarro-Noya, Y.E. (2023). Shifts in root-associated fungal communities under

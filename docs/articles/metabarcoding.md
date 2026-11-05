@@ -28,7 +28,8 @@ BiocManager::install("MicroBioMeta")
 ## Example data
 
 For this example, we will use data sequenced using the 16S barcode for
-bacteria and 18S barcode for fungi.
+bacteria and 18S barcode for microbial eukaryotes (mostly fungi, but
+also ciliates, cercozoans and other protists).
 
 The data is taken from:
 
@@ -38,10 +39,9 @@ the seeds community more than the rhizosphere bacteria independent of
 soil water content. Sci Rep 11, 2173 (2021).
 https://doi.org/10.1038/s41598-021-81551-7](https://doi.org/10.1038/s41598-021-81551-7)
 
-For 18S 🍄: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L.,
-& Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal
-communities under drought conditions in Ricinus communis. Fungal
-Ecology, 63,
+For 18S: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., &
+Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities
+under drought conditions in Ricinus communis. Fungal Ecology, 63,
 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
 ## Loading data
@@ -155,7 +155,7 @@ metadata_bacteria <- bacteria_metadata[
 ]
 ```
 
-and for fungi:
+and for microbial eukaryotes:
 
 ``` r
 
@@ -518,10 +518,10 @@ alpha_hill_plot(
 
 ![](metabarcoding_files/figure-html/alpha-1-1.png)
 
-The same function can swap the roles of the variables. For the fungi 🍄
-we put the soil compartment on the x-axis and split the panels by
-treatment, which highlights how diversity changes from bulk soil to
-roots within each treatment:
+The same function can swap the roles of the variables. For the microbial
+eukaryotes we put the soil compartment on the x-axis and split the
+panels by treatment, which highlights how diversity changes from bulk
+soil to roots within each treatment:
 
 ``` r
 
@@ -552,8 +552,8 @@ and
 with 3 to 11 groups the last one is grey), `"earth"` (CARTO “Earth”,
 brown to teal; best for two groups or ordered groups, since the middle
 colors are pale), `"grey"`, `"viridis"` or `"brewer"`. `group_colors`
-overrides `palette` with your own colors. Here the fungal example above
-with `"safe"`:
+overrides `palette` with your own colors. Here the microbial eukaryote
+example above with `"safe"`:
 
 ``` r
 
@@ -720,9 +720,9 @@ The function returns a **list with two elements**:
 - **`long_format`**: the same information in long format, which is
   useful for downstream plotting or statistical analyses.
 
-For example, the following code collapses the fungal abundance table to
-the **genus level**, and then we make a Venn diagram to visualize the
-shared genera.
+For example, the following code collapses the microbial eukaryote
+abundance table to the **genus level**, and then we make a Venn diagram
+to visualize the shared genera.
 
 ``` r
 
@@ -868,12 +868,12 @@ beta_ord_plot(
 
 ![](metabarcoding_files/figure-html/ord-1-1.png)
 
-For the fungi 🍄 we use a different combination: the **Aitchison**
-distance (Euclidean distance between clr-transformed abundances, with a
-pseudocount of 0.5 for the zeros), which respects the compositional
-nature of the data, with an **NMDS** ordination. NMDS starts from random
-configurations, so [`set.seed()`](https://rdrr.io/r/base/Random.html) is
-used here too:
+For the microbial eukaryotes we use a different combination: the
+**Aitchison** distance (Euclidean distance between clr-transformed
+abundances, with a pseudocount of 0.5 for the zeros), which respects the
+compositional nature of the data, with an **NMDS** ordination. NMDS
+starts from random configurations, so
+[`set.seed()`](https://rdrr.io/r/base/Random.html) is used here too:
 
 ``` r
 
@@ -1074,8 +1074,8 @@ which is used as-is.
 behind the plot as a tab-delimited file**.
 
 `distance` matches the ordination of each dataset above (`compositional`
-for bacteria, `aitchison` for fungi), so the significance test evaluates
-the same notion of dissimilarity shown in the plot.
+for bacteria, `aitchison` for microbial eukaryotes), so the significance
+test evaluates the same notion of dissimilarity shown in the plot.
 
 The result is a table figure (a ggplot), so it can be combined with
 other plots
@@ -1239,7 +1239,7 @@ beta_dissimilarity_plot(
 
 ![](metabarcoding_files/figure-html/dissim-2-1.png)
 
-For the fungi 🍄 we look at a different component:
+For the microbial eukaryotes we look at a different component:
 `partition = "turnover"` keeps only the replacement of taxa between
 samples (not the differences due to one sample holding a subset of the
 other), here with the Sørensen family:
@@ -1545,7 +1545,7 @@ colored even if that particular comparison is not significant;
 `save_table = TRUE` saves the adjusted p-value (`q_`) and the
 significance (`diff_`) of every comparison.
 
-### Example: Fungal data
+### Example: Microbial eukaryote data
 
 We follow the same procedure, comparing **Bulk soil** and **Roots**, but
 visualize the results with a **heatmap**. This function uses

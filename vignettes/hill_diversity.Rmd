@@ -48,7 +48,7 @@ The same idea extends to two other dimensions of diversity [@chao2014unifying]. 
 
 ## Preparing the data
 
-We use the fungal example of the package (arbuscular mycorrhizal fungi, 18S).
+We use the 18S example of the package (microbial eukaryotes, mostly fungi).
 
 ```{r data}
 library(MicroBioMeta)

@@ -28,7 +28,8 @@ BiocManager::install("MicroBioMeta")
 ## Datos de ejemplo
 
 Para este ejemplo usaremos datos secuenciados con el barcode 16S para
-bacterias y 18S para hongos.
+bacterias y 18S para eucariontes microscópicos (sobre todo hongos, pero
+también ciliados, cercozoos y otros protistas).
 
 Los datos provienen de:
 
@@ -38,10 +39,9 @@ the seeds community more than the rhizosphere bacteria independent of
 soil water content. Sci Rep 11, 2173 (2021).
 https://doi.org/10.1038/s41598-021-81551-7](https://doi.org/10.1038/s41598-021-81551-7)
 
-Para 18S 🍄: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L.,
-& Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal
-communities under drought conditions in Ricinus communis. Fungal
-Ecology, 63,
+Para 18S: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., &
+Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities
+under drought conditions in Ricinus communis. Fungal Ecology, 63,
 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
 ## Cargar los datos
@@ -157,7 +157,7 @@ metadata_bacteria <- bacteria_metadata[
 ]
 ```
 
-y para hongos:
+y para eucariontes microscópicos:
 
 ``` r
 
@@ -538,9 +538,10 @@ alpha_hill_plot(
 ![](metabarcoding_es_files/figure-html/alpha-1-1.png)
 
 La misma función permite intercambiar el papel de las variables. Para
-los hongos 🍄 ponemos el compartimento de suelo en el eje x y separamos
-los paneles por tratamiento, lo que resalta cómo cambia la diversidad
-del suelo desnudo a las raíces dentro de cada tratamiento:
+los eucariontes microscópicos ponemos el compartimento de suelo en el
+eje x y separamos los paneles por tratamiento, lo que resalta cómo
+cambia la diversidad del suelo desnudo a las raíces dentro de cada
+tratamiento:
 
 ``` r
 
@@ -572,7 +573,8 @@ con 3 a 11 grupos el último es gris), `"earth"` (la paleta “Earth” de
 CARTO, de café a azul verdoso; mejor para dos grupos o grupos ordenados,
 porque los colores intermedios son pálidos), `"grey"`, `"viridis"` o
 `"brewer"`. `group_colors` reemplaza a `palette` con tus propios
-colores. Aquí el ejemplo de hongos de arriba con `"safe"`:
+colores. Aquí el ejemplo de eucariontes microscópicos de arriba con
+`"safe"`:
 
 ``` r
 
@@ -743,8 +745,8 @@ La función retorna una **lista con dos elementos**:
   graficación o análisis estadísticos posteriores.
 
 Por ejemplo, el siguiente código colapsa la tabla de abundancia de
-hongos al **nivel de género** y hacemos un diagrama de Venn para
-visualizar los géneros compartidos.
+eucariontes microscópicos al **nivel de género** y hacemos un diagrama
+de Venn para visualizar los géneros compartidos.
 
 ``` r
 
@@ -893,9 +895,9 @@ beta_ord_plot(
 
 ![](metabarcoding_es_files/figure-html/ord-1-1.png)
 
-Para los hongos 🍄 usamos otra combinación: la distancia de
-**Aitchison** (distancia euclidiana entre abundancias transformadas con
-clr, con un pseudoconteo de 0.5 para los ceros), que respeta la
+Para los eucariontes microscópicos usamos otra combinación: la distancia
+de **Aitchison** (distancia euclidiana entre abundancias transformadas
+con clr, con un pseudoconteo de 0.5 para los ceros), que respeta la
 naturaleza composicional de los datos, con una ordenación **NMDS**. NMDS
 parte de configuraciones al azar, así que aquí también se usa
 [`set.seed()`](https://rdrr.io/r/base/Random.html):
@@ -1101,9 +1103,9 @@ que se usa tal cual.
 valores detrás del gráfico en un archivo delimitado por tabuladores**.
 
 `distance` coincide con la ordenación de cada conjunto de datos de
-arriba (`compositional` para bacterias, `aitchison` para hongos), de
-modo que la prueba de significancia evalúa la misma noción de
-disimilitud que se muestra en el gráfico.
+arriba (`compositional` para bacterias, `aitchison` para eucariontes
+microscópicos), de modo que la prueba de significancia evalúa la misma
+noción de disimilitud que se muestra en el gráfico.
 
 El resultado es una figura de la tabla (un ggplot), así que se puede
 combinar con otros gráficos (p. ej.
@@ -1273,10 +1275,10 @@ beta_dissimilarity_plot(
 
 ![](metabarcoding_es_files/figure-html/dissim-2-1.png)
 
-Para los hongos 🍄 vemos otro componente: `partition = "turnover"`
-conserva solo el reemplazo de taxones entre muestras (no las diferencias
-debidas a que una muestra tenga un subconjunto de los taxones de la
-otra), aquí con la familia Sørensen:
+Para los eucariontes microscópicos vemos otro componente:
+`partition = "turnover"` conserva solo el reemplazo de taxones entre
+muestras (no las diferencias debidas a que una muestra tenga un
+subconjunto de los taxones de la otra), aquí con la familia Sørensen:
 
 ``` r
 
@@ -1593,7 +1595,7 @@ comparación en particular no sea significativa; con `save_table = TRUE`
 se guardan el valor p ajustado (`q_`) y la significancia (`diff_`) de
 cada comparación.
 
-### Ejemplo: datos de hongos
+### Ejemplo: datos de eucariontes microscópicos
 
 Seguimos el mismo procedimiento, comparando **Bulk soil** y **Roots**,
 pero visualizamos los resultados con un **heatmap**. Esta función usa

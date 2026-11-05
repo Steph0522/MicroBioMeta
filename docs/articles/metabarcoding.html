@@ -96,14 +96,15 @@ install it from GitHub:</p>
 <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
 <p>For this example, we will use data sequenced using the 16S barcode
-for bacteria and 18S barcode for fungi.</p>
+for bacteria and 18S barcode for microbial eukaryotes (mostly fungi, but
+also ciliates, cercozoans and other protists).</p>
 <p>The data is taken from:</p>
 <p>For 16S 🦠: <a href="https://doi.org/10.1038/s41598-021-81551-7" class="external-link">Hereira-Pacheco, S.E.,
 Navarro-Noya, Y.E. &amp; Dendooven, L. The root endophytic bacterial
 community of Ricinus communis L. resembles the seeds community more than
 the rhizosphere bacteria independent of soil water content. Sci Rep 11,
 2173 (2021). https://doi.org/10.1038/s41598-021-81551-7</a></p>
-<p>For 18S 🍄: <a href="https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028" class="external-link">Hereira-Pacheco,
+<p>For 18S: <a href="https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028" class="external-link">Hereira-Pacheco,
 S. E., Estrada-Torres, A., Dendooven, L., &amp; Navarro-Noya, Y. E.
 (2023). Shifts in root-associated fungal communities under drought
 conditions in Ricinus communis. Fungal Ecology, 63, 101225.</a></p>
@@ -193,7 +194,7 @@ metadata.</p>
 <span><span class="va">metadata_bacteria</span> <span class="op">&lt;-</span> <span class="va">bacteria_metadata</span><span class="op">[</span></span>
 <span>    <span class="va">bacteria_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">samples_bac</span>,</span>
 <span><span class="op">]</span></span></code></pre></div>
-<p>and for fungi:</p>
+<p>and for microbial eukaryotes:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samples_fun</span> <span class="op">&lt;-</span> <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span><span class="op">[</span></span>
 <span>    <span class="va">fungi_metadata</span><span class="op">$</span><span class="va">SAMPLEID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">fungi_table</span><span class="op">)</span></span>
@@ -505,10 +506,10 @@ sample.</p>
 <span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/alpha-1-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>The same function can swap the roles of the variables. For the fungi
-🍄 we put the soil compartment on the x-axis and split the panels by
-treatment, which highlights how diversity changes from bulk soil to
-roots within each treatment:</p>
+<p>The same function can swap the roles of the variables. For the
+microbial eukaryotes we put the soil compartment on the x-axis and split
+the panels by treatment, which highlights how diversity changes from
+bulk soil to roots within each treatment:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
@@ -532,7 +533,8 @@ is grey), <code>"earth"</code> (CARTO “Earth”, brown to teal; best for
 two groups or ordered groups, since the middle colors are pale),
 <code>"grey"</code>, <code>"viridis"</code> or <code>"brewer"</code>.
 <code>group_colors</code> overrides <code>palette</code> with your own
-colors. Here the fungal example above with <code>"safe"</code>:</p>
+colors. Here the microbial eukaryote example above with
+<code>"safe"</code>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/alpha_hill_plot.html">alpha_hill_plot</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
@@ -675,9 +677,9 @@ level and columns correspond to samples.</p></li>
 in long format, which is useful for downstream plotting or statistical
 analyses.</p></li>
 </ul>
-<p>For example, the following code collapses the fungal abundance table
-to the <strong>genus level</strong>, and then we make a Venn diagram to
-visualize the shared genera.</p>
+<p>For example, the following code collapses the microbial eukaryote
+abundance table to the <strong>genus level</strong>, and then we make a
+Venn diagram to visualize the shared genera.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">table_genus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/collapse_table.html">collapse_table</a></span><span class="op">(</span></span>
 <span>    table <span class="op">=</span> <span class="va">table_fung</span>,</span>
@@ -805,7 +807,7 @@ computation.</p>
 <span>    shape_col <span class="op">=</span> <span class="st">"Treatment"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/ord-1-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>For the fungi 🍄 we use a different combination: the
+<p>For the microbial eukaryotes we use a different combination: the
 <strong>Aitchison</strong> distance (Euclidean distance between
 clr-transformed abundances, with a pseudocount of 0.5 for the zeros),
 which respects the compositional nature of the data, with an
@@ -996,8 +998,8 @@ that saves the values behind the plot as a tab-delimited
 file</strong>.</p>
 <p><code>distance</code> matches the ordination of each dataset above
 (<code>compositional</code> for bacteria, <code>aitchison</code> for
-fungi), so the significance test evaluates the same notion of
-dissimilarity shown in the plot.</p>
+microbial eukaryotes), so the significance test evaluates the same
+notion of dissimilarity shown in the plot.</p>
 <p>The result is a table figure (a ggplot), so it can be combined with
 other plots (e.g. <code><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">cowplot::plot_grid()</a></code>) or saved with
 <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code>. Use <code>save_table = TRUE</code> to
@@ -1128,7 +1130,7 @@ plot.</p>
 <span>    save_table <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="metabarcoding_files/figure-html/dissim-2-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
-<p>For the fungi 🍄 we look at a different component:
+<p>For the microbial eukaryotes we look at a different component:
 <code>partition = "turnover"</code> keeps only the replacement of taxa
 between samples (not the differences due to one sample holding a subset
 of the other), here with the Sørensen family:</p>
@@ -1396,7 +1398,7 @@ adjusted p-value (<code>q_</code>) and the significance
 (<code>diff_</code>) of every comparison.</p>
 </div>
 <div class="section level3">
-<h3 id="example-fungal-data">Example: Fungal data<a class="anchor" aria-label="anchor" href="#example-fungal-data"></a>
+<h3 id="example-microbial-eukaryote-data">Example: Microbial eukaryote data<a class="anchor" aria-label="anchor" href="#example-microbial-eukaryote-data"></a>
 </h3>
 <p>We follow the same procedure, comparing <strong>Bulk soil</strong>
 and <strong>Roots</strong>, but visualize the results with a

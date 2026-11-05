@@ -48,7 +48,7 @@ La misma idea se extiende a otras dos dimensiones de la diversidad [@chao2014uni
 
 ## Preparar los datos
 
-Usamos el ejemplo de hongos del paquete (hongos micorrízicos arbusculares, 18S).
+Usamos el ejemplo 18S del paquete (eucariontes microscópicos, sobre todo hongos).
 
 ```{r data}
 library(MicroBioMeta)

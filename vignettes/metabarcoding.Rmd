@@ -45,13 +45,13 @@ BiocManager::install("MicroBioMeta")
 
 ## Example data
 
-For this example, we will use data sequenced using the 16S barcode for bacteria and 18S barcode for fungi.
+For this example, we will use data sequenced using the 16S barcode for bacteria and 18S barcode for microbial eukaryotes (mostly fungi, but also ciliates, cercozoans and other protists).
 
 The data is taken from:
 
 For 16S 🦠: [Hereira-Pacheco, S.E., Navarro-Noya, Y.E. & Dendooven, L. The root endophytic bacterial community of Ricinus communis L. resembles the seeds community more than the rhizosphere bacteria independent of soil water content. Sci Rep 11, 2173 (2021). https://doi.org/10.1038/s41598-021-81551-7](https://doi.org/10.1038/s41598-021-81551-7)
 
-For 18S 🍄: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities under drought conditions in Ricinus communis. Fungal Ecology, 63, 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
+For 18S: [Hereira-Pacheco, S. E., Estrada-Torres, A., Dendooven, L., & Navarro-Noya, Y. E. (2023). Shifts in root-associated fungal communities under drought conditions in Ricinus communis. Fungal Ecology, 63, 101225.](https://www.sciencedirect.com/science/article/abs/pii/S1754504823000028)
 
 ## Loading data
 First, let's load the `MicroBioMeta` package:
@@ -142,7 +142,7 @@ metadata_bacteria <- bacteria_metadata[
 ]
 ```
 
-and for fungi:
+and for microbial eukaryotes:
 
 ```{r data-6}
 samples_fun <- fungi_metadata$SAMPLEID[
@@ -364,7 +364,7 @@ alpha_hill_plot(
 )
 ```
 
-The same function can swap the roles of the variables. For the fungi 🍄 we put the soil compartment on the x-axis and split the panels by treatment, which highlights how diversity changes from bulk soil to roots within each treatment:
+The same function can swap the roles of the variables. For the microbial eukaryotes we put the soil compartment on the x-axis and split the panels by treatment, which highlights how diversity changes from bulk soil to roots within each treatment:
 
 ```{r alpha-2, warning=FALSE, fig.width=9, fig.height=7}
 alpha_hill_plot(
@@ -379,7 +379,7 @@ alpha_hill_plot(
 )
 ```
 
-`palette` sets the group colors in `alpha_hill_plot()`, `alpha_diversity_plot()`, `alpha_decay_plot()`, `beta_ord_plot()` and `beta_decay_plot()`: `"colorb"` (default, the colorblind-friendly Okabe-Ito palette), `"safe"` (the colorblind-friendly CARTO "Safe" palette; as in `rcartocolor::carto_pal()`, with 3 to 11 groups the last one is grey), `"earth"` (CARTO "Earth", brown to teal; best for two groups or ordered groups, since the middle colors are pale), `"grey"`, `"viridis"` or `"brewer"`. `group_colors` overrides `palette` with your own colors. Here the fungal example above with `"safe"`:
+`palette` sets the group colors in `alpha_hill_plot()`, `alpha_diversity_plot()`, `alpha_decay_plot()`, `beta_ord_plot()` and `beta_decay_plot()`: `"colorb"` (default, the colorblind-friendly Okabe-Ito palette), `"safe"` (the colorblind-friendly CARTO "Safe" palette; as in `rcartocolor::carto_pal()`, with 3 to 11 groups the last one is grey), `"earth"` (CARTO "Earth", brown to teal; best for two groups or ordered groups, since the middle colors are pale), `"grey"`, `"viridis"` or `"brewer"`. `group_colors` overrides `palette` with your own colors. Here the microbial eukaryote example above with `"safe"`:
 
 ```{r alpha-pal, warning=FALSE, fig.width=9, fig.height=7}
 alpha_hill_plot(
@@ -494,7 +494,7 @@ The function returns a **list with two elements**:
 
 -   **`long_format`**: the same information in long format, which is useful for downstream plotting or statistical analyses.
 
-For example, the following code collapses the fungal abundance table to the **genus level**, and then we make a Venn diagram to visualize the shared genera.
+For example, the following code collapses the microbial eukaryote abundance table to the **genus level**, and then we make a Venn diagram to visualize the shared genera.
 
 ```{r collapse, fig.width=7, fig.height=6}
 table_genus <- collapse_table(
@@ -578,7 +578,7 @@ beta_ord_plot(
 )
 ```
 
-For the fungi 🍄 we use a different combination: the **Aitchison** distance (Euclidean distance between clr-transformed abundances, with a pseudocount of 0.5 for the zeros), which respects the compositional nature of the data, with an **NMDS** ordination. NMDS starts from random configurations, so `set.seed()` is used here too:
+For the microbial eukaryotes we use a different combination: the **Aitchison** distance (Euclidean distance between clr-transformed abundances, with a pseudocount of 0.5 for the zeros), which respects the compositional nature of the data, with an **NMDS** ordination. NMDS starts from random configurations, so `set.seed()` is used here too:
 
 ```{r ord-2, fig.width=8, fig.height=6}
 set.seed(123)
@@ -617,7 +617,7 @@ The `permutations` parameter determines the number of permutations used to estim
 
 ⚠️ **NOTE: Each function has a `save_table` option that saves the values behind the plot as a tab-delimited file**.
 
-`distance` matches the ordination of each dataset above (`compositional` for bacteria, `aitchison` for fungi), so the significance test evaluates the same notion of dissimilarity shown in the plot.
+`distance` matches the ordination of each dataset above (`compositional` for bacteria, `aitchison` for microbial eukaryotes), so the significance test evaluates the same notion of dissimilarity shown in the plot.
 
 The result is a table figure (a ggplot), so it can be combined with other plots (e.g. `cowplot::plot_grid()`) or saved with `ggplot2::ggsave()`. Use `save_table = TRUE` to also get the results as a text file.
 
@@ -713,7 +713,7 @@ beta_dissimilarity_plot(
 )
 ```
 
-For the fungi 🍄 we look at a different component: `partition = "turnover"` keeps only the replacement of taxa between samples (not the differences due to one sample holding a subset of the other), here with the Sørensen family:
+For the microbial eukaryotes we look at a different component: `partition = "turnover"` keeps only the replacement of taxa between samples (not the differences due to one sample holding a subset of the other), here with the Sørensen family:
 
 ```{r dissim-3}
 groups_fung <- setdiff(unique(as.character(metadata_fungi$Type_of_soil)), "Roots")
@@ -890,7 +890,7 @@ ancombc_plot(
 
 **How to read the heatmap:** each column is one group compared with the reference (here **Rhizosphere** vs **Bulk soil** and **Roots** vs **Bulk soil**), and each row is a taxon. The color and the number in each cell are the log fold change (LFC, natural logarithm) estimated by ANCOMBC2: positive values (orange) mean the taxon is more abundant in that group than in bulk soil, negative values (blue) that it is less abundant, and white means no change. For example, an LFC of 1 means about 2.7 times more abundant (*e*^1^), and -1 about 2.7 times less. A taxon is shown when it is significant in at least one of the comparisons, so a cell can be colored even if that particular comparison is not significant; `save_table = TRUE` saves the adjusted p-value (`q_`) and the significance (`diff_`) of every comparison.
 
-### Example: Fungal data
+### Example: Microbial eukaryote data
 We follow the same procedure, comparing **Bulk soil** and **Roots**, but visualize the results with a **heatmap**. This function uses `ComplexHeatmap` [@gu2016complexheatmap].
 
 ```{r fung-data}

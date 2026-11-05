@@ -44,8 +44,8 @@ lineages or functional groups. Always say which one you report.
 
 ## Preparing the data
 
-We use the fungal example of the package (arbuscular mycorrhizal fungi,
-18S).
+We use the 18S example of the package (microbial eukaryotes, mostly
+fungi).
 
 ``` r
 

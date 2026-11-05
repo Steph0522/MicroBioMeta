@@ -2,7 +2,8 @@
 #'
 #' Collapses an abundance table to a taxonomic level (e.g. genus, family,
 #' phylum), summing the counts of the features that share the same taxonomy.
-#' Features not resolved to that level are kept as they are. Optionally
+#' Features not resolved to that level keep their deepest assigned rank and are
+#' also summed when they share the same taxonomy. Optionally
 #' converts the counts to relative abundance and saves the collapsed table.
 #'
 #' @param table A data frame with taxa in rows and samples in columns.
@@ -82,18 +83,17 @@ collapse_table <- function(table,
         paste(levels[seq_len(level_idx)], collapse = ";")
     }, character(1))
 
-    highres <- highres %>%
-        dplyr::group_by(taxonomy) %>%
-        dplyr::summarise(
-            OTU_ID = dplyr::first(OTU_ID),
-            dplyr::across(where(is.numeric), \(x) sum(x, na.rm = TRUE)),
-            .groups = "drop"
-        )
-
+    # features not resolved to `level` are also summed when they share taxonomy
     table_final <- dplyr::bind_rows(
         lowres[, c("OTU_ID", "taxonomy", ordered_samples)],
         highres[, c("OTU_ID", "taxonomy", ordered_samples)]
-    )
+    ) %>%
+        dplyr::group_by(taxonomy) %>%
+        dplyr::summarise(
+            OTU_ID = dplyr::first(OTU_ID),
+            dplyr::across(dplyr::all_of(ordered_samples), \(x) sum(x, na.rm = TRUE)),
+            .groups = "drop"
+        )
 
     table_final <-
         table_final[, c("OTU_ID", "taxonomy", ordered_samples)]

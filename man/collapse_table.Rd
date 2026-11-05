@@ -38,7 +38,8 @@ pivoted to one row per taxon/sample combination).
 \description{
 Collapses an abundance table to a taxonomic level (e.g. genus, family,
 phylum), summing the counts of the features that share the same taxonomy.
-Features not resolved to that level are kept as they are. Optionally
+Features not resolved to that level keep their deepest assigned rank and are
+also summed when they share the same taxonomy. Optionally
 converts the counts to relative abundance and saves the collapsed table.
 }
 \examples{

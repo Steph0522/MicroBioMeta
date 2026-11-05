@@ -44,8 +44,8 @@ linajes o grupos funcionales. Di siempre cuál reportas.
 
 ## Preparar los datos
 
-Usamos el ejemplo de hongos del paquete (hongos micorrízicos
-arbusculares, 18S).
+Usamos el ejemplo 18S del paquete (eucariontes microscópicos, sobre todo
+hongos).
 
 ``` r
 

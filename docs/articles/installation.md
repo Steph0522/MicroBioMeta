@@ -1,6 +1,6 @@
 # Installation
 
-`MicroBioMeta` requires **R \>= 4.3**.
+`MicroBioMeta` requires **R \>= 4.6**.
 
 ## Installing MicroBioMeta
 
@@ -24,8 +24,8 @@ BiocManager::install("MicroBioMeta")
 ## Dependencies
 
 Every package `MicroBioMeta` needs for its core functions (CRAN and
-Bioconductor packages: `vegan`, `hillR`, `betapart`, `ALDEx2`,
-`ANCOMBC`, `phyloseq`, `ComplexHeatmap`, `ggplot2`, and others) installs
+Bioconductor packages: `vegan`, `hillR`, `hilldiv3`, `ape`, `betapart`,
+`ALDEx2`, `ANCOMBC`, `ComplexHeatmap`, `ggplot2`, and others) installs
 automatically with either method above — no extra steps needed for
 regular use.
 
