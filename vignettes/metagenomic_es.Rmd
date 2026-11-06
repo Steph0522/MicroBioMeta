@@ -29,7 +29,7 @@ Para este ejemplo, las lecturas fueron clasificadas taxonómicamente con [`Krake
 
 Los datos provienen de suelos forestales a lo largo de los transectos Iztaccíhuatl-Popocatépetl (PNIP) y La Malinche (PNML), en el centro de México:
 
-[Hereira-Pacheco, S. E. et al. (2025). Metagenomic analysis of the diversity and composition of the fungal communities of forest soils of the transect Iztaccíhuatl-Popocatépetl and La Malinche. *PeerJ*, 13, e18323.](https://peerj.com/articles/18323/)
+[Hereira-Pacheco, S. E. et al. (2025). Metagenomic analysis of fungal assemblages at a regional scale in high-altitude temperate forest soils: alternative methods to determine diversity, composition and environmental drivers. *PeerJ*, 13, e18323.](https://peerj.com/articles/18323/)
 
 Datos crudos, metadatos y los scripts originales del análisis: [github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML](https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML)
 

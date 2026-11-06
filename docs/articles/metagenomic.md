@@ -19,9 +19,10 @@ al. 2017](#ref-lu2017bracken)).
 The data comes from forest soils along the Iztaccíhuatl-Popocatépetl
 (PNIP) and La Malinche (PNML) transects, Central Mexico:
 
-[Hereira-Pacheco, S. E. et al. (2025). Metagenomic analysis of the
-diversity and composition of the fungal communities of forest soils of
-the transect Iztaccíhuatl-Popocatépetl and La Malinche. *PeerJ*, 13,
+[Hereira-Pacheco, S. E. et al. (2025). Metagenomic analysis of fungal
+assemblages at a regional scale in high-altitude temperate forest soils:
+alternative methods to determine diversity, composition and
+environmental drivers. *PeerJ*, 13,
 e18323.](https://peerj.com/articles/18323/)
 
 Raw data, metadata and the original analysis scripts:

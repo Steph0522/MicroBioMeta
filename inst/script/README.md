@@ -48,9 +48,7 @@ text.
 
 ## Shotgun metagenomes (fungi, Kraken2/Bracken)
 
-Source: Hereira-Pacheco, S.E. et al. (2025). Metagenomic analysis of the
-diversity and composition of the fungal communities of forest soils of the
-transect Iztaccíhuatl-Popocatépetl and La Malinche. *PeerJ*, 13, e18323.
+Source: Hereira-Pacheco, S.E. et al. (2025). Metagenomic analysis of fungal assemblages at a regional scale in high-altitude temperate forest soils: alternative methods to determine diversity, composition and environmental drivers. *PeerJ*, 13, e18323.
 Raw data, metadata and analysis scripts:
 https://github.com/Steph0522/Fungal_Metagenomes_PNIP_PNML
 
